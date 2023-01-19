@@ -10,6 +10,7 @@
   "license": "UNLICENSED",
   "devDependencies": {
     "@lifeomic/typescript-tools": "^15.0.1",
-    "prettier": "^2.8.3"
+    "prettier": "^2.8.3",
+    "react-native-test-app": "^2.3.1"
   }
 }
