@@ -23,13 +23,13 @@ Reading the above, we probably want to rename the repo before open-sourcing.
 
 ## Development
 
-NOTE: The react-native app within the "app" folder was generated from
-[react-native-test-app](https://github.com/microsoft/react-native-test-app).
+NOTE: The react-native app within the "components-app" folder was generated
+from [react-native-test-app](https://github.com/microsoft/react-native-test-app)
 Keep this in mind when it's time for RN upgrades - should be helpful.
 
 ### Build and run the components app
 
--   `cd app`
+-   `cd components-app`
 -   `yarn install`
 -   `cd ios && pod install && cd ../`
 -   `npx react-native start`
