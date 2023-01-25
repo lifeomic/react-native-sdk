@@ -1,10 +1,10 @@
 {
   "name": "lo-components-app",
-  "displayName": "lo-components-app",
+  "displayName": "Components App",
   "components": [
     {
       "appKey": "lo-components-app",
-      "displayName": "lo-components-app"
+      "displayName": "Components App"
     }
   ],
   "resources": {
