@@ -21,6 +21,7 @@
     "@babel/core": "^7.12.9",
     "@babel/preset-env": "^7.14.0",
     "@babel/runtime": "^7.12.5",
+    "@lifeomic/react-native-components": "../",
     "@react-native-community/eslint-config": "^3.0.0",
     "@storybook/addon-actions": "^5.3",
     "@storybook/addon-knobs": "^5.3",
