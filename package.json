@@ -1,6 +1,7 @@
 {
-  "name": "react-native-components",
+  "name": "@lifeomic/react-native-components",
   "version": "0.0.0",
+  "main": "src/index.ts",
   "description": "React-native components for building a mobile app against the LifeOmic Platform",
   "scripts": {
     "test": "echo \"Warn: no test specified\"",

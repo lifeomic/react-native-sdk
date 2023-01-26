@@ -1,0 +1,5 @@
+.npmignore
+node_modules
+
+components-app/
+src/**/__tests__/*.*
