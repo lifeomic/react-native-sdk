@@ -38,6 +38,9 @@ module.exports = {
   resolver: {
     blacklistRE: blockList,
     blockList,
+    extraNodeModules: {
+      '@lifeomic/react-native-components': path.resolve(__dirname, '../'),
+    },
   },
   transformer: {
     getTransformOptions: async () => ({
@@ -47,4 +50,11 @@ module.exports = {
       },
     }),
   },
+  // projectRoot: path.resolve(__dirname, '..'),
+  // watchFolders: [
+  //   path.resolve(__dirname),
+  //   path.resolve(__dirname, './node_modules'),
+  //   path.resolve(__dirname, '../node_modules'),
+  //   path.resolve(__dirname, '../src'),
+  // ],
 };
