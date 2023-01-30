@@ -47,3 +47,6 @@ can do so following these steps:
 -   `yarn web-controls`
 -   Now, as you navigate components in the web app that just launched, the
     mobile app UI is updated.
+
+NOTE: If you don't see a components tree on the left, you may need to reload
+the mobile app UI.
