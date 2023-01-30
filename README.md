@@ -23,13 +23,14 @@ Reading the above, we probably want to rename the repo before open-sourcing.
 
 ## Development
 
-NOTE: The react-native app within the "components-app" folder was generated
-from [react-native-test-app](https://github.com/microsoft/react-native-test-app)
-Keep this in mind when it's time for RN upgrades - should be helpful.
+The `example` app/folder should be used for all component demonstration
+purposes.  Currently, it's solely used for storyboard / component development.
+But if we were to want to showcase components in a different way, the same
+`example` app should be used.
 
-### Build and run the components app
+### Build and run the example app
 
--   `cd components-app`
+-   `cd example`
 -   `yarn install`
 -   `cd ios && pod install && cd ../`
 -   `npx react-native start`
@@ -42,7 +43,7 @@ can be cumbersome.  If you have a lot of JSON to manipulate within a knob, for
 example, you might consider controlling the mobile app UI from the web.  You
 can do so following these steps:
 
--   `cd app`
--   `yarn start-storybook`
+-   `cd example`
+-   `yarn web-controls`
 -   Now, as you navigate components in the web app that just launched, the
     mobile app UI is updated.
