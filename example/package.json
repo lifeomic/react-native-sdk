@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "react": "18.2.0",
-    "react-native": "0.71.1"
+    "react-native": "0.71.1",
+    "react-native-app-auth": "^6.4.3",
+    "react-native-config": "^1.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -51,5 +51,16 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.lifeomic.components-app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.lifeomic.mobile-example</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
