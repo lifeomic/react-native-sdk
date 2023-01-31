@@ -1,17 +1,16 @@
 import React, { FC, useCallback } from 'react';
-import { StyleProp, ViewStyle, TouchableOpacity } from 'react-native';
+import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import { LoginParams, useOAuthFlow } from '../hooks/useOAuthFlow';
 
-type OAuthLoginButtonParams = LoginParams & {
-  style?: StyleProp<ViewStyle>;
+type OAuthLoginButtonParams = Omit<TouchableOpacityProps, 'onPress'> & LoginParams & {
   children?: React.ReactNode;
 };
 
 export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   onSuccess,
   onFail,
-  style,
-  children
+  children,
+  ...touchableOpacityProps
 }) => {
   const authConfig = useOAuthFlow();
 
@@ -23,7 +22,7 @@ export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   }, [authConfig]);
 
   return (
-    <TouchableOpacity style={style} onPress={login}>
+    <TouchableOpacity {...touchableOpacityProps} onPress={login}>
       {children}
     </TouchableOpacity>
   );
