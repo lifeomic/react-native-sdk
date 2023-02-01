@@ -1,5 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { tID } from '../common/testID';
 import { LoginParams, useOAuthFlow } from '../hooks/useOAuthFlow';
 
 type OAuthLoginButtonParams = Omit<TouchableOpacityProps, 'onPress'> &
@@ -23,7 +24,11 @@ export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   }, [login, onSuccess, onFail]);
 
   return (
-    <TouchableOpacity {...touchableOpacityProps} onPress={_login}>
+    <TouchableOpacity
+      testID={tID('oauth-login-button')}
+      {...touchableOpacityProps}
+      onPress={_login}
+    >
       {children}
     </TouchableOpacity>
   );

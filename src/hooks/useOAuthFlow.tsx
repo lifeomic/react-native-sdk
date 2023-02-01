@@ -48,6 +48,7 @@ export const OAuthContextProvider = ({
     async (params: LogoutParams) => {
       const { onSuccess, onFail } = params;
       if (!isLoggedIn || !authResult?.refreshToken) {
+        await clearAuthResult();
         onSuccess();
         return;
       }

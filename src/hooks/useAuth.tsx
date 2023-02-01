@@ -28,21 +28,24 @@ export const AuthContextProvider = ({
 }) => {
   const [authResult, setAuthResult] = useState<AuthResult>();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const storeAuthResult = useCallback(async (result: AuthResult) => {
     await secureStorage.setObject('auth-result', result);
     setAuthResult(result);
     setIsLoggedIn(true);
+    setLoading(false);
   }, []);
 
   const clearAuthResult = useCallback(async () => {
     await secureStorage.clear();
     setAuthResult(undefined);
     setIsLoggedIn(false);
+    setLoading(false);
   }, []);
 
   const context = {
-    loading: true,
+    loading,
     isLoggedIn,
     authResult,
     storeAuthResult,

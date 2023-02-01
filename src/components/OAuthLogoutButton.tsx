@@ -1,5 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { tID } from '../common/testID';
 import { useAuth } from '../hooks/useAuth';
 import { LogoutParams, useOAuthFlow } from '../hooks/useOAuthFlow';
 
@@ -26,6 +27,7 @@ export const OAuthLogoutButton: FC<OAuthLogoutButtonParams> = ({
 
   return (
     <TouchableOpacity
+      testID={tID('oauth-logout-button')}
       {...touchableOpacityProps}
       disabled={!isLoggedIn}
       onPress={_logout}
