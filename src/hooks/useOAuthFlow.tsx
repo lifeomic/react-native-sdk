@@ -3,10 +3,9 @@ import {
   authorize,
   AuthConfiguration,
   AuthorizeResult,
-  EndSessionResult,
-  logout,
-  LogoutConfiguration
+  revoke
 } from 'react-native-app-auth';
+import { useAuth } from './useAuth';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
@@ -19,8 +18,8 @@ export interface LoginParams {
   onFail: (error?: any) => void;
 }
 
-export interface LogoutParams extends LogoutConfiguration {
-  onSuccess: (result: EndSessionResult) => void;
+export interface LogoutParams {
+  onSuccess: () => void;
   onFail: (error?: any) => void;
 }
 
@@ -36,27 +35,34 @@ export const OAuthContextProvider = ({
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
 }) => {
+  const { isLoggedIn, authResult, storeAuthResult, clearAuthResult } = useAuth();
+
   // PKCE is required
   if (!authConfig.usePKCE) {
     console.warn('NOTE: LifeOmic requires PKCE. Overriding to usePKCE=true');
     authConfig.usePKCE = true;
   }
 
-  const initiateLogout = useCallback(
+  const logout = useCallback(
     async (params: LogoutParams) => {
-      const { idToken, postLogoutRedirectUrl, onSuccess, onFail } = params;
+      const { onSuccess, onFail } = params;
+      if (!isLoggedIn || !authResult?.refreshToken) {
+        onSuccess();
+        return;
+      }
 
       try {
-        const result = await logout(authConfig, {
-          idToken,
-          postLogoutRedirectUrl
+        await revoke(authConfig, {
+          tokenToRevoke: authResult.refreshToken
         });
-        onSuccess(result);
+        await clearAuthResult();
+        onSuccess();
       } catch (error) {
+        await clearAuthResult();
         onFail(error);
       }
     },
-    [authConfig]
+    [isLoggedIn, authConfig, authResult]
   );
 
   const login = useCallback(
@@ -65,8 +71,10 @@ export const OAuthContextProvider = ({
 
       try {
         const result = await authorize(authConfig);
+        await storeAuthResult(result);
         onSuccess(result);
       } catch (error) {
+        await clearAuthResult();
         onFail(error);
       }
     },
@@ -75,7 +83,7 @@ export const OAuthContextProvider = ({
 
   const context = {
     login,
-    logout: initiateLogout,
+    logout,
     authConfig
   };
 
