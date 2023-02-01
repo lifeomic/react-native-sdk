@@ -1,14 +1,14 @@
-import React, {FC} from 'react';
-import {StyleProp, TextStyle, Text} from 'react-native';
-import {storiesOf} from '@storybook/react-native';
-import {action} from '@storybook/addon-actions';
-import {text, object} from '@storybook/addon-knobs';
+import React, { FC } from 'react';
+import { StyleProp, TextStyle, Text } from 'react-native';
+import { storiesOf } from '@storybook/react-native';
+import { action } from '@storybook/addon-actions';
+import { text, object } from '@storybook/addon-knobs';
 import Config from 'react-native-config';
-import {AuthConfiguration, AuthorizeResult} from 'react-native-app-auth';
-import {OAuthLoginButton} from '../../../src/components/OAuthLoginButton';
-import {OAuthLogoutButton} from '../../../src/components/OAuthLogoutButton';
-import {OAuthContextProvider} from '../../../src/hooks/useOAuthFlow';
-import {AuthContextProvider, useAuth} from '../../../src/hooks/useAuth';
+import { AuthConfiguration, AuthorizeResult } from 'react-native-app-auth';
+import { OAuthLoginButton } from '../../../src/components/OAuthLoginButton';
+import { OAuthLogoutButton } from '../../../src/components/OAuthLogoutButton';
+import { OAuthContextProvider } from '../../../src/hooks/useOAuthFlow';
+import { AuthContextProvider, useAuth } from '../../../src/hooks/useAuth';
 
 const authConfig: AuthConfiguration = {
   clientId: Config.OAUTH_CLIENT_ID!,
@@ -54,13 +54,15 @@ storiesOf('OAuth', module).add('demo', () => {
         <OAuthLoginButton
           onSuccess={loginOnSuccess}
           onFail={onFail}
-          style={buttonStyle}>
+          style={buttonStyle}
+        >
           <Text style={textStyle}>{loginButtonText}</Text>
         </OAuthLoginButton>
         <OAuthLogoutButton
           onSuccess={logoutOnSuccess}
           onFail={onFail}
-          style={buttonStyle}>
+          style={buttonStyle}
+        >
           <Text style={textStyle}>{logoutButtonText}</Text>
         </OAuthLogoutButton>
       </OAuthContextProvider>
@@ -69,7 +71,7 @@ storiesOf('OAuth', module).add('demo', () => {
 });
 
 const IsSignedIn: FC = () => {
-  const {isLoggedIn, authResult} = useAuth();
+  const { isLoggedIn, authResult } = useAuth();
   return (
     <Text>
       {isLoggedIn
