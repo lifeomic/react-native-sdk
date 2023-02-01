@@ -12,7 +12,7 @@
     "lint:fix": "yarn lint --fix",
     "test": "yarn lint && yarn jest",
     "test:ci": "yarn lint && yarn jest --coverage --runInBand --silent --ci --logHeapUsage",
-    "build": "tsc --outDir dist"
+    "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist"
   },
   "author": "LifeOmic <development@lifeomic.com>",
   "license": "UNLICENSED",
