@@ -1,3 +1,6 @@
 module.exports = {
-  ...require('@lifeomic/typescript-tools/config/prettier')
+  singleQuote: true,
+  arrowParens: 'always',
+  trailingComma: 'all',
+  proseWrap: 'always',
 };

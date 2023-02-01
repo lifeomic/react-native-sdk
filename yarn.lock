@@ -828,11 +828,6 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@lifeomic/typescript-tools@^15.0.1":
-  version "15.0.1"
-  resolved "https://registry.yarnpkg.com/@lifeomic/typescript-tools/-/typescript-tools-15.0.1.tgz#0b7880999ce0335e923511bd115a3b9620dead86"
-  integrity sha512-i/wrBnE660ZWuU5ZNk79vmet3iHKB24AvIZUO9dos1wLhzfPDYQ9vzP2Nxp8htRFf9at4pe7QtZY/ZH1EX44Og==
-
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
   resolved "https://registry.yarnpkg.com/@nicolo-ribaudo/eslint-scope-5-internals/-/eslint-scope-5-internals-5.1.1-v1.tgz#dbf733a965ca47b1973177dc0bb6c889edcfb129"
