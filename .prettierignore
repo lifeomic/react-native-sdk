@@ -11,3 +11,4 @@ index.js
 .vscode
 .idea
 *.config.js
+dist
