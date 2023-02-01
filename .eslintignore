@@ -1,0 +1,15 @@
+node_modules
+coverage
+ios
+android
+build
+index.js
+vendor
+__mocks__
+.jest
+.bundle
+.github
+.vscode
+.idea
+.eslintrc.js
+*.config.js

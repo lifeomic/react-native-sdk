@@ -3,7 +3,7 @@ import {
   authorize,
   AuthConfiguration,
   AuthorizeResult,
-  revoke
+  revoke,
 } from 'react-native-app-auth';
 import { useAuth } from './useAuth';
 
@@ -25,17 +25,18 @@ export interface LogoutParams {
 
 const OAuthContext = createContext<OAuthConfig>({
   login: (_) => Promise.reject(),
-  logout: () => Promise.reject()
+  logout: () => Promise.reject(),
 });
 
 export const OAuthContextProvider = ({
   authConfig,
-  children
+  children,
 }: {
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
 }) => {
-  const { isLoggedIn, authResult, storeAuthResult, clearAuthResult } = useAuth();
+  const { isLoggedIn, authResult, storeAuthResult, clearAuthResult } =
+    useAuth();
 
   // PKCE is required
   if (!authConfig.usePKCE) {
@@ -53,7 +54,7 @@ export const OAuthContextProvider = ({
 
       try {
         await revoke(authConfig, {
-          tokenToRevoke: authResult.refreshToken
+          tokenToRevoke: authResult.refreshToken,
         });
         await clearAuthResult();
         onSuccess();
@@ -62,7 +63,7 @@ export const OAuthContextProvider = ({
         onFail(error);
       }
     },
-    [isLoggedIn, authConfig, authResult]
+    [isLoggedIn, authConfig, authResult, clearAuthResult],
   );
 
   const login = useCallback(
@@ -78,13 +79,13 @@ export const OAuthContextProvider = ({
         onFail(error);
       }
     },
-    [authConfig]
+    [authConfig, clearAuthResult, storeAuthResult],
   );
 
   const context = {
     login,
     logout,
-    authConfig
+    authConfig,
   };
 
   return (

@@ -1,0 +1,13 @@
+node_modules
+coverage
+package.json
+ios
+android
+vendor
+index.js
+.jest
+.bundle
+.github
+.vscode
+.idea
+*.config.js
