@@ -6,15 +6,18 @@
   "types": "src/index.d.ts",
   "scripts": {
     "test": "echo \"Warn: no test specified\"",
-    "format": "yarn prettier '**/*.{ts,tsx}' --write",
+    "format": "yarn prettier '**/*.{ts,tsx,js,json,md}' --write",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "build": "tsc --outDir dist"
   },
   "author": "LifeOmic <development@lifeomic.com>",
   "license": "UNLICENSED",
   "devDependencies": {
     "@lifeomic/typescript-tools": "^15.0.1",
+    "@react-native-community/eslint-config": "^3.2.0",
     "@types/react": "^18.0.27",
     "@types/react-native": "^0.71.0",
+    "eslint": "^8.33.0",
     "prettier": "^2.8.3",
     "react": "^18.2.0",
     "react-native": "0.68.2",
