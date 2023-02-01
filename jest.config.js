@@ -13,6 +13,14 @@ module.exports = {
   clearMocks: true,
   collectCoverage: true,
   collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx,js,jsx}'],
+  coverageThreshold: {
+    global: {
+      branches: 75,
+      statements: 75,
+      functions: 75,
+      lines: 75,
+    },
+  },
   transformIgnorePatterns: [
     'node_modules/(?!(jest-)?@?react-native)'
   ]
