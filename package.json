@@ -6,8 +6,11 @@
   "types": "src/index.d.ts",
   "scripts": {
     "test": "echo \"Warn: no test specified\"",
-    "format": "yarn prettier '**/*.{ts,tsx,js,json,md}' --write",
+    "format": "yarn prettier '**/*.{ts,tsx,js,json,md}'",
+    "format:write": "yarn format --write",
+    "format:check": "yarn format --check",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "yarn lint --fix",
     "build": "tsc --outDir dist"
   },
   "author": "LifeOmic <development@lifeomic.com>",

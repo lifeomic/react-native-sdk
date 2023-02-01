@@ -45,7 +45,7 @@ export const AuthContextProvider = ({
     isLoggedIn,
     authResult,
     storeAuthResult,
-    clearAuthResult
+    clearAuthResult,
   };
 
   return (

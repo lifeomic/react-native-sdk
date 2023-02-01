@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, {FC} from 'react';
 import {StyleProp, TextStyle, Text} from 'react-native';
 import {storiesOf} from '@storybook/react-native';
 import {action} from '@storybook/addon-actions';
@@ -8,7 +8,7 @@ import {AuthConfiguration, AuthorizeResult} from 'react-native-app-auth';
 import {OAuthLoginButton} from '../../../src/components/OAuthLoginButton';
 import {OAuthLogoutButton} from '../../../src/components/OAuthLogoutButton';
 import {OAuthContextProvider} from '../../../src/hooks/useOAuthFlow';
-import { AuthContextProvider, useAuth } from '../../../src/hooks/useAuth';
+import {AuthContextProvider, useAuth} from '../../../src/hooks/useAuth';
 
 const authConfig: AuthConfiguration = {
   clientId: Config.OAUTH_CLIENT_ID!,
@@ -69,8 +69,12 @@ storiesOf('OAuth', module).add('demo', () => {
 });
 
 const IsSignedIn: FC = () => {
-  const { isLoggedIn, authResult } = useAuth();
+  const {isLoggedIn, authResult} = useAuth();
   return (
-    <Text>{isLoggedIn ? `Logged in until ${authResult?.accessTokenExpirationDate}` : 'Logged out'}</Text>
-  )
+    <Text>
+      {isLoggedIn
+        ? `Logged in until ${authResult?.accessTokenExpirationDate}`
+        : 'Logged out'}
+    </Text>
+  );
 };

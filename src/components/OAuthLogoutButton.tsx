@@ -3,9 +3,10 @@ import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import { useAuth } from '../hooks/useAuth';
 import { LogoutParams, useOAuthFlow } from '../hooks/useOAuthFlow';
 
-type OAuthLogoutButtonParams = Omit<TouchableOpacityProps, 'onPress'> & LogoutParams & {
-  children?: React.ReactNode;
-};
+type OAuthLogoutButtonParams = Omit<TouchableOpacityProps, 'onPress'> &
+  LogoutParams & {
+    children?: React.ReactNode;
+  };
 
 export const OAuthLogoutButton: FC<OAuthLogoutButtonParams> = ({
   onSuccess,
@@ -19,12 +20,16 @@ export const OAuthLogoutButton: FC<OAuthLogoutButtonParams> = ({
   const _logout = useCallback(async () => {
     await logout({
       onSuccess,
-      onFail
+      onFail,
     });
   }, [isLoggedIn, authConfig, authResult]);
 
   return (
-    <TouchableOpacity {...touchableOpacityProps} disabled={!isLoggedIn} onPress={_logout}>
+    <TouchableOpacity
+      {...touchableOpacityProps}
+      disabled={!isLoggedIn}
+      onPress={_logout}
+    >
       {children}
     </TouchableOpacity>
   );

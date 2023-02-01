@@ -14,11 +14,7 @@
     "declaration": true,
     "baseUrl": ".",
     "lib": ["es2017", "es6", "dom"],
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": ["./node_modules/@types"]
   },
-  "include": [
-    "src/**/*",
-    "example/**/*",
-    "__mocks__/**/*",
-  ],
+  "include": ["src/**/*", "example/**/*", "__mocks__/**/*"]
 }
