@@ -13,14 +13,14 @@ export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   children,
   ...touchableOpacityProps
 }) => {
-  const { authConfig, login } = useOAuthFlow();
+  const { login } = useOAuthFlow();
 
   const _login = useCallback(async () => {
     await login({
       onSuccess,
       onFail,
     });
-  }, [authConfig]);
+  }, [login, onSuccess, onFail]);
 
   return (
     <TouchableOpacity {...touchableOpacityProps} onPress={_login}>

@@ -63,7 +63,7 @@ export const OAuthContextProvider = ({
         onFail(error);
       }
     },
-    [isLoggedIn, authConfig, authResult],
+    [isLoggedIn, authConfig, authResult, clearAuthResult],
   );
 
   const login = useCallback(
@@ -79,7 +79,7 @@ export const OAuthContextProvider = ({
         onFail(error);
       }
     },
-    [authConfig],
+    [authConfig, clearAuthResult, storeAuthResult],
   );
 
   const context = {

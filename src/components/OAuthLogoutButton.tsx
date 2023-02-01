@@ -14,15 +14,15 @@ export const OAuthLogoutButton: FC<OAuthLogoutButtonParams> = ({
   children,
   ...touchableOpacityProps
 }) => {
-  const { isLoggedIn, authResult } = useAuth();
-  const { authConfig, logout } = useOAuthFlow();
+  const { isLoggedIn } = useAuth();
+  const { logout } = useOAuthFlow();
 
   const _logout = useCallback(async () => {
     await logout({
       onSuccess,
       onFail,
     });
-  }, [isLoggedIn, authConfig, authResult]);
+  }, [logout, onSuccess, onFail]);
 
   return (
     <TouchableOpacity

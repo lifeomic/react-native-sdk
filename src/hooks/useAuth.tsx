@@ -19,12 +19,13 @@ const AuthContext = createContext<AuthStatus>({
   clearAuthResult: () => Promise.reject(),
 });
 
+const secureStorage = new SecureStore<AuthResult>('auth-hook');
+
 export const AuthContextProvider = ({
   children,
 }: {
   children?: React.ReactNode;
 }) => {
-  const secureStorage = new SecureStore<AuthResult>('auth-hook');
   const [authResult, setAuthResult] = useState<AuthResult>();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
