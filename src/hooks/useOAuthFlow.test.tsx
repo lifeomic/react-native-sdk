@@ -1,0 +1,163 @@
+import React from 'react';
+import { renderHook, act } from '@testing-library/react-native';
+import { authorize, revoke } from 'react-native-app-auth';
+import { OAuthContextProvider, useOAuthFlow } from './useOAuthFlow';
+import { AuthResult, useAuth } from './useAuth';
+
+jest.mock('react-native-app-auth', () => ({
+  authorize: jest.fn(),
+  revoke: jest.fn(),
+}));
+jest.mock('./useAuth', () => ({
+  useAuth: jest.fn(),
+}));
+
+const useAuthMock = useAuth as jest.Mock;
+const authorizeMock = authorize as jest.Mock;
+const revokeMock = revoke as jest.Mock;
+const storeAuthResultMock = jest.fn();
+const clearAuthResultMock = jest.fn();
+
+const authConfig = {
+  clientId: 'clientId',
+  redirectUrl: 'http://localhost/redirect',
+  serviceConfiguration: {
+    authorizationEndpoint: 'http://localhost/authorize',
+    tokenEndpoint: 'http://localhost/token',
+    revocationEndpoint: 'http://localhost/revoke',
+  },
+  scopes: ['openid'],
+  usePKCE: true,
+};
+
+const authResult: AuthResult = {
+  tokenType: 'bearer',
+  accessTokenExpirationDate: new Date().toISOString(),
+  accessToken: 'accessToken',
+  idToken: 'idToken',
+  refreshToken: 'refreshToken',
+};
+
+const renderHookInContext = async () => {
+  return renderHook(() => useOAuthFlow(), {
+    wrapper: ({ children }) => (
+      <OAuthContextProvider authConfig={authConfig}>
+        {children}
+      </OAuthContextProvider>
+    ),
+  });
+};
+
+beforeEach(() => {
+  useAuthMock.mockReturnValue({
+    isLoggedIn: true,
+    authResult: authResult,
+    storeAuthResult: storeAuthResultMock,
+    clearAuthResult: clearAuthResultMock,
+  });
+
+  authorizeMock.mockResolvedValue(authResult);
+});
+
+test('initial state test', async () => {
+  const { result } = await renderHookInContext();
+  expect(result.current.authConfig).toEqual(authConfig);
+});
+
+test('overrides usePKCE to true', async () => {
+  const newAuthConfig = {
+    ...authConfig,
+    usePKCE: false,
+  };
+  const { result } = await renderHook(() => useOAuthFlow(), {
+    wrapper: ({ children }) => (
+      <OAuthContextProvider authConfig={newAuthConfig}>
+        {children}
+      </OAuthContextProvider>
+    ),
+  });
+  expect(result.current.authConfig).toEqual(authConfig);
+});
+
+describe('login', () => {
+  test('utilizes authorize and storeAuthResult', async () => {
+    const { result } = await renderHookInContext();
+    const onSuccess = jest.fn();
+    await act(async () => {
+      await result.current.login({
+        onSuccess,
+        onFail: jest.fn(),
+      });
+    });
+    expect(authorize).toHaveBeenCalledWith(authConfig);
+    expect(storeAuthResultMock).toHaveBeenCalledWith(authResult);
+    expect(onSuccess).toHaveBeenCalledWith(authResult);
+  });
+
+  test('upon error, clears storage and reports error', async () => {
+    const { result } = await renderHookInContext();
+    const onFail = jest.fn();
+    const error = new Error('login fail');
+    authorizeMock.mockRejectedValue(error);
+    await act(async () => {
+      await result.current.login({
+        onSuccess: jest.fn(),
+        onFail,
+      });
+    });
+    expect(storeAuthResultMock).not.toHaveBeenCalled();
+    expect(clearAuthResultMock).toHaveBeenCalled();
+    expect(onFail).toHaveBeenCalledWith(error);
+  });
+});
+
+describe('logout', () => {
+  test('utilizes revoke and clearAuthResult', async () => {
+    const { result } = await renderHookInContext();
+    const onSuccess = jest.fn();
+    await act(async () => {
+      await result.current.logout({
+        onSuccess,
+        onFail: jest.fn(),
+      });
+    });
+    expect(revoke).toHaveBeenCalled();
+    expect(clearAuthResultMock).toHaveBeenCalled();
+    expect(onSuccess).toHaveBeenCalledWith();
+  });
+
+  test('upon error, still clears storage and reports error', async () => {
+    const { result } = await renderHookInContext();
+    const onFail = jest.fn();
+    const error = new Error('logout fail');
+    revokeMock.mockRejectedValue(error);
+    await act(async () => {
+      await result.current.logout({
+        onSuccess: jest.fn(),
+        onFail,
+      });
+    });
+    expect(clearAuthResultMock).toHaveBeenCalled();
+    expect(onFail).toHaveBeenCalledWith(error);
+  });
+
+  test('invokes onSuccess early if isLoggedIn=false, still clearing storage', async () => {
+    useAuthMock.mockReturnValue({
+      isLoggedIn: false,
+      authResult: undefined,
+      storeAuthResult: storeAuthResultMock,
+      clearAuthResult: clearAuthResultMock,
+    });
+    const { result } = await renderHookInContext();
+    const onSuccess = jest.fn();
+    await act(async () => {
+      await result.current.logout({
+        onSuccess,
+        onFail: jest.fn(),
+      });
+    });
+    expect(revoke).not.toHaveBeenCalled();
+    expect(clearAuthResultMock).toHaveBeenCalled();
+    expect(onSuccess).toHaveBeenCalledWith();
+  });
+});

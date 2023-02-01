@@ -35,7 +35,7 @@ test('stores token and updates state', async () => {
     accessTokenExpirationDate: new Date().toISOString(),
     accessToken: 'accessToken',
     idToken: 'idToken',
-    refreshToken: 'refreshToken'
+    refreshToken: 'refreshToken',
   };
 
   await act(async () => {
@@ -44,7 +44,11 @@ test('stores token and updates state', async () => {
   expect(result.current.loading).toBe(false);
   expect(result.current.authResult).toEqual(authResult);
   expect(result.current.isLoggedIn).toBe(true);
-  expect(keychainMock.setGenericPassword).toHaveBeenCalledWith('auth-result', JSON.stringify(authResult), expect.anything());
+  expect(keychainMock.setGenericPassword).toHaveBeenCalledWith(
+    'auth-result',
+    JSON.stringify(authResult),
+    expect.anything(),
+  );
 });
 
 test('clears token and updates state', async () => {
@@ -54,7 +58,7 @@ test('clears token and updates state', async () => {
     accessTokenExpirationDate: new Date().toISOString(),
     accessToken: 'accessToken',
     idToken: 'idToken',
-    refreshToken: 'refreshToken'
+    refreshToken: 'refreshToken',
   };
   await act(async () => {
     await result.current.storeAuthResult(authResult);
