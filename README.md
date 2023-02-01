@@ -31,6 +31,7 @@ But if we were to want to showcase components in a different way, the same
 ### Build and run the example app
 
 -   `cd example`
+-   `cp .env.example .env`
 -   `yarn install`
 -   `cd ios && pod install && cd ../`
 -   `npx react-native start`
@@ -50,3 +51,24 @@ can do so following these steps:
 
 NOTE: If you don't see a components tree on the left, you may need to reload
 the mobile app UI.
+
+### Gotchas
+
+#### .env files not updating
+
+react-native-config generates files (based on the .env file) via native build
+scripts.  Initially, and any time you update the `example/.env` file, you'll
+need to run from Xcode for iOS or Android Studio for Android to ensure changes
+get picked up.  In Xcode, you may need to run a "Clean Build Folder" as well.
+
+#### "Invariant Violation" for Android login
+
+Try "wipe data" on the emulator and retrying.  Sometimes the clock gets messed
+up so bad on the emulator that the OAuth flow fails.
+
+#### Cached IdP login due to cookies
+
+We'll want to require [react-native-app-auth 7.0](https://github.com/FormidableLabs/react-native-app-auth/releases/tag/v7.0.0-rc2)
+as soon as it's fully released.  We currently utilize the `/logout` endpoint
+to alleviate much of this issue, but using `prefersEphemeralSession` will be
+a better solution.
