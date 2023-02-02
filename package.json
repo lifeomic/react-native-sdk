@@ -2,8 +2,6 @@
   "name": "@lifeomic/react-native-components",
   "version": "0.0.0",
   "description": "React-native components for building a mobile app against the LifeOmic Platform",
-  "main": "src/index.ts",
-  "types": "src/index.d.ts",
   "scripts": {
     "format": "yarn prettier '**/*.{ts,tsx,js,json,md}'",
     "format:write": "yarn format --write",
@@ -12,7 +10,7 @@
     "lint:fix": "yarn lint --fix",
     "test": "yarn lint && yarn jest",
     "test:ci": "yarn lint && yarn jest --coverage --runInBand --silent --ci --logHeapUsage",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist"
+    "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist && cp package.json ./dist"
   },
   "author": "LifeOmic <development@lifeomic.com>",
   "license": "UNLICENSED",
