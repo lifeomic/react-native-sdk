@@ -13,3 +13,4 @@ __mocks__
 .idea
 .eslintrc.js
 *.config.js
+dist

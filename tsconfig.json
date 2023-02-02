@@ -10,8 +10,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "allowJs": true,
-    "emitDeclarationOnly": true,
-    "declaration": true,
+    "declaration": false,
+    "noEmit": true,
     "baseUrl": ".",
     "lib": ["es2017", "es6", "dom"],
     "typeRoots": ["./node_modules/@types"]

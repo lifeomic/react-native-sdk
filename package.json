@@ -12,7 +12,7 @@
     "lint:fix": "yarn lint --fix",
     "test": "yarn lint && yarn jest",
     "test:ci": "yarn lint && yarn jest --coverage --runInBand --silent --ci --logHeapUsage",
-    "build": "tsc --outDir dist"
+    "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist"
   },
   "author": "LifeOmic <development@lifeomic.com>",
   "license": "UNLICENSED",
@@ -35,6 +35,7 @@
     "react-native-device-info": "^10.3.0",
     "react-native-keychain": "^8.1.1",
     "react-test-renderer": "^18.2.0",
+    "semantic-release": "^19.0.3",
     "ts-jest": "^29.0.5",
     "typescript": "^4.9.4"
   },
