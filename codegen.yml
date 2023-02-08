@@ -1,0 +1,50 @@
+overwrite: true
+schema:
+  - lib/graphql/remote.schema.json
+documents:
+  - '(src|lib)/**/*.{ts,tsx,graphql}'
+  - '!**/(types|__generated__)/*'
+  - '!**/*.test.*'
+config:
+  reactApolloVersion: 3
+  namingConvention:
+    enumValues: keep
+    namingConvention: keep
+  scalars:
+    Date: string
+    URL: string
+    Upload: string
+  nonOptionalTypename: true
+  useTypeImports: true
+pluckConfig:
+  gqlMagicComment: ''
+hooks:
+  afterAllFileWrite:
+    - prettier --write
+generates:
+  lib/graphql/api.graphql.ts:
+    plugins:
+      - typescript
+      - named-operations-object
+    config:
+      transformUnderscore: true
+  lib/graphql/introspection-fragment-types.ts:
+    plugins:
+      - fragment-matcher
+    config:
+      apolloClientVersion: 3
+  '.':
+    preset: near-operation-file
+    presetConfig:
+      folder: __generated__
+      extension: .graphql.tsx
+      baseTypesPath: lib/graphql/api.graphql.ts
+    plugins:
+      - typescript-react-apollo
+      - typescript-operations
+    config:
+      withHooks: true
+      withComponent: false
+      preResolveTypes: true
+      operationResultSuffix: Response
+      exportFragmentSpreadSubTypes: true

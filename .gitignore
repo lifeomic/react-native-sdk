@@ -13,3 +13,9 @@ coverage/
 targets/
 *.tgz
 dist
+
+# GQL introspection/codegen files
+lib/graphql/introspection-fragment-types.ts
+lib/graphql/remote.schema.json
+lib/graphql/api.graphql.ts
+**/__generated__/
