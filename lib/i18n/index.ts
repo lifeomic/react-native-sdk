@@ -9,8 +9,9 @@ declare module 'i18next' {
 }
 
 // Skeleton instance will enable building i18n ready components
-function configure() {
+export function configure() {
   return i18next.use(initReactI18next).init({
+    compatibilityJSON: 'v3',
     fallbackLng: 'en',
     debug: false && __DEV__ && process.env.NODE_ENV !== 'test', // Remove `false` to debug locally
 
@@ -22,10 +23,6 @@ function configure() {
       escapeValue: false,
     },
   });
-}
-
-if (!i18next.isInitialized) {
-  configure();
 }
 
 export default i18next;

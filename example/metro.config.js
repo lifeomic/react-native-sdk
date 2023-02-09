@@ -11,6 +11,7 @@ module.exports = {
   },
   watchFolders: [
     path.resolve(__dirname, '../src'),
+    path.resolve(__dirname, '../lib'),
     path.resolve(__dirname, '../node_modules')
   ],
 };
