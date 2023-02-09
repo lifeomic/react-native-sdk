@@ -1,35 +1,35 @@
 # React Native Components
 
-React-native components for building a mobile app against the LifeOmic Platform.
+Public react-native components for building a mobile app against the LifeOmic
+Platform.
 
 Checkout https://github.com/wix/react-native-ui-lib for some inspiration. But
 blur your eyes a bit, because we're not trying to launch into a fat components
-lib. So far, platform customers aren't interested in our components other than
-how they relate to interacting with the platform and empower them to speed up
-their app development. Furthermore, our more novel and highly reusable
-components such as [wearables config](https://github.com/lifeomic/wearables-ui)
-and [trackers](https://github.com/lifeomic/track-tile-ui) already have repos of
-their own. When it comes time to open-source those for platform customers'
-usage, we may want to entertain migrating those into this repo. But that
-decision doesn't matter at the time of writing. What we need soon for platform
-customers is the following:
+lib. What we need soon for platform customers is the following:
 
 - Helpers for auth and API session management
 - The shell of an app: login, home, notifications, settings
-- The ability to use that shell as-is, config it, and inject new screens into
-  it - OR take components/screens from it and use it an entirely different way
-
-Reading the above, we probably want to rename the repo before open-sourcing.
-`@lifeomic/react-native-components` might be too vague for what we're after.
+- The ability to use that shell as-is, config it, and inject new
+  screens/functionality into it
 
 ## Development
+
+This is a public repo. Any private LifeOmic repos (or references to them) cannot
+go in here - please be careful.
+
+We are migrating several components & screens into this repo to enable customers
+to build on our app shell within their own repo. Each PR is required to have a
+semantic commit message like `fix`, `feat`, etc. For now, always use `fix` or
+`chore` because we have a ways to go and we like small focused PRs.
+
+### Example app
 
 The `example` app/folder should be used for all component demonstration
 purposes. Currently, it's solely used for storyboard / component development.
 But if we were to want to showcase components in a different way, the same
 `example` app should be used.
 
-### Build and run the example app
+#### Build and run the example app
 
 - `cd example`
 - `cp .env.example .env`
@@ -38,7 +38,7 @@ But if we were to want to showcase components in a different way, the same
 - `npx react-native start`
 - type `i` or `a` to run on either platform
 
-### (Optional) Navigate via the web
+#### (Optional) Navigate via the web
 
 Sometimes the in app UI for viewing storybook actions and manipulating knobs can
 be cumbersome. If you have a lot of JSON to manipulate within a knob, for
