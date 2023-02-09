@@ -35,9 +35,9 @@ export class SecureStore<Stored> {
    * Stores an object as { username, password } at key com.lifeomic.securestore/<instanceIdentifier>
    * @param object
    */
-  async setObject(itemId: string, object: Stored) {
+  async setObject(object: Stored) {
     return Keychain.setGenericPassword(
-      itemId,
+      unusedUsername,
       JSON.stringify(object),
       this.keychainOptions,
     );
@@ -49,9 +49,9 @@ export class SecureStore<Stored> {
     if (result === false) {
       return null;
     } else {
-      const { username, password } = result;
+      const { password } = result;
       const secureData: Stored = JSON.parse(password);
-      return { username, ...secureData };
+      return secureData;
     }
   }
 
@@ -59,3 +59,5 @@ export class SecureStore<Stored> {
     return Keychain.resetGenericPassword(this.keychainOptions);
   }
 }
+
+export const unusedUsername = 'unused-username';

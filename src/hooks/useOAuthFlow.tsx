@@ -1,4 +1,9 @@
-import React, { createContext, useCallback, useContext } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+} from 'react';
 import {
   authorize,
   AuthConfiguration,
@@ -35,8 +40,13 @@ export const OAuthContextProvider = ({
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
 }) => {
-  const { isLoggedIn, authResult, storeAuthResult, clearAuthResult } =
-    useAuth();
+  const {
+    isLoggedIn,
+    initialize,
+    authResult,
+    storeAuthResult,
+    clearAuthResult,
+  } = useAuth();
 
   // PKCE is required
   if (!authConfig.usePKCE) {
@@ -82,6 +92,10 @@ export const OAuthContextProvider = ({
     },
     [authConfig, clearAuthResult, storeAuthResult],
   );
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
   const context = {
     login,

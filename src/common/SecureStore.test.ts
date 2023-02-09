@@ -1,4 +1,4 @@
-import { SecureStore } from './SecureStore';
+import { SecureStore, unusedUsername } from './SecureStore';
 
 import Keychain from 'react-native-keychain';
 
@@ -47,9 +47,9 @@ describe('SecureStore', () => {
     });
 
     it('sets a generic password with the expected options', async () => {
-      await store.setObject('some-user', { item: 'item-1' });
+      await store.setObject({ item: 'item-1' });
       expect(keychainMock.setGenericPassword).toHaveBeenCalledWith(
-        'some-user',
+        unusedUsername,
         '{"item":"item-1"}',
         expectedOptions,
       );
@@ -58,7 +58,7 @@ describe('SecureStore', () => {
     it('returns a generic password with the username and password when exists', async () => {
       keychainMock.getGenericPassword.mockResolvedValueOnce({
         service: '',
-        username: 'bob',
+        username: 'unused',
         password: '{"item":"item-1"}',
         storage: '',
       });
@@ -68,7 +68,6 @@ describe('SecureStore', () => {
         expectedOptions,
       );
       expect(result).toMatchObject({
-        username: 'bob',
         item: 'item-1',
       });
     });

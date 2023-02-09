@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 import { RefreshResult } from 'react-native-app-auth';
 import { SecureStore } from '../common/SecureStore';
 
@@ -14,6 +8,7 @@ export interface AuthStatus {
   authResult?: AuthResult;
   storeAuthResult: (params: AuthResult) => Promise<void>;
   clearAuthResult: () => Promise<void>;
+  initialize: () => Promise<void>;
 }
 
 export type AuthResult = Omit<RefreshResult, 'additionalParameters'>;
@@ -23,6 +18,7 @@ const AuthContext = createContext<AuthStatus>({
   isLoggedIn: false,
   storeAuthResult: (_) => Promise.reject(),
   clearAuthResult: () => Promise.reject(),
+  initialize: () => Promise.reject(),
 });
 
 const secureStorage = new SecureStore<AuthResult>('auth-hook');
@@ -37,7 +33,7 @@ export const AuthContextProvider = ({
   const [loading, setLoading] = useState<boolean>(true);
 
   const storeAuthResult = useCallback(async (result: AuthResult) => {
-    await secureStorage.setObject('auth-result', result);
+    await secureStorage.setObject(result);
     setAuthResult(result);
     setIsLoggedIn(true);
     setLoading(false);
@@ -50,8 +46,22 @@ export const AuthContextProvider = ({
     setLoading(false);
   }, []);
 
-  // TODO: load saved token and evaluated expiration
-  useEffect(() => {
+  const initialize = useCallback(async () => {
+    try {
+      const storedResult = await secureStorage.getObject();
+      if (storedResult) {
+        const fifteenMinInMs = 15 * 60 * 1000;
+        if (
+          new Date(storedResult.accessTokenExpirationDate).getTime() >
+          new Date().getTime() + fifteenMinInMs
+        ) {
+          setAuthResult(storedResult);
+          setIsLoggedIn(true);
+        }
+      }
+    } catch (error) {
+      console.warn(error, 'Error occurred loading auth token');
+    }
     setLoading(false);
   }, []);
 
@@ -61,6 +71,7 @@ export const AuthContextProvider = ({
     authResult,
     storeAuthResult,
     clearAuthResult,
+    initialize,
   };
 
   return (
