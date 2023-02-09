@@ -10,7 +10,7 @@ import { OAuthLogoutButton } from '../../../src/components/OAuthLogoutButton';
 import { OAuthContextProvider } from '../../../src/hooks/useOAuthFlow';
 import { AuthContextProvider, useAuth } from '../../../src/hooks/useAuth';
 
-const authConfig: AuthConfiguration = {
+export const authConfig: AuthConfiguration = {
   clientId: Config.OAUTH_CLIENT_ID!,
   redirectUrl: Config.OAUTH_REDIRECT_URL!,
   serviceConfiguration: {

@@ -1,4 +1,10 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { RefreshResult } from 'react-native-app-auth';
 import { SecureStore } from '../common/SecureStore';
 
@@ -41,6 +47,11 @@ export const AuthContextProvider = ({
     await secureStorage.clear();
     setAuthResult(undefined);
     setIsLoggedIn(false);
+    setLoading(false);
+  }, []);
+
+  // TODO: load saved token and evaluated expiration
+  useEffect(() => {
     setLoading(false);
   }, []);
 
