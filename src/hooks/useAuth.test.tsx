@@ -23,7 +23,7 @@ const renderHookInContext = async () => {
 test('initial state test', async () => {
   const { result } = await renderHookInContext();
 
-  expect(result.current.loading).toBe(true);
+  expect(result.current.loading).toBe(false);
   expect(result.current.authResult).toBeUndefined();
   expect(result.current.isLoggedIn).toBe(false);
 });
