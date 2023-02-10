@@ -24,8 +24,8 @@ export interface LoginParams {
 }
 
 export interface LogoutParams {
-  onSuccess: () => void;
-  onFail: (error?: any) => void;
+  onSuccess?: () => void;
+  onFail?: (error?: any) => void;
 }
 
 const OAuthContext = createContext<OAuthConfig>({
@@ -59,7 +59,9 @@ export const OAuthContextProvider = ({
       const { onSuccess, onFail } = params;
       if (!isLoggedIn || !authResult?.refreshToken) {
         await clearAuthResult();
-        onSuccess();
+        if (onSuccess) {
+          onSuccess();
+        }
         return;
       }
 
@@ -68,10 +70,14 @@ export const OAuthContextProvider = ({
           tokenToRevoke: authResult.refreshToken,
         });
         await clearAuthResult();
-        onSuccess();
+        if (onSuccess) {
+          onSuccess();
+        }
       } catch (error) {
         await clearAuthResult();
-        onFail(error);
+        if (onFail) {
+          onFail(error);
+        }
       }
     },
     [isLoggedIn, authConfig, authResult, clearAuthResult],

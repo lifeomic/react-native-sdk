@@ -1,5 +1,6 @@
 // if you use expo remove this line
 import { AppRegistry } from 'react-native';
+import init from '../../src/common/init';
 
 import {
   getStorybookUI,
@@ -9,6 +10,9 @@ import {
 import { withKnobs } from '@storybook/addon-knobs';
 
 import './rn-addons';
+
+// LifeOmic app initialization
+init();
 
 // enables knobs for all stories
 addDecorator(withKnobs);

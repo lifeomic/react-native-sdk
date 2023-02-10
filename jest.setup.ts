@@ -6,3 +6,7 @@ jest.mock('react-native-device-info', () => mockDeviceInfo);
 jest.mock('./src/common/testID', () => ({
   tID: (id: string) => id,
 }));
+
+jest.mock('i18next', () => ({
+  t: (_key: string, defaultValue: string) => defaultValue,
+}));

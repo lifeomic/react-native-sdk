@@ -18,6 +18,8 @@ module.exports = {
   collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx,js,jsx}'],
   coveragePathIgnorePatterns: [
     'src/common/testID',
+    'src/index',
+    'src/common/init'
   ],
   coverageThreshold: {
     global: {

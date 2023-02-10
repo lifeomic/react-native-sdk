@@ -1,3 +1,3 @@
 import './Welcome/Welcome.stories';
-import './Navigation.stories';
+import './AppDemo.stories';
 import './OAuth.stories';

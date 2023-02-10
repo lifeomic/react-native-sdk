@@ -10,12 +10,12 @@ import {
   AuthContextProvider,
   useAuth,
   OAuthLoginButton,
-  OAuthLogoutButton,
   OAuthContextProvider,
+  SettingsScreen,
 } from '../../../src';
 import { authConfig } from './OAuth.stories';
 
-storiesOf('Navigation', module).add('demo', () => {
+storiesOf('App', module).add('demo', () => {
   return (
     <AuthContextProvider>
       <OAuthContextProvider authConfig={authConfig}>
@@ -29,17 +29,8 @@ storiesOf('Navigation', module).add('demo', () => {
 
 const noop = () => {};
 
-const HomeScreen: FC = () => {
-  const onFail = action('logout onFail');
-  return (
-    <OAuthLogoutButton onSuccess={noop} onFail={onFail}>
-      <Text>Logout</Text>
-    </OAuthLogoutButton>
-  );
-};
-
 const LoginScreen: FC = () => {
-  const onFail = action('logout onFail');
+  const onFail = action('login onFail');
   return (
     <OAuthLoginButton onSuccess={noop} onFail={onFail}>
       <Text>Login</Text>
@@ -49,7 +40,7 @@ const LoginScreen: FC = () => {
 
 // TODO: Once we have some real screens in place, move all this below into src and make this story reuse it.
 type LoggedInRootParamList = {
-  'screens/Home': undefined;
+  'screens/Settings': undefined;
 };
 
 type NotLoggedInRootParamList = {
@@ -67,7 +58,7 @@ function RootStack() {
     const Stack = createNativeStackNavigator<LoggedInRootParamList>();
     return (
       <Stack.Navigator>
-        <Stack.Screen name="screens/Home" component={HomeScreen} />
+        <Stack.Screen name="screens/Settings" component={SettingsScreen} />
       </Stack.Navigator>
     );
   }
