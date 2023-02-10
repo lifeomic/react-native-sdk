@@ -2,7 +2,7 @@ import React from 'react';
 import { TextStyle, ViewStyle } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { text, object } from '@storybook/addon-knobs';
-import ProfileImage from '../../../src/components/ProfileImage';
+import ProfileImage from 'src/components/ProfileImage';
 
 const stockPhoto =
   'https://st2.depositphotos.com/1662991/8837/i/450/depositphotos_88370500-stock-photo-mechanic-wearing-overalls.jpg';

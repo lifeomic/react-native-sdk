@@ -9,7 +9,7 @@ import {
   StopProps,
   PathProps,
 } from 'react-native-svg';
-import _ from 'lodash';
+import times from 'lodash/times';
 
 const { width: windowWidth } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -34,7 +34,7 @@ const axisXdistance = 9.2122;
 let initialPoint = 6.46432;
 const curvesSectionsAtWidth: string[] = [];
 
-const curvesSequenceTimes = _.times(windowWidth / (axisXdistance * 3));
+const curvesSequenceTimes = times(windowWidth / (axisXdistance * 3));
 curvesSequenceTimes.forEach(() => {
   const pointOne = initialPoint + axisXdistance;
   const pointTwo = pointOne + axisXdistance;
@@ -46,7 +46,7 @@ curvesSequenceTimes.forEach(() => {
 const drawingSectionString = curvesSectionsAtWidth.join(',').replace(',', ' ');
 const path: PathProps['d'] = `M${windowWidth} 0.44751H0.666992V30.011C2.2553 29.2963 4.08186 ${drawingSectionString} 28.8198 ${initialPoint} 28.8198V0.44751H${windowWidth}Z`;
 
-const SocialBanner = ({
+const GradientBanner = ({
   gradientColors,
   text,
 }: {
@@ -84,4 +84,4 @@ const SocialBanner = ({
   );
 };
 
-export default SocialBanner;
+export default GradientBanner;
