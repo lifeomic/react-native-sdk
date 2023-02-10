@@ -12,7 +12,7 @@ import {
   OAuthLoginButton,
   OAuthContextProvider,
   SettingsScreen,
-} from '../../../src';
+} from '../../..';
 import { authConfig } from './OAuth.stories';
 
 storiesOf('App', module).add('demo', () => {
