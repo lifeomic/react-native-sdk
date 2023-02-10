@@ -54,6 +54,7 @@ beforeEach(() => {
     authResult: authResult,
     storeAuthResult: storeAuthResultMock,
     clearAuthResult: clearAuthResultMock,
+    initialize: jest.fn(),
   });
 
   authorizeMock.mockResolvedValue(authResult);
@@ -147,6 +148,7 @@ describe('logout', () => {
       authResult: undefined,
       storeAuthResult: storeAuthResultMock,
       clearAuthResult: clearAuthResultMock,
+      initialize: jest.fn(),
     });
     const { result } = await renderHookInContext();
     const onSuccess = jest.fn();
