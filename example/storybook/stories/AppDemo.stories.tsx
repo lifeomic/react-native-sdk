@@ -6,14 +6,11 @@ import { ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { action } from '@storybook/addon-actions';
-import {
-  AuthContextProvider,
-  useAuth,
-  OAuthLoginButton,
-  OAuthContextProvider,
-  SettingsScreen,
-} from '../../..';
 import { authConfig } from './OAuth.stories';
+import { AuthContextProvider, useAuth } from 'src/hooks/useAuth';
+import { OAuthContextProvider } from 'src/hooks/useOAuthFlow';
+import { OAuthLoginButton } from 'src/components/OAuthLoginButton';
+import SettingsScreen from 'src/screens/SettingsScreen';
 
 storiesOf('App', module).add('demo', () => {
   return (
