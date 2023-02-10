@@ -34,6 +34,15 @@ beforeEach(() => {
   keychainMock.getGenericPassword.mockResolvedValue(false);
 });
 
+test('without provider, methods fail', async () => {
+  const { result } = renderHook(() => useAuth());
+  await expect(result.current.initialize()).rejects.toBeUndefined();
+  await expect(
+    result.current.storeAuthResult(exampleAuthResult),
+  ).rejects.toBeUndefined();
+  await expect(result.current.clearAuthResult()).rejects.toBeUndefined();
+});
+
 test('initial state test', async () => {
   const { result } = await renderHookInContext();
 

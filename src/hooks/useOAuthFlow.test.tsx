@@ -60,6 +60,12 @@ beforeEach(() => {
   authorizeMock.mockResolvedValue(authResult);
 });
 
+test('without provider, methods fail', async () => {
+  const { result } = renderHook(() => useOAuthFlow());
+  await expect(result.current.login({})).rejects.toBeUndefined();
+  await expect(result.current.logout({})).rejects.toBeUndefined();
+});
+
 test('initial state test', async () => {
   const { result } = await renderHookInContext();
   expect(result.current.authConfig).toEqual(authConfig);
