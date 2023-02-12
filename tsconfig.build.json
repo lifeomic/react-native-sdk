@@ -7,5 +7,9 @@
     "noEmit": false
   },
   "include": ["index.ts", "src/**/*", "lib/**/*"],
+  "paths": {
+    "src": ["./src"],
+    "lib": ["./lib"],
+  },
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
 }

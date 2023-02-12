@@ -13,6 +13,8 @@ module.exports = {
             __dirname,
             './node_modules/react-native'
           ),
+          src: '../src',
+          lib: '../lib',
         }
       }
     ]
