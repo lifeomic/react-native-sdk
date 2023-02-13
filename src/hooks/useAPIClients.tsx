@@ -22,11 +22,11 @@ const APIClientsContext = createContext<APIClients>({
 let interceptorId: number;
 
 /**
- * The APIClientContextProvider's job is to provide API clients (such as an
+ * The APIClientsContextProvider's job is to provide API clients (such as an
  * HTTP client and/or graphql client) that takes care of things like managing
  * the HTTP Authorization header and other default behavior.
  */
-export const APIClientContextProvider = ({
+export const APIClientsContextProvider = ({
   baseURL,
   children,
 }: {
@@ -41,7 +41,7 @@ export const APIClientContextProvider = ({
 
   const httpClient = useMemo(() => {
     axiosInstance.interceptors.request.eject(interceptorId);
-    if (!authResult) {
+    if (!authResult?.accessToken) {
       return axiosInstance;
     }
     interceptorId = axiosInstance.interceptors.request.use((config) => {
@@ -49,7 +49,7 @@ export const APIClientContextProvider = ({
       return config;
     });
     return axiosInstance;
-  }, [authResult]);
+  }, [authResult?.accessToken]);
 
   const context: APIClients = {
     httpClient,

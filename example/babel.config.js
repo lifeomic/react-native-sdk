@@ -13,6 +13,10 @@ module.exports = {
             __dirname,
             './node_modules/react-native'
           ),
+          'react-query': path.resolve(
+            __dirname,
+            './node_modules/react-query'
+          ),
         }
       }
     ]

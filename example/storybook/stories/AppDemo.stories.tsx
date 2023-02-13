@@ -1,29 +1,39 @@
 import React, { FC } from 'react';
 import { Text } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
-
 import { ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { action } from '@storybook/addon-actions';
 import {
+  ActiveAccountContextProvider,
+  APIClientsContextProvider,
   AuthContextProvider,
   useAuth,
   OAuthLoginButton,
   OAuthContextProvider,
   SettingsScreen,
-} from '../../..';
+} from '../../../src';
 import { authConfig } from './OAuth.stories';
+
+const queryClient = new QueryClient();
 
 storiesOf('App', module).add('demo', () => {
   return (
-    <AuthContextProvider>
-      <OAuthContextProvider authConfig={authConfig}>
-        <NavigationContainer>
-          <RootStack />
-        </NavigationContainer>
-      </OAuthContextProvider>
-    </AuthContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthContextProvider>
+        <APIClientsContextProvider>
+          <OAuthContextProvider authConfig={authConfig}>
+            <ActiveAccountContextProvider>
+              <NavigationContainer>
+                <RootStack />
+              </NavigationContainer>
+            </ActiveAccountContextProvider>
+          </OAuthContextProvider>
+        </APIClientsContextProvider>
+      </AuthContextProvider>
+    </QueryClientProvider>
   );
 });
 
