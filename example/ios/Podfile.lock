@@ -398,11 +398,15 @@ PODS:
     - React-perflogger (= 0.71.1)
   - RNDeviceInfo (10.3.0):
     - React-Core
+  - RNGestureHandler (2.9.0):
+    - React-Core
   - RNKeychain (8.1.1):
     - React-Core
   - RNScreens (3.19.0):
     - React-Core
     - React-RCTImage
+  - RNSVG (13.8.0):
+    - React-Core
   - SocketRocket (0.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
@@ -471,8 +475,10 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSVG (from `../node_modules/react-native-svg`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -569,10 +575,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
   RNKeychain:
     :path: "../node_modules/react-native-keychain"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -628,8 +638,10 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 311feb67600774723fe10eb8801d3138cae9ad67
   ReactCommon: 03be76588338a27a88d103b35c3c44a3fd43d136
   RNDeviceInfo: 4701f0bf2a06b34654745053db0ce4cb0c53ada7
+  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
   RNScreens: ea4cd3a853063cda19a4e3c28d2e52180c80f4eb
+  RNSVG: c1e76b81c76cdcd34b4e1188852892dc280eb902
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   Yoga: 921eb014669cf9c718ada68b08d362517d564e0c
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
