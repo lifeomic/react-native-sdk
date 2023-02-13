@@ -6,6 +6,10 @@ module.exports = {
   testMatch: [
     '<rootDir>/src/**/*.test.{js,jsx,ts,tsx}',
   ],
+  moduleNameMapper: {
+    'src/(.*)': '<rootDir>/src/$1',
+    'lib/i18n': '<rootDir>/lib/i18n',
+  },
   moduleFileExtensions: ['js', 'json', 'ts', 'tsx', 'jsx', 'node', 'mjs'],
   modulePathIgnorePatterns: ['<rootDir>[/\\\\](|coverage|node_modules)[/\\\\]'],
   preset: 'react-native',
