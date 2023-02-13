@@ -9,8 +9,6 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import colors from 'src/common/utils/colors';
-
 const defaultSize = 80;
 const defaultFontSize = 32;
 
@@ -30,8 +28,8 @@ export interface Props {
 }
 
 export const imageWrapperStyles: StyleProp<ViewStyle> = {
-  backgroundColor: colors.lifeBlue,
-  borderColor: colors.backgroundLightGray,
+  backgroundColor: '#02BFF1', // light blue
+  borderColor: '#EFEFF4', // light gray
   borderWidth: 1,
   justifyContent: 'center',
   alignItems: 'center',
@@ -50,7 +48,7 @@ const styles = StyleSheet.create({
     width: defaultSize,
     height: defaultSize,
     borderRadius: defaultSize / 2,
-    backgroundColor: colors.backgroundLightGray,
+    backgroundColor: '#EFEFF4', // light gray
   },
   text: {
     color: 'white',
