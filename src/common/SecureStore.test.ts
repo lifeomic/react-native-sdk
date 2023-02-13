@@ -72,6 +72,15 @@ describe('SecureStore', () => {
       });
     });
 
+    it('returns null when object has been cleared', async () => {
+      keychainMock.getGenericPassword.mockResolvedValueOnce(false);
+      const result = await store.getObject();
+      expect(keychainMock.getGenericPassword).toHaveBeenCalledWith(
+        expectedOptions,
+      );
+      expect(result).toBeNull();
+    });
+
     it('can clear the specific item', async () => {
       await store.clear();
       expect(keychainMock.resetGenericPassword).toHaveBeenCalledWith(

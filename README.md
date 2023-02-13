@@ -22,6 +22,26 @@ to build on our app shell within their own repo. Each PR is required to have a
 semantic commit message like `fix`, `feat`, etc. For now, always use `fix` or
 `chore` because we have a ways to go and we like small focused PRs.
 
+### Peer dependencies strategy
+
+We've seen a lot of pain when it comes to libraries shipping with dependencies
+that either we have or other libraries also have. This can cause React to run
+with multiple versions, one of the versions "wins" (in yarn.lock) and it's
+unexpected, or other issues along these lines. For this reason, we want to not
+be shy about peer dependencies, which keeps the library consumer in control of
+those versions. On the other hand, this can become cumbersome if we get into the
+10s of peer dependencies. Let's use these guidelines below.
+
+#### It should be a peer dependency if:
+
+- We think it's highly likely a consumer app will also use that library
+- We know that if a consumer app uses a different version of the dependency, it
+  will cause issues.
+
+If you are a LifeOmic customer, building a mobile app, and see a dependency that
+you feel should be a peer dependency, reach out to us at
+development@lifeomic.com.
+
 ### Example app
 
 The `example` app/folder should be used for all component demonstration
