@@ -137,9 +137,7 @@ const ProfileImage: React.FC<Props> & { Loading: React.FC } = (props) => {
               uri: picture,
             }}
             testID="profile-image"
-            accessibilityLabel={i18n.t('profile-image', {
-              defaultValue: 'Profile image',
-            })}
+            accessibilityLabel={i18n.t('profile-image', 'Profile image')}
           />
         ) : (
           <Text style={[styles.text, initialsStyle, textStyle]}>
