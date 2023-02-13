@@ -14,9 +14,8 @@ interface DebouncedTouchableProps extends TouchableWithoutFeedbackProps {
   activeOpacity?: number;
 }
 
-export function DebouncedTouchable<T extends DebouncedTouchableProps>(
-  // @ts-expect-error TODO: figure out type
-  TouchableElement,
+function DebouncedTouchable<T extends DebouncedTouchableProps>(
+  TouchableElement: typeof TouchableOpacity,
 ) {
   return class WrappedButton extends React.Component<T, {}> {
     public static defaultProps = {

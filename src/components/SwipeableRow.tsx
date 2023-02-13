@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useRef } from 'react';
 import { I18nManager, Image, StyleSheet, View } from 'react-native';
 import i18n from 'lib/i18n';
 
@@ -46,9 +46,9 @@ type SwipeableRowProps = {
 } & React.PropsWithChildren;
 
 type EditActionProps = {
-  disabled?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
+  disabled?: boolean;
   closeSwipeable?: () => void;
 };
 
@@ -84,33 +84,43 @@ const EditActions: FC<EditActionProps> = (props) => {
           />
         </TouchableOpacityDebounced>
       )}
-      <TouchableOpacityDebounced
-        onPress={deleteAndClose}
-        style={styles.deleteButton}
-        testID="swipeDelete"
-        accessibilityRole="button"
-        accessibilityLabel="item-swipe-delete-button"
-        disabled={disabled}
-      >
-        <Image
-          accessibilityLabel={i18n.t('delete-item', {
-            defaultValue: 'Delete Item',
-          })}
-          style={styles.iconStyle}
-          source={Images.buttons.delete}
-          resizeMode={'center'}
-        />
-      </TouchableOpacityDebounced>
+      {onDelete && (
+        <TouchableOpacityDebounced
+          onPress={deleteAndClose}
+          style={styles.deleteButton}
+          testID="swipeDelete"
+          accessibilityRole="button"
+          accessibilityLabel="item-swipe-delete-button"
+          disabled={disabled}
+        >
+          <Image
+            accessibilityLabel={i18n.t('delete-item', {
+              defaultValue: 'Delete Item',
+            })}
+            style={styles.iconStyle}
+            source={Images.buttons.delete}
+            resizeMode={'center'}
+          />
+        </TouchableOpacityDebounced>
+      )}
     </View>
   );
 };
 
-export const SwipeableRow: FC<SwipeableRowProps> = (
-  props: SwipeableRowProps,
-) => {
-  const renderEditActions = () => <EditActions />;
+const SwipeableRow: FC<SwipeableRowProps> = (props: SwipeableRowProps) => {
+  const { onDelete, onEdit, disabled } = props;
+  const swipeableRef = useRef<Swipeable>(null);
+  const renderEditActions = () => (
+    <EditActions
+      onEdit={onEdit}
+      onDelete={onDelete}
+      disabled={disabled}
+      closeSwipeable={swipeableRef.current?.close}
+    />
+  );
   return (
     <Swipeable
+      ref={swipeableRef}
       friction={2}
       rightThreshold={scale(60)}
       renderRightActions={I18nManager.isRTL ? undefined : renderEditActions}
@@ -122,3 +132,5 @@ export const SwipeableRow: FC<SwipeableRowProps> = (
     </Swipeable>
   );
 };
+
+export default SwipeableRow;
