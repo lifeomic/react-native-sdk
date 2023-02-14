@@ -1,42 +1,47 @@
 import React, { createContext, useContext, useMemo } from 'react';
-import { useAuth } from './useAuth';
 import axios, { AxiosInstance, RawAxiosRequestHeaders } from 'axios';
+import { useAuth } from './useAuth';
 
 export const defaultBaseURL = 'https://api.us.lifeomic.com';
 export const defaultHeaders: RawAxiosRequestHeaders = {
   'Content-Type': 'application/json',
 };
-const axiosInstance = axios.create({
+
+export const defaultAxiosInstance = axios.create({
   baseURL: defaultBaseURL,
   headers: defaultHeaders,
 });
 
-export interface APIClients {
+export interface HttpClient {
   httpClient: AxiosInstance;
 }
 
-const APIClientsContext = createContext<APIClients>({
-  httpClient: axiosInstance,
+const HttpClientContext = createContext<HttpClient>({
+  httpClient: defaultAxiosInstance,
 });
 
 let interceptorId: number;
 
 /**
- * The APIClientsContextProvider's job is to provide API clients (such as an
- * HTTP client and/or graphql client) that takes care of things like managing
- * the HTTP Authorization header and other default behavior.
+ * The HttpClientContextProvider's job is to provide an HTTP client that
+ * takes care of things like managing the HTTP Authorization header and
+ * other default behavior.
  */
-export const APIClientsContextProvider = ({
+export const HttpClientContextProvider = ({
+  injectedAxiosInstance,
   baseURL,
   children,
 }: {
+  injectedAxiosInstance?: AxiosInstance;
   baseURL?: string;
   children?: React.ReactNode;
 }) => {
   const { authResult } = useAuth();
 
-  if (baseURL) {
-    axiosInstance.defaults.baseURL = baseURL;
+  const axiosInstance = injectedAxiosInstance || defaultAxiosInstance;
+
+  if (baseURL || !axiosInstance.defaults.baseURL) {
+    axiosInstance.defaults.baseURL = baseURL || defaultBaseURL;
   }
 
   const httpClient = useMemo(() => {
@@ -49,17 +54,15 @@ export const APIClientsContextProvider = ({
       return config;
     });
     return axiosInstance;
-  }, [authResult?.accessToken]);
+  }, [authResult?.accessToken, axiosInstance]);
 
-  const context: APIClients = {
-    httpClient,
-  };
+  const context: HttpClient = { httpClient };
 
   return (
-    <APIClientsContext.Provider value={context}>
+    <HttpClientContext.Provider value={context}>
       {children}
-    </APIClientsContext.Provider>
+    </HttpClientContext.Provider>
   );
 };
 
-export const useAPIClients = () => useContext(APIClientsContext);
+export const useHttpClient = () => useContext(HttpClientContext);

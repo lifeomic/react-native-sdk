@@ -12,6 +12,7 @@ import DeviceInfo from 'react-native-device-info';
 import { OAuthLogoutButton } from '../components/OAuthLogoutButton';
 import { tID } from '../common/testID';
 import { useActiveAccount } from '../hooks/useActiveAccount';
+import { useUserProfile } from '../hooks/useUserProfile';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -38,11 +39,15 @@ const MainMenuItem = ({
 
 export const SettingsScreen = () => {
   const { account } = useActiveAccount();
+  const { data: userProfile } = useUserProfile();
 
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scroll}>
         {account?.name && <MainMenuItem title={account?.name} />}
+        {userProfile?.profile && (
+          <MainMenuItem title={userProfile?.profile?.displayName} />
+        )}
         <View style={styles.subMenuContainer}>
           <OAuthLogoutButton>
             <Text>{t('settings-logout', 'Logout')}</Text>
