@@ -42,14 +42,14 @@ If you are a LifeOmic customer, building a mobile app, and see a dependency that
 you feel should be a peer dependency, reach out to us at
 development@lifeomic.com.
 
-### Example app
+### Example apps
 
 The `example` app/folder should be used for all component demonstration
-purposes. Currently, it's solely used for storyboard / component development.
-But if we were to want to showcase components in a different way, the same
-`example` app should be used.
+purposes. It's used for both storyboard / component development as well as
+showing a full app demonstration. See below for how to toggle between the two
+apps which are both served from the `example` folder.
 
-#### Build and run the example app
+#### Build and run the storybook example app
 
 - `cd example`
 - `cp .env.example .env`
@@ -58,7 +58,14 @@ But if we were to want to showcase components in a different way, the same
 - `npx react-native start`
 - type `i` or `a` to run on either platform
 
-#### (Optional) Navigate via the web
+#### Build and run the full app demo app
+
+- Run the example app as storybook first (previous section)
+- Open `.env` and set `DEMO_APP` to `'true'`
+- `npx react-native start` (from `example` folder)
+- type `i` or `a` to run on either platform
+
+#### (Optional) Navigate storybook via the web
 
 Sometimes the in app UI for viewing storybook actions and manipulating knobs can
 be cumbersome. If you have a lot of JSON to manipulate within a knob, for

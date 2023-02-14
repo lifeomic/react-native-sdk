@@ -1,25 +1,22 @@
 import React, { FC } from 'react';
-import { Text } from 'react-native';
-import { storiesOf } from '@storybook/react-native';
-import { ActivityIndicator } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { action } from '@storybook/addon-actions';
+import { ActivityIndicator, Text } from 'react-native';
+import { authConfig } from './storybook/stories/OAuth.stories';
 import {
   ActiveAccountContextProvider,
-  HttpClientContextProvider,
   AuthContextProvider,
-  useAuth,
-  OAuthLoginButton,
+  HttpClientContextProvider,
   OAuthContextProvider,
+  OAuthLoginButton,
   SettingsScreen,
-} from '../../../src';
-import { authConfig } from './OAuth.stories';
+  useAuth,
+} from '../src';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 
 const queryClient = new QueryClient();
 
-storiesOf('App', module).add('demo', () => {
+const App: FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
@@ -35,12 +32,12 @@ storiesOf('App', module).add('demo', () => {
       </AuthContextProvider>
     </QueryClientProvider>
   );
-});
+};
 
 const noop = () => {};
+const onFail = console.error;
 
 const LoginScreen: FC = () => {
-  const onFail = action('login onFail');
   return (
     <OAuthLoginButton onSuccess={noop} onFail={onFail}>
       <Text>Login</Text>
@@ -80,3 +77,5 @@ function RootStack() {
     </Stack.Navigator>
   );
 }
+
+export default App;

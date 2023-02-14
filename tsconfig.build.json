@@ -9,7 +9,7 @@
   "include": ["index.ts", "src/**/*", "lib/**/*"],
   "paths": {
     "src": ["./src"],
-    "lib": ["./lib"],
+    "lib": ["./lib"]
   },
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
 }
