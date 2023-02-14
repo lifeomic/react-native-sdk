@@ -2,7 +2,7 @@ import React from 'react';
 import { act, renderHook } from '@testing-library/react-native';
 import MockAdapter from 'axios-mock-adapter';
 import { AuthResult, useAuth } from './useAuth';
-import { APIClientsContextProvider, useAPIClients } from './useAPIClients';
+import { HttpClientContextProvider, useHttpClient } from './useHttpClient';
 
 jest.mock('./useAuth', () => ({
   useAuth: jest.fn(),
@@ -19,11 +19,11 @@ const authResult: AuthResult = {
 };
 
 const renderHookInContext = async () => {
-  return renderHook(() => useAPIClients(), {
+  return renderHook(() => useHttpClient(), {
     wrapper: ({ children }) => (
-      <APIClientsContextProvider baseURL="http://localhost/unit-test">
+      <HttpClientContextProvider baseURL="http://localhost/unit-test">
         {children}
-      </APIClientsContextProvider>
+      </HttpClientContextProvider>
     ),
   });
 };
