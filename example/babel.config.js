@@ -13,6 +13,7 @@ module.exports = {
             __dirname,
             './node_modules/react-native'
           ),
+          'src/common/img': path.resolve(__dirname, './storybook/img'),
           src: '../src',
           lib: '../lib',
         }

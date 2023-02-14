@@ -6,7 +6,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { TouchableOpacityDebounced } from './TouchableOpacityDebounced';
 
 import { scale } from 'src/common/utils/screen';
-import Images from 'src/common/img';
+import { EditIconSvg, deleteIconSource } from 'src/common/img';
 
 const styles = StyleSheet.create({
   iconStyle: {
@@ -74,13 +74,12 @@ const EditActions: FC<EditActionProps> = (props) => {
           accessibilityLabel="item-swipe-edit-button"
           disabled={disabled}
         >
-          <Image
+          <EditIconSvg
+            style={styles.iconStyle}
             accessibilityLabel={i18n.t('edit-item', {
               defaultValue: 'Edit Item',
             })}
-            style={styles.iconStyle}
-            source={Images.buttons.edit}
-            resizeMode={'center'}
+            fill="white"
           />
         </TouchableOpacityDebounced>
       )}
@@ -98,7 +97,7 @@ const EditActions: FC<EditActionProps> = (props) => {
               defaultValue: 'Delete Item',
             })}
             style={styles.iconStyle}
-            source={Images.buttons.delete}
+            source={deleteIconSource}
             resizeMode={'center'}
           />
         </TouchableOpacityDebounced>
