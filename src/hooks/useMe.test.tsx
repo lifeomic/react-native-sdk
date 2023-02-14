@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useAuth } from './useAuth';
-import { useAccounts } from './useAccounts';
+import { useActiveAccount } from './useActiveAccount';
+import { useMe } from './useMe';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
@@ -15,18 +15,18 @@ const queryClient = new QueryClient({
   },
 });
 
-jest.mock('./useAuth', () => ({
-  useAuth: jest.fn(),
+jest.mock('./useActiveAccount', () => ({
+  useActiveAccount: jest.fn(),
 }));
 jest.mock('./useHttpClient', () => ({
   useHttpClient: jest.fn(),
 }));
 
-const useAuthMock = useAuth as jest.Mock;
+const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useHttpClientMock = useHttpClient as jest.Mock;
 
 const renderHookInContext = async () => {
-  return renderHook(() => useAccounts(), {
+  return renderHook(() => useMe(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     ),
@@ -37,19 +37,20 @@ const axiosInstance = axios.create();
 const axiosMock = new MockAdapter(axiosInstance);
 
 beforeEach(() => {
-  useAuthMock.mockReturnValue({
-    authResult: { accessToken: 'accessToken' },
+  useActiveAccountMock.mockReturnValue({
+    accountHeaders: { Authorization: 'Bearer accessToken' },
   });
   useHttpClientMock.mockReturnValue({ httpClient: axiosInstance });
 });
 
-test('fetches and parses accounts', async () => {
-  const accounts = [{ id: 'accountid' }];
-  axiosMock.onGet('/v1/accounts').reply(200, {
-    accounts,
+test('fetches and parses $me', async () => {
+  axiosMock.onGet('/v1/fhir/dstu3/$me').reply(200, {
+    entry: [{ resource: { id: 'patientId' } }],
   });
   const { result } = await renderHookInContext();
   await waitFor(() => result.current.isSuccess);
-  expect(axiosMock.history.get[0].url).toBe('/v1/accounts');
-  await waitFor(() => expect(result.current.data).toEqual(accounts));
+  expect(axiosMock.history.get[0].url).toBe('/v1/fhir/dstu3/$me');
+  await waitFor(() => {
+    expect(result.current.data).toEqual({ patientId: 'patientId' });
+  });
 });

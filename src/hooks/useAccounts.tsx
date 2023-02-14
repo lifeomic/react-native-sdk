@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { useAPIClients } from './useAPIClients';
+import { useHttpClient } from './useHttpClient';
 import { useAuth } from './useAuth';
 
 export interface Account {
@@ -20,7 +20,7 @@ interface AccountsResponse {
 
 export function useAccounts() {
   const { authResult } = useAuth();
-  const { httpClient } = useAPIClients();
+  const { httpClient } = useHttpClient();
 
   return useQuery(
     'accounts',

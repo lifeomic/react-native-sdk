@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { action } from '@storybook/addon-actions';
 import {
   ActiveAccountContextProvider,
-  APIClientsContextProvider,
+  HttpClientContextProvider,
   AuthContextProvider,
   useAuth,
   OAuthLoginButton,
@@ -23,7 +23,7 @@ storiesOf('App', module).add('demo', () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
-        <APIClientsContextProvider>
+        <HttpClientContextProvider>
           <OAuthContextProvider authConfig={authConfig}>
             <ActiveAccountContextProvider>
               <NavigationContainer>
@@ -31,7 +31,7 @@ storiesOf('App', module).add('demo', () => {
               </NavigationContainer>
             </ActiveAccountContextProvider>
           </OAuthContextProvider>
-        </APIClientsContextProvider>
+        </HttpClientContextProvider>
       </AuthContextProvider>
     </QueryClientProvider>
   );
