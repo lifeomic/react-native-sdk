@@ -1,6 +1,7 @@
 export * from './hooks/useAccounts';
 export * from './hooks/useActiveAccount';
 export * from './hooks/useAuth';
+export * from './hooks/useGraphQLClient';
 export * from './hooks/useHttpClient';
 export * from './hooks/useOAuthFlow';
 

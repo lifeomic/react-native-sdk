@@ -12,6 +12,8 @@ jest.mock('react-native-keychain', () => ({
   getGenericPassword: jest.fn(),
 }));
 
+jest.mock('jwt-decode', () => () => ({ 'cognito:username': 'userId' }));
+
 const keychainMock = Keychain as jest.Mocked<typeof Keychain>;
 
 const renderHookInContext = async () => {
@@ -60,6 +62,7 @@ test('stores token and updates state', async () => {
   expect(result.current.loading).toBe(false);
   expect(result.current.authResult).toEqual(exampleAuthResult);
   expect(result.current.isLoggedIn).toBe(true);
+  expect(result.current.username).toBe('userId');
   expect(keychainMock.setGenericPassword).toHaveBeenCalledWith(
     unusedUsername,
     JSON.stringify(exampleAuthResult),
@@ -109,6 +112,7 @@ test('initialize loads token and updates state', async () => {
   expect(result.current.loading).toBe(false);
   expect(result.current.authResult).toEqual(authResult);
   expect(result.current.isLoggedIn).toBe(true);
+  expect(result.current.username).toBe('userId');
 });
 
 test('initialize can handle password retrieval error', async () => {

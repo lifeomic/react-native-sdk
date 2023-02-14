@@ -1,11 +1,19 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import { RefreshResult } from 'react-native-app-auth';
 import { SecureStore } from '../common/SecureStore';
+import jwtDecode from 'jwt-decode';
 
 export interface AuthStatus {
   loading: boolean;
   isLoggedIn: boolean;
   authResult?: AuthResult;
+  username?: string;
   storeAuthResult: (params: AuthResult) => Promise<void>;
   clearAuthResult: () => Promise<void>;
   initialize: () => Promise<void>;
@@ -65,10 +73,19 @@ export const AuthContextProvider = ({
     setLoading(false);
   }, []);
 
+  const username = useMemo(() => {
+    if (!authResult?.idToken) {
+      return;
+    }
+    const decoded = jwtDecode(authResult?.idToken) as any;
+    return decoded?.['cognito:username'];
+  }, [authResult?.idToken]);
+
   const context = {
     loading,
     isLoggedIn,
     authResult,
+    username,
     storeAuthResult,
     clearAuthResult,
     initialize,
