@@ -8,11 +8,13 @@ import {
 } from 'react-native';
 import { t } from 'i18next';
 import DeviceInfo from 'react-native-device-info';
-
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { OAuthLogoutButton } from '../components/OAuthLogoutButton';
 import { tID } from '../common/testID';
 import { useActiveAccount } from '../hooks/useActiveAccount';
-import { useUserProfile } from '../hooks/useUserProfile';
+import { SettingsStackParamList } from '../navigators/SettingsStack';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -37,30 +39,38 @@ const MainMenuItem = ({
   );
 };
 
+type NavigationParams = NativeStackNavigationProp<
+  SettingsStackParamList,
+  'Settings'
+>;
+
 export const SettingsScreen = () => {
   const { account } = useActiveAccount();
-  const { data: userProfile } = useUserProfile();
+  const { navigate } = useNavigation<NavigationParams>();
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scroll}>
-        {account?.name && <MainMenuItem title={account?.name} />}
-        {userProfile?.profile && (
-          <MainMenuItem title={userProfile?.profile?.displayName} />
-        )}
-        <View style={styles.subMenuContainer}>
-          <OAuthLogoutButton>
-            <Text>{t('settings-logout', 'Logout')}</Text>
-          </OAuthLogoutButton>
-          <View style={styles.versionContainer}>
-            <Text testID={tID('version-text')}>
-              {t('settings-version', 'Version {{ version }}', {
-                version: fullVersion,
-              })}
-            </Text>
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.scroll}>
+          <MainMenuItem
+            title={t('settings-profile-row-title', 'Profile')}
+            action={() => navigate('Profile')}
+          />
+          {account?.name && <MainMenuItem title={account?.name} />}
+          <View style={styles.subMenuContainer}>
+            <OAuthLogoutButton>
+              <Text>{t('settings-logout', 'Logout')}</Text>
+            </OAuthLogoutButton>
+            <View style={styles.versionContainer}>
+              <Text testID={tID('version-text')}>
+                {t('settings-version', 'Version {{ version }}', {
+                  version: fullVersion,
+                })}
+              </Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
     </View>
   );
 };

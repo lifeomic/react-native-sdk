@@ -15,11 +15,11 @@ module.exports = {
   ],
   clearMocks: true,
   collectCoverage: true,
-  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx,js,jsx}'],
+  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx,js,jsx}', '!src/**/**/index.ts'],
   coveragePathIgnorePatterns: [
     'src/common/testID',
-    'src/index',
-    'src/common/init'
+    'src/common/init',
+    'src/navigators'
   ],
   coverageThreshold: {
     global: {

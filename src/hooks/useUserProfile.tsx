@@ -6,9 +6,9 @@ export interface UserProfile {
   userId: string;
   profile: {
     email: string;
-    displayName: string;
-    givenName: string;
-    familyName: string;
+    displayName?: string;
+    givenName?: string;
+    familyName?: string;
   };
   patientId: string;
 }

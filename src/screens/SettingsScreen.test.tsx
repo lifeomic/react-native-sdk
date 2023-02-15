@@ -1,9 +1,10 @@
 import React from 'react';
-import SettingsScreen from './SettingsScreen';
-import { render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useUserProfile } from '../hooks/useUserProfile';
+import SettingsScreen from './SettingsScreen';
 
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
@@ -15,7 +16,10 @@ jest.mock('../hooks/useUserProfile', () => ({
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useUserProfileMock = useUserProfile as jest.Mock;
+const useNavigationMock = useNavigation as jest.Mock;
 const getVersionMock = DeviceInfo.getVersion as jest.Mock;
+
+const navigateMock = jest.fn();
 
 beforeEach(() => {
   getVersionMock.mockReturnValue('1.0');
@@ -24,6 +28,9 @@ beforeEach(() => {
   });
   useUserProfileMock.mockReturnValue({
     data: { profile: { displayName: 'User Name' } },
+  });
+  useNavigationMock.mockReturnValue({
+    navigate: navigateMock,
   });
 });
 
@@ -44,10 +51,13 @@ test('shows account name', async () => {
   });
 });
 
-test('(temporarily) shows user displayName', async () => {
+test('navigates to user profile', async () => {
   const { getByText } = await render(<SettingsScreen />);
 
   await waitFor(() => {
-    expect(getByText('User Name')).toBeDefined();
+    expect(getByText('Profile')).toBeDefined();
   });
+  fireEvent.press(getByText('Profile'));
+
+  expect(navigateMock).toHaveBeenCalledWith('Profile');
 });
