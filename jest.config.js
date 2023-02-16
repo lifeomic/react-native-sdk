@@ -19,6 +19,8 @@ module.exports = {
   coveragePathIgnorePatterns: [
     'src/common/testID',
     'src/common/init',
+    'src/common/RootProviders',
+    'src/common/LoggedInProviders',
     'src/navigators'
   ],
   coverageThreshold: {
