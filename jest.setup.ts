@@ -8,5 +8,6 @@ jest.mock('./src/common/testID', () => ({
 }));
 
 jest.mock('i18next', () => ({
-  t: (_key: string, defaultValue: string) => defaultValue,
+  t: (_key: string, defaultValue: string, params?: any) =>
+    `${defaultValue}${params ? JSON.stringify(params) : ''}`,
 }));

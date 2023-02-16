@@ -6,10 +6,10 @@ import {
   AuthContextProvider,
   HttpClientContextProvider,
   OAuthContextProvider,
-  OAuthLoginButton,
-  SettingsScreen,
   useAuth,
-} from '../src';
+} from '../src/hooks';
+import { OAuthLoginButton } from '../src/components';
+import { SettingsStack } from '../src/navigators';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -45,11 +45,6 @@ const LoginScreen: FC = () => {
   );
 };
 
-// TODO: Once we have some real screens in place, move all this below into src and make this story reuse it.
-type LoggedInRootParamList = {
-  'screens/Settings': undefined;
-};
-
 type NotLoggedInRootParamList = {
   'screens/Login': undefined;
 };
@@ -62,12 +57,7 @@ function RootStack() {
   }
 
   if (isLoggedIn) {
-    const Stack = createNativeStackNavigator<LoggedInRootParamList>();
-    return (
-      <Stack.Navigator>
-        <Stack.Screen name="screens/Settings" component={SettingsScreen} />
-      </Stack.Navigator>
-    );
+    return <SettingsStack />;
   }
 
   const Stack = createNativeStackNavigator<NotLoggedInRootParamList>();

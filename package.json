@@ -63,5 +63,7 @@
     "react-native-screens": "^3.19.0",
     "react-query": "^3.39.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react-use": "^17.4.0"
+  }
 }
