@@ -37,10 +37,18 @@ those versions. On the other hand, this can become cumbersome if we get into the
 - We think it's highly likely a consumer app will also use that library
 - We know that if a consumer app uses a different version of the dependency, it
   will cause issues.
+- There are corresponding Pods that need to be installed for iOS
 
 If you are a LifeOmic customer, building a mobile app, and see a dependency that
 you feel should be a peer dependency, reach out to us at
 development@lifeomic.com.
+
+### Export everything, except default
+
+Try not to use `export default`. If we use named exports everywhere, we can
+`export * from ...` in index.ts files that facilitate what is available in the
+npm lib. Try to export any/everything that might be buseful for reuse, and try
+not to do anything outside of a method (e.g. that will happen during `import`).
 
 ### Example apps
 
@@ -93,6 +101,9 @@ picked up. In Xcode, you may need to run a "Clean Build Folder" as well.
 
 Try "wipe data" on the emulator and retrying. Sometimes the clock gets messed up
 so bad on the emulator that the OAuth flow fails.
+
+This can also show itself with an "Invalid ID Token" error under the covers.
+Visually, you login and, if no `onFail` is setup, then nothing happens.
 
 #### Cached IdP login due to cookies
 

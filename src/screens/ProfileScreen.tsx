@@ -18,7 +18,7 @@ const getLabelValueSection = (label: string, value?: string) => {
   ) : null;
 };
 
-const ProfileScreen = () => {
+export const ProfileScreen = () => {
   const { isLoading, data } = useUserProfile();
 
   const userProfile = data?.profile;
@@ -56,5 +56,3 @@ const ProfileScreen = () => {
     </View>
   );
 };
-
-export default ProfileScreen;
