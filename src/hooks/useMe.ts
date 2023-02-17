@@ -2,19 +2,28 @@ import { useQuery } from 'react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 
-export interface Me {
-  patientId: string;
+export interface Subject {
+  subjectId: string;
+  projectId: string;
+}
+
+interface Entry {
+  resource: {
+    id: string;
+    meta: {
+      tag: [
+        {
+          system: string;
+          code: string;
+        },
+      ];
+    };
+  };
 }
 
 interface MeResponse {
   resourceType: 'Bundle';
-  entry: [
-    {
-      resource: {
-        id: string;
-      };
-    },
-  ];
+  entry: Entry[];
 }
 
 export function useMe() {
@@ -26,9 +35,17 @@ export function useMe() {
     () =>
       httpClient
         .get<MeResponse>('/v1/fhir/dstu3/$me', { headers: accountHeaders })
-        .then((res) => ({
-          patientId: res.data.entry?.[0]?.resource?.id,
-        })),
+        .then((res) =>
+          res.data.entry?.map(
+            (entry) =>
+              ({
+                subjectId: entry.resource.id,
+                projectId: entry.resource.meta.tag.find(
+                  (t) => t.system === 'http://lifeomic.com/fhir/dataset',
+                )?.code,
+              } as Subject),
+          ),
+        ),
     {
       enabled: !!accountHeaders,
     },
