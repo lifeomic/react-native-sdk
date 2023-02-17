@@ -1,19 +1,29 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { t } from 'i18next';
 import { HomeStackParamList } from '../navigators/HomeStack';
 import { useActiveAccount } from '../hooks/useActiveAccount';
-import { useAppConfig } from '../hooks/useAppConfig';
+import { AppTile, useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
+import { AppTiles } from '../components/tiles/AppTiles';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 export type HomeScreenNavigation = Props['navigation'];
 
 export const HomeScreen = () => {
-  const { isLoading: loadingAccount, account } = useActiveAccount();
-  const { isLoading: loadingAppConfig } = useAppConfig();
+  const { isLoading: loadingAccount } = useActiveAccount();
+  const { isLoading: loadingAppConfig, data: appConfig } = useAppConfig();
+  const { navigate } = useNavigation<HomeScreenNavigation>();
+
+  const onAppTilePress = useCallback(
+    (appTile: AppTile) => {
+      navigate('tiles/AppTile', { appTile });
+    },
+    [navigate],
+  );
 
   if (loadingAccount || loadingAppConfig) {
     return (
@@ -30,8 +40,12 @@ export const HomeScreen = () => {
           overScrollMode="always"
           showsVerticalScrollIndicator={false}
         >
-          {/* TODO: replace this text with appConfig & tiles */}
-          <Text>{account?.name}</Text>
+          {appConfig?.homeTab?.appTiles?.length && (
+            <AppTiles
+              onPress={onAppTilePress}
+              appTiles={appConfig.homeTab.appTiles}
+            />
+          )}
         </ScrollView>
       </SafeAreaView>
     </View>
