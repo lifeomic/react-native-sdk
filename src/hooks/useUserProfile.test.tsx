@@ -1,4 +1,3 @@
-// import React from 'react';
 import { renderHook } from '@testing-library/react-native';
 import { useMe } from './useMe';
 import { useUser } from './useUser';

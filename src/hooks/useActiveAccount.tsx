@@ -46,7 +46,8 @@ export const ActiveAccountContextProvider = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const accounts = useAccounts();
+  const accountsResult = useAccounts();
+  const [accountsWithProduct, setAccountsWithProduct] = useState<Account[]>([]);
   const [activeAccount, setActiveAccount] = useState<ActiveAccountProps>({});
 
   /**
@@ -56,13 +57,14 @@ export const ActiveAccountContextProvider = ({
     if (activeAccount?.account?.id) {
       return;
     }
-    const accountsWithProduct = filterAccounts(accounts.data);
-    if (accountsWithProduct.length < 1) {
+    const filteredAccounts = filterAccounts(accountsResult.data);
+    if (filteredAccounts.length < 1) {
       return;
     }
+    setAccountsWithProduct(filteredAccounts);
 
     // TODO: use previously-selected account logic
-    const selectedAccount = accountsWithProduct[0];
+    const selectedAccount = filteredAccounts[0];
 
     setActiveAccount({
       account: selectedAccount,
@@ -70,14 +72,13 @@ export const ActiveAccountContextProvider = ({
         'LifeOmic-Account': selectedAccount.id,
       },
       trialExpired: getTrialExpired(selectedAccount),
-      accountsWithProduct,
     });
-  }, [accounts.data, activeAccount?.account?.id]);
+  }, [accountsResult.data, activeAccount?.account?.id]);
 
   const setActiveAccountId = useCallback(
     async (accountId: string) => {
       try {
-        const selectedAccount = filterAccounts(accounts.data).find(
+        const selectedAccount = filterAccounts(accountsWithProduct).find(
           (a) => a.id === accountId,
         );
         if (!selectedAccount) {
@@ -89,28 +90,32 @@ export const ActiveAccountContextProvider = ({
 
         setActiveAccount({
           account: selectedAccount,
+          accountHeaders: {
+            'LifeOmic-Account': selectedAccount.id,
+          },
           trialExpired: getTrialExpired(selectedAccount),
         });
       } catch (error) {
         console.warn('Unable to set active account', error);
       }
     },
-    [accounts.data],
+    [accountsWithProduct],
   );
 
   const refetch = useCallback(async () => {
-    return accounts.refetch();
-  }, [accounts]);
+    return accountsResult.refetch();
+  }, [accountsResult]);
 
   return (
     <ActiveAccountContext.Provider
       value={{
         ...activeAccount,
+        accountsWithProduct,
         refetch,
         setActiveAccountId,
-        isLoading: accounts.isLoading,
-        isFetched: accounts.isFetched,
-        error: accounts.error,
+        isLoading: accountsResult.isLoading,
+        isFetched: accountsResult.isFetched,
+        error: accountsResult.error,
       }}
     >
       {children}

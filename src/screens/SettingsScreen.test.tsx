@@ -3,19 +3,13 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import { useActiveAccount } from '../hooks/useActiveAccount';
-import { useUserProfile } from '../hooks/useUserProfile';
 import SettingsScreen from './SettingsScreen';
 
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));
 
-jest.mock('../hooks/useUserProfile', () => ({
-  useUserProfile: jest.fn(),
-}));
-
 const useActiveAccountMock = useActiveAccount as jest.Mock;
-const useUserProfileMock = useUserProfile as jest.Mock;
 const useNavigationMock = useNavigation as jest.Mock;
 const getVersionMock = DeviceInfo.getVersion as jest.Mock;
 
@@ -25,9 +19,6 @@ beforeEach(() => {
   getVersionMock.mockReturnValue('1.0');
   useActiveAccountMock.mockReturnValue({
     account: { name: 'Account Name' },
-  });
-  useUserProfileMock.mockReturnValue({
-    data: { profile: { displayName: 'User Name' } },
   });
   useNavigationMock.mockReturnValue({
     navigate: navigateMock,
@@ -51,6 +42,15 @@ test('shows account name', async () => {
   });
 });
 
+test('shows placeholder if account still loading', async () => {
+  useActiveAccountMock.mockReturnValue({});
+  const { getByText } = await render(<SettingsScreen />);
+
+  await waitFor(() => {
+    expect(getByText('Accounts')).toBeDefined();
+  });
+});
+
 test('navigates to user profile', async () => {
   const { getByText } = await render(<SettingsScreen />);
 
@@ -60,4 +60,15 @@ test('navigates to user profile', async () => {
   fireEvent.press(getByText('Profile'));
 
   expect(navigateMock).toHaveBeenCalledWith('Profile');
+});
+
+test('navigates to account selection', async () => {
+  const { getByText } = await render(<SettingsScreen />);
+
+  await waitFor(() => {
+    expect(getByText('Account Name')).toBeDefined();
+  });
+  fireEvent.press(getByText('Account Name'));
+
+  expect(navigateMock).toHaveBeenCalledWith('AccountSelection');
 });

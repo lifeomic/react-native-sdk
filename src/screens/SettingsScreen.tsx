@@ -56,7 +56,10 @@ export const SettingsScreen = () => {
             title={t('settings-profile-row-title', 'Profile')}
             action={() => navigate('Profile')}
           />
-          {account?.name && <MainMenuItem title={account?.name} />}
+          <MainMenuItem
+            title={account?.name || t('settings-account-selection', 'Accounts')}
+            action={() => navigate('AccountSelection')}
+          />
           <View style={styles.subMenuContainer}>
             <OAuthLogoutButton>
               <Text>{t('settings-logout', 'Logout')}</Text>
