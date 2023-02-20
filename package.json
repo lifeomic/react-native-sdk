@@ -43,6 +43,7 @@
     "react-native-keychain": "^8.1.1",
     "react-native-safe-area-context": "^4.5.0",
     "react-native-screens": "^3.19.0",
+    "react-native-webview": "^11.26.1",
     "react-query": "^3.39.3",
     "react-test-renderer": "^18.2.0",
     "semantic-release": "^19.0.3",
@@ -63,10 +64,10 @@
     "react-native-keychain": "^8.1.1",
     "react-native-safe-area-context": "^4.5.0",
     "react-native-screens": "^3.19.0",
+    "react-native-webview": "^11.26.1",
     "react-query": "^3.39.3"
   },
   "dependencies": {
-    "react-native-webview": "^11.26.1",
     "react-use": "^17.4.0"
   }
 }

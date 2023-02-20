@@ -2,7 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '../screens/HomeScreen';
 import { AppTile } from '../hooks/useAppConfig';
-import AppTileScreen from '../screens/AppTileScreen';
+import { AppTileScreen } from '../screens/AppTileScreen';
 
 export type HomeStackParamList = {
   Home: undefined;

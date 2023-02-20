@@ -8,7 +8,7 @@ import { HomeStackParamList } from '../navigators/HomeStack';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { AppTile, useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
-import { AppTiles } from '../components/tiles/AppTiles';
+import { Tile } from '../components/tiles/Tile';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 export type HomeScreenNavigation = Props['navigation'];
@@ -19,7 +19,7 @@ export const HomeScreen = () => {
   const { navigate } = useNavigation<HomeScreenNavigation>();
 
   const onAppTilePress = useCallback(
-    (appTile: AppTile) => {
+    (appTile: AppTile) => () => {
       navigate('tiles/AppTile', { appTile });
     },
     [navigate],
@@ -40,12 +40,16 @@ export const HomeScreen = () => {
           overScrollMode="always"
           showsVerticalScrollIndicator={false}
         >
-          {appConfig?.homeTab?.appTiles?.length && (
-            <AppTiles
-              onPress={onAppTilePress}
-              appTiles={appConfig.homeTab.appTiles}
+          {/* TODO: as we add more tile types, refactor into TilesList to help
+          with ordering, etc. */}
+          {appConfig?.homeTab?.appTiles?.map((appTile) => (
+            <Tile
+              key={appTile.id}
+              id={appTile.id}
+              title={appTile.title}
+              onPress={onAppTilePress(appTile)}
             />
-          )}
+          ))}
         </ScrollView>
       </SafeAreaView>
     </View>

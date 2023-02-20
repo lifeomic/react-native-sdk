@@ -1,19 +1,19 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { WebView } from 'react-native-webview';
 import { HomeStackParamList } from '../navigators/HomeStack';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'tiles/AppTile'>;
 
-const AppTileScreen = ({ navigation, route }: Props) => {
+export const AppTileScreen = ({ navigation, route }: Props) => {
   const appTile = route.params.appTile;
-  const webViewRef = React.useRef<WebView>(null);
+  const webViewRef = useRef<WebView>(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: route.params.appTile.title,
     });
-  });
+  }, [navigation, route.params.appTile.title]);
 
   return (
     <WebView
@@ -24,5 +24,3 @@ const AppTileScreen = ({ navigation, route }: Props) => {
     />
   );
 };
-
-export default AppTileScreen;
