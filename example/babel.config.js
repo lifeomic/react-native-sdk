@@ -22,6 +22,10 @@ module.exports = {
           '@react-navigation/bottom-tabs': path.resolve(__dirname, './node_modules/@react-navigation/bottom-tabs'),
           'react-native-safe-area-context': path.resolve(__dirname, './node_modules/react-native-safe-area-context'),
           'react-native-screens': path.resolve(__dirname, './node_modules/react-native-screens'),
+          'graphql-request': path.resolve(
+            __dirname, 
+            './node_modules/graphql-request'
+          ),
           src: '../src',
           lib: '../lib',
         }

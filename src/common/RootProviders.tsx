@@ -8,6 +8,7 @@ import { ActiveAccountContextProvider } from '../hooks/useActiveAccount';
 import { HttpClientContextProvider } from '../hooks/useHttpClient';
 import { OAuthContextProvider } from '../hooks/useOAuthFlow';
 import { ActiveProjectContextProvider } from '../hooks/useActiveProject';
+import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
 const queryClient = new QueryClient();
 
@@ -22,15 +23,17 @@ export function RootProviders({
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
         <HttpClientContextProvider>
-          <OAuthContextProvider authConfig={authConfig}>
-            <ActiveAccountContextProvider>
-              <ActiveProjectContextProvider>
-                <SafeAreaProvider>
-                  <NavigationContainer>{children}</NavigationContainer>
-                </SafeAreaProvider>
-              </ActiveProjectContextProvider>
-            </ActiveAccountContextProvider>
-          </OAuthContextProvider>
+          <GraphQLClientContextProvider>
+            <OAuthContextProvider authConfig={authConfig}>
+              <ActiveAccountContextProvider>
+                <ActiveProjectContextProvider>
+                  <SafeAreaProvider>
+                    <NavigationContainer>{children}</NavigationContainer>
+                  </SafeAreaProvider>
+                </ActiveProjectContextProvider>
+              </ActiveAccountContextProvider>
+            </OAuthContextProvider>
+          </GraphQLClientContextProvider>
         </HttpClientContextProvider>
       </AuthContextProvider>
     </QueryClientProvider>

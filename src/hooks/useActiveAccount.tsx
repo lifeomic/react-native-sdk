@@ -6,13 +6,12 @@ import React, {
   useCallback,
 } from 'react';
 import { Account, useAccounts } from './useAccounts';
-import { RawAxiosRequestHeaders } from 'axios';
 import { QueryObserverResult } from 'react-query';
 
 export type ActiveAccountProps = {
   account?: Account;
   accountsWithProduct?: Account[];
-  accountHeaders?: RawAxiosRequestHeaders;
+  accountHeaders?: Record<string, string>;
   trialExpired?: boolean;
 };
 
