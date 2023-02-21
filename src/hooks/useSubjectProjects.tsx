@@ -27,7 +27,10 @@ export function useSubjectProjects() {
         )
         .then((res) => res.data.items),
     {
-      enabled: !!accountHeaders && !!subjects?.[0]?.projectId,
+      enabled:
+        !!accountHeaders &&
+        (subjects?.length ?? 0) > 0 &&
+        !!subjects?.every((s) => s.projectId),
     },
   );
 }

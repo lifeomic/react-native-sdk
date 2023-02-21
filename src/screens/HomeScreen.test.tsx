@@ -50,8 +50,16 @@ beforeEach(() => {
   });
 });
 
-test('renders loading indicator initially', async () => {
+test('renders loading indicator while account fetching', async () => {
   useActiveAccountMock.mockReturnValue({
+    isLoading: true,
+  });
+  const { getByTestId } = render(<HomeScreen />);
+  expect(getByTestId('activity-indicator-view')).toBeDefined();
+});
+
+test('renders loading indicator while app config fetching', async () => {
+  useAppConfigMock.mockReturnValue({
     isLoading: true,
   });
   const { getByTestId } = render(<HomeScreen />);

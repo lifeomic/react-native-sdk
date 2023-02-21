@@ -57,7 +57,7 @@ const axiosMock = new MockAdapter(axiosInstance);
 
 beforeEach(() => {
   useActiveAccountMock.mockReturnValue({
-    accountHeaders: { Authorization: 'Bearer accessToken' },
+    accountHeaders: { 'LifeOmic-Account': 'acct1' },
   });
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
