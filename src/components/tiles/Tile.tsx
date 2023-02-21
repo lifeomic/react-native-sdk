@@ -8,25 +8,14 @@ export interface TileProps {
   title: string;
   children?: React.ReactNode;
 }
-type ViewTileProps = Pick<TileProps, 'title' | 'id'>;
-
-const ViewTile = ({ title, id }: ViewTileProps) => {
-  return (
-    <View testID={tID(`tile-view-${id}`)}>
-      <Text numberOfLines={2}>{title}</Text>
-    </View>
-  );
-};
 
 export const Tile = ({ onPress, id, title, children }: TileProps) => {
-  if (onPress) {
-    return (
-      <TouchableOpacity testID={tID(`tile-button-${id}`)} onPress={onPress}>
-        <ViewTile id={id} title={title} />
-        {children}
-      </TouchableOpacity>
-    );
-  }
-
-  return <ViewTile id={id} title={title} />;
+  return (
+    <TouchableOpacity testID={tID(`tile-button-${id}`)} onPress={onPress} disabled={!onPress}>
+      <View testID={tID(`tile-view-${id}`)}>
+        <Text numberOfLines={2}>{title}</Text>
+      </View>
+      {children}
+    </TouchableOpacity>
+  );
 };
