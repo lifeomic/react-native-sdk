@@ -25,10 +25,18 @@ export const HomeScreen = () => {
     [navigate],
   );
 
-  if (loadingAccount || loadingAppConfig) {
+  if (loadingAccount) {
     return (
       <ActivityIndicatorView
-        message={t('home-screen-loading', 'Loading account information')}
+        message={t('home-screen-loading-account', 'Loading account information')}
+      />
+    );
+  }
+
+  if (loadingAppConfig) {
+    return (
+      <ActivityIndicatorView
+        message={t('home-screen-loading-config', 'Loading app config')}
       />
     );
   }
