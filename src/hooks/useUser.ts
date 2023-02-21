@@ -6,9 +6,9 @@ export interface User {
   id: string;
   profile: {
     email: string;
-    displayName: string;
-    givenName: string;
-    familyName: string;
+    displayName?: string;
+    givenName?: string;
+    familyName?: string;
   };
 }
 
