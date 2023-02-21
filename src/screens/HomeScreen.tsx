@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { t } from 'i18next';
 import { HomeStackParamList } from '../navigators/HomeStack';
 import { useActiveAccount } from '../hooks/useActiveAccount';
+import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
@@ -12,8 +13,9 @@ export type HomeScreenNavigation = Props['navigation'];
 
 export const HomeScreen = () => {
   const { isLoading: loadingAccount, account } = useActiveAccount();
+  const { isLoading: loadingAppConfig } = useAppConfig();
 
-  if (loadingAccount) {
+  if (loadingAccount || loadingAppConfig) {
     return (
       <ActivityIndicatorView
         message={t('home-screen-loading', 'Loading account information')}
