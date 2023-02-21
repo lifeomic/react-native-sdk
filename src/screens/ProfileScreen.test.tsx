@@ -33,6 +33,7 @@ test('renders loading indicator initially', async () => {
   });
 
   const { getByTestId, rerender } = render(<ProfileScreen />);
+  expect(getByTestId('activity-indicator-view')).toBeDefined();
 
   useUserMock.mockReturnValue({
     isLoading: false,
