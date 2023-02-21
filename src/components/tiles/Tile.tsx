@@ -11,7 +11,11 @@ export interface TileProps {
 
 export const Tile = ({ onPress, id, title, children }: TileProps) => {
   return (
-    <TouchableOpacity testID={tID(`tile-button-${id}`)} onPress={onPress} disabled={!onPress}>
+    <TouchableOpacity
+      testID={tID(`tile-button-${id}`)}
+      onPress={onPress}
+      disabled={!onPress}
+    >
       <View testID={tID(`tile-view-${id}`)}>
         <Text numberOfLines={2}>{title}</Text>
       </View>

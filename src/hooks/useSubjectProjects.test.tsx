@@ -46,7 +46,7 @@ beforeEach(() => {
     accountHeaders: { 'LifeOmic-Account': 'acct1' },
   });
   useMeMock.mockReturnValue({
-    data: [{ projectId: 'proj1' }, { projectId: 'proj2' }]
+    data: [{ projectId: 'proj1' }, { projectId: 'proj2' }],
   });
   useHttpClientMock.mockReturnValue({ httpClient: axiosInstance });
   axiosMock.reset();
@@ -63,19 +63,19 @@ test('fetches and returns projects related to useMe', async () => {
 
 test('does not fetch if useMe has no data', async () => {
   useMeMock.mockReturnValue({
-    isLoading: true
+    isLoading: true,
   });
   const { result, rerender } = await renderHookInContext();
   await waitFor(() => result.current.isSuccess);
 
   useMeMock.mockReturnValue({
-    data: []
+    data: [],
   });
   await rerender({});
   await waitFor(() => result.current.isSuccess);
 
   useMeMock.mockReturnValue({
-    data: [{ projectId: 'proj1' }, { noProjectIdEdgeCase: true }]
+    data: [{ projectId: 'proj1' }, { noProjectIdEdgeCase: true }],
   });
   await rerender({});
   await waitFor(() => result.current.isSuccess);

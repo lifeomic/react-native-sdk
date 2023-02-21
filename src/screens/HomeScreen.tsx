@@ -28,7 +28,10 @@ export const HomeScreen = () => {
   if (loadingAccount) {
     return (
       <ActivityIndicatorView
-        message={t('home-screen-loading-account', 'Loading account information')}
+        message={t(
+          'home-screen-loading-account',
+          'Loading account information',
+        )}
       />
     );
   }
