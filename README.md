@@ -100,8 +100,8 @@ picked up. In Xcode, you may need to run a "Clean Build Folder" as well.
 #### Android login not working locally
 
 This can show itself with an "Invariant Violation" or "Invalid ID Token" error.
-Or if there is no `onFail` is provided, nothing happens visually when tapping
-the login button.
+Or if no `onFail` is provided, nothing happens visually when tapping the login
+button.
 
 Try "wipe data" on the emulator and retrying. Sometimes the emulator clock gets
 messed up so bad that the OAuth flow fails.
