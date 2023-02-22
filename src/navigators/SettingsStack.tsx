@@ -1,10 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { t } from 'i18next';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
-import { t } from 'i18next';
-import { AccountSelectionScreen } from 'src/screens/AccountSelectionScreen';
+import { AccountSelectionScreen } from '../screens/AccountSelectionScreen';
 
 export type SettingsStackParamList = {
   Settings: undefined;

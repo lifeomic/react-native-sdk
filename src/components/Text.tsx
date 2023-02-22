@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text as RNText, TextStyle, StyleSheet } from 'react-native';
-import { useBrandConfig } from 'src/hooks/useBrandConfig';
+import { useBrandConfig } from '../hooks/useBrandConfig';
 import { colors } from '../theme';
 
 interface Props {
