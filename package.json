@@ -1,5 +1,5 @@
 {
-  "name": "@lifeomic/react-native-components",
+  "name": "@lifeomic/react-native-sdk",
   "version": "0.0.0",
   "description": "React-native components for building a mobile app against the LifeOmic Platform",
   "scripts": {
