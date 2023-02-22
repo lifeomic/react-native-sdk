@@ -124,5 +124,3 @@ export const ActiveAccountContextProvider = ({
 };
 
 export const useActiveAccount = () => useContext(ActiveAccountContext);
-
-export default ActiveAccountContext;

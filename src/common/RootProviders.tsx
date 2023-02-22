@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ActiveAccountContextProvider } from '../hooks/useActiveAccount';
 import { HttpClientContextProvider } from '../hooks/useHttpClient';
 import { OAuthContextProvider } from '../hooks/useOAuthFlow';
+import { ActiveProjectContextProvider } from '../hooks/useActiveProject';
 
 const queryClient = new QueryClient();
 
@@ -23,9 +24,11 @@ export function RootProviders({
         <HttpClientContextProvider>
           <OAuthContextProvider authConfig={authConfig}>
             <ActiveAccountContextProvider>
-              <SafeAreaProvider>
-                <NavigationContainer>{children}</NavigationContainer>
-              </SafeAreaProvider>
+              <ActiveProjectContextProvider>
+                <SafeAreaProvider>
+                  <NavigationContainer>{children}</NavigationContainer>
+                </SafeAreaProvider>
+              </ActiveProjectContextProvider>
             </ActiveAccountContextProvider>
           </OAuthContextProvider>
         </HttpClientContextProvider>

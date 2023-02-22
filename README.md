@@ -47,7 +47,7 @@ development@lifeomic.com.
 
 Try not to use `export default`. If we use named exports everywhere, we can
 `export * from ...` in index.ts files that facilitate what is available in the
-npm lib. Try to export any/everything that might be buseful for reuse, and try
+npm lib. Try to export any/everything that might be useful for reuse, and try
 not to do anything outside of a method (e.g. that will happen during `import`).
 
 ### Example apps
@@ -75,7 +75,7 @@ apps which are both served from the `example` folder.
 
 #### (Optional) Navigate storybook via the web
 
-Sometimes the in app UI for viewing storybook actions and manipulating knobs can
+Sometimes the in-app UI for viewing storybook actions and manipulating knobs can
 be cumbersome. If you have a lot of JSON to manipulate within a knob, for
 example, you might consider controlling the mobile app UI from the web. You can
 do so following these steps:
@@ -97,13 +97,14 @@ scripts. Initially, and any time you update the `example/.env` file, you'll need
 to run from Xcode for iOS or Android Studio for Android to ensure changes get
 picked up. In Xcode, you may need to run a "Clean Build Folder" as well.
 
-#### "Invariant Violation" for Android login
+#### Android login not working locally
 
-Try "wipe data" on the emulator and retrying. Sometimes the clock gets messed up
-so bad on the emulator that the OAuth flow fails.
+This can show itself with an "Invariant Violation" or "Invalid ID Token" error.
+Or if no `onFail` is provided, nothing happens visually when tapping the login
+button.
 
-This can also show itself with an "Invalid ID Token" error under the covers.
-Visually, you login and, if no `onFail` is setup, then nothing happens.
+Try "wipe data" on the emulator and retrying. Sometimes the emulator clock gets
+messed up so bad that the OAuth flow fails.
 
 #### Cached IdP login due to cookies
 

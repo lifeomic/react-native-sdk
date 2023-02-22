@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { useUserProfile } from '../hooks/useUserProfile';
+import { useUser } from '../hooks/useUser';
 import { tID } from '../common/testID';
 import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
@@ -19,7 +19,7 @@ const getLabelValueSection = (label: string, value?: string) => {
 };
 
 export const ProfileScreen = () => {
-  const { isLoading, data } = useUserProfile();
+  const { isLoading, data } = useUser();
 
   const userProfile = data?.profile;
 
@@ -42,7 +42,7 @@ export const ProfileScreen = () => {
   return (
     <View>
       <ScrollView>
-        {getLabelValueSection(t('profile-username', 'Username'), data.userId)}
+        {getLabelValueSection(t('profile-username', 'Username'), data.id)}
         {getLabelValueSection(
           t('profile-first-name', 'First Name'),
           userProfile.givenName,

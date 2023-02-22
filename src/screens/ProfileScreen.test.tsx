@@ -1,41 +1,41 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ProfileScreen } from './ProfileScreen';
-import { useUserProfile, UserProfile } from '../hooks/useUserProfile';
+import { useUser, User } from '../hooks/useUser';
 
-jest.mock('../hooks/useUserProfile', () => ({
-  useUserProfile: jest.fn(),
+jest.mock('../hooks/useUser', () => ({
+  useUser: jest.fn(),
 }));
 
-const useUserProfileMock = useUserProfile as jest.Mock;
+const useUserMock = useUser as jest.Mock;
 
-const mockUserProfile = (profile: UserProfile) => {
-  useUserProfileMock.mockReturnValue({
+const mockUser = (user: User) => {
+  useUserMock.mockReturnValue({
     loading: false,
-    data: profile,
+    data: user,
   });
 };
 
-const exampleProfile: UserProfile = {
-  userId: 'userId',
+const exampleProfile: User = {
+  id: 'userId',
   profile: {
     displayName: 'first last',
     givenName: 'firstName',
     familyName: 'lastName',
     email: 'unit@test.com',
   },
-  patientId: 'patientId',
 };
 
 test('renders loading indicator initially', async () => {
-  useUserProfileMock.mockReturnValue({
+  useUserMock.mockReturnValue({
     isLoading: true,
     data: undefined,
   });
 
   const { getByTestId, rerender } = render(<ProfileScreen />);
+  expect(getByTestId('activity-indicator-view')).toBeDefined();
 
-  useUserProfileMock.mockReturnValue({
+  useUserMock.mockReturnValue({
     isLoading: false,
     data: undefined, // Still waiting for data
   });
@@ -45,7 +45,7 @@ test('renders loading indicator initially', async () => {
 });
 
 test('renders profile label/values given user profile', () => {
-  mockUserProfile(exampleProfile);
+  mockUser(exampleProfile);
 
   const { getByText, getByTestId } = render(<ProfileScreen />);
   expect(getByTestId('Username')).toBeDefined();
@@ -53,7 +53,7 @@ test('renders profile label/values given user profile', () => {
   expect(getByTestId('Last Name')).toBeDefined();
   expect(getByTestId('Email')).toBeDefined();
 
-  expect(getByText(new RegExp(exampleProfile.userId))).toBeDefined();
+  expect(getByText(new RegExp(exampleProfile.id))).toBeDefined();
   expect(getByText(new RegExp(exampleProfile.profile.email))).toBeDefined();
   expect(
     getByText(new RegExp(exampleProfile.profile.familyName!)),
@@ -64,12 +64,11 @@ test('renders profile label/values given user profile', () => {
 });
 
 test('does not render fields which are not populated', () => {
-  mockUserProfile({
-    userId: 'userId',
+  mockUser({
+    id: 'userId',
     profile: {
       email: 'unit@test.com',
     },
-    patientId: 'patientId',
   });
 
   const { queryByTestId } = render(<ProfileScreen />);
