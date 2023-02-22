@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { TextStyles, defaultTextStyles } from 'src/components/Text';
+import { TextStyles, defaultTextStyles } from '../components/Text';
 import * as theme from '../theme';
 
 export interface BrandConfig {
