@@ -102,5 +102,3 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
   },
 });
-
-export default SettingsScreen;

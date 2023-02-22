@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import { useActiveAccount } from '../hooks/useActiveAccount';
-import SettingsScreen from './SettingsScreen';
+import { SettingsScreen } from './SettingsScreen';
 
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),

@@ -8,8 +8,6 @@ export function initializeI18Next() {
   }
 }
 
-const init = () => {
+export const init = () => {
   initializeI18Next();
 };
-
-export default init;

@@ -1,6 +1,6 @@
 // if you use expo remove this line
 import { AppRegistry } from 'react-native';
-import init from '../../src/common/init';
+import { init } from '../../src/common/init';
 
 import {
   getStorybookUI,
