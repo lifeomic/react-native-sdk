@@ -1,15 +1,18 @@
+import { TextStyles } from '../Text/TextStyles';
 import { Theme } from './Theme';
-import { TextStyles } from '../Text/types';
-import { defaultTextStyles } from '../Text/default';
 
 interface Props {
-  theme: Theme;
+  theme?: Theme;
 }
 
 export class Styles {
   Text: TextStyles;
 
-  constructor({ theme }: Props) {
-    this.Text = defaultTextStyles(theme);
+  private _theme: Theme;
+
+  constructor({ theme }: Props = {}) {
+    this._theme = theme || new Theme();
+
+    this.Text = new TextStyles(this._theme);
   }
 }

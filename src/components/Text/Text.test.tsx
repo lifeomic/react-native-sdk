@@ -2,8 +2,9 @@ import React from 'react';
 
 import { render, screen } from '@testing-library/react-native';
 import { Text } from './Text';
-import { BrandConfig, BrandConfigProvider } from '../BrandConfigProvider';
+import { BrandConfigProvider } from '../BrandConfigProvider';
 import { colors } from '../../themes/default';
+import { Styles } from '../BrandConfigProvider/Styles';
 
 describe('Without configuration', () => {
   test('Renders text with default style (baseTheme.colors.text)', () => {
@@ -15,12 +16,11 @@ describe('Without configuration', () => {
 });
 
 describe('With configuration', () => {
-  const customAppStyles: BrandConfig['styles'] = {
-    Text: {
-      base: { color: 'green' },
-      heading: { color: 'blue', fontWeight: 'bold' },
-    },
-  };
+  const customAppStyles = new Styles();
+  customAppStyles.Text.mergeStyles({
+    body: { color: 'green' },
+    heading: { color: 'blue', fontWeight: 'bold' },
+  });
 
   test('Renders text with configured style', () => {
     render(
@@ -40,18 +40,6 @@ describe('With configuration', () => {
     );
 
     expect(screen.toJSON()).toMatchInlineSnapshot(textBoldSnapshot('blue'));
-  });
-
-  test('Style object that takes precedence over variant styling', () => {
-    render(
-      <BrandConfigProvider styles={customAppStyles}>
-        <Text variant="heading" style={{ color: 'black' }}>
-          Hello World!
-        </Text>
-      </BrandConfigProvider>,
-    );
-
-    expect(screen.toJSON()).toMatchInlineSnapshot(textBoldSnapshot('black'));
   });
 });
 

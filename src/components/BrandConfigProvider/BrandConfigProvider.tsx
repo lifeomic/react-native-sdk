@@ -9,7 +9,7 @@ export interface BrandConfig {
 
 export const BrandConfigContext = React.createContext<BrandConfig>({
   theme: new Theme(),
-  styles: new Styles({ theme: new Theme() }),
+  styles: new Styles(),
 });
 
 interface Props {

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Text as RNText, TextStyle } from 'react-native';
+
+import { Text as RNText, TextStyle, StyleSheet } from 'react-native';
 import { useBrandConfig } from '../../hooks/useBrandConfig';
-import { defaultTextStyles } from './default';
-import { Variant } from './types';
+import { Variant } from './TextStyles';
 
 interface Props {
   variant?: Variant;
@@ -11,14 +11,11 @@ interface Props {
 }
 
 export function Text({ variant = 'body', style, children }: Props) {
-  const { theme, styles } = useBrandConfig();
+  const { styles } = useBrandConfig();
 
-  const mergedStyles = {
-    ...defaultTextStyles(theme).base,
-    ...styles.Text?.base,
-    ...styles.Text?.[variant],
-    ...style,
-  };
-
-  return <RNText style={mergedStyles}>{children}</RNText>;
+  return (
+    <RNText style={StyleSheet.compose(styles.Text[variant], style)}>
+      {children}
+    </RNText>
+  );
 }

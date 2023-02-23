@@ -1,11 +1,12 @@
 import React from 'react';
 
 import { storiesOf } from '@storybook/react-native';
-import { Text as RNText, TextStyle } from 'react-native';
-import { Text } from 'src/components/Text';
-import { BrandConfigProvider, BrandConfig } from 'src';
+import { BrandConfigProvider } from 'src';
 import { View, ViewStyle } from 'react-native';
 import { text, object } from '@storybook/addon-knobs';
+import { Theme } from 'src/components/BrandConfigProvider/Theme';
+import { Styles } from 'src/components/BrandConfigProvider/Styles';
+import { Examples } from './Examples';
 
 const defaultTextContent = 'Example text content.';
 
@@ -14,42 +15,6 @@ const centerView: ViewStyle = {
   justifyContent: 'center',
   alignItems: 'center',
 };
-
-function Container({ description, children }) {
-  const containerStyle: ViewStyle = {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  };
-  const descriptionStyle: TextStyle = { fontStyle: 'italic' };
-  const contentStyle: ViewStyle = { padding: 0, marginVertical: 4 };
-
-  return (
-    <View style={containerStyle}>
-      <RNText style={descriptionStyle}>{description}:</RNText>
-      <View style={contentStyle}>{children}</View>
-    </View>
-  );
-}
-
-function Examples({ content }) {
-  return (
-    <>
-      <Container description="default">
-        <Text>{content}</Text>
-      </Container>
-      <Container description="body">
-        <Text variant="body">{content}</Text>
-      </Container>
-      <Container description="heading">
-        <Text variant="heading">{content}</Text>
-      </Container>
-      <Container description="subHeading">
-        <Text variant="subHeading">{content}</Text>
-      </Container>
-    </>
-  );
-}
 
 storiesOf('Brand Config', module)
   .addDecorator((story) => <View style={centerView}>{story()}</View>)
@@ -67,14 +32,17 @@ storiesOf('Brand Config', module)
   .add('Custom theme', () => {
     const content = text('Text Content', defaultTextContent);
 
-    const theme = object('Theme', {
+    const themeConfig = object('Theme', {
       colors: {
         text: 'blue',
       },
     });
 
+    const theme = new Theme(themeConfig);
+    const styles = new Styles({ theme });
+
     return (
-      <BrandConfigProvider theme={theme}>
+      <BrandConfigProvider theme={theme} styles={styles}>
         <Examples content={content} />
       </BrandConfigProvider>
     );
@@ -83,7 +51,20 @@ storiesOf('Brand Config', module)
   .add('Custom style', () => {
     const content = text('Text Content', defaultTextContent);
 
-    const styles: BrandConfig['styles'] = object('Styles', {});
+    const styleConfig = object('Text Styles', {
+      body: {
+        color: 'red',
+      },
+      heading: {
+        color: 'green',
+      },
+      subHeading: {
+        color: 'blue',
+      },
+    });
+
+    const styles = new Styles();
+    styles.Text.mergeStyles(styleConfig);
 
     return (
       <BrandConfigProvider styles={styles}>
