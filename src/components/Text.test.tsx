@@ -1,8 +1,12 @@
 import React from 'react';
+
 import { render, screen } from '@testing-library/react-native';
 import { Text } from './Text';
-import { BrandConfig, BrandConfigProvider } from '../hooks/useBrandConfig';
-import { colors } from '../theme';
+import {
+  BrandConfig,
+  BrandConfigProvider,
+} from '../components/BrandConfigProvider';
+import { colors } from '../themes/default';
 
 describe('Without configuration', () => {
   test('Renders text with default style (baseTheme.colors.text)', () => {
