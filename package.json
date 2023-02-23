@@ -2,6 +2,9 @@
   "name": "@lifeomic/react-native-sdk",
   "version": "0.0.0",
   "description": "React-native components for building a mobile app against the LifeOmic Platform",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "format": "yarn prettier '**/*.{ts,tsx,js,json,md}'",
     "format:write": "yarn format --write",
@@ -15,7 +18,7 @@
     "copyToStarter": "cp -r ./dist/ ../react-native-starter/node_modules/@lifeomic/react-native-sdk"
   },
   "author": "LifeOmic <development@lifeomic.com>",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.20.12",
     "@babel/preset-env": "^7.20.2",

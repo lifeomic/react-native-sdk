@@ -25,6 +25,4 @@ jobs:
           yarn lint
           yarn build
       - name: Publish
-        run: |
-          yarn semantic-release
-          npm access grant read-only lifeomic:readonly-developers '@lifeomic/react-native-sdk'
+        run: yarn semantic-release
