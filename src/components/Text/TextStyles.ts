@@ -4,9 +4,11 @@ import { Theme } from '../BrandConfigProvider/Theme';
 export type Variant = 'body' | 'heading' | 'subHeading';
 
 export class TextStyles {
-  body?: TextStyle;
-  heading?: TextStyle;
-  subHeading?: TextStyle;
+  body: TextStyle = {};
+  heading: TextStyle = {};
+  subHeading: TextStyle = {};
+
+  private _variants: Variant[] = ['body', 'heading', 'subHeading'];
 
   constructor(theme: Theme) {
     const defaultStyles: Partial<TextStyles> = {
@@ -15,12 +17,12 @@ export class TextStyles {
       },
       heading: {
         color: theme.colors.text,
-        fontSize: 18,
+        fontSize: 24,
         fontWeight: 'bold',
       },
       subHeading: {
         color: theme.colors.text,
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: 'bold',
       },
     };
@@ -29,13 +31,8 @@ export class TextStyles {
   }
 
   mergeStyles(styles: Partial<TextStyles>) {
-    Object.assign(this, styles);
-  }
-
-  get(variant: Variant, style: TextStyle) {
-    return {
-      ...this[variant],
-      ...style,
-    };
+    this._variants.forEach((variant) => {
+      Object.assign(this[variant], styles[variant]);
+    });
   }
 }

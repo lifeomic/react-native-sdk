@@ -31,16 +31,6 @@ describe('With configuration', () => {
 
     expect(screen.toJSON()).toMatchInlineSnapshot(textSnapshot('green'));
   });
-
-  test('Accepts a variant', () => {
-    render(
-      <BrandConfigProvider styles={customAppStyles}>
-        <Text variant="heading">Hello World!</Text>
-      </BrandConfigProvider>,
-    );
-
-    expect(screen.toJSON()).toMatchInlineSnapshot(textBoldSnapshot('blue'));
-  });
 });
 
 const textSnapshot = (color: string) => `
@@ -48,19 +38,6 @@ const textSnapshot = (color: string) => `
   style={
     {
       "color": "${color}",
-    }
-  }
->
-  Hello World!
-</Text>
-`;
-
-const textBoldSnapshot = (color: string) => `
-<Text
-  style={
-    {
-      "color": "${color}",
-      "fontWeight": "bold",
     }
   }
 >

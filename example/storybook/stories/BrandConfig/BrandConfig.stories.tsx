@@ -7,6 +7,7 @@ import { text, object } from '@storybook/addon-knobs';
 import { Theme } from 'src/components/BrandConfigProvider/Theme';
 import { Styles } from 'src/components/BrandConfigProvider/Styles';
 import { Examples } from './Examples';
+import { TextStyles } from 'src/components/Text/TextStyles';
 
 const defaultTextContent = 'Example text content.';
 
@@ -39,19 +40,18 @@ storiesOf('Brand Config', module)
     });
 
     const theme = new Theme(themeConfig);
-    const styles = new Styles({ theme });
 
     return (
-      <BrandConfigProvider theme={theme} styles={styles}>
+      <BrandConfigProvider theme={theme}>
         <Examples content={content} />
       </BrandConfigProvider>
     );
   })
 
-  .add('Custom style', () => {
+  .add('Custom styles', () => {
     const content = text('Text Content', defaultTextContent);
 
-    const styleConfig = object('Text Styles', {
+    const customTextStyles = object('Custom Text Styles', {
       body: {
         color: 'red',
       },
@@ -64,7 +64,37 @@ storiesOf('Brand Config', module)
     });
 
     const styles = new Styles();
-    styles.Text.mergeStyles(styleConfig);
+    styles.Text.mergeStyles(customTextStyles);
+
+    return (
+      <BrandConfigProvider styles={styles}>
+        <Examples content={content} />
+      </BrandConfigProvider>
+    );
+  })
+
+  .add('Theme and styles', () => {
+    const content = text('Text Content', defaultTextContent);
+
+    const themeConfig = object('Theme', {
+      colors: {
+        text: 'black',
+      },
+    });
+
+    const theme = new Theme(themeConfig);
+
+    const customTextStyles: Partial<TextStyles> = object('Custom Text Styles', {
+      body: {
+        fontStyle: 'italic',
+      },
+      heading: {
+        color: 'purple',
+      },
+    });
+
+    const styles = new Styles({ theme });
+    styles.Text.mergeStyles(customTextStyles);
 
     return (
       <BrandConfigProvider styles={styles}>
