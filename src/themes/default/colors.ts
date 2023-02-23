@@ -17,7 +17,7 @@ const palette = {
 
   error100: '#F2D6CD',
   error500: '#C03403',
-} as const;
+};
 
 export const colors = {
   /**
@@ -62,4 +62,4 @@ export const colors = {
   errorBackground: palette.error100,
 };
 
-export type Colors = typeof colors;
+export type Colors = Partial<typeof colors>;
