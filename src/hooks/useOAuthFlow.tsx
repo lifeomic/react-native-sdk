@@ -8,9 +8,10 @@ import {
   authorize,
   AuthConfiguration,
   AuthorizeResult,
+  refresh,
   revoke,
 } from 'react-native-app-auth';
-import { useAuth } from './useAuth';
+import { AuthResult, useAuth } from './useAuth';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
@@ -93,9 +94,23 @@ export const OAuthContextProvider = ({
     [authConfig, clearAuthResult, storeAuthResult],
   );
 
+  const refreshHandler = useCallback(
+    async function (storedResult: AuthResult) {
+      if (!storedResult?.refreshToken) {
+        throw new Error('No refreshToken');
+      }
+      return await refresh(authConfig, {
+        refreshToken: storedResult.refreshToken,
+      });
+    },
+    [authConfig],
+  );
+
   useEffect(() => {
-    initialize();
-  }, [initialize]);
+    if (authConfig && refreshHandler) {
+      initialize(refreshHandler);
+    }
+  }, [initialize, refreshHandler, authConfig]);
 
   const context = {
     login,
