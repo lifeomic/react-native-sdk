@@ -1,23 +1,20 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { TextStyles, defaultTextStyles } from '../Text';
 import { Theme } from './Theme';
+import { Styles } from './Styles';
 
 export interface BrandConfig {
   theme: Theme;
-  styles: {
-    Text?: TextStyles;
-  };
+  styles: Styles;
 }
 
 export const BrandConfigContext = React.createContext<BrandConfig>({
   theme: new Theme(),
-  styles: {},
+  styles: new Styles({ theme: new Theme() }),
 });
 
 interface Props {
   theme?: Theme;
-  styles?: Partial<BrandConfig['styles']>;
+  styles?: Styles;
   children: React.ReactNode;
 }
 
@@ -26,18 +23,13 @@ export function BrandConfigProvider({ theme, styles, children }: Props) {
     theme = new Theme();
   }
 
-  const defaultStyles: any = {
-    Text: defaultTextStyles(theme),
-  };
-
-  const mergedStyles = StyleSheet.flatten<BrandConfig['styles']>([
-    defaultStyles,
-    styles,
-  ]);
+  if (!styles) {
+    styles = new Styles({ theme });
+  }
 
   const context = {
     theme,
-    styles: mergedStyles,
+    styles,
   };
 
   return (
