@@ -1,11 +1,12 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
-import { authorize, revoke } from 'react-native-app-auth';
+import { authorize, refresh, revoke } from 'react-native-app-auth';
 import { OAuthContextProvider, useOAuthFlow } from './useOAuthFlow';
 import { AuthResult, useAuth } from './useAuth';
 
 jest.mock('react-native-app-auth', () => ({
   authorize: jest.fn(),
+  refresh: jest.fn(),
   revoke: jest.fn(),
 }));
 jest.mock('./useAuth', () => ({
@@ -14,9 +15,11 @@ jest.mock('./useAuth', () => ({
 
 const useAuthMock = useAuth as jest.Mock;
 const authorizeMock = authorize as jest.Mock;
+const refreshMock = refresh as jest.Mock;
 const revokeMock = revoke as jest.Mock;
 const storeAuthResultMock = jest.fn();
 const clearAuthResultMock = jest.fn();
+const useAuthInitialize = jest.fn();
 
 const authConfig = {
   clientId: 'clientId',
@@ -54,7 +57,7 @@ beforeEach(() => {
     authResult: authResult,
     storeAuthResult: storeAuthResultMock,
     clearAuthResult: clearAuthResultMock,
-    initialize: jest.fn(),
+    initialize: useAuthInitialize,
   });
 
   authorizeMock.mockResolvedValue(authResult);
@@ -167,5 +170,31 @@ describe('logout', () => {
     expect(revoke).not.toHaveBeenCalled();
     expect(clearAuthResultMock).toHaveBeenCalled();
     expect(onSuccess).toHaveBeenCalledWith();
+  });
+});
+
+describe('refreshHandler', () => {
+  test('calls useAuth with refreshHandler that utilizes refresh method', async () => {
+    await renderHookInContext();
+    expect(useAuthInitialize).toHaveBeenCalled();
+
+    const refreshHandler = useAuthInitialize.mock.calls[0][0];
+    await act(async () => {
+      await refreshHandler({ refreshToken: 'refresh-token' });
+    });
+
+    expect(refreshMock).toHaveBeenCalledWith(authConfig, {
+      refreshToken: 'refresh-token',
+    });
+  });
+
+  test('throws if no refreshToken provided', async () => {
+    await renderHookInContext();
+    expect(useAuthInitialize).toHaveBeenCalled();
+
+    const refreshHandler = useAuthInitialize.mock.calls[0][0];
+    await act(async () => {
+      await expect(refreshHandler).rejects.toThrow();
+    });
   });
 });
