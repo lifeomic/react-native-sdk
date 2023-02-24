@@ -1,8 +1,14 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
-import { AuthContextProvider, AuthResult, useAuth } from './useAuth';
+import {
+  AuthContextProvider,
+  AuthResult,
+  shouldAttemptTokenRefresh,
+  useAuth,
+} from './useAuth';
 import Keychain from 'react-native-keychain';
 import { unusedUsername } from '../common/SecureStore';
+import { useCurrentAppState } from './useCurrentAppState';
 
 jest.mock('react-native-keychain', () => ({
   ACCESSIBLE: { AFTER_FIRST_UNLOCK: 'AFTER_FIRST_UNLOCK' },
@@ -11,8 +17,13 @@ jest.mock('react-native-keychain', () => ({
   resetGenericPassword: jest.fn(),
   getGenericPassword: jest.fn(),
 }));
+jest.mock('./useCurrentAppState', () => ({
+  useCurrentAppState: jest.fn(),
+}));
 
+const useCurrentAppStateMock = useCurrentAppState as jest.Mock;
 const keychainMock = Keychain as jest.Mocked<typeof Keychain>;
+
 function mockAuthResult(authResult: AuthResult) {
   keychainMock.getGenericPassword.mockResolvedValue({
     username: 'auth-result',
@@ -42,6 +53,9 @@ const refreshHandler = jest.fn();
 
 beforeEach(() => {
   keychainMock.getGenericPassword.mockResolvedValue(false);
+  useCurrentAppStateMock.mockReturnValue({
+    currentAppState: 'active',
+  });
 });
 
 test('without provider, methods fail', async () => {
@@ -183,7 +197,7 @@ describe('initialize', () => {
       accessTokenExpirationDate: new Date(
         Date.now() + 60 * 60 * 1000,
       ).toISOString(),
-      refreshToken: undefined, // NOTE: purpose of test
+      refreshToken: '', // NOTE: purpose of test
     };
     refreshHandler.mockResolvedValue(refreshedAuthResult);
     await act(async () => {
@@ -197,4 +211,83 @@ describe('initialize', () => {
     });
     expect(result.current.isLoggedIn).toBe(true);
   });
+
+  test('refresh clears auth storage if it fails', async () => {
+    const authResult = {
+      ...exampleAuthResult,
+      accessTokenExpirationDate: new Date(
+        Date.now() + 5 * 60 * 1000,
+      ).toISOString(),
+    };
+    mockAuthResult(authResult);
+    const { result } = await renderHookInContext();
+
+    refreshHandler.mockRejectedValue(new Error('auth service down'));
+    await act(async () => {
+      await result.current.initialize(refreshHandler);
+    });
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.authResult).toBeUndefined();
+    expect(result.current.isLoggedIn).toBe(false);
+    expect(keychainMock.resetGenericPassword).toHaveBeenCalled();
+  });
+});
+
+test('app state change refreshes auth token if needed', async () => {
+  // 1. Get refreshHandler registered, and non-expiring token in state.
+  const authResult = {
+    ...exampleAuthResult,
+    accessTokenExpirationDate: new Date(
+      Date.now() + 60 * 60 * 1000,
+    ).toISOString(),
+  };
+  mockAuthResult(authResult);
+  useCurrentAppStateMock.mockReturnValue({
+    currentAppState: 'background',
+  });
+  const { result, rerender } = await renderHookInContext();
+  await act(async () => {
+    await result.current.initialize(refreshHandler);
+  });
+  expect(refreshHandler).not.toHaveBeenCalled();
+
+  // 2. Sneak an expiring token into state.
+  const expiringAuthResult = {
+    ...exampleAuthResult,
+    accessTokenExpirationDate: new Date(
+      Date.now() + 5 * 60 * 1000,
+    ).toISOString(), // Expires soon ...
+  };
+  await act(async () => {
+    await result.current.storeAuthResult(expiringAuthResult);
+  });
+  expect(refreshHandler).not.toHaveBeenCalled();
+
+  // 3. Finally, go from background to active app state
+  const refreshedAuthResult = {
+    ...exampleAuthResult,
+    accessToken: 'REFRESHED_accessToken',
+    idToken: 'REFRESHED_idToken',
+    refreshToken: 'REFRESHED_refreshToken',
+    accessTokenExpirationDate: new Date(
+      Date.now() + 60 * 60 * 1000,
+    ).toISOString(), // Expires in 1 hour
+  };
+  await act(async () => {
+    refreshHandler.mockResolvedValue(refreshedAuthResult);
+    useCurrentAppStateMock.mockReturnValue({
+      currentAppState: 'active',
+    });
+    rerender({});
+  });
+  expect(refreshHandler).toHaveBeenCalledWith(expiringAuthResult);
+
+  expect(result.current.loading).toBe(false);
+  expect(result.current.authResult).toEqual(refreshedAuthResult);
+  expect(result.current.isLoggedIn).toBe(true);
+});
+
+test('shouldAttemptTokenRefresh handles edge case of accessTokenExpirationDate not being set', () => {
+  expect(shouldAttemptTokenRefresh(undefined)).toBe(false);
 });
