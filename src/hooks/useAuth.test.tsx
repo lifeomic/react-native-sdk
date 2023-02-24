@@ -56,6 +56,7 @@ beforeEach(() => {
   useCurrentAppStateMock.mockReturnValue({
     currentAppState: 'active',
   });
+  jest.useRealTimers();
 });
 
 test('without provider, methods fail', async () => {
@@ -67,6 +68,9 @@ test('without provider, methods fail', async () => {
     result.current.storeAuthResult(exampleAuthResult),
   ).rejects.toBeUndefined();
   await expect(result.current.clearAuthResult()).rejects.toBeUndefined();
+  await expect(
+    result.current.refreshForAuthFailure(new Error()),
+  ).rejects.toBeUndefined();
 });
 
 test('initial state test', async () => {
@@ -290,4 +294,60 @@ test('app state change refreshes auth token if needed', async () => {
 
 test('shouldAttemptTokenRefresh handles edge case of accessTokenExpirationDate not being set', () => {
   expect(shouldAttemptTokenRefresh(undefined)).toBe(false);
+});
+
+test('refreshForAuthFailure refreshes auth token if not already loading', async () => {
+  // 1. Setup being initialized and authorized
+  const authResult = {
+    ...exampleAuthResult,
+    accessTokenExpirationDate: new Date(
+      Date.now() + 60 * 60 * 1000,
+    ).toISOString(),
+  };
+  mockAuthResult(authResult);
+  const { result } = await renderHookInContext();
+  await act(async () => {
+    await result.current.initialize(refreshHandler);
+  });
+  expect(result.current.loading).toBe(false);
+  expect(result.current.authResult).toEqual(authResult);
+  expect(result.current.isLoggedIn).toBe(true);
+  expect(refreshHandler).not.toHaveBeenCalled();
+
+  // 2. Simulate reporting a 401 error
+  const refreshedAuthResult = {
+    ...exampleAuthResult,
+    accessToken: 'REFRESHED_accessToken',
+    idToken: 'REFRESHED_idToken',
+    refreshToken: 'REFRESHED_refreshToken',
+    accessTokenExpirationDate: new Date(
+      Date.now() + 60 * 60 * 1000,
+    ).toISOString(), // Expires in 1 hour
+  };
+  refreshHandler.mockResolvedValue(
+    new Promise((resolve) =>
+      process.nextTick(() => resolve(refreshedAuthResult)),
+    ),
+  );
+  jest.useFakeTimers();
+  act(() => {
+    result.current.refreshForAuthFailure(new Error());
+  });
+  expect(refreshHandler).toHaveBeenCalledTimes(1);
+  expect(result.current.loading).toBe(true);
+
+  // 3. 401 reports have no effect while still loading
+  await act(async () => {
+    await result.current.refreshForAuthFailure(new Error());
+  });
+  expect(refreshHandler).toHaveBeenCalledTimes(1);
+
+  // 4. Resolve refreshHandler inside act so hook can "react"
+  await act(async () => {
+    jest.runAllTimers();
+  });
+
+  expect(result.current.loading).toBe(false);
+  expect(result.current.authResult).toEqual(refreshedAuthResult);
+  expect(result.current.isLoggedIn).toBe(true);
 });

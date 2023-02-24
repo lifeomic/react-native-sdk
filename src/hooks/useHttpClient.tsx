@@ -20,12 +20,13 @@ const HttpClientContext = createContext<HttpClient>({
   httpClient: defaultAxiosInstance,
 });
 
-let interceptorId: number;
+let requestInterceptorId: number;
+let responseInterceptorId: number;
 
 /**
  * The HttpClientContextProvider's job is to provide an HTTP client that
- * takes care of things like managing the HTTP Authorization header and
- * other default behavior.
+ * takes care of things like managing the HTTP Authorization header, error
+ * response handling, and other default behavior.
  */
 export const HttpClientContextProvider = ({
   injectedAxiosInstance,
@@ -36,7 +37,7 @@ export const HttpClientContextProvider = ({
   baseURL?: string;
   children?: React.ReactNode;
 }) => {
-  const { authResult } = useAuth();
+  const { authResult, refreshForAuthFailure } = useAuth();
 
   const axiosInstance = injectedAxiosInstance || defaultAxiosInstance;
 
@@ -45,16 +46,38 @@ export const HttpClientContextProvider = ({
   }
 
   const httpClient = useMemo(() => {
-    axiosInstance.interceptors.request.eject(interceptorId);
+    axiosInstance.interceptors.request.eject(requestInterceptorId);
+    axiosInstance.interceptors.response.eject(responseInterceptorId);
     if (!authResult?.accessToken) {
       return axiosInstance;
     }
-    interceptorId = axiosInstance.interceptors.request.use((config) => {
+
+    // Add current access token as auth header
+    requestInterceptorId = axiosInstance.interceptors.request.use((config) => {
       config.headers.Authorization = `Bearer ${authResult.accessToken}`;
       return config;
     });
+
+    // Detect 401s and ask for refresh
+    responseInterceptorId = axiosInstance.interceptors.response.use(
+      undefined,
+      async function (error: Error) {
+        if (axios.isAxiosError(error)) {
+          if (__DEV__) {
+            console.warn('Request Failed: ', error.toJSON());
+          }
+
+          if (error.response?.status === 401) {
+            await refreshForAuthFailure(error);
+          }
+        }
+
+        return Promise.reject(error);
+      },
+    );
+
     return axiosInstance;
-  }, [authResult?.accessToken, axiosInstance]);
+  }, [authResult?.accessToken, axiosInstance, refreshForAuthFailure]);
 
   const context: HttpClient = { httpClient };
 

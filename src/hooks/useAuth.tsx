@@ -16,6 +16,7 @@ export interface AuthStatus {
   storeAuthResult: (authResult: AuthResult) => Promise<void>;
   clearAuthResult: () => Promise<void>;
   initialize: (refreshHandler: RefreshHandler) => Promise<void>;
+  refreshForAuthFailure: (error: Error) => Promise<void>;
 }
 
 export type AuthResult = Omit<RefreshResult, 'additionalParameters'>;
@@ -27,6 +28,7 @@ const AuthContext = createContext<AuthStatus>({
   storeAuthResult: (_) => Promise.reject(),
   clearAuthResult: () => Promise.reject(),
   initialize: (_) => Promise.reject(),
+  refreshForAuthFailure: (_) => Promise.reject(),
 });
 
 const secureStorage = new SecureStore<AuthResult>('auth-hook');
@@ -78,6 +80,9 @@ export const AuthContextProvider = ({
 
   const refreshAuthResult = useCallback(
     async (_refreshHandler: RefreshHandler, _authResult: AuthResult) => {
+      if (__DEV__) {
+        console.warn('Attempting access token refresh');
+      }
       try {
         setLoading(true);
         const refreshResult = await _refreshHandler(_authResult);
@@ -118,22 +123,30 @@ export const AuthContextProvider = ({
     [refreshAuthResult],
   );
 
-  const refreshIfNeeded = useCallback(async () => {
-    if (
-      !loading &&
-      refreshHandler &&
-      authResult &&
-      shouldAttemptTokenRefresh(authResult.accessTokenExpirationDate)
-    ) {
-      refreshAuthResult(refreshHandler, authResult);
-    }
-  }, [loading, refreshHandler, authResult, refreshAuthResult]);
+  const refreshIfNeeded = useCallback(
+    async (skipExpirationCheck: boolean = false) => {
+      if (
+        !loading &&
+        refreshHandler &&
+        authResult &&
+        (skipExpirationCheck ||
+          shouldAttemptTokenRefresh(authResult.accessTokenExpirationDate))
+      ) {
+        return refreshAuthResult(refreshHandler, authResult);
+      }
+    },
+    [loading, refreshHandler, authResult, refreshAuthResult],
+  );
 
   useEffect(() => {
     if (currentAppState === 'active') {
       refreshIfNeeded();
     }
   }, [currentAppState, refreshIfNeeded]);
+
+  const refreshForAuthFailure = useCallback(async () => {
+    return refreshIfNeeded(true);
+  }, [refreshIfNeeded]);
 
   const context = {
     loading,
@@ -142,6 +155,7 @@ export const AuthContextProvider = ({
     storeAuthResult,
     clearAuthResult,
     initialize,
+    refreshForAuthFailure,
   };
 
   return (
