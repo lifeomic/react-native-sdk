@@ -1,6 +1,13 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { RefreshResult } from 'react-native-app-auth';
 import { SecureStore } from '../common/SecureStore';
+import { useCurrentAppState } from './useCurrentAppState';
 
 export interface AuthStatus {
   loading: boolean;
@@ -25,8 +32,12 @@ const AuthContext = createContext<AuthStatus>({
 const secureStorage = new SecureStore<AuthResult>('auth-hook');
 
 export function shouldAttemptTokenRefresh(
-  expirationDate: string | number | Date,
+  expirationDate: string | number | Date | undefined,
 ) {
+  if (!expirationDate) {
+    return false;
+  }
+
   const fifteenMinInMs = 15 * 60 * 1000;
   const nowMs = new Date().getTime();
   const expirationMs = new Date(expirationDate).getTime();
@@ -46,11 +57,10 @@ export const AuthContextProvider = ({
   const [authResult, setAuthResult] = useState<AuthResult>();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-
-  // TODO: rename to refreshHandler and use (if needed) in appState changes
-  const [__refreshHandler, setRefreshHandler] = useState<
+  const [refreshHandler, setRefreshHandler] = useState<
     RefreshHandler | undefined
   >();
+  const { currentAppState } = useCurrentAppState();
 
   const storeAuthResult = useCallback(async (result: AuthResult) => {
     await secureStorage.setObject(result);
@@ -66,6 +76,25 @@ export const AuthContextProvider = ({
     setLoading(false);
   }, []);
 
+  const refreshAuthResult = useCallback(
+    async (_refreshHandler: RefreshHandler, _authResult: AuthResult) => {
+      try {
+        setLoading(true);
+        const refreshResult = await _refreshHandler(_authResult);
+        await storeAuthResult({
+          ...refreshResult,
+
+          // Careful not to lose `refreshToken`, which may not be in `refreshResult`
+          refreshToken: refreshResult.refreshToken || _authResult.refreshToken,
+        });
+      } catch (error) {
+        console.warn('Error occurred refreshing access token', error);
+        clearAuthResult();
+      }
+    },
+    [storeAuthResult, clearAuthResult],
+  );
+
   const initialize = useCallback(
     async (_refreshHandler: RefreshHandler) => {
       setRefreshHandler(() => _refreshHandler);
@@ -73,18 +102,9 @@ export const AuthContextProvider = ({
         const storedResult = await secureStorage.getObject();
         if (storedResult) {
           if (
-            shouldAttemptTokenRefresh(storedResult.accessTokenExpirationDate) &&
-            _refreshHandler &&
-            storedResult?.refreshToken
+            shouldAttemptTokenRefresh(storedResult.accessTokenExpirationDate)
           ) {
-            const refreshedResult = await _refreshHandler(storedResult);
-            await storeAuthResult({
-              ...refreshedResult,
-
-              // Careful not to lose `refreshToken`, which may not be in `refreshedResult`
-              refreshToken:
-                refreshedResult.refreshToken ?? storedResult?.refreshToken,
-            });
+            await refreshAuthResult(_refreshHandler, storedResult);
           } else {
             setAuthResult(storedResult);
             setIsLoggedIn(true);
@@ -95,8 +115,25 @@ export const AuthContextProvider = ({
       }
       setLoading(false);
     },
-    [storeAuthResult],
+    [refreshAuthResult],
   );
+
+  const refreshIfNeeded = useCallback(async () => {
+    if (
+      !loading &&
+      refreshHandler &&
+      authResult &&
+      shouldAttemptTokenRefresh(authResult.accessTokenExpirationDate)
+    ) {
+      refreshAuthResult(refreshHandler, authResult);
+    }
+  }, [loading, refreshHandler, authResult, refreshAuthResult]);
+
+  useEffect(() => {
+    if (currentAppState === 'active') {
+      refreshIfNeeded();
+    }
+  }, [currentAppState, refreshIfNeeded]);
 
   const context = {
     loading,
