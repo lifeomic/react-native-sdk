@@ -13,7 +13,7 @@
     "lint:fix": "yarn lint --fix",
     "test": "yarn jest",
     "test:ci": "yarn lint && yarn jest --coverage --runInBand --silent --ci --logHeapUsage",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist && cp package.json ./dist",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist && cp package.json README.md ./dist",
     "precopyToStarter": "yarn build",
     "copyToStarter": "cp -r ./dist/ ../react-native-starter/node_modules/@lifeomic/react-native-sdk"
   },

@@ -12,6 +12,21 @@ you want a release, or `chore` if you don't. We have a ways to go before this is
 production ready, and we like small, focused PRs. When we're ready, we'll switch
 to traditional semantic versioning after a minor or major release.
 
+### Component development cycle
+
+- Build the component and its supporting files inside the `src` directory
+- Add unit tests to cover all functionality
+- Add 1+ storybook stories into the `example/AppStorybook.tsx` app
+- Add example usage into the `example/AppDemo.tsx` app
+- Test locally in [@lifeomic/react-native-starter] via `yarn copyToStarter`
+- Use an appropriate semantic commit message to publish a new npm release
+- Put up a PR [@lifeomic/react-native-starter] consuming the latest lib (and
+  ideally demonstrating the new component)
+
+> :warning: The above bullet points should span several PRs - possibly even
+> multiple per bullet point. We want to be very incremental, but at the same
+> time careful not to introduce breaking changes.
+
 ### Peer dependencies strategy
 
 We've seen a lot of pain when it comes to libraries shipping with dependencies
@@ -58,3 +73,6 @@ apps which are both served from the `example` folder.
   `React.FC` - it is being deprecated.
 - Prefer defining components with a single function declaration at the top of
   the file.
+
+[@lifeomic/react-native-starter]:
+  https://github.com/lifeomic/react-native-starter
