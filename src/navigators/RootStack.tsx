@@ -19,7 +19,7 @@ export type NotLoggedInRootParamList = {
 export function RootStack() {
   const { isLoggedIn, loading } = useAuth();
 
-  if (loading) {
+  if (!isLoggedIn && loading) {
     return (
       <ActivityIndicatorView
         message={t('root-stack-waiting-for-auth', 'Waiting for authorization')}
