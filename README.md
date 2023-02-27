@@ -1,5 +1,9 @@
 # React Native SDK
 
+[![npm](https://img.shields.io/npm/v/@lifeomic/react-native-sdk.svg)](https://www.npmjs.com/package/@lifeomic/react-native-sdk)
+[![Build Status](https://github.com/lifeomic/react-native-sdk/actions/workflows/release.yml/badge.svg)](https://github.com/lifeomic/react-native-sdk/actions/workflows/release.yml)
+[![Coverage Status](https://coveralls.io/repos/github/lifeomic/react-native-sdk/badge.svg?branch=master)](https://coveralls.io/github/lifeomic/react-native-sdk?branch=master)
+
 React-native hooks, components, screens, and utilities for building a mobile app
 against the LifeOmic Platform.
 

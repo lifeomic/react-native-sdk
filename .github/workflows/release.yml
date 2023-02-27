@@ -21,8 +21,22 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
           yarn
-          yarn test
-          yarn lint
+          yarn test:ci
           yarn build
       - name: Publish
         run: yarn semantic-release
+      - name: Coveralls
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov.info
+          parallel: true
+  finish:
+    needs: main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@v1.1.2
+        with:
+          github-token: ${{ secrets.github_token }}
+          parallel-finished: true
