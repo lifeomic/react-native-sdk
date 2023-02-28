@@ -1,12 +1,17 @@
 import React from 'react';
+
+import { View, ViewStyle } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
+import { object, color } from '@storybook/addon-knobs';
 import { BrandConfigProvider, Theme } from 'src';
 import { ThemeExampleScreen } from './ThemeExampleScreen';
 import * as baseTheme from 'src/components/BrandConfigProvider/theme/base';
-
-import { object, color } from '@storybook/addon-knobs';
+import { ExampleBox, ExampleBoxStyles } from './ExampleBox';
+import { BrandConfigProviderStyles } from 'src/components/BrandConfigProvider/types';
 
 storiesOf('BrandConfigProvider', module)
+  .addDecorator((story) => <View style={centerView}>{story()}</View>)
+
   .add('Basic Theme Colors', () => {
     const customColors: Record<string, string> = {};
     Object.entries(baseTheme.colors).forEach(([key, value]) => {
@@ -21,6 +26,7 @@ storiesOf('BrandConfigProvider', module)
       </BrandConfigProvider>
     );
   })
+
   .add('Default Theme', () => {
     const customColors = object('theme.colors', baseTheme.colors);
     const customSpacing = object('theme.spacing', baseTheme.spacing);
@@ -32,4 +38,40 @@ storiesOf('BrandConfigProvider', module)
         <ThemeExampleScreen />
       </BrandConfigProvider>
     );
+  })
+
+  .add('Style', () => {
+    const providerStyles: BrandConfigProviderStyles = object(
+      'Provider level component styles',
+      {
+        ExampleBox: {
+          container: {
+            borderWidth: 4,
+          },
+          text: {
+            fontWeight: 'bold',
+          },
+        },
+      },
+    );
+    const componentStyles: ExampleBoxStyles = object('Component level styles', {
+      container: {
+        borderColor: 'blue',
+      },
+      text: {
+        fontStyle: 'italic',
+      },
+    });
+
+    return (
+      <BrandConfigProvider styles={providerStyles}>
+        <ExampleBox message="Text inside a box" styles={componentStyles} />
+      </BrandConfigProvider>
+    );
   });
+
+const centerView: ViewStyle = {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+};
