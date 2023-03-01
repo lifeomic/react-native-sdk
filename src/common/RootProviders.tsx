@@ -9,6 +9,8 @@ import { HttpClientContextProvider } from '../hooks/useHttpClient';
 import { OAuthContextProvider } from '../hooks/useOAuthFlow';
 import { ActiveProjectContextProvider } from '../hooks/useActiveProject';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
+import Toast from 'react-native-toast-message';
+import { NoInternetToastProvider } from '../hooks/NoInternetToastProvider';
 
 const queryClient = new QueryClient();
 
@@ -27,9 +29,12 @@ export function RootProviders({
             <OAuthContextProvider authConfig={authConfig}>
               <ActiveAccountContextProvider>
                 <ActiveProjectContextProvider>
-                  <SafeAreaProvider>
-                    <NavigationContainer>{children}</NavigationContainer>
-                  </SafeAreaProvider>
+                  <NoInternetToastProvider>
+                    <SafeAreaProvider>
+                      <NavigationContainer>{children}</NavigationContainer>
+                      <Toast />
+                    </SafeAreaProvider>
+                  </NoInternetToastProvider>
                 </ActiveProjectContextProvider>
               </ActiveAccountContextProvider>
             </OAuthContextProvider>
