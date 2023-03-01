@@ -5,21 +5,24 @@ import Toast, { ToastProps } from 'react-native-toast-message';
 
 export const NoInternetToastContext = createContext({});
 
+class NoInternetToastProviderProps {
+  children?: React.ReactNode;
+  toastOverrides?: ToastProps;
+  /** Simulate the connection state (useful for testing) */
+  _isConnected?: boolean;
+}
+
 export const NoInternetToastProvider = ({
   children,
   toastOverrides,
-  forceShowToast,
-}: {
-  children?: React.ReactNode;
-  toastOverrides?: ToastProps;
-  forceShowToast?: boolean;
-}) => {
+  _isConnected,
+}: NoInternetToastProviderProps) => {
   const { isConnected } = useNetInfo();
   const hiddenByAPI = useRef<boolean>(false);
   const [forceRefresh, setForceRefresh] = useState<boolean>(false);
 
   useEffect(() => {
-    if (isConnected === false || forceShowToast === false) {
+    if (_isConnected === false || isConnected === false) {
       hiddenByAPI.current = false;
       Toast.show({
         type: 'error',
@@ -40,11 +43,11 @@ export const NoInternetToastProvider = ({
         },
         ...toastOverrides,
       });
-    } else if (isConnected === true || forceShowToast === true) {
+    } else if (_isConnected === true || isConnected === true) {
       hiddenByAPI.current = true;
       Toast.hide();
     }
-  }, [isConnected, toastOverrides, forceRefresh, forceShowToast]);
+  }, [isConnected, toastOverrides, forceRefresh, _isConnected]);
 
   return (
     <NoInternetToastContext.Provider value={{}}>

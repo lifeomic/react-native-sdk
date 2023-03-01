@@ -1,13 +1,13 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
-import { boolean } from '@storybook/addon-knobs';
 import { NoInternetToastProvider } from '../../../src';
 import Toast from 'react-native-toast-message';
+import { boolean } from '@storybook/addon-knobs';
 
 storiesOf('NoInternetToast', module).add('demo', () => {
-  const internetConnection = boolean('Internet connection', false);
+  const isConnected = boolean('Internet Connection', false);
   return (
-    <NoInternetToastProvider forceShowToast={internetConnection}>
+    <NoInternetToastProvider _isConnected={isConnected}>
       <Toast />
     </NoInternetToastProvider>
   );
