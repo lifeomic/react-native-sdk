@@ -22,9 +22,7 @@ const styles = StyleSheet.create({
 storiesOf('NoInternetToast', module).add('demo', () => {
   return (
     <View>
-      <NoInternetToastProvider>
-        <Toast />
-      </NoInternetToastProvider>
+      <NoInternetToastProvider />
       <View style={styles.view}>
         <Text style={styles.text}>
           This component depends on the connection state of your device. The
@@ -38,6 +36,7 @@ storiesOf('NoInternetToast', module).add('demo', () => {
           </Text>
         </Text>
       </View>
+      <Toast />
     </View>
   );
 });
