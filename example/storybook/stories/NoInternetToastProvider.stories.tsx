@@ -27,7 +27,7 @@ storiesOf('NoInternetToast', module).add('demo', () => {
       </NoInternetToastProvider>
       <View style={styles.view}>
         <Text style={styles.text}>
-          This component depends on the connection state of the your device. The
+          This component depends on the connection state of your device. The
           toast will be displayed when you disconnect from internet and hidden
           when you've restored your connection. The NetInfo library recommends
           that you do not use an iOS Simulator for testing this.{'\n\n'}
