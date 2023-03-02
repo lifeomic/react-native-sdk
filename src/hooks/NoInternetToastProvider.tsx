@@ -8,21 +8,18 @@ export const NoInternetToastContext = createContext({});
 class NoInternetToastProviderProps {
   children?: React.ReactNode;
   toastOverrides?: ToastProps;
-  /** Simulate the connection state (useful for testing) */
-  _isConnected?: boolean;
 }
 
 export const NoInternetToastProvider = ({
   children,
   toastOverrides,
-  _isConnected,
 }: NoInternetToastProviderProps) => {
   const { isConnected } = useNetInfo();
   const hiddenByAPI = useRef<boolean>(false);
   const [forceRefresh, setForceRefresh] = useState<boolean>(false);
 
   useEffect(() => {
-    if (_isConnected === false || isConnected === false) {
+    if (isConnected === false) {
       hiddenByAPI.current = false;
       Toast.show({
         type: 'error',
@@ -43,11 +40,11 @@ export const NoInternetToastProvider = ({
         },
         ...toastOverrides,
       });
-    } else if (_isConnected === true || isConnected === true) {
+    } else if (isConnected === true) {
       hiddenByAPI.current = true;
       Toast.hide();
     }
-  }, [isConnected, toastOverrides, forceRefresh, _isConnected]);
+  }, [isConnected, toastOverrides, forceRefresh]);
 
   return (
     <NoInternetToastContext.Provider value={{}}>
