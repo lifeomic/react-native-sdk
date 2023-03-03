@@ -7,7 +7,12 @@ import {
 } from './useActiveAccount';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
-import { QueryClient, QueryClientProvider, UseQueryResult } from 'react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  QueryObserverLoadingResult,
+  UseQueryResult,
+} from 'react-query';
 import { mockDeep } from 'jest-mock-extended';
 import * as GetAsyncStorage from './useGetAsyncStorage';
 
@@ -52,7 +57,7 @@ beforeEach(() => {
     refetch: refetchMock,
   });
   useGetAsyncStorageSpy.mockReturnValue({
-    ...mockDeep<UseQueryResult<string | null, unknown>>(),
+    ...mockDeep<UseQueryResult<string | null>>(),
   });
 });
 
@@ -79,6 +84,10 @@ test('exposes some props from useAccounts', async () => {
     isLoading: true,
     isFetched: true,
     error,
+  });
+  useGetAsyncStorageSpy.mockReturnValueOnce({
+    ...mockDeep<QueryObserverLoadingResult<string | null>>(),
+    isFetched: true,
   });
 
   const { result } = await renderHookInContext();

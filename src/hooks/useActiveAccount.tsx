@@ -137,8 +137,12 @@ export const ActiveAccountContextProvider = ({
         accountsWithProduct,
         refetch,
         setActiveAccountId,
-        isLoading: accountsResult.isLoading || storedAccountResult.isLoading,
-        isFetched: accountsResult.isFetched && storedAccountResult.isFetched,
+        isLoading: !!(
+          accountsResult.isLoading || storedAccountResult.isLoading
+        ),
+        isFetched: !!(
+          accountsResult.isFetched && storedAccountResult.isFetched
+        ),
         error: accountsResult.error || storedAccountResult.error,
       }}
     >
