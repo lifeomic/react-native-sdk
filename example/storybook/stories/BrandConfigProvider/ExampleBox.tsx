@@ -2,7 +2,6 @@ import React from 'react';
 
 import { Text, TextStyle, View, ViewStyle } from 'react-native';
 import { Theme, useStyles } from 'src';
-import { NamedStylesProp } from 'src/components/BrandConfigProvider/types';
 
 interface Props {
   message: string;
@@ -10,11 +9,11 @@ interface Props {
 }
 
 export function ExampleBox({ message, styles }: Props) {
-  const merged = useStyles('ExampleBox', defaultStyles, styles);
+  const { styles: $ } = useStyles('ExampleBox', defaultStyles, styles);
 
   return (
-    <View style={merged.styles.container}>
-      <Text style={merged.styles.text}>{message}</Text>
+    <View style={$.container}>
+      <Text style={$.text}>{message}</Text>
     </View>
   );
 }
@@ -40,7 +39,7 @@ const defaultStyles = (theme: Theme) => {
   };
 };
 
-declare module 'src/components/BrandConfigProvider/types' {
+declare module '@styles' {
   interface ComponentStyles
     extends ComponentNamedStyles<'ExampleBox', typeof defaultStyles> {}
 }

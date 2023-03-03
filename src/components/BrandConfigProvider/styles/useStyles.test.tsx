@@ -11,7 +11,7 @@ const defaultStyles = {
 
 const defaultTheme = new Theme();
 
-declare module '../types' {
+declare module '@styles' {
   interface ComponentStyles
     extends ComponentNamedStyles<'TestComponent', typeof defaultStyles> {}
 }

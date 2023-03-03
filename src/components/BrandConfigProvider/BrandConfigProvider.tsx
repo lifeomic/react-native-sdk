@@ -2,7 +2,7 @@ import React from 'react';
 import { Theme } from './theme/Theme';
 import { ThemeProvider } from './theme/ThemeProvider';
 import { StylesProvider } from './styles/StylesProvider';
-import { BrandConfigProviderStyles } from './types';
+import { BrandConfigProviderStyles } from './styles/types';
 
 export const BrandConfigContext = React.createContext<{ theme: Theme }>({
   theme: new Theme(),
