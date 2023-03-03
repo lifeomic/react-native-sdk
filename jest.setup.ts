@@ -15,3 +15,6 @@ jest.mock('i18next', () => ({
 }));
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+);
