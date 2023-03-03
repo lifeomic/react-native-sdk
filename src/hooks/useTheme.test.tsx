@@ -21,13 +21,13 @@ test('returns theme', async () => {
 });
 
 test('returns custom theme merged with base theme', async () => {
-  const customTheme = new Theme({ colors: { text: 'pink' } });
+  const customTheme = new Theme({ colors: { onBackground: 'pink' } });
   const {
     result: {
       current: { theme },
     },
   } = await renderHookInContext(customTheme);
 
-  expect(theme.colors.text).toBe('pink');
+  expect(theme.colors.onBackground).toBe('pink');
   expect(theme.colors.background).toBe(baseTheme.colors.background);
 });

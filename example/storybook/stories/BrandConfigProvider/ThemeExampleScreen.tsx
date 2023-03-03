@@ -6,19 +6,20 @@ import { useTheme } from 'src/hooks/useTheme';
 export function ThemeExampleScreen() {
   const { theme } = useTheme();
 
-  const centerView: ViewStyle = {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  const containerView: ViewStyle = {
     backgroundColor: theme.colors.background,
   };
 
-  const blackText: TextStyle = {
-    color: theme.colors.black,
+  const primaryText: TextStyle = {
+    color: theme.colors.onPrimary,
   };
 
-  const whiteText: TextStyle = {
-    color: theme.colors.white,
+  const secondaryText: TextStyle = {
+    color: theme.colors.onSecondary,
+  };
+
+  const tertiaryText: TextStyle = {
+    color: theme.colors.onTertiary,
   };
 
   const primaryView: ViewStyle = {
@@ -29,51 +30,60 @@ export function ThemeExampleScreen() {
     backgroundColor: theme.colors.secondary,
   };
 
+  const tertiaryView: ViewStyle = {
+    backgroundColor: theme.colors.tertiary,
+  };
+
   const tileView: ViewStyle = {
-    width: '63%',
+    minWidth: 200,
     margin: theme.spacing.large,
     padding: theme.spacing.small,
-    borderColor: theme.colors.border,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: theme.roundness,
+    alignItems: 'center',
   };
 
   const normalText: TextStyle = {
-    color: theme.colors.text,
+    color: theme.colors.onBackground,
   };
 
-  const dimText: TextStyle = {
-    color: theme.colors.textDim,
+  const disabledText: TextStyle = {
+    color: theme.colors.onSurfaceDisabled,
   };
 
   const separatorView: ViewStyle = {
     margin: theme.spacing.large,
     width: '80%',
     height: 1,
-    backgroundColor: theme.colors.separator,
+    backgroundColor: theme.colors.outline,
   };
 
   const errorView: ViewStyle = {
     margin: theme.spacing.large,
     padding: theme.spacing.small,
-    backgroundColor: theme.colors.errorBackground,
-    borderColor: theme.colors.error,
+    backgroundColor: theme.colors.error,
+    borderColor: theme.colors.onErrorContainer,
     borderWidth: 1,
     borderRadius: 32,
+    alignItems: 'center',
   };
 
   const errorText: TextStyle = {
-    color: theme.colors.error,
+    color: theme.colors.onError,
   };
 
   return (
-    <View style={centerView}>
+    <View style={containerView}>
       <View style={[tileView, primaryView]}>
-        <Text style={whiteText}>Primary color (white text)</Text>
+        <Text style={primaryText}>Primary</Text>
       </View>
 
       <View style={[tileView, secondaryView]}>
-        <Text style={blackText}>Secondary color (black text)</Text>
+        <Text style={secondaryText}>Secondary</Text>
+      </View>
+
+      <View style={[tileView, tertiaryView]}>
+        <Text style={tertiaryText}>Tertiary</Text>
       </View>
 
       <View style={tileView}>
@@ -81,7 +91,7 @@ export function ThemeExampleScreen() {
       </View>
 
       <View style={tileView}>
-        <Text style={dimText}>This is dim text color</Text>
+        <Text style={disabledText}>This is dim text color</Text>
       </View>
 
       <View style={separatorView} />

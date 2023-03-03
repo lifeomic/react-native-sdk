@@ -20,14 +20,14 @@ beforeEach(() => {
 
 test('renders', () => {
   const screen = render(
-    <OAuthLoginButton onSuccess={onSuccess} onFail={onFail} />,
+    <OAuthLoginButton onSuccess={onSuccess} onFail={onFail} label="login" />,
   );
   expect(screen.getByTestId('oauth-login-button')).toBeDefined();
 });
 
 test('login utilizes useOAuthFlow', async () => {
   const screen = render(
-    <OAuthLoginButton onSuccess={onSuccess} onFail={onFail} />,
+    <OAuthLoginButton onSuccess={onSuccess} onFail={onFail} label="login" />,
   );
   await waitFor(async () => {
     const loginButton = screen.getByTestId('oauth-login-button');

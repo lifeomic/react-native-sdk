@@ -1,19 +1,31 @@
 import React, { FC, useCallback } from 'react';
-import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import {
+  Platform,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+  ViewStyle,
+  Text,
+  TextStyle,
+} from 'react-native';
+import { useStyles } from '../../src/hooks/useStyles';
+import { LoginParams, useOAuthFlow } from '../../src/hooks/useOAuthFlow';
 import { tID } from '../common/testID';
-import { LoginParams, useOAuthFlow } from '../hooks/useOAuthFlow';
+import { NamedStylesProp } from './BrandConfigProvider/types';
+import { Theme } from './BrandConfigProvider';
 
 type OAuthLoginButtonParams = Omit<TouchableOpacityProps, 'onPress'> &
   LoginParams & {
-    children?: React.ReactNode;
+    label: string;
   };
 
 export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   onSuccess,
   onFail,
-  children,
+  label,
   ...touchableOpacityProps
 }) => {
+  const { styles } = useStyles('OAuthLoginButton', defaultStyles);
   const { login } = useOAuthFlow();
 
   const _login = useCallback(async () => {
@@ -24,12 +36,62 @@ export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   }, [login, onSuccess, onFail]);
 
   return (
-    <TouchableOpacity
-      testID={tID('oauth-login-button')}
-      {...touchableOpacityProps}
-      onPress={_login}
-    >
-      {children}
-    </TouchableOpacity>
+    <View style={styles.button}>
+      <TouchableOpacity
+        testID={tID('oauth-login-button')}
+        {...touchableOpacityProps}
+        onPress={_login}
+        style={styles.touchableOpacity}
+      >
+        <View style={styles.content}>
+          <Text style={styles.label}>{label}</Text>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 };
+
+const defaultStyles = (theme: Theme) => {
+  const button: ViewStyle = {
+    flexDirection: 'row',
+  };
+  const touchableOpacity: ViewStyle = {
+    alignItems: 'center',
+    backgroundColor: theme.colors.secondary,
+    borderRadius: 5 * theme.roundness,
+
+    minWidth: 64,
+  };
+
+  const content: ViewStyle = {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  };
+
+  const label: TextStyle = {
+    color: theme.colors.onPrimary,
+    marginVertical: 10,
+    marginHorizontal: 24,
+
+    fontFamily: Platform.select({
+      web: 'Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
+      ios: 'System',
+      default: 'sans-serif-medium',
+    }),
+
+    fontWeight: '500',
+    letterSpacing: 0.1,
+    lineHeight: 20,
+    fontSize: 14,
+  };
+
+  return { button, touchableOpacity, content, label };
+};
+
+declare module './BrandConfigProvider/types' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<'OAuthLoginButton', typeof defaultStyles> {}
+}
+
+export type OAuthLoginButtonStyles = NamedStylesProp<typeof defaultStyles>;

@@ -17,7 +17,7 @@ describe('Theme', () => {
     const theme = new Theme({ colors: customColors });
 
     expect(theme.colors.background).toBe('pink');
-    expect(theme.colors.text).toBe(baseColors.text);
+    expect(theme.colors.onBackground).toBe(baseColors.onBackground);
   });
 
   test('merges custom spacing with default', () => {

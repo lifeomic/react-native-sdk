@@ -2,7 +2,7 @@ import React from 'react';
 
 import { View, ViewStyle } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
-import { object, color } from '@storybook/addon-knobs';
+import { object } from '@storybook/addon-knobs';
 import { BrandConfigProvider, Theme } from 'src';
 import { ThemeExampleScreen } from './ThemeExampleScreen';
 import * as baseTheme from 'src/components/BrandConfigProvider/theme/base';
@@ -11,21 +11,6 @@ import { BrandConfigProviderStyles } from 'src/components/BrandConfigProvider/ty
 
 storiesOf('BrandConfigProvider', module)
   .addDecorator((story) => <View style={centerView}>{story()}</View>)
-
-  .add('Basic Theme Colors', () => {
-    const customColors: Record<string, string> = {};
-    Object.entries(baseTheme.colors).forEach(([key, value]) => {
-      customColors[key] = color(key, value);
-    });
-
-    const theme = new Theme({ colors: customColors });
-
-    return (
-      <BrandConfigProvider theme={theme}>
-        <ThemeExampleScreen />
-      </BrandConfigProvider>
-    );
-  })
 
   .add('Default Theme', () => {
     const customColors = object('theme.colors', baseTheme.colors);

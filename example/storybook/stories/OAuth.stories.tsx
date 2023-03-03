@@ -55,9 +55,8 @@ storiesOf('OAuth', module).add('demo', () => {
           onSuccess={loginOnSuccess}
           onFail={onFail}
           style={buttonStyle}
-        >
-          <Text style={textStyle}>{loginButtonText}</Text>
-        </OAuthLoginButton>
+          label={loginButtonText}
+        />
         <OAuthLogoutButton
           onSuccess={logoutOnSuccess}
           onFail={onFail}
