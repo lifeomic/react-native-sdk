@@ -24,13 +24,14 @@ const defaultStyles = (theme: Theme) => {
     width: '63%',
     margin: theme.spacing.large,
     padding: theme.spacing.small,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.onSurface,
+    backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderRadius: 8,
   };
 
   const text: TextStyle = {
-    color: theme.colors.text,
+    color: theme.colors.onSurface,
   };
 
   return {
