@@ -1,14 +1,15 @@
 import React, { FC } from 'react';
-import { StyleProp, TextStyle, Text } from 'react-native';
+import { Text, View, ViewStyle } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
-import { text, object } from '@storybook/addon-knobs';
+import { text } from '@storybook/addon-knobs';
 import Config from 'react-native-config';
 import { AuthConfiguration, AuthorizeResult } from 'react-native-app-auth';
 import { OAuthLoginButton } from '../../../src/components/OAuthLoginButton';
 import { OAuthLogoutButton } from '../../../src/components/OAuthLogoutButton';
 import { OAuthContextProvider } from '../../../src/hooks/useOAuthFlow';
 import { AuthContextProvider, useAuth } from '../../../src/hooks/useAuth';
+import { CenterView } from '../helpers/CenterView';
 
 export const authConfig: AuthConfiguration = {
   clientId: Config.OAUTH_CLIENT_ID!,
@@ -22,52 +23,49 @@ export const authConfig: AuthConfiguration = {
   usePKCE: true,
 };
 
-storiesOf('OAuth', module).add('demo', () => {
-  // Actions:
-  const loginOnSuccess = (result: AuthorizeResult) => {
-    action('login - onSuccess')({
-      tokenType: result.tokenType,
-      accessTokenExpirationDate: result.accessTokenExpirationDate,
-    });
-  };
-  const logoutOnSuccess = action('logout - onSuccess');
-  const onFail = action('onFail');
+storiesOf('OAuth', module)
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
 
-  // Knobs:
-  const buttonStyle = object('buttonStyle', {
-    width: '100%',
-    height: 40,
-    backgroundColor: '#e3e3e3',
-    marginTop: 40,
-    paddingTop: 10,
+  .add('demo', () => {
+    // Actions:
+    const loginOnSuccess = (result: AuthorizeResult) => {
+      action('login - onSuccess')({
+        tokenType: result.tokenType,
+        accessTokenExpirationDate: result.accessTokenExpirationDate,
+      });
+    };
+    const logoutOnSuccess = action('logout - onSuccess');
+    const onFail = action('onFail');
+
+    const loginButtonText = text('loginButtonText', 'Login');
+    const logoutButtonText = text('logoutButtonText', 'Logout');
+    const signedInWrapper: ViewStyle = {
+      margin: 64,
+      height: 200,
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    };
+
+    return (
+      <AuthContextProvider>
+        <OAuthContextProvider authConfig={authConfig}>
+          <View style={signedInWrapper}>
+            <IsSignedIn />
+            <OAuthLoginButton
+              onSuccess={loginOnSuccess}
+              onFail={onFail}
+              label={loginButtonText}
+            />
+            <OAuthLogoutButton
+              onSuccess={logoutOnSuccess}
+              onFail={onFail}
+              label={logoutButtonText}
+            />
+          </View>
+        </OAuthContextProvider>
+      </AuthContextProvider>
+    );
   });
-  const textStyle = object('textStyle', {
-    textAlign: 'center',
-  }) as StyleProp<TextStyle>;
-  const loginButtonText = text('loginButtonText', 'Login');
-  const logoutButtonText = text('logoutButtonText', 'Logout');
-
-  return (
-    <AuthContextProvider>
-      <IsSignedIn />
-      <OAuthContextProvider authConfig={authConfig}>
-        <OAuthLoginButton
-          onSuccess={loginOnSuccess}
-          onFail={onFail}
-          style={buttonStyle}
-          label={loginButtonText}
-        />
-        <OAuthLogoutButton
-          onSuccess={logoutOnSuccess}
-          onFail={onFail}
-          style={buttonStyle}
-        >
-          <Text style={textStyle}>{logoutButtonText}</Text>
-        </OAuthLogoutButton>
-      </OAuthContextProvider>
-    </AuthContextProvider>
-  );
-});
 
 const IsSignedIn: FC = () => {
   const { isLoggedIn, authResult } = useAuth();
