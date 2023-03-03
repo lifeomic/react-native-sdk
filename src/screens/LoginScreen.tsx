@@ -3,7 +3,6 @@ import { View, ViewStyle } from 'react-native';
 import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
 import { useStyles } from '../hooks/useStyles';
-import { NamedStylesProp } from '../components/BrandConfigProvider/types';
 
 export const LoginScreen: FC = () => {
   const { styles } = useStyles('LoginScreen', defaultStyles);
@@ -25,7 +24,7 @@ const defaultStyles = {
   containerView,
 };
 
-declare module 'src/components/BrandConfigProvider/types' {
+declare module '@styles' {
   interface ComponentStyles
     extends ComponentNamedStyles<'LoginScreen', typeof defaultStyles> {}
 }

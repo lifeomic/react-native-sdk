@@ -1,7 +1,18 @@
 import { ImageStyle, TextStyle, ViewStyle } from 'react-native';
-import { Theme } from './theme/Theme';
+import { Theme } from '../theme/Theme';
+
+/**
+ * This module is referenced globally as @styles
+ */
 
 export interface ComponentStyles {}
+
+// Convenience type to get a deep partial type version of the styles prop
+declare global {
+  type NamedStylesProp<T extends StylesBuilder> = RecursivePartial<
+    NamedStyles<T>
+  >;
+}
 
 export type BrandConfigProviderStyles = RecursivePartial<ComponentStyles>;
 
@@ -19,11 +30,6 @@ export type NamedStyles<T extends StylesBuilder> = T extends (
 ) => infer U
   ? Record<keyof U, ViewStyle | TextStyle | ImageStyle>
   : Record<keyof T, ViewStyle | TextStyle | ImageStyle>;
-
-// Convenience type to get a deep partial type version of the styles prop
-export type NamedStylesProp<T extends StylesBuilder> = RecursivePartial<
-  NamedStyles<T>
->;
 
 // Creates a Named StylesProp context to group component level styles together (TrackTile, LoginButton, etc.)
 export type ComponentNamedStyles<
