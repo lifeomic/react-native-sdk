@@ -24,6 +24,7 @@ module.exports = {
           'react-native-screens': path.resolve(__dirname, './node_modules/react-native-screens'),
           'react-native-toast-message': path.resolve(__dirname, './node_modules/react-native-toast-message'),
           '@react-native-community/netinfo': path.resolve(__dirname, './node_modules/@react-native-community/netinfo'),
+          '@react-native-async-storage/async-storage': path.resolve(__dirname, './node_modules/@react-native-async-storage/async-storage'),
           'graphql-request': path.resolve(
             __dirname, 
             './node_modules/graphql-request'

@@ -1,17 +1,29 @@
 import React from 'react';
-import { act, renderHook } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useAccounts } from './useAccounts';
 import {
   ActiveAccountContextProvider,
   useActiveAccount,
 } from './useActiveAccount';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
+import {
+  QueryClient,
+  QueryClientProvider,
+  QueryObserverLoadingResult,
+  UseQueryResult,
+} from 'react-query';
+import { mockDeep } from 'jest-mock-extended';
+import * as GetAsyncStorage from './useGetAsyncStorage';
 
 jest.mock('./useAccounts', () => ({
   useAccounts: jest.fn(),
 }));
 
 const useAccountsMock = useAccounts as jest.Mock;
+
 const refetchMock = jest.fn();
+let useGetAsyncStorageSpy = jest.spyOn(GetAsyncStorage, 'useGetAsyncStorage');
 
 const accountId1 = 'acct1';
 const accountId2 = 'acct2';
@@ -27,10 +39,14 @@ const mockAccounts = [
   },
 ];
 
-const renderHookInContext = async () => {
+const renderHookInContext = async (accountIdToSelect?: string) => {
   return renderHook(() => useActiveAccount(), {
     wrapper: ({ children }) => (
-      <ActiveAccountContextProvider>{children}</ActiveAccountContextProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        <ActiveAccountContextProvider accountIdToSelect={accountIdToSelect}>
+          {children}
+        </ActiveAccountContextProvider>
+      </QueryClientProvider>
     ),
   });
 };
@@ -39,6 +55,9 @@ beforeEach(() => {
   useAccountsMock.mockReturnValue({
     data: mockAccounts,
     refetch: refetchMock,
+  });
+  useGetAsyncStorageSpy.mockReturnValue({
+    ...mockDeep<UseQueryResult<string | null>>(),
   });
 });
 
@@ -66,9 +85,12 @@ test('exposes some props from useAccounts', async () => {
     isFetched: true,
     error,
   });
+  useGetAsyncStorageSpy.mockReturnValueOnce({
+    ...mockDeep<QueryObserverLoadingResult<string | null>>(),
+    isFetched: true,
+  });
 
   const { result } = await renderHookInContext();
-
   expect(result.current).toMatchObject({
     isLoading: true,
     isFetched: true,
@@ -132,4 +154,62 @@ test('indicates expired trial', async () => {
     account: expiredTrialAccount,
     trialExpired: true,
   });
+});
+
+test('provider allows for account override by id', async () => {
+  const { result } = await renderHookInContext(accountId2);
+  expect(result.current).toMatchObject({
+    account: mockAccounts[1],
+  });
+});
+
+test('uses account from async storage', async () => {
+  useGetAsyncStorageSpy.mockRestore();
+
+  AsyncStorageMock.getItem = jest.fn().mockResolvedValueOnce(accountId1);
+  const { result, rerender } = await renderHookInContext();
+  await waitFor(() => result.current.isLoading === false);
+  rerender({});
+  expect(AsyncStorage.getItem).toBeCalledWith('selectedAccountId');
+  expect(result.current).toMatchObject({
+    account: mockAccounts[0],
+    accountHeaders: { 'LifeOmic-Account': mockAccounts[0].id },
+    accountsWithProduct: mockAccounts,
+  });
+
+  AsyncStorageMock.getItem = jest.fn().mockResolvedValueOnce(accountId2);
+  const { result: nextResult, rerender: nextRerender } =
+    await renderHookInContext();
+  await waitFor(() => nextResult.current.isLoading === false);
+  nextRerender({});
+  expect(nextResult.current).toMatchObject({
+    account: mockAccounts[1],
+    accountHeaders: { 'LifeOmic-Account': mockAccounts[1].id },
+    accountsWithProduct: mockAccounts,
+  });
+
+  useGetAsyncStorageSpy = jest.spyOn(GetAsyncStorage, 'useGetAsyncStorage');
+});
+
+test('initial render writes selected account to async storage', async () => {
+  await renderHookInContext(accountId2);
+  expect(AsyncStorageMock.setItem).toBeCalledWith(
+    'selectedAccountId',
+    accountId2,
+  );
+});
+
+test('setAccountAccountId writes selected account to async storage', async () => {
+  const { result } = await renderHookInContext();
+  expect(AsyncStorageMock.setItem).toBeCalledWith(
+    'selectedAccountId',
+    accountId1,
+  );
+  await act(async () => {
+    result.current.setActiveAccountId(accountId2);
+  });
+  expect(AsyncStorageMock.setItem).toBeCalledWith(
+    'selectedAccountId',
+    accountId2,
+  );
 });
