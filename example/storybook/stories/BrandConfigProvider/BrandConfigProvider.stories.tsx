@@ -7,7 +7,7 @@ import { BrandConfigProvider, Theme } from 'src';
 import { ThemeExampleScreen } from './ThemeExampleScreen';
 import * as baseTheme from 'src/components/BrandConfigProvider/theme/base';
 import { ExampleBox, ExampleBoxStyles } from './ExampleBox';
-import { BrandConfigProviderStyles } from 'src/components/BrandConfigProvider/types';
+import { BrandConfigProviderStyles } from 'src/components/BrandConfigProvider/styles/types';
 
 storiesOf('BrandConfigProvider', module)
   .addDecorator((story) => <View style={centerView}>{story()}</View>)

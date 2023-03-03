@@ -14,7 +14,10 @@
     "noEmit": true,
     "baseUrl": ".",
     "lib": ["es2017", "es6", "dom"],
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": ["./node_modules/@types"],
+    "paths": {
+      "@styles": ["./src/components/BrandConfigProvider/styles/types"]
+    }
   },
   "include": [
     "index.ts",

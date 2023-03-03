@@ -5,9 +5,8 @@ import {
   RecursivePartial,
   StylesBuilder,
   NamedStyles,
-  NamedStylesProp,
   BrandConfigProviderStyles,
-} from '../types';
+} from './types';
 import { Theme } from '../theme/Theme';
 import { useTheme } from '../../../hooks/useTheme';
 

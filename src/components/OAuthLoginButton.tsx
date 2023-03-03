@@ -11,21 +11,22 @@ import {
 import { useStyles } from '../../src/hooks/useStyles';
 import { LoginParams, useOAuthFlow } from '../../src/hooks/useOAuthFlow';
 import { tID } from '../common/testID';
-import { NamedStylesProp } from './BrandConfigProvider/types';
 import { Theme } from './BrandConfigProvider';
 
 type OAuthLoginButtonParams = Omit<TouchableOpacityProps, 'onPress'> &
   LoginParams & {
     label: string;
+    styles?: OAuthLoginButtonStyles;
   };
 
 export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   onSuccess,
   onFail,
   label,
+  styles,
   ...touchableOpacityProps
 }) => {
-  const { styles } = useStyles('OAuthLoginButton', defaultStyles);
+  const { styles: $ } = useStyles('OAuthLoginButton', defaultStyles, styles);
   const { login } = useOAuthFlow();
 
   const _login = useCallback(async () => {
@@ -36,15 +37,15 @@ export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   }, [login, onSuccess, onFail]);
 
   return (
-    <View style={styles.button}>
+    <View style={$.button}>
       <TouchableOpacity
         testID={tID('oauth-login-button')}
         {...touchableOpacityProps}
         onPress={_login}
-        style={styles.touchableOpacity}
+        style={$.touchableOpacity}
       >
-        <View style={styles.content}>
-          <Text style={styles.label}>{label}</Text>
+        <View style={$.content}>
+          <Text style={$.label}>{label}</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -89,7 +90,7 @@ const defaultStyles = (theme: Theme) => {
   return { button, touchableOpacity, content, label };
 };
 
-declare module './BrandConfigProvider/types' {
+declare module '@styles' {
   interface ComponentStyles
     extends ComponentNamedStyles<'OAuthLoginButton', typeof defaultStyles> {}
 }
