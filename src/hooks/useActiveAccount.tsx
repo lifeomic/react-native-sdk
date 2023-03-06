@@ -5,10 +5,9 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Account, useAccounts } from './useAccounts';
 import { QueryObserverResult } from 'react-query';
-import { useGetAsyncStorage } from './useGetAsyncStorage';
+import { useAsyncStorage } from './useAsyncStorage';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -60,11 +59,8 @@ export const ActiveAccountContextProvider = ({
   const accountsResult = useAccounts();
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
   const [activeAccount, setActiveAccount] = useState<ActiveAccountProps>({});
-  const storedAccountResult = useGetAsyncStorage(selectedAccountIdKey);
-
-  const storeAccountId = useCallback(async (accountId: string) => {
-    await AsyncStorage.setItem(selectedAccountIdKey, accountId);
-  }, []);
+  const { useGetItem, setItem } = useAsyncStorage();
+  const storedAccountResult = useGetItem(selectedAccountIdKey);
 
   /**
    * Initial setting of activeAccount
@@ -92,12 +88,12 @@ export const ActiveAccountContextProvider = ({
       },
       trialExpired: getTrialExpired(selectedAccount),
     });
-    storeAccountId(selectedAccount.id);
+    setItem(selectedAccountIdKey, selectedAccount.id);
   }, [
     accountsWithProduct,
     activeAccount?.account?.id,
     accountIdToSelect,
-    storeAccountId,
+    setItem,
     storedAccountResult.data,
     storedAccountResult.isLoading,
   ]);
@@ -118,12 +114,12 @@ export const ActiveAccountContextProvider = ({
           },
           trialExpired: getTrialExpired(selectedAccount),
         });
-        storeAccountId(selectedAccount.id);
+        setItem(selectedAccountIdKey, selectedAccount.id);
       } catch (error) {
         console.warn('Unable to set active account', error);
       }
     },
-    [accountsWithProduct, storeAccountId],
+    [accountsWithProduct, setItem],
   );
 
   const refetch = useCallback(async () => {
@@ -137,13 +133,9 @@ export const ActiveAccountContextProvider = ({
         accountsWithProduct,
         refetch,
         setActiveAccountId,
-        isLoading: !!(
-          accountsResult.isLoading || storedAccountResult.isLoading
-        ),
-        isFetched: !!(
-          accountsResult.isFetched && storedAccountResult.isFetched
-        ),
-        error: accountsResult.error || storedAccountResult.error,
+        isLoading: accountsResult.isLoading,
+        isFetched: accountsResult.isFetched,
+        error: accountsResult.error,
       }}
     >
       {children}

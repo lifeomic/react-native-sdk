@@ -7,14 +7,9 @@ import {
 } from './useActiveAccount';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
-import {
-  QueryClient,
-  QueryClientProvider,
-  QueryObserverLoadingResult,
-  UseQueryResult,
-} from 'react-query';
+import { QueryClient, QueryClientProvider, UseQueryResult } from 'react-query';
 import { mockDeep } from 'jest-mock-extended';
-import * as GetAsyncStorage from './useGetAsyncStorage';
+import * as useAsyncStorage from './useAsyncStorage';
 
 jest.mock('./useAccounts', () => ({
   useAccounts: jest.fn(),
@@ -23,7 +18,7 @@ jest.mock('./useAccounts', () => ({
 const useAccountsMock = useAccounts as jest.Mock;
 
 const refetchMock = jest.fn();
-let useGetAsyncStorageSpy = jest.spyOn(GetAsyncStorage, 'useGetAsyncStorage');
+let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 
 const accountId1 = 'acct1';
 const accountId2 = 'acct2';
@@ -56,8 +51,11 @@ beforeEach(() => {
     data: mockAccounts,
     refetch: refetchMock,
   });
-  useGetAsyncStorageSpy.mockReturnValue({
-    ...mockDeep<UseQueryResult<string | null>>(),
+  useAsyncStorageSpy.mockReturnValue({
+    useGetItem: (_: string) => ({
+      ...mockDeep<UseQueryResult<string | null>>(),
+    }),
+    setItem: AsyncStorage.setItem,
   });
 });
 
@@ -85,9 +83,12 @@ test('exposes some props from useAccounts', async () => {
     isFetched: true,
     error,
   });
-  useGetAsyncStorageSpy.mockReturnValueOnce({
-    ...mockDeep<QueryObserverLoadingResult<string | null>>(),
-    isFetched: true,
+  useAsyncStorageSpy.mockReturnValueOnce({
+    useGetItem: (_: string) => ({
+      ...mockDeep<UseQueryResult<string | null>>(),
+      isFetched: true,
+    }),
+    setItem: AsyncStorage.setItem,
   });
 
   const { result } = await renderHookInContext();
@@ -164,7 +165,7 @@ test('provider allows for account override by id', async () => {
 });
 
 test('uses account from async storage', async () => {
-  useGetAsyncStorageSpy.mockRestore();
+  useAsyncStorageSpy.mockRestore();
 
   AsyncStorageMock.getItem = jest.fn().mockResolvedValueOnce(accountId1);
   const { result, rerender } = await renderHookInContext();
@@ -188,7 +189,7 @@ test('uses account from async storage', async () => {
     accountsWithProduct: mockAccounts,
   });
 
-  useGetAsyncStorageSpy = jest.spyOn(GetAsyncStorage, 'useGetAsyncStorage');
+  useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 });
 
 test('initial render writes selected account to async storage', async () => {
