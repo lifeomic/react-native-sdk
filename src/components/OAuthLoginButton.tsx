@@ -63,7 +63,7 @@ const defaultStyles = (theme: Theme) => {
   const touchableOpacity: ViewStyle = {
     alignItems: 'center',
     backgroundColor: theme.colors.secondary,
-    borderRadius: 5 * theme.roundness,
+    borderRadius: theme.buttonRoundness,
 
     minWidth: 64,
   };

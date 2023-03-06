@@ -1750,6 +1750,13 @@
     "@pnpm/network.ca-file" "^1.0.1"
     config-chain "^1.1.11"
 
+"@react-native-async-storage/async-storage@^1.17.11":
+  version "1.17.11"
+  resolved "https://registry.yarnpkg.com/@react-native-async-storage/async-storage/-/async-storage-1.17.11.tgz#7ec329c1b9f610e344602e806b04d7c928a2341d"
+  integrity sha512-bzs45n5HNcDq6mxXnSsOHysZWn1SbbebNxldBXCQs8dSvF8Aor9KCdpm+TpnnGweK3R6diqsT8lFhX77VX0NFw==
+  dependencies:
+    merge-options "^3.0.4"
+
 "@react-native-community/cli-debugger-ui@^7.0.3":
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-7.0.3.tgz#3eeeacc5a43513cbcae56e5e965d77726361bcb4"
@@ -5411,6 +5418,11 @@ is-plain-obj@^1.1.0:
   resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-1.1.0.tgz#71a50c8429dfca773c92a390a4a03b39fcd51d3e"
   integrity sha512-yvkRyxmFKEOQ4pNXCmJG5AEQNlXJS5LaONXo5/cLdTZdWvsZ1ioJEonLGAosKlMWE8lwUy/bJzMjcw8az73+Fg==
 
+is-plain-obj@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-2.1.0.tgz#45e42e37fccf1f40da8e5f76ee21515840c09287"
+  integrity sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==
+
 is-plain-object@^2.0.3, is-plain-object@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/is-plain-object/-/is-plain-object-2.0.4.tgz#2c163b3fafb1b606d9d17928f05c2a1c38e07677"
@@ -5782,6 +5794,13 @@ jest-message-util@^29.4.1:
     pretty-format "^29.4.1"
     slash "^3.0.0"
     stack-utils "^2.0.3"
+
+jest-mock-extended@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/jest-mock-extended/-/jest-mock-extended-3.0.3.tgz#570e33b099f8da87487acb4cd7d820712dcc3b52"
+  integrity sha512-yqpzvwFr2JWFArj4sPco4hPSanYH3erFgdkv7ahP8EMiAbVH+Rgjc8/cpAHJVG7+sZnQgl0AuTkxofD7eLJN+g==
+  dependencies:
+    ts-essentials "^7.0.3"
 
 jest-mock@^29.4.1:
   version "29.4.1"
@@ -6625,6 +6644,13 @@ meow@^8.0.0:
     trim-newlines "^3.0.0"
     type-fest "^0.18.0"
     yargs-parser "^20.2.3"
+
+merge-options@^3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/merge-options/-/merge-options-3.0.4.tgz#84709c2aa2a4b24c1981f66c179fe5565cc6dbb7"
+  integrity sha512-2Sug1+knBjkaMsMgf1ctR1Ujx+Ayku4EdJN4Z+C2+JzoeF7A3OZ9KM2GY0CpQS51NR61LTurMJrRKPhSs3ZRTQ==
+  dependencies:
+    is-plain-obj "^2.1.0"
 
 merge-stream@^2.0.0:
   version "2.0.0"
@@ -9624,6 +9650,11 @@ ts-easing@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/ts-easing/-/ts-easing-0.2.0.tgz#c8a8a35025105566588d87dbda05dd7fbfa5a4ec"
   integrity sha512-Z86EW+fFFh/IFB1fqQ3/+7Zpf9t2ebOAxNI/V6Wo7r5gqiqtxmgTlQ1qbqQcjLKYeSHPTsEmvlJUDg/EuL0uHQ==
+
+ts-essentials@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/ts-essentials/-/ts-essentials-7.0.3.tgz#686fd155a02133eedcc5362dc8b5056cde3e5a38"
+  integrity sha512-8+gr5+lqO3G84KdiTSMRLtuyJ+nTBVRKuCrK4lidMPdVeEp0uqC875uE5NMcaA7YYMN7XsNiFQuMvasF8HT/xQ==
 
 ts-jest@^29.0.5:
   version "29.0.5"
