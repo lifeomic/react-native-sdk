@@ -23,10 +23,14 @@ export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   onSuccess,
   onFail,
   label,
-  styles,
+  styles: instanceStyles,
   ...touchableOpacityProps
 }) => {
-  const { styles: $ } = useStyles('OAuthLoginButton', defaultStyles, styles);
+  const { styles } = useStyles(
+    'OAuthLoginButton',
+    defaultStyles,
+    instanceStyles,
+  );
   const { login } = useOAuthFlow();
 
   const _login = useCallback(async () => {
@@ -37,15 +41,15 @@ export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   }, [login, onSuccess, onFail]);
 
   return (
-    <View style={$.button}>
+    <View style={styles.button}>
       <TouchableOpacity
         testID={tID('oauth-login-button')}
         {...touchableOpacityProps}
         onPress={_login}
-        style={$.touchableOpacity}
+        style={styles.touchableOpacity}
       >
-        <View style={$.content}>
-          <Text style={$.label}>{label}</Text>
+        <View style={styles.content}>
+          <Text style={styles.label}>{label}</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -59,7 +63,7 @@ const defaultStyles = (theme: Theme) => {
   const touchableOpacity: ViewStyle = {
     alignItems: 'center',
     backgroundColor: theme.colors.secondary,
-    borderRadius: 5 * theme.roundness,
+    borderRadius: theme.buttonRoundness,
 
     minWidth: 64,
   };
@@ -71,7 +75,7 @@ const defaultStyles = (theme: Theme) => {
   };
 
   const label: TextStyle = {
-    color: theme.colors.onPrimary,
+    color: theme.colors.onSecondary,
     marginVertical: 10,
     marginHorizontal: 24,
 

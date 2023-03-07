@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { View, ViewStyle } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { object } from '@storybook/addon-knobs';
 import { BrandConfigProvider, Theme } from 'src';
@@ -8,9 +7,10 @@ import { ThemeExampleScreen } from './ThemeExampleScreen';
 import * as baseTheme from 'src/components/BrandConfigProvider/theme/base';
 import { ExampleBox, ExampleBoxStyles } from './ExampleBox';
 import { BrandConfigProviderStyles } from 'src/components/BrandConfigProvider/styles/types';
+import { CenterView } from 'example/storybook/helpers/CenterView';
 
 storiesOf('BrandConfigProvider', module)
-  .addDecorator((story) => <View style={centerView}>{story()}</View>)
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
 
   .add('Default Theme', () => {
     const customColors = object('theme.colors', baseTheme.colors);
@@ -54,9 +54,3 @@ storiesOf('BrandConfigProvider', module)
       </BrandConfigProvider>
     );
   });
-
-const centerView: ViewStyle = {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-};

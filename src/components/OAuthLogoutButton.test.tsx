@@ -28,14 +28,14 @@ beforeEach(() => {
 
 test('renders', () => {
   const screen = render(
-    <OAuthLogoutButton onSuccess={onSuccess} onFail={onFail} />,
+    <OAuthLogoutButton onSuccess={onSuccess} onFail={onFail} label="logout" />,
   );
   expect(screen.getByTestId('oauth-logout-button')).toBeDefined();
 });
 
 test('logout utilizes useOAuthFlow', async () => {
   const screen = render(
-    <OAuthLogoutButton onSuccess={onSuccess} onFail={onFail} />,
+    <OAuthLogoutButton onSuccess={onSuccess} onFail={onFail} label="logout" />,
   );
   await waitFor(async () => {
     const logoutButton = screen.getByTestId('oauth-logout-button');

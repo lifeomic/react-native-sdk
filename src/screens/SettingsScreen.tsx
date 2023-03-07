@@ -61,9 +61,7 @@ export const SettingsScreen = () => {
             action={() => navigate('AccountSelection')}
           />
           <View style={styles.subMenuContainer}>
-            <OAuthLogoutButton>
-              <Text>{t('settings-logout', 'Logout')}</Text>
-            </OAuthLogoutButton>
+            <OAuthLogoutButton label={t('settings-logout', 'Logout')} />
             <View style={styles.versionContainer}>
               <Text testID={tID('version-text')}>
                 {t('settings-version', 'Version {{ version }}', {
