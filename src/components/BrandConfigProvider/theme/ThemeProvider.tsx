@@ -1,17 +1,28 @@
 import React from 'react';
-import { Theme } from './Theme';
+
+import {
+  MD3LightTheme as defaultPaperTheme,
+  Provider as PaperProvider,
+  useTheme as usePaperTheme,
+} from 'react-native-paper';
+import * as baseTheme from './base';
+import merge from 'lodash/merge';
+import { RecursivePartial } from '@styles';
+
+const defaultTheme = merge({}, defaultPaperTheme, baseTheme);
+
+export type Theme = typeof defaultTheme;
+export type ThemeProp = RecursivePartial<Theme>;
+
+export const useTheme = () => usePaperTheme<Theme>();
 
 interface Props {
-  theme: Theme;
+  theme: ThemeProp;
   children: React.ReactNode;
 }
 
-export function ThemeProvider({ theme, children }: Props) {
-  return (
-    <ThemeContext.Provider value={{ theme }}>{children}</ThemeContext.Provider>
-  );
-}
+export function ThemeProvider({ theme: customTheme, children }: Props) {
+  const theme = merge({}, defaultTheme, customTheme);
 
-export const ThemeContext = React.createContext<{ theme: Theme }>({
-  theme: new Theme(),
-});
+  return <PaperProvider theme={theme}>{children}</PaperProvider>;
+}

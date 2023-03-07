@@ -1,15 +1,12 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react-native';
 import { useStyles, StylesProvider } from './StylesProvider';
-import { Theme } from '../theme/Theme';
 
 const defaultStyles = {
   container: {
     width: '100%',
   },
 };
-
-const defaultTheme = new Theme();
 
 declare module '@styles' {
   interface ComponentStyles
@@ -19,9 +16,7 @@ declare module '@styles' {
 const renderHookInContext = async () => {
   return renderHook(() => useStyles('TestComponent', defaultStyles), {
     wrapper: ({ children }) => (
-      <StylesProvider componentStyles={{}} theme={defaultTheme}>
-        {children}
-      </StylesProvider>
+      <StylesProvider styles={{}}>{children}</StylesProvider>
     ),
   });
 };

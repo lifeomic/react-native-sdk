@@ -2,7 +2,7 @@ import React from 'react';
 
 import { storiesOf } from '@storybook/react-native';
 import { object } from '@storybook/addon-knobs';
-import { BrandConfigProvider, Theme } from 'src';
+import { BrandConfigProvider } from 'src';
 import { ThemeExampleScreen } from './ThemeExampleScreen';
 import * as baseTheme from 'src/components/BrandConfigProvider/theme/base';
 import { ExampleBox, ExampleBoxStyles } from './ExampleBox';
@@ -16,7 +16,7 @@ storiesOf('BrandConfigProvider', module)
     const customColors = object('theme.colors', baseTheme.colors);
     const customSpacing = object('theme.spacing', baseTheme.spacing);
 
-    const theme = new Theme({ colors: customColors, spacing: customSpacing });
+    const theme = { colors: customColors, spacing: customSpacing };
 
     return (
       <BrandConfigProvider theme={theme}>

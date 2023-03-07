@@ -1,2 +1,2 @@
 export { BrandConfigProvider } from './BrandConfigProvider';
-export { Theme } from './theme/Theme';
+export { Theme, ThemeProp, ThemeProvider } from './theme/ThemeProvider';

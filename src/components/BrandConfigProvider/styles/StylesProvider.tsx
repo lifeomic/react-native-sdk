@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 import {
   ComponentStyles,
   RecursivePartial,
@@ -7,11 +7,10 @@ import {
   NamedStyles,
   BrandConfigProviderStyles,
 } from './types';
-import { Theme } from '../theme/Theme';
-import { useTheme } from '../../../hooks/useTheme';
+import { useTheme } from '../theme/ThemeProvider';
 
 export const StylesContext = React.createContext({
-  componentStyles: {} as RecursivePartial<ComponentStyles>,
+  styles: {} as RecursivePartial<ComponentStyles>,
 });
 
 export const useStyles = <T extends StylesBuilder>(
@@ -19,8 +18,8 @@ export const useStyles = <T extends StylesBuilder>(
   builder: T,
   styleOverrides?: NamedStylesProp<T>,
 ) => {
-  const { theme } = useTheme();
-  const { componentStyles } = React.useContext(StylesContext);
+  const theme = useTheme();
+  const { styles: componentStyles } = React.useContext(StylesContext);
 
   const styles = merge(
     {},
@@ -33,16 +32,15 @@ export const useStyles = <T extends StylesBuilder>(
 };
 
 interface Props {
-  componentStyles: BrandConfigProviderStyles;
-  theme: RecursivePartial<Theme>;
+  styles: BrandConfigProviderStyles;
   children: React.ReactNode;
 }
 
-export function StylesProvider({ componentStyles = {}, children }: Props) {
+export function StylesProvider({ styles = {}, children }: Props) {
   return (
     <StylesContext.Provider
       value={{
-        componentStyles,
+        styles,
       }}
     >
       {children}

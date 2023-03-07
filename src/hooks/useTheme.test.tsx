@@ -1,11 +1,13 @@
 import React from 'react';
 import { renderHook } from '@testing-library/react-native';
-import { BrandConfigProvider } from '../components/BrandConfigProvider/BrandConfigProvider';
-import { Theme } from '../components/BrandConfigProvider/theme/Theme';
+import {
+  BrandConfigProvider,
+  ThemeProp,
+} from '../components/BrandConfigProvider';
 import * as baseTheme from '../components/BrandConfigProvider/theme/base';
 import { useTheme } from './useTheme';
 
-const renderHookInContext = async (theme?: Theme) => {
+const renderHookInContext = async (theme?: ThemeProp) => {
   return renderHook(() => useTheme(), {
     wrapper: ({ children }) => (
       <BrandConfigProvider theme={theme}>{children}</BrandConfigProvider>
@@ -14,18 +16,18 @@ const renderHookInContext = async (theme?: Theme) => {
 };
 
 test('returns theme', async () => {
-  const { result } = await renderHookInContext();
+  const {
+    result: { current: theme },
+  } = await renderHookInContext();
 
-  expect(result.current.theme).toBeInstanceOf(Theme);
-  expect(result.current.theme).toEqual(baseTheme);
+  expect(theme.colors.onBackground).toBe(baseTheme.colors.onBackground);
+  expect(theme.colors.background).toBe(baseTheme.colors.background);
 });
 
 test('returns custom theme merged with base theme', async () => {
-  const customTheme = new Theme({ colors: { onBackground: 'pink' } });
+  const customTheme = { colors: { onBackground: 'pink' } };
   const {
-    result: {
-      current: { theme },
-    },
+    result: { current: theme },
   } = await renderHookInContext(customTheme);
 
   expect(theme.colors.onBackground).toBe('pink');

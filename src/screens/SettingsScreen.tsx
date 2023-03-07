@@ -18,7 +18,7 @@ import { tID } from '../common/testID';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { SettingsStackParamList } from '../navigators/SettingsStack';
 import { useStyles } from '../hooks/useStyles';
-import { Theme } from '../components/BrandConfigProvider/theme/Theme';
+import { Theme } from '../components/BrandConfigProvider';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
