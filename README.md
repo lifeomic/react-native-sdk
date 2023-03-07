@@ -92,8 +92,12 @@ mobile app UI.
 
 react-native-config generates files (based on the .env file) via native build
 scripts. Initially, and any time you update the `example/.env` file, you'll need
-to run from Xcode for iOS or Android Studio for Android to ensure changes get
-picked up. In Xcode, you may need to run a "Clean Build Folder" as well.
+to take extra steps to ensure changes get picked up.
+
+For Android do the build from Android Studio.
+
+For iOS you can run "Clean Build Folder" from Xcode or:
+`xcodebuild -workspace ./ios/example.xcworkspace -scheme example clean`
 
 ### Android login not working locally
 
