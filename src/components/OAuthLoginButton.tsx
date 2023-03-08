@@ -1,7 +1,8 @@
 import React, { useCallback } from 'react';
 import { TextStyle, TouchableOpacityProps, ViewStyle } from 'react-native';
-import { useStyles } from '../../src/hooks/useStyles';
-import { LoginParams, useOAuthFlow } from '../../src/hooks/useOAuthFlow';
+import { useStyles } from '../hooks/useStyles';
+import { LoginParams, useOAuthFlow } from '../hooks/useOAuthFlow';
+import { tID } from '../common/testID';
 import { Theme } from './BrandConfigProvider';
 import { Button } from 'react-native-paper';
 
@@ -36,6 +37,7 @@ export function OAuthLoginButton({
     <Button
       mode="contained"
       onPress={handleOnPress}
+      testID={tID('oauth-login-button')}
       {...styles}
       {...buttonProps}
     >
