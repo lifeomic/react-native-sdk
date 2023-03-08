@@ -22,7 +22,7 @@ test('renders', () => {
   const screen = render(
     <OAuthLoginButton onSuccess={onSuccess} onFail={onFail} label="login" />,
   );
-  expect(screen.getByTestId('oauth-login-button')).toBeDefined();
+  expect(screen.getByTestId('button')).toBeDefined();
 });
 
 test('login utilizes useOAuthFlow', async () => {
@@ -30,7 +30,7 @@ test('login utilizes useOAuthFlow', async () => {
     <OAuthLoginButton onSuccess={onSuccess} onFail={onFail} label="login" />,
   );
   await waitFor(async () => {
-    const loginButton = screen.getByTestId('oauth-login-button');
+    const loginButton = screen.getByTestId('button');
     await fireEvent.press(loginButton);
   });
   expect(loginMock).toHaveBeenCalledWith({

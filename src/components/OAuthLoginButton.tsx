@@ -1,31 +1,23 @@
-import React, { FC, useCallback } from 'react';
-import {
-  Platform,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewStyle,
-  Text,
-  TextStyle,
-} from 'react-native';
+import React, { useCallback } from 'react';
+import { TextStyle, TouchableOpacityProps, ViewStyle } from 'react-native';
 import { useStyles } from '../../src/hooks/useStyles';
 import { LoginParams, useOAuthFlow } from '../../src/hooks/useOAuthFlow';
-import { tID } from '../common/testID';
 import { Theme } from './BrandConfigProvider';
+import { Button } from 'react-native-paper';
 
-type OAuthLoginButtonParams = Omit<TouchableOpacityProps, 'onPress'> &
+type Props = Omit<TouchableOpacityProps, 'onPress'> &
   LoginParams & {
     label: string;
     styles?: OAuthLoginButtonStyles;
   };
 
-export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
+export function OAuthLoginButton({
   onSuccess,
   onFail,
   label,
   styles: instanceStyles,
-  ...touchableOpacityProps
-}) => {
+  ...buttonProps
+}: Props) {
   const { styles } = useStyles(
     'OAuthLoginButton',
     defaultStyles,
@@ -33,7 +25,7 @@ export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   );
   const { login } = useOAuthFlow();
 
-  const _login = useCallback(async () => {
+  const handleOnPress = useCallback(async () => {
     await login({
       onSuccess,
       onFail,
@@ -41,57 +33,23 @@ export const OAuthLoginButton: FC<OAuthLoginButtonParams> = ({
   }, [login, onSuccess, onFail]);
 
   return (
-    <View style={styles.button}>
-      <TouchableOpacity
-        testID={tID('oauth-login-button')}
-        {...touchableOpacityProps}
-        onPress={_login}
-        style={styles.touchableOpacity}
-      >
-        <View style={styles.content}>
-          <Text style={styles.label}>{label}</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+    <Button
+      mode="contained"
+      onPress={handleOnPress}
+      {...styles}
+      {...buttonProps}
+    >
+      {label}
+    </Button>
   );
-};
+}
 
-const defaultStyles = (theme: Theme) => {
-  const button: ViewStyle = {
-    flexDirection: 'row',
-  };
-  const touchableOpacity: ViewStyle = {
-    alignItems: 'center',
-    backgroundColor: theme.colors.secondary,
-    borderRadius: theme.buttonRoundness,
+const defaultStyles = (_theme: Theme) => {
+  const style: ViewStyle = {};
+  const contentStyle: ViewStyle = {};
+  const labelStyle: TextStyle = {};
 
-    minWidth: 64,
-  };
-
-  const content: ViewStyle = {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  };
-
-  const label: TextStyle = {
-    color: theme.colors.onSecondary,
-    marginVertical: 10,
-    marginHorizontal: 24,
-
-    fontFamily: Platform.select({
-      web: 'Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif',
-      ios: 'System',
-      default: 'sans-serif-medium',
-    }),
-
-    fontWeight: '500',
-    letterSpacing: 0.1,
-    lineHeight: 20,
-    fontSize: 14,
-  };
-
-  return { button, touchableOpacity, content, label };
+  return { style, contentStyle, labelStyle };
 };
 
 declare module '@styles' {
