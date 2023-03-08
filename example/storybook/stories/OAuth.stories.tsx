@@ -56,6 +56,7 @@ storiesOf('OAuth', module)
       loading: boolean('loading', false, groupId),
       disabled: boolean('disabled', false, groupId),
       uppercase: boolean('uppercase', false, groupId),
+      icon: text('icon', '', groupId),
     });
 
     const loginButtonProps = buttonProps('Login Button');
