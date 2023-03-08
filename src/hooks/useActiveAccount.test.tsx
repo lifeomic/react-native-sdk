@@ -51,12 +51,12 @@ beforeEach(() => {
     data: mockAccounts,
     refetch: refetchMock,
   });
-  useAsyncStorageSpy.mockReturnValue({
-    useGetItem: (_: string) => ({
+  useAsyncStorageSpy.mockReturnValue([
+    {
       ...mockDeep<UseQueryResult<string | null>>(),
-    }),
-    setItem: AsyncStorage.setItem,
-  });
+    },
+    (value: string) => AsyncStorage.setItem('selectedAccountId', value),
+  ]);
 });
 
 test('without provider, methods fail', async () => {
@@ -83,14 +83,6 @@ test('exposes some props from useAccounts', async () => {
     isFetched: true,
     error,
   });
-  useAsyncStorageSpy.mockReturnValueOnce({
-    useGetItem: (_: string) => ({
-      ...mockDeep<UseQueryResult<string | null>>(),
-      isFetched: true,
-    }),
-    setItem: AsyncStorage.setItem,
-  });
-
   const { result } = await renderHookInContext();
   expect(result.current).toMatchObject({
     isLoading: true,
