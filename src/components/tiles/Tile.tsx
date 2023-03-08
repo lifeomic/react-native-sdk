@@ -8,7 +8,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { useStyles } from 'src/hooks/useStyles';
+import { useStyles } from '../../hooks/useStyles';
 import { Theme } from '..';
 import { tID } from '../../common/testID';
 
