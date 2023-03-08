@@ -5,8 +5,11 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import { useMe } from './useMe';
+import { Subject, useMe } from './useMe';
 import { Project, useSubjectProjects } from './useSubjectProjects';
+import { useAsyncStorage } from './useAsyncStorage';
+
+const selectedProjectIdKey = 'selectedProjectIdKey';
 
 export type ActiveProjectProps = {
   activeProject?: Project;
@@ -26,6 +29,32 @@ const ActiveProjectContext = createContext({
   isFetched: false,
 } as ActiveProjectContextProps);
 
+const findProjectAndSubjectById = (
+  projectId?: string | null,
+  projects?: Project[],
+  subjects?: Subject[],
+) => {
+  const getDefault = () => {
+    const defaultProject = projects?.[0];
+    const defaultSubject = subjects?.find(
+      (s) => s.projectId === defaultProject?.id,
+    );
+    return { selectedProject: defaultProject, selectedSubject: defaultSubject };
+  };
+
+  if (!projectId) {
+    return getDefault();
+  }
+
+  const selectedProject = projects?.find((p) => p.id === projectId);
+  const selectedSubject = subjects?.find((s) => s.projectId === projectId);
+  if (!selectedProject || !selectedSubject) {
+    console.warn('Ignoring attempt to set invalid projectId', projectId);
+    return getDefault();
+  }
+  return { selectedProject, selectedSubject };
+};
+
 export const ActiveProjectContextProvider = ({
   children,
 }: {
@@ -36,40 +65,63 @@ export const ActiveProjectContextProvider = ({
   const [hookReturnValue, setHookReturnValue] = useState<ActiveProjectProps>(
     {},
   );
+  const [storedProjectIdResult, setStoredProjectId] =
+    useAsyncStorage(selectedProjectIdKey);
 
-  const setActiveProjectId = useCallback(
-    async (projectId: string) => {
-      const selectedProject = projectsResult.data?.find(
-        (p) => p.id === projectId,
-      );
-      const selectedSubject = useMeResult.data?.find(
-        (s) => s.projectId === projectId,
-      );
-      if (!selectedProject || !selectedSubject) {
-        console.warn('Ignoring attempt to set invalid projectId', projectId);
-        return;
-      }
+  /**
+   * Initial setting of activeProject
+   */
+  useEffect(() => {
+    if (
+      hookReturnValue.activeProject?.id || // active project already set
+      !projectsResult.data?.length || // wait for projects endpoint to return data
+      !useMeResult.data?.length || // wait for subjects endpoint to return data
+      (storedProjectIdResult.isLoading && !storedProjectIdResult.isError) // wait for async storage result or error
+    ) {
+      return;
+    }
 
-      // TODO: Save for previously-selected project
+    const { selectedProject, selectedSubject } = findProjectAndSubjectById(
+      storedProjectIdResult.data,
+      projectsResult.data,
+      useMeResult.data,
+    );
 
+    if (selectedProject && selectedSubject) {
       setHookReturnValue({
         activeProject: selectedProject,
         activeSubjectId: selectedSubject.subjectId,
       });
-    },
-    [projectsResult.data, useMeResult.data],
-  );
-
-  useEffect(() => {
-    if (projectsResult.data?.length) {
-      // TODO: Load previously-selected project
-
-      const firstProjectId = projectsResult.data?.[0].id;
-      if (firstProjectId) {
-        setActiveProjectId(firstProjectId);
-      }
+      setStoredProjectId(selectedProject.id);
     }
-  }, [projectsResult.data, setActiveProjectId]);
+  }, [
+    storedProjectIdResult.data,
+    storedProjectIdResult.isLoading,
+    storedProjectIdResult.isError,
+    projectsResult.data,
+    useMeResult.data,
+    hookReturnValue.activeProject?.id,
+    setStoredProjectId,
+  ]);
+
+  const setActiveProjectId = useCallback(
+    async (projectId: string) => {
+      const { selectedProject, selectedSubject } = findProjectAndSubjectById(
+        projectId,
+        projectsResult.data,
+        useMeResult.data,
+      );
+
+      if (selectedProject && selectedSubject) {
+        setHookReturnValue({
+          activeProject: selectedProject,
+          activeSubjectId: selectedSubject.subjectId,
+        });
+        await setStoredProjectId(selectedProject.id);
+      }
+    },
+    [projectsResult.data, useMeResult.data, setStoredProjectId],
+  );
 
   return (
     <ActiveProjectContext.Provider
