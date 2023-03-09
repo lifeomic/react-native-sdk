@@ -4,7 +4,7 @@ import { Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useTheme } from 'src/hooks/useTheme';
 
 export function ThemeExampleScreen() {
-  const { theme } = useTheme();
+  const theme = useTheme();
 
   const containerView: ViewStyle = {
     backgroundColor: theme.colors.background,

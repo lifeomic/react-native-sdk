@@ -12,7 +12,7 @@ import { useStyles } from '../hooks/useStyles';
 import { tID } from '../common/testID';
 import { useAuth } from '../hooks/useAuth';
 import { LogoutParams, useOAuthFlow } from '../hooks/useOAuthFlow';
-import { Theme } from './BrandConfigProvider/theme/Theme';
+import { Theme } from './BrandConfigProvider';
 
 type OAuthLogoutButtonParams = Omit<TouchableOpacityProps, 'onPress'> &
   LogoutParams & {
