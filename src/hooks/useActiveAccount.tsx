@@ -59,15 +59,15 @@ export const ActiveAccountContextProvider = ({
   const accountsResult = useAccounts();
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
   const [activeAccount, setActiveAccount] = useState<ActiveAccountProps>({});
-  const { useGetItem, setItem } = useAsyncStorage();
-  const storedAccountResult = useGetItem(selectedAccountIdKey);
+  const [storedAccountIdResult, setStoredAccountId] =
+    useAsyncStorage(selectedAccountIdKey);
 
   /**
    * Initial setting of activeAccount
    */
   useEffect(() => {
     if (
-      storedAccountResult.isLoading || // wait for async storage result
+      storedAccountIdResult.isLoading || // wait for async storage result
       activeAccount?.account?.id || // activeAccount already set
       accountsWithProduct.length < 1 // no valid accounts found server side
     ) {
@@ -75,7 +75,7 @@ export const ActiveAccountContextProvider = ({
     }
 
     const accountToSelect =
-      accountIdToSelect ?? storedAccountResult.data ?? undefined;
+      accountIdToSelect ?? storedAccountIdResult.data ?? undefined;
 
     const selectedAccount =
       getValidAccount(accountsWithProduct, accountToSelect) ??
@@ -88,14 +88,14 @@ export const ActiveAccountContextProvider = ({
       },
       trialExpired: getTrialExpired(selectedAccount),
     });
-    setItem(selectedAccountIdKey, selectedAccount.id);
+    setStoredAccountId(selectedAccount.id);
   }, [
     accountsWithProduct,
     activeAccount?.account?.id,
     accountIdToSelect,
-    setItem,
-    storedAccountResult.data,
-    storedAccountResult.isLoading,
+    setStoredAccountId,
+    storedAccountIdResult.data,
+    storedAccountIdResult.isLoading,
   ]);
 
   const setActiveAccountId = useCallback(
@@ -114,12 +114,12 @@ export const ActiveAccountContextProvider = ({
           },
           trialExpired: getTrialExpired(selectedAccount),
         });
-        setItem(selectedAccountIdKey, selectedAccount.id);
+        await setStoredAccountId(selectedAccount.id);
       } catch (error) {
         console.warn('Unable to set active account', error);
       }
     },
-    [accountsWithProduct, setItem],
+    [accountsWithProduct, setStoredAccountId],
   );
 
   const refetch = useCallback(async () => {

@@ -1,17 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from 'react-query';
 
-export function useAsyncStorage() {
-  const useGetItem = (key: string) =>
-    useQuery<string | null>('async-storage-get', () =>
-      AsyncStorage.getItem(key),
+export function useAsyncStorage(key: string) {
+  const itemResult = useQuery<string | null>('async-storage-get', () =>
+    AsyncStorage.getItem(key),
+  );
+
+  const setItem = (value: string) =>
+    AsyncStorage.setItem(key, value).catch((error) =>
+      console.error(`[LifeOmicSDK]:${error}`),
     );
 
-  const setItem = (key: string, value: string) =>
-    AsyncStorage.setItem(key, value);
-
-  return {
-    useGetItem: useGetItem,
-    setItem: setItem,
-  };
+  return [itemResult, setItem] as [typeof itemResult, typeof setItem];
 }
