@@ -5,10 +5,9 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Account, useAccounts } from './useAccounts';
 import { QueryObserverResult } from 'react-query';
-import { useGetAsyncStorage } from './useGetAsyncStorage';
+import { useAsyncStorage } from './useAsyncStorage';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -60,18 +59,15 @@ export const ActiveAccountContextProvider = ({
   const accountsResult = useAccounts();
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
   const [activeAccount, setActiveAccount] = useState<ActiveAccountProps>({});
-  const storedAccountResult = useGetAsyncStorage(selectedAccountIdKey);
-
-  const storeAccountId = useCallback(async (accountId: string) => {
-    await AsyncStorage.setItem(selectedAccountIdKey, accountId);
-  }, []);
+  const [storedAccountIdResult, setStoredAccountId] =
+    useAsyncStorage(selectedAccountIdKey);
 
   /**
    * Initial setting of activeAccount
    */
   useEffect(() => {
     if (
-      storedAccountResult.isLoading || // wait for async storage result
+      storedAccountIdResult.isLoading || // wait for async storage result
       activeAccount?.account?.id || // activeAccount already set
       accountsWithProduct.length < 1 // no valid accounts found server side
     ) {
@@ -79,7 +75,7 @@ export const ActiveAccountContextProvider = ({
     }
 
     const accountToSelect =
-      accountIdToSelect ?? storedAccountResult.data ?? undefined;
+      accountIdToSelect ?? storedAccountIdResult.data ?? undefined;
 
     const selectedAccount =
       getValidAccount(accountsWithProduct, accountToSelect) ??
@@ -92,14 +88,14 @@ export const ActiveAccountContextProvider = ({
       },
       trialExpired: getTrialExpired(selectedAccount),
     });
-    storeAccountId(selectedAccount.id);
+    setStoredAccountId(selectedAccount.id);
   }, [
     accountsWithProduct,
     activeAccount?.account?.id,
     accountIdToSelect,
-    storeAccountId,
-    storedAccountResult.data,
-    storedAccountResult.isLoading,
+    setStoredAccountId,
+    storedAccountIdResult.data,
+    storedAccountIdResult.isLoading,
   ]);
 
   const setActiveAccountId = useCallback(
@@ -118,12 +114,12 @@ export const ActiveAccountContextProvider = ({
           },
           trialExpired: getTrialExpired(selectedAccount),
         });
-        storeAccountId(selectedAccount.id);
+        await setStoredAccountId(selectedAccount.id);
       } catch (error) {
         console.warn('Unable to set active account', error);
       }
     },
-    [accountsWithProduct, storeAccountId],
+    [accountsWithProduct, setStoredAccountId],
   );
 
   const refetch = useCallback(async () => {
@@ -137,13 +133,9 @@ export const ActiveAccountContextProvider = ({
         accountsWithProduct,
         refetch,
         setActiveAccountId,
-        isLoading: !!(
-          accountsResult.isLoading || storedAccountResult.isLoading
-        ),
-        isFetched: !!(
-          accountsResult.isFetched && storedAccountResult.isFetched
-        ),
-        error: accountsResult.error || storedAccountResult.error,
+        isLoading: accountsResult.isLoading,
+        isFetched: accountsResult.isFetched,
+        error: accountsResult.error,
       }}
     >
       {children}

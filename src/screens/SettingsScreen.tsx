@@ -78,6 +78,9 @@ function MainMenuItem({ title, action, badge }: Props) {
       <View style={styles.mainMenuItem}>
         <Text style={styles.mainMenuItemText}>{title}</Text>
         {badge}
+        {
+          // TODO: Replace this with default actual icons. Possibly from react native paper.
+        }
         <Text style={styles.arrow}>{'>'}</Text>
       </View>
     </TouchableOpacity>

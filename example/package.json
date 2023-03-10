@@ -47,6 +47,7 @@
     "babel-loader": "^8.3.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "metro-react-native-babel-preset": "0.73.7",
+    "pod-install": "^0.1.38",
     "react-dom": "18.2.0",
     "react-native-safe-area-context": "^4.5.0",
     "react-native-screens": "^3.19.0",

@@ -14,7 +14,7 @@ starting point.
 
 - `yarn add @lifeomic/react-native-sdk`
 - Install peer dependencies listed in `package.json`
-- `npx pod-install`
+- `yarn pod-install`
 
 See `example/AppDemo.tsx` for simple usage, which could be as simple as:
 
@@ -60,7 +60,7 @@ both served from the `example` folder.
 - `cd example`
 - `cp .env.example .env`
 - `yarn install`
-- `npx pod-install`
+- `yarn pod-install`
 - `npx react-native start`
 - type `i` or `a` to run on either platform
 
