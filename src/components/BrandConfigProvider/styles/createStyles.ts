@@ -10,6 +10,7 @@ import { Theme } from '../theme/ThemeProvider';
  *   - Names ending in `Image` will become an `ImageStyle` type
  *   - Names ending in `Text` or `Label` will become a `TextStyle` type
  *   - Names ending in anything else (often `View` or `Container`) will become a `ViewStyle` type
+ * Other suffixes and/or types can be added when needed.
  * @returns The defaultStyles function that returns the named, typed style builder to be given to `useStyles`
  */
 export const createStyles: CreateStyles = (namespace, styleBuilder) => {
@@ -36,6 +37,10 @@ export type NamedStyles<T> = {
     : ViewStyle;
 };
 
+/**
+ * IgnoreCapitals is used when parsing suffixes so that, for example, a style name of text or fooText
+ * would both get the TextStyle type.
+ */
 type IgnoreCapitals<T> = T extends string
   ? Uncapitalize<T> | Capitalize<T>
   : never;
