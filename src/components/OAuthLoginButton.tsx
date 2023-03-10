@@ -1,29 +1,25 @@
 import React, { useCallback } from 'react';
-import { TextStyle, ViewStyle } from 'react-native';
+
+import { Button, ButtonProps } from 'react-native-paper';
 import { useStyles } from '../hooks/useStyles';
 import { LoginParams, useOAuthFlow } from '../hooks/useOAuthFlow';
 import { tID } from '../common/testID';
-import { Theme } from './BrandConfigProvider';
-import { Button, ButtonProps } from 'react-native-paper';
+import { createStyles } from './BrandConfigProvider';
 
-type Props = Omit<ButtonProps, 'onPress' | 'children'> &
+type Props = Omit<ButtonProps, 'onPress' | 'style' | 'children'> &
   LoginParams & {
     label: string;
-    styles?: OAuthLoginButtonStyles;
+    style?: OAuthLoginButtonStyles;
   };
 
 export function OAuthLoginButton({
   onSuccess,
   onFail,
   label,
-  styles: instanceStyles,
+  style: instanceStyles,
   ...buttonProps
 }: Props) {
-  const { styles } = useStyles(
-    'OAuthLoginButton',
-    defaultStyles,
-    instanceStyles,
-  );
+  const { styles } = useStyles(defaultStyles, instanceStyles);
   const { login } = useOAuthFlow();
 
   const handleOnPress = useCallback(async () => {
@@ -38,7 +34,9 @@ export function OAuthLoginButton({
       mode="contained"
       onPress={handleOnPress}
       testID={tID('oauth-login-button')}
-      {...styles}
+      style={styles.style}
+      contentStyle={styles.content}
+      labelStyle={styles.label}
       {...buttonProps}
     >
       {label}
@@ -46,17 +44,15 @@ export function OAuthLoginButton({
   );
 }
 
-const defaultStyles = (_theme: Theme) => {
-  const style: ViewStyle = {};
-  const contentStyle: ViewStyle = {};
-  const labelStyle: TextStyle = {};
-
-  return { style, contentStyle, labelStyle };
-};
+const defaultStyles = createStyles('OAuthLoginButton', () => ({
+  style: {},
+  content: {},
+  label: {},
+}));
 
 declare module '@styles' {
   interface ComponentStyles
-    extends ComponentNamedStyles<'OAuthLoginButton', typeof defaultStyles> {}
+    extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
 export type OAuthLoginButtonStyles = NamedStylesProp<typeof defaultStyles>;

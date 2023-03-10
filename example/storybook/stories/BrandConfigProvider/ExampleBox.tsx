@@ -1,24 +1,24 @@
 import React from 'react';
 
 import { Text, TextStyle, View, ViewStyle } from 'react-native';
-import { Theme, useStyles } from 'src';
+import { createStyles, Theme, useStyles } from 'src';
 
 interface Props {
   message: string;
   styles: ExampleBoxStyles;
 }
 
-export function ExampleBox({ message, styles }: Props) {
-  const { styles: $ } = useStyles('ExampleBox', defaultStyles, styles);
+export function ExampleBox({ message, styles: instanceStyles }: Props) {
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
-    <View style={$.container}>
-      <Text style={$.text}>{message}</Text>
+    <View style={styles.container}>
+      <Text style={styles.text}>{message}</Text>
     </View>
   );
 }
 
-const defaultStyles = (theme: Theme) => {
+const defaultStyles = createStyles('ExampleBox', (theme: Theme) => {
   const container: ViewStyle = {
     width: '63%',
     margin: theme.spacing.large,
@@ -37,11 +37,11 @@ const defaultStyles = (theme: Theme) => {
     container,
     text,
   };
-};
+});
 
 declare module '@styles' {
   interface ComponentStyles
-    extends ComponentNamedStyles<'ExampleBox', typeof defaultStyles> {}
+    extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
 export type ExampleBoxStyles = NamedStylesProp<typeof defaultStyles>;

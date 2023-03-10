@@ -3,30 +3,29 @@ import merge from 'lodash/merge';
 import {
   ComponentStyles,
   RecursivePartial,
-  StylesBuilder,
-  NamedStyles,
   BrandConfigProviderStyles,
 } from './types';
 import { useTheme } from '../theme/ThemeProvider';
+import { CreateStyles } from './createStyles';
 
 export const StylesContext = React.createContext({
   styles: {} as RecursivePartial<ComponentStyles>,
 });
 
-export const useStyles = <T extends StylesBuilder>(
-  name: keyof ComponentStyles,
+export const useStyles = <T extends ReturnType<CreateStyles>>(
   builder: T,
   styleOverrides?: NamedStylesProp<T>,
 ) => {
   const theme = useTheme();
   const { styles: componentStyles } = React.useContext(StylesContext);
+  const [namespace, namedStyles] = builder(theme);
 
   const styles = merge(
     {},
-    typeof builder === 'function' ? builder(theme) : builder,
-    componentStyles[name],
+    namedStyles,
+    (componentStyles as any)[namespace],
     styleOverrides,
-  ) as NamedStyles<T>;
+  ) as NamedStylesProp<T>;
 
   return { styles };
 };

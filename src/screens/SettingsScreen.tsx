@@ -18,7 +18,7 @@ import { tID } from '../common/testID';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { SettingsStackParamList } from '../navigators/SettingsStack';
 import { useStyles } from '../hooks/useStyles';
-import { Theme } from '../components/BrandConfigProvider';
+import { Theme, createStyles } from '../components/BrandConfigProvider';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -32,7 +32,7 @@ type NavigationParams = NativeStackNavigationProp<
 export const SettingsScreen = () => {
   const { account } = useActiveAccount();
   const { navigate } = useNavigation<NavigationParams>();
-  const { styles } = useStyles('SettingsScreen', defaultStyles);
+  const { styles } = useStyles(defaultStyles);
 
   return (
     <View style={styles.container}>
@@ -71,7 +71,7 @@ interface Props {
 }
 
 function MainMenuItem({ title, action, badge }: Props) {
-  const { styles } = useStyles('SettingsScreen', defaultStyles);
+  const { styles } = useStyles(defaultStyles);
 
   return (
     <TouchableOpacity onPress={action} accessibilityRole="button">
@@ -88,12 +88,12 @@ function MainMenuItem({ title, action, badge }: Props) {
 }
 
 function Divider() {
-  const { styles } = useStyles('SettingsScreen', defaultStyles);
+  const { styles } = useStyles(defaultStyles);
 
   return <View style={styles.divider} />;
 }
 
-const defaultStyles = (theme: Theme) => {
+const defaultStyles = createStyles('SettingsScreen', (theme: Theme) => {
   const mainMenuItem: ViewStyle = {
     flex: 1,
     flexDirection: 'row',
@@ -148,11 +148,11 @@ const defaultStyles = (theme: Theme) => {
     scroll,
     divider,
   };
-};
+});
 
 declare module '@styles' {
   interface ComponentStyles
-    extends ComponentNamedStyles<'SettingsScreen', typeof defaultStyles> {}
+    extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
 export type SettingsScreenStyles = NamedStylesProp<typeof defaultStyles>;

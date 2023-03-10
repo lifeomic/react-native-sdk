@@ -1,11 +1,12 @@
 import React, { FC } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
 import { useStyles } from '../hooks/useStyles';
+import { createStyles } from '../components/BrandConfigProvider';
 
 export const LoginScreen: FC = () => {
-  const { styles } = useStyles('LoginScreen', defaultStyles);
+  const { styles } = useStyles(defaultStyles);
 
   return (
     <View style={styles.containerView}>
@@ -14,19 +15,17 @@ export const LoginScreen: FC = () => {
   );
 };
 
-const containerView: ViewStyle = {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
-const defaultStyles = {
-  containerView,
-};
+const defaultStyles = createStyles('LoginScreen', () => ({
+  containerView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+}));
 
 declare module '@styles' {
   interface ComponentStyles
-    extends ComponentNamedStyles<'LoginScreen', typeof defaultStyles> {}
+    extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
 export type LoginScreenStyles = NamedStylesProp<typeof defaultStyles>;
