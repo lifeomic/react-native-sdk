@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ScrollView, ViewStyle, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { AppTile } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { HomeScreenNavigation } from 'src/screens';
 import { useStyles } from '../../hooks';
 import { spacing } from '../BrandConfigProvider/theme/base';
+import { createStyles } from '..';
 
 export interface TilesListProps {
   tiles?: AppTile[];
@@ -23,7 +24,7 @@ export const TileList = ({
   tileStyles,
   onAppTilePress,
 }: TilesListProps) => {
-  const { styles } = useStyles('TilesList', defaultStyles, instanceStyles);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
   const { navigate } = useNavigation<HomeScreenNavigation>();
 
   const onAppTilePressDefault = useCallback(
@@ -53,19 +54,18 @@ export const TileList = ({
   );
 };
 
-const defaultStyles = () => {
-  const scrollView: ViewStyle = {};
-  const view: ViewStyle = {
+const defaultStyles = createStyles('TilesList', () => ({
+  scrollView: {},
+  view: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     padding: spacing.extraSmall,
-  };
-  return { scrollView, view };
-};
+  },
+}));
 
 declare module '@styles' {
   interface ComponentStyles
-    extends ComponentNamedStyles<'TilesList', typeof defaultStyles> {}
+    extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
 export type TilesListStyles = NamedStylesProp<typeof defaultStyles> &

@@ -1,12 +1,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
-import { AppTile, spaceBetweenTiles, Tile, tileWidth } from '../../../src';
+import { AppTile, Tile } from '../../../src';
 import { TileList } from 'src/components/tiles/TilesList';
 import { NavigationContainer } from '@react-navigation/native';
 import { Alert } from 'react-native';
+import { select } from '@storybook/addon-knobs';
 
 storiesOf('TilesList', module).add('demo', () => {
-  // TODO: once we have styles/theming/branding: add knobs for styling.
   const appTiles: AppTile[] = [
     {
       id: 'tile1',
@@ -30,22 +30,71 @@ storiesOf('TilesList', module).add('demo', () => {
     },
   ];
 
-  const singleWideTiles = appTiles.splice(0, 2);
+  const tile1Length = select(
+    'Tile #1 mode',
+    {
+      halfLength: 'halfLength',
+      fullLength: 'fullLength',
+    },
+    'halfLength',
+  );
+
+  const tile2Length = select(
+    'Tile #2 mode',
+    {
+      halfLength: 'halfLength',
+      fullLength: 'fullLength',
+    },
+    'halfLength',
+  );
+
+  const tile3Length = select(
+    'Tile #3 mode',
+    {
+      halfLength: 'halfLength',
+      fullLength: 'fullLength',
+    },
+    'fullLength',
+  );
+
+  const tile4Length = select(
+    'Tile #4 mode',
+    {
+      halfLength: 'halfLength',
+      fullLength: 'fullLength',
+    },
+    'fullLength',
+  );
+
   const onTilePress = () => Alert.alert('Clicked app tile');
 
   return (
     <NavigationContainer>
-      <TileList tiles={singleWideTiles} onAppTilePress={onTilePress}>
-        {appTiles.map((tile) => (
-          <Tile
-            id={tile.id}
-            title={tile.title}
-            styles={{
-              tileSize: { width: tileWidth * 2 + spaceBetweenTiles },
-            }}
-            onPress={onTilePress}
-          />
-        ))}
+      <TileList>
+        <Tile
+          id={appTiles[0].id}
+          title={appTiles[0].title}
+          mode={tile1Length}
+          onPress={onTilePress}
+        />
+        <Tile
+          id={appTiles[1].id}
+          title={appTiles[1].title}
+          mode={tile2Length}
+          onPress={onTilePress}
+        />
+        <Tile
+          id={appTiles[2].id}
+          title={appTiles[2].title}
+          mode={tile3Length}
+          onPress={onTilePress}
+        />
+        <Tile
+          id={appTiles[3].id}
+          title={appTiles[3].title}
+          mode={tile4Length}
+          onPress={onTilePress}
+        />
       </TileList>
     </NavigationContainer>
   );
