@@ -2,6 +2,7 @@ import React from 'react';
 
 import {
   MD3LightTheme as defaultPaperTheme,
+  MD3Theme,
   Provider as PaperProvider,
   useTheme as usePaperTheme,
 } from 'react-native-paper';
@@ -11,7 +12,7 @@ import { RecursivePartial } from '@styles';
 
 const defaultTheme = merge({}, defaultPaperTheme, baseTheme);
 
-export type Theme = typeof defaultTheme;
+export type Theme = typeof baseTheme & MD3Theme;
 export type ThemeProp = RecursivePartial<Theme>;
 
 export const useTheme = () => usePaperTheme<Theme>();

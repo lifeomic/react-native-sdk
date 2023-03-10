@@ -1,18 +1,16 @@
 import * as React from 'react';
 import merge from 'lodash/merge';
-import {
-  ComponentStyles,
-  RecursivePartial,
-  BrandConfigProviderStyles,
-} from './types';
+import { ComponentStyles, BrandConfigProviderStyles } from './types';
 import { useTheme } from '../theme/ThemeProvider';
 import { CreateStyles } from './createStyles';
 
 export const StylesContext = React.createContext({
-  styles: {} as RecursivePartial<ComponentStyles>,
+  styles: {} as BrandConfigProviderStyles,
 });
 
-export const useStyles = <T extends ReturnType<CreateStyles>>(
+export const useStyles = <
+  T extends ReturnType<CreateStyles<keyof ComponentStyles>>,
+>(
   builder: T,
   styleOverrides?: NamedStylesProp<T>,
 ) => {
@@ -23,7 +21,7 @@ export const useStyles = <T extends ReturnType<CreateStyles>>(
   const styles = merge(
     {},
     namedStyles,
-    (componentStyles as any)[namespace],
+    componentStyles[namespace],
     styleOverrides,
   ) as NamedStylesProp<T>;
 
