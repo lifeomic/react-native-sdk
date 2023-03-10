@@ -1,12 +1,12 @@
 import React, { useCallback } from 'react';
-import { TextStyle, TouchableOpacityProps, ViewStyle } from 'react-native';
+import { TextStyle, ViewStyle } from 'react-native';
 import { useStyles } from '../hooks/useStyles';
 import { LoginParams, useOAuthFlow } from '../hooks/useOAuthFlow';
 import { tID } from '../common/testID';
 import { Theme } from './BrandConfigProvider';
-import { Button } from 'react-native-paper';
+import { Button, ButtonProps } from 'react-native-paper';
 
-type Props = Omit<TouchableOpacityProps, 'onPress'> &
+type Props = Omit<ButtonProps, 'onPress' | 'children'> &
   LoginParams & {
     label: string;
     styles?: OAuthLoginButtonStyles;
