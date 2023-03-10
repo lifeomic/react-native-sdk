@@ -29,12 +29,12 @@ export function Tile({
       onPress={onPress}
       disabled={!onPress}
       style={[
-        styles.tileColor,
-        styles.tileSize,
-        styles.tileSpacing,
         mode === 'fullLength'
           ? { width: tileWidth * 2 + spaceBetweenTiles }
           : { width: tileWidth },
+        styles.tileColor,
+        styles.tileSize,
+        styles.tileSpacing,
       ]}
     >
       <View testID={tID(`tile-view-${id}`)}>
