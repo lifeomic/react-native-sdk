@@ -15,16 +15,19 @@ import { Theme } from '../theme/ThemeProvider';
  */
 export const createStyles: CreateStyles = (namespace, styleBuilder) => {
   const defaultStyles = (theme: Theme) => {
-    return [namespace, styleBuilder(theme)] as any;
+    return [namespace, styleBuilder(theme)] as const;
   };
 
   return defaultStyles;
 };
 
-export type CreateStyles = <N extends string, T extends NamedStyles<T>>(
+export type CreateStyles<Names = string> = <
+  N extends Names,
+  T extends NamedStyles<T>,
+>(
   namespace: StringLiteral<N>,
   styleBuilder: StylesBuilder<T>,
-) => (theme: Theme) => [StringLiteral<N>, NamedStyles<T>];
+) => (theme: Theme) => Readonly<[StringLiteral<N>, NamedStyles<T>]>;
 
 /**
  * Parses out the named properties and assigns types based on their suffix
