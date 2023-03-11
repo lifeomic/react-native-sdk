@@ -4,6 +4,7 @@ export * from './useActiveAccount';
 export * from './useActiveProject';
 export * from './useAppConfig';
 export * from './useAuth';
+export * from './useCurrentAppState';
 export * from './useHttpClient';
 export * from './useMe';
 export * from './useOAuthFlow';
