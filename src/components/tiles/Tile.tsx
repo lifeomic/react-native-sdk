@@ -1,5 +1,6 @@
 import React from 'react';
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, TouchableOpacity, View } from 'react-native';
+import { Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { createStyles, Theme } from '..';
 import { tID } from '../../common/testID';
