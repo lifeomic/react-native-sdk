@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { t } from 'i18next';
 import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@react-navigation/native';
@@ -19,6 +11,7 @@ import { useActiveAccount } from '../hooks/useActiveAccount';
 import { SettingsStackParamList } from '../navigators/SettingsStack';
 import { useStyles } from '../hooks/useStyles';
 import { Theme, createStyles } from '../components/BrandConfigProvider';
+import { Text, Divider } from 'react-native-paper';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -50,9 +43,12 @@ export const SettingsScreen = () => {
           <Divider />
         </ScrollView>
         <View style={styles.subMenuContainer}>
-          <OAuthLogoutButton label={t('settings-logout', 'Logout')} />
+          <OAuthLogoutButton
+            label={t('settings-logout', 'Logout')}
+            mode="outlined"
+          />
           <View style={styles.versionContainer}>
-            <Text testID={tID('version-text')}>
+            <Text variant="bodySmall" testID={tID('version-text')}>
               {t('settings-version', 'Version {{ version }}', {
                 version: fullVersion,
               })}
@@ -76,79 +72,45 @@ function MainMenuItem({ title, action, badge }: Props) {
   return (
     <TouchableOpacity onPress={action} accessibilityRole="button">
       <View style={styles.mainMenuItem}>
-        <Text style={styles.mainMenuItemText}>{title}</Text>
+        <Text variant="titleMedium" style={styles.mainMenuItemText}>
+          {title}
+        </Text>
         {badge}
-        {
-          // TODO: Replace this with default actual icons. Possibly from react native paper.
-        }
-        <Text style={styles.arrow}>{'>'}</Text>
       </View>
     </TouchableOpacity>
   );
 }
 
-function Divider() {
-  const { styles } = useStyles(defaultStyles);
-
-  return <View style={styles.divider} />;
-}
-
-const defaultStyles = createStyles('SettingsScreen', (theme: Theme) => {
-  const mainMenuItem: ViewStyle = {
+const defaultStyles = createStyles('SettingsScreen', (theme: Theme) => ({
+  mainMenuItem: {
     flex: 1,
     flexDirection: 'row',
     paddingVertical: 14,
     justifyContent: 'space-between',
-  };
-
-  const mainMenuItemText: TextStyle = {
+  },
+  mainMenuItemText: {
     color: theme.colors.primary,
-  };
-
-  const subMenuContainer: ViewStyle = {
+  },
+  subMenuContainer: {
     flex: 1,
     padding: 14,
     justifyContent: 'center',
     alignItems: 'center',
-  };
-
-  const arrow: TextStyle = {
-    marginRight: 8,
-    color: theme.colors.outline,
-  };
-
-  const container: ViewStyle = {
+  },
+  container: {
     flex: 1,
     marginTop: 8,
-  };
-
-  const versionContainer: ViewStyle = {
+  },
+  versionContainer: {
     paddingVertical: 14,
     marginTop: 28,
-  };
-
-  const scroll: ViewStyle = {
+  },
+  scroll: {
     flex: 1,
     paddingHorizontal: 28,
     flexGrow: 4,
-  };
-
-  const divider: ViewStyle = {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: theme.colors.outline,
-  };
-
-  return {
-    mainMenuItem,
-    mainMenuItemText,
-    arrow,
-    subMenuContainer,
-    container,
-    versionContainer,
-    scroll,
-    divider,
-  };
-});
+  },
+}));
 
 declare module '@styles' {
   interface ComponentStyles
