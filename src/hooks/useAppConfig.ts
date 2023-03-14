@@ -22,7 +22,6 @@ export function useAppConfig() {
   const { httpClient } = useHttpClient();
   const { activeProject } = useActiveProject();
 
-  // TODO: rename this API endpoint
   return useQuery(
     `/v1/life-research/projects/${activeProject?.id}/app-config`,
     () =>
