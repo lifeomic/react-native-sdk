@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '../screens/HomeScreen';
 import { AppTile } from '../hooks/useAppConfig';
 import { AppTileScreen } from '../screens/AppTileScreen';
+import { AppNavHeader } from '../components/AppNavHeader';
 
 export type HomeStackParamList = {
   Home: undefined;
@@ -15,15 +16,10 @@ export function HomeStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerBackTitle: '',
-        title: '',
+        header: AppNavHeader,
       }}
     >
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="tiles/AppTile" component={AppTileScreen} />
     </Stack.Navigator>
   );

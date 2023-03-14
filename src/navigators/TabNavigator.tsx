@@ -26,8 +26,7 @@ export function TabNavigator() {
         component={SettingsStack}
         options={{
           tabBarLabel: t('tabs-settings', 'Settings'),
-          headerShown: true,
-          headerTitle: 'Settings',
+          headerShown: false,
         }}
       />
     </Tab.Navigator>
