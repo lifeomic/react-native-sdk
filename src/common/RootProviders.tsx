@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationProvider } from './NavigationProvider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthConfiguration } from 'react-native-app-auth';
 import { AuthContextProvider } from '../hooks/useAuth';
@@ -33,7 +33,7 @@ export function RootProviders({
                   <BrandConfigProvider>
                     <NoInternetToastProvider>
                       <SafeAreaProvider>
-                        <NavigationContainer>{children}</NavigationContainer>
+                        <NavigationProvider>{children}</NavigationProvider>
                         <Toast />
                       </SafeAreaProvider>
                     </NoInternetToastProvider>

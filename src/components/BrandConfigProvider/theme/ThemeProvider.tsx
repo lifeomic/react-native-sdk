@@ -1,18 +1,44 @@
 import React from 'react';
 
 import {
-  MD3LightTheme as defaultPaperTheme,
-  MD3Theme,
-  Provider as PaperProvider,
+  DefaultTheme as reactNavigationLight,
+  DarkTheme as reactNavigationDark,
+} from '@react-navigation/native';
+
+import {
+  MD3LightTheme,
+  MD3DarkTheme,
   useTheme as usePaperTheme,
+  adaptNavigationTheme,
+  Provider as PaperProvider,
 } from 'react-native-paper';
-import * as baseTheme from './base';
+import type { MD3Theme } from 'react-native-paper';
+
+import * as baseLightTheme from './base/light';
+// TODO: When we decide to support a dark theme, import here
+import * as baseDarkTheme from './base/light';
+
 import merge from 'lodash/merge';
 import { RecursivePartial } from '@styles';
 
-const defaultTheme = merge({}, defaultPaperTheme, baseTheme);
+const combinedLightTheme = merge(
+  {},
+  reactNavigationLight,
+  MD3LightTheme,
+  baseLightTheme,
+);
 
-export type Theme = typeof baseTheme & MD3Theme;
+const combinedDarkTheme = merge(
+  {},
+  reactNavigationDark,
+  MD3DarkTheme,
+  baseDarkTheme,
+);
+
+export type Theme = typeof combinedLightTheme &
+  typeof combinedDarkTheme &
+  MD3Theme;
+
 export type ThemeProp = RecursivePartial<Theme>;
 
 export const useTheme = () => usePaperTheme<Theme>();
@@ -23,7 +49,23 @@ interface Props {
 }
 
 export function ThemeProvider({ theme: customTheme, children }: Props) {
-  const theme = merge({}, defaultTheme, customTheme);
+  // TODO: When we decide to support a dark theme, add this to context/state
+  const isThemeDark = false;
+
+  const materialLight = merge({}, MD3LightTheme, baseLightTheme, customTheme);
+  const materialDark = merge({}, MD3DarkTheme, baseDarkTheme, customTheme);
+
+  const { LightTheme, DarkTheme } = adaptNavigationTheme({
+    reactNavigationLight,
+    reactNavigationDark,
+    materialLight,
+    materialDark,
+  });
+
+  const lightTheme = merge({}, LightTheme, materialLight);
+  const darkTheme = merge({}, DarkTheme, materialDark);
+
+  const theme = isThemeDark ? darkTheme : lightTheme;
 
   return <PaperProvider theme={theme}>{children}</PaperProvider>;
 }
