@@ -9,7 +9,7 @@
     "format": "yarn prettier '**/*.{ts,tsx,js,json,md}'",
     "format:write": "yarn format --write",
     "format:check": "yarn format --check",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "tsc --noEmit && eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "yarn lint --fix",
     "test": "tsc --noEmit && yarn jest",
     "test:ci": "yarn lint && yarn jest --coverage --runInBand --silent --ci --logHeapUsage",
