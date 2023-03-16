@@ -103,7 +103,12 @@ export const ActiveAccountContextProvider = ({
       try {
         const selectedAccount = getValidAccount(accountsWithProduct, accountId);
         if (!selectedAccount) {
-          console.warn('Ignoring attempt to set invalid accountId', accountId);
+          if (process.env.NODE_ENV !== 'test') {
+            console.warn(
+              'Ignoring attempt to set invalid accountId',
+              accountId,
+            );
+          }
           return;
         }
 
@@ -116,7 +121,9 @@ export const ActiveAccountContextProvider = ({
         });
         await setStoredAccountId(selectedAccount.id);
       } catch (error) {
-        console.warn('Unable to set active account', error);
+        if (process.env.NODE_ENV !== 'test') {
+          console.warn('Unable to set active account', error);
+        }
       }
     },
     [accountsWithProduct, setStoredAccountId],

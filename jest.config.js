@@ -1,6 +1,6 @@
 module.exports = {
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.tsx?$': ['ts-jest', { diagnostics: false }],
   },
   testRunner: 'jest-circus/runner',
   testMatch: [

@@ -11,7 +11,7 @@
     "format:check": "yarn format --check",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "yarn lint --fix",
-    "test": "yarn jest",
+    "test": "tsc --noEmit && yarn jest",
     "test:ci": "yarn lint && yarn jest --coverage --runInBand --silent --ci --logHeapUsage",
     "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist && cp package.json README.md ./dist",
     "precopyToStarter": "yarn build",
