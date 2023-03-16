@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { t } from 'i18next';
 import { SettingsStack, SettingsStackParamList } from './SettingsStack';
@@ -11,22 +11,34 @@ export type TabParamList = {
   SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
 };
 
-const Tab = createBottomTabNavigator<TabParamList>();
+const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
 export function TabNavigator() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator shifting={true}>
       <Tab.Screen
         name="HomeTab"
         component={HomeStack}
-        options={{ tabBarLabel: t('tabs-home', 'Home'), headerShown: false }}
+        options={{
+          tabBarLabel: t('tabs-home', 'Home'),
+          tabBarIcon: 'home',
+        }}
+      />
+      <Tab.Screen
+        name="NotificationsTab"
+        component={HomeStack}
+        options={{
+          tabBarLabel: t('tabs-notifications', 'Notifications'),
+          tabBarIcon: 'bell',
+          tabBarBadge: true,
+        }}
       />
       <Tab.Screen
         name="SettingsTab"
         component={SettingsStack}
         options={{
           tabBarLabel: t('tabs-settings', 'Settings'),
-          headerShown: false,
+          tabBarIcon: 'cog',
         }}
       />
     </Tab.Navigator>
