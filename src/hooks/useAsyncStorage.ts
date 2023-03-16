@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from 'react-query';
 
 export function useAsyncStorage(key: string) {
-  const itemResult = useQuery<string | null>('async-storage-get', () =>
+  const itemResult = useQuery<string | null>(['async-storage-get', key], () =>
     AsyncStorage.getItem(key),
   );
 
