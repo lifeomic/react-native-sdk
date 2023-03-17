@@ -2,7 +2,7 @@ import React from 'react';
 import { Dimensions, TouchableOpacity, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
-import { createStyles, Theme } from '..';
+import { createStyles, Theme } from '../BrandConfigProvider';
 import { tID } from '../../common/testID';
 
 export interface TileProps {
