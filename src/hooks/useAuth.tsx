@@ -80,7 +80,7 @@ export const AuthContextProvider = ({
 
   const refreshAuthResult = useCallback(
     async (_refreshHandler: RefreshHandler, _authResult: AuthResult) => {
-      if (__DEV__) {
+      if (__DEV__ && process.env.NODE_ENV !== 'test') {
         console.warn('Attempting access token refresh');
       }
       try {
@@ -93,7 +93,9 @@ export const AuthContextProvider = ({
           refreshToken: refreshResult.refreshToken || _authResult.refreshToken,
         });
       } catch (error) {
-        console.warn('Error occurred refreshing access token', error);
+        if (process.env.NODE_ENV !== 'test') {
+          console.warn('Error occurred refreshing access token', error);
+        }
         clearAuthResult();
       }
     },
@@ -116,7 +118,12 @@ export const AuthContextProvider = ({
           }
         }
       } catch (error) {
-        console.warn(error, 'Error occurred loading or refreshing auth token');
+        if (process.env.NODE_ENV !== 'test') {
+          console.warn(
+            error,
+            'Error occurred loading or refreshing auth token',
+          );
+        }
       }
       setLoading(false);
     },

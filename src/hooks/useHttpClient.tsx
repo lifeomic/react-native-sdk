@@ -63,7 +63,7 @@ export const HttpClientContextProvider = ({
       undefined,
       async function (error: Error) {
         if (axios.isAxiosError(error)) {
-          if (__DEV__) {
+          if (__DEV__ && process.env.NODE_ENV !== 'test') {
             console.warn('Request Failed: ', error.toJSON());
           }
 

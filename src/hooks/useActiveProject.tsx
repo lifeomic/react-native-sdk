@@ -49,7 +49,9 @@ const findProjectAndSubjectById = (
   const selectedProject = projects?.find((p) => p.id === projectId);
   const selectedSubject = subjects?.find((s) => s.projectId === projectId);
   if (!selectedProject || !selectedSubject) {
-    console.warn('Ignoring attempt to set invalid projectId', projectId);
+    if (process.env.NODE_ENV !== 'test') {
+      console.warn('Ignoring attempt to set invalid projectId', projectId);
+    }
     return getDefault();
   }
   return { selectedProject, selectedSubject };

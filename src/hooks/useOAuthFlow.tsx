@@ -51,7 +51,9 @@ export const OAuthContextProvider = ({
 
   // PKCE is required
   if (!authConfig.usePKCE) {
-    console.warn('NOTE: LifeOmic requires PKCE. Overriding to usePKCE=true');
+    if (process.env.NODE_ENV !== 'test') {
+      console.warn('NOTE: LifeOmic requires PKCE. Overriding to usePKCE=true');
+    }
     authConfig.usePKCE = true;
   }
 
