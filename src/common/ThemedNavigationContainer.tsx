@@ -7,7 +7,7 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export function NavigationProvider({ children }: Props) {
+export function ThemedNavigationContainer({ children }: Props) {
   const theme = useTheme<Theme>();
 
   return <NavigationContainer theme={theme}>{children}</NavigationContainer>;

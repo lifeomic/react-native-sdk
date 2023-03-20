@@ -6,7 +6,7 @@ import {
 } from '../components/BrandConfigProvider';
 import * as baseTheme from '../components/BrandConfigProvider/theme/base';
 import { useTheme } from './useTheme';
-import { NavigationProvider } from '../common/NavigationProvider';
+import { ThemedNavigationContainer } from '../common/ThemedNavigationContainer';
 
 jest.unmock('@react-navigation/native');
 
@@ -14,7 +14,7 @@ const renderHookInContext = async (theme?: ThemeProp) => {
   return renderHook(() => useTheme(), {
     wrapper: ({ children }) => (
       <BrandConfigProvider theme={theme}>
-        <NavigationProvider>{children}</NavigationProvider>
+        <ThemedNavigationContainer>{children}</ThemedNavigationContainer>
       </BrandConfigProvider>
     ),
   });
