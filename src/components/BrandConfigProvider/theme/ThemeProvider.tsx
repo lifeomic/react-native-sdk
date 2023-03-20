@@ -1,43 +1,28 @@
 import React from 'react';
 
-import {
-  DefaultTheme as reactNavigationLight,
-  DarkTheme as reactNavigationDark,
-} from '@react-navigation/native';
+import { DefaultTheme as reactNavigationDefault } from '@react-navigation/native';
 
 import {
-  MD3LightTheme,
-  MD3DarkTheme,
+  MD3LightTheme as MD3DefaultTheme,
   useTheme as usePaperTheme,
   adaptNavigationTheme,
   Provider as PaperProvider,
 } from 'react-native-paper';
 import type { MD3Theme } from 'react-native-paper';
 
-import * as baseLightTheme from './base/light';
-// TODO: When we decide to support a dark theme, import here
-import * as baseDarkTheme from './base/light';
+import * as baseDefaultTheme from './base/default';
 
 import merge from 'lodash/merge';
 import { RecursivePartial } from '@styles';
 
-const combinedLightTheme = merge(
+const combinedDefaultTheme = merge(
   {},
-  reactNavigationLight,
-  MD3LightTheme,
-  baseLightTheme,
+  reactNavigationDefault,
+  MD3DefaultTheme,
+  baseDefaultTheme,
 );
 
-const combinedDarkTheme = merge(
-  {},
-  reactNavigationDark,
-  MD3DarkTheme,
-  baseDarkTheme,
-);
-
-export type Theme = typeof combinedLightTheme &
-  typeof combinedDarkTheme &
-  MD3Theme;
+export type Theme = typeof combinedDefaultTheme & MD3Theme;
 
 export type ThemeProp = RecursivePartial<Theme>;
 
@@ -49,23 +34,21 @@ interface Props {
 }
 
 export function ThemeProvider({ theme: customTheme, children }: Props) {
-  // TODO: When we decide to support a dark theme, add this to context/state
-  const isThemeDark = false;
+  const materialDefault = merge(
+    {},
+    MD3DefaultTheme,
+    baseDefaultTheme,
+    customTheme,
+  );
 
-  const materialLight = merge({}, MD3LightTheme, baseLightTheme, customTheme);
-  const materialDark = merge({}, MD3DarkTheme, baseDarkTheme, customTheme);
-
-  const { LightTheme, DarkTheme } = adaptNavigationTheme({
-    reactNavigationLight,
-    reactNavigationDark,
-    materialLight,
-    materialDark,
+  const { LightTheme: DefaultTheme } = adaptNavigationTheme({
+    reactNavigationLight: reactNavigationDefault,
+    reactNavigationDark: reactNavigationDefault,
+    materialLight: materialDefault,
+    materialDark: materialDefault,
   });
 
-  const lightTheme = merge({}, LightTheme, materialLight);
-  const darkTheme = merge({}, DarkTheme, materialDark);
+  const defaultTheme = merge({}, DefaultTheme, materialDefault);
 
-  const theme = isThemeDark ? darkTheme : lightTheme;
-
-  return <PaperProvider theme={theme}>{children}</PaperProvider>;
+  return <PaperProvider theme={defaultTheme}>{children}</PaperProvider>;
 }

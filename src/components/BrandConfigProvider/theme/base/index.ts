@@ -1,2 +1,2 @@
 // Default base theme
-export * from './light';
+export * from './default';
