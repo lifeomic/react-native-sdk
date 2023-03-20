@@ -7,7 +7,6 @@ import { HomeStack } from './HomeStack';
 
 export type TabParamList = {
   HomeTab: undefined;
-  NotificationsTab: undefined;
   SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
 };
 
@@ -22,15 +21,6 @@ export function TabNavigator() {
         options={{
           tabBarLabel: t('tabs-home', 'Home'),
           tabBarIcon: 'home',
-        }}
-      />
-      <Tab.Screen
-        name="NotificationsTab"
-        component={HomeStack}
-        options={{
-          tabBarLabel: t('tabs-notifications', 'Notifications'),
-          tabBarIcon: 'bell',
-          tabBarBadge: true,
         }}
       />
       <Tab.Screen
