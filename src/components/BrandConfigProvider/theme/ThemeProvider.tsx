@@ -1,18 +1,29 @@
 import React from 'react';
 
+import { DefaultTheme as reactNavigationDefault } from '@react-navigation/native';
+
 import {
-  MD3LightTheme as defaultPaperTheme,
-  MD3Theme,
-  Provider as PaperProvider,
+  MD3LightTheme as MD3DefaultTheme,
   useTheme as usePaperTheme,
+  adaptNavigationTheme,
+  Provider as PaperProvider,
 } from 'react-native-paper';
-import * as baseTheme from './base';
+import type { MD3Theme } from 'react-native-paper';
+
+import * as baseDefaultTheme from './base/default';
+
 import merge from 'lodash/merge';
 import { RecursivePartial } from '@styles';
 
-const defaultTheme = merge({}, defaultPaperTheme, baseTheme);
+const combinedDefaultTheme = merge(
+  {},
+  reactNavigationDefault,
+  MD3DefaultTheme,
+  baseDefaultTheme,
+);
 
-export type Theme = typeof baseTheme & MD3Theme;
+export type Theme = typeof combinedDefaultTheme & MD3Theme;
+
 export type ThemeProp = RecursivePartial<Theme>;
 
 export const useTheme = () => usePaperTheme<Theme>();
@@ -23,7 +34,21 @@ interface Props {
 }
 
 export function ThemeProvider({ theme: customTheme, children }: Props) {
-  const theme = merge({}, defaultTheme, customTheme);
+  const materialDefault = merge(
+    {},
+    MD3DefaultTheme,
+    baseDefaultTheme,
+    customTheme,
+  );
 
-  return <PaperProvider theme={theme}>{children}</PaperProvider>;
+  const { LightTheme: DefaultTheme } = adaptNavigationTheme({
+    reactNavigationLight: reactNavigationDefault,
+    reactNavigationDark: reactNavigationDefault,
+    materialLight: materialDefault,
+    materialDark: materialDefault,
+  });
+
+  const defaultTheme = merge({}, DefaultTheme, materialDefault);
+
+  return <PaperProvider theme={defaultTheme}>{children}</PaperProvider>;
 }

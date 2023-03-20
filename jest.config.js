@@ -21,6 +21,7 @@ module.exports = {
     'src/common/init',
     'src/common/RootProviders',
     'src/common/LoggedInProviders',
+    'src/common/ThemedNavigationContainer',
     'src/navigators'
   ],
   coverageThreshold: {
