@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Code, TrackerValue } from '../services/TrackTileService';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { pick, uniqBy } from 'lodash';
 import { EventTypeHandler, notifier } from '../services/EmitterService';
 

@@ -1,11 +1,11 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import AsyncStorage, {
   AsyncStorageStatic
-} from '@react-native-community/async-storage';
+} from '@react-native-async-storage/async-storage';
 import { useRecentCodedValues } from '../useRecentCodedValues';
 import { notifier } from '../../services/EmitterService';
 
-jest.mock('@react-native-community/async-storage', () => ({
+jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
   setItem: jest.fn()
 }));
