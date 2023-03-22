@@ -6,14 +6,14 @@ import {
   StylesProp,
   useStyleOverrides,
   Text,
-  useFontOverrides
+  useFontOverrides,
 } from '../styles';
 import { UnitPicker } from './UnitPicker';
 import {
   Tracker,
   TrackerValue,
   TrackerValuesContext,
-  useTrackTileService
+  useTrackTileService,
 } from '../services/TrackTileService';
 import Indicator from '../icons/indicator';
 import TrackAmountControl from './TrackAmountControl';
@@ -30,7 +30,7 @@ import {
   convertToPreferredUnit,
   convertToStoreUnit,
   getPreferredUnitType,
-  getStoredUnitType
+  getStoredUnitType,
 } from '../util/convert-value';
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
 import { numberFormatters } from '../formatters';
@@ -57,24 +57,24 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   const svc = useTrackTileService();
   const [dateRange, setDateRange] = useState({
     start: startOfToday(),
-    end: endOfToday()
+    end: endOfToday(),
   });
   const {
     trackerValues: [todaysValues],
-    loading: fetchingTrackerValues
+    loading: fetchingTrackerValues,
   } = useTrackerValues(valuesContext, dateRange);
   const metricId = tracker.metricId ?? tracker.id;
   const incomingValue = (todaysValues[metricId] ?? []).reduce(
     (total, { value }) => total + value,
-    0
+    0,
   );
 
   const [currentValue, setCurrentValue] = useState(incomingValue ?? 0);
   const [selectedUnit, setSelectedUnit] = useState(
-    getPreferredUnitType(tracker) || defaultUnit
+    getPreferredUnitType(tracker) || defaultUnit,
   );
   const [currentTarget, setCurrentTarget] = useState(
-    tracker.target ?? selectedUnit.target
+    tracker.target ?? selectedUnit.target,
   );
   const [target, setTarget] = useState(numberFormat(currentTarget));
 
@@ -86,7 +86,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     setTarget((target: string) => {
       const newTarget = coerceToNonnegativeValue(
         convertToISONumber(target),
-        currentTarget
+        currentTarget,
       );
       setCurrentTarget(newTarget);
       return numberFormat(newTarget);
@@ -95,7 +95,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
 
   useSyncTrackerSettingsEffect(tracker, {
     target: currentTarget,
-    unit: selectedUnit.unit
+    unit: selectedUnit.unit,
   });
 
   const onSelectUnit = useCallback(
@@ -104,7 +104,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
       const newUnit = newUnitType ?? defaultUnit;
       setSelectedUnit(newUnit);
     },
-    [defaultUnit, tracker.units]
+    [defaultUnit, tracker.units],
   );
 
   const saveNewValue = useCallback(
@@ -113,7 +113,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
         const values = todaysValues[metricId] ?? [];
         const currentValue = values.reduce(
           (total, { value }) => total + value,
-          0
+          0,
         );
         const updates: TrackerValue[] = [];
         const deletes: TrackerValue[] = [];
@@ -134,8 +134,8 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
                   : dateRange.start,
                 ...todaysValues[metricId]?.[0],
                 value: convertToPreferredUnit(resourceValue, tracker),
-                tracker
-              })
+                tracker,
+              }),
             );
             updates.push(res);
           } else {
@@ -145,7 +145,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
             const removed = await svc.deleteTrackerResource(
               valuesContext,
               tracker.resourceType,
-              trackerValue.id
+              trackerValue.id,
             );
 
             if (removed) {
@@ -157,13 +157,13 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
         const batchMeta = { valuesContext, metricId };
         notifier.emit('valuesChanged', [
           ...updates.map((tracker) => ({ ...batchMeta, tracker })),
-          ...deletes.map((tracker) => ({ ...batchMeta, tracker, drop: true }))
+          ...deletes.map((tracker) => ({ ...batchMeta, tracker, drop: true })),
         ]);
       } catch (e) {
         onError?.(e);
       }
     }, 800),
-    [todaysValues, tracker, metricId, svc, valuesContext, dateRange, onError]
+    [todaysValues, tracker, metricId, svc, valuesContext, dateRange, onError],
   );
 
   const onValueChange = useCallback(
@@ -171,7 +171,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
       setCurrentValue(newValue);
       saveNewValue(newValue);
     },
-    [saveNewValue, metricId]
+    [saveNewValue, metricId],
   );
 
   return (
@@ -209,14 +209,14 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           >
             {i18n.t('1dd732d282905b785370859fe167cdc6', {
               defaultValue: 'My Target',
-              ns: 'track-tile-ui'
+              ns: 'track-tile-ui',
             })}
           </Text>
           <TextInput
             testID={tID('tracker-target-input')}
             accessibilityLabel={i18n.t('9a8405185ebe954aaefa599d99390a2f', {
               defaultValue: 'Target Input',
-              ns: 'track-tile-ui'
+              ns: 'track-tile-ui',
             })}
             value={target}
             style={[fontWeights.semibold, styles.trackerDetailsTargetInput]}
@@ -265,7 +265,7 @@ const defaultStyles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     minHeight: '100%',
-    paddingBottom: 24
+    paddingBottom: 24,
   },
   trackerDetailsHeaderContainer: {
     width: '100%',
@@ -275,7 +275,7 @@ const defaultStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 37.5,
-    minHeight: 120
+    minHeight: 120,
   },
   trackerDetailsDescription: {
     textAlign: 'center',
@@ -284,7 +284,7 @@ const defaultStyles = StyleSheet.create({
     marginBottom: 6,
     marginHorizontal: 39,
     fontSize: 14,
-    lineHeight: 22
+    lineHeight: 22,
   },
   trackerDetailsTargetContainer: {
     flexDirection: 'row',
@@ -294,19 +294,19 @@ const defaultStyles = StyleSheet.create({
     paddingBottom: 10,
     marginHorizontal: 54,
     borderBottomColor: '#E6E6E6',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   trackerDetailsMyTarget: {
     color: '#333333',
     letterSpacing: 0.23,
     fontSize: 16,
-    lineHeight: 16
+    lineHeight: 16,
   },
   trackerDetailsSingleUnit: {
     color: '#262C32',
     letterSpacing: 0.23,
     fontSize: 16,
-    lineHeight: 16
+    lineHeight: 16,
   },
   trackerDetailsTargetInput: {
     flex: 1,
@@ -317,12 +317,12 @@ const defaultStyles = StyleSheet.create({
     alignSelf: 'stretch',
     marginTop: 'auto',
     marginBottom: -2,
-    paddingTop: 14
+    paddingTop: 14,
   },
   trackerDetailsHistoryChartContainer: {
     width: '100%',
     paddingHorizontal: 34,
     marginTop: 10,
-    flex: 1
-  }
+    flex: 1,
+  },
 });

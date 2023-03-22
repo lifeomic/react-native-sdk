@@ -5,7 +5,7 @@ import { useTrackerValues } from '../hooks/useTrackerValues';
 import {
   TrackerValuesContext,
   TRACKER_CODE,
-  TRACKER_CODE_SYSTEM
+  TRACKER_CODE_SYSTEM,
 } from '../services/TrackTileService';
 import { notifier } from '../services/EmitterService';
 import { startOfYesterday, format } from 'date-fns';
@@ -14,11 +14,12 @@ import * as fhirHelperModule from './to-fhir-resource';
 jest.mock('../hooks/useTrackerValues');
 jest.mock('lodash/debounce', () => jest.fn((fn) => fn));
 
-const mockUseTrackerValues: jest.Mock<typeof useTrackerValues> = useTrackerValues as any;
+const mockUseTrackerValues: jest.Mock<typeof useTrackerValues> =
+  useTrackerValues as any;
 
 const valuesContext: TrackerValuesContext = {
   system: TRACKER_CODE_SYSTEM,
-  codeBelow: TRACKER_CODE
+  codeBelow: TRACKER_CODE,
 };
 
 describe('Tracker Details', () => {
@@ -29,7 +30,7 @@ describe('Tracker Details', () => {
   it('should display tracker description', async () => {
     mockUseTrackerValues.mockReturnValue({
       loading: false,
-      trackerValues: [{}]
+      trackerValues: [{}],
     } as any);
 
     const { findByText } = render(
@@ -38,11 +39,11 @@ describe('Tracker Details', () => {
         tracker={
           {
             description: 'Description',
-            units: [{ display: '' }]
+            units: [{ display: '' }],
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     expect(await findByText('Description')).toBeDefined();
@@ -51,7 +52,7 @@ describe('Tracker Details', () => {
   it('should upsert the tracker when detail screen is unmounted', async () => {
     mockUseTrackerValues.mockReturnValue({
       loading: false,
-      trackerValues: [{}]
+      trackerValues: [{}],
     } as any);
 
     const upsertTracker = jest.fn();
@@ -62,11 +63,11 @@ describe('Tracker Details', () => {
         tracker={
           {
             id: 'metric-id',
-            units: [{ display: '', target: 5, unit: 'unit' }]
+            units: [{ display: '', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     unmount();
@@ -74,14 +75,14 @@ describe('Tracker Details', () => {
     expect(upsertTracker).toHaveBeenCalledWith('metric-id', {
       unit: 'unit',
       target: 5,
-      order: Number.MAX_SAFE_INTEGER
+      order: Number.MAX_SAFE_INTEGER,
     });
   });
 
   it('should upsert the tracker with a new target on unmount', async () => {
     mockUseTrackerValues.mockReturnValue({
       loading: false,
-      trackerValues: [{}]
+      trackerValues: [{}],
     } as any);
 
     const upsertTracker = jest.fn();
@@ -96,11 +97,11 @@ describe('Tracker Details', () => {
             target: 4,
             unit: 'unit',
             order: 0,
-            units: [{ display: '', target: 5, unit: 'unit' }]
+            units: [{ display: '', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     fireEvent.changeText(await findByPlaceholderText('5'), '10');
@@ -111,14 +112,14 @@ describe('Tracker Details', () => {
     expect(upsertTracker).toHaveBeenCalledWith('metric-id', {
       unit: 'unit',
       target: 10,
-      order: 0
+      order: 0,
     });
   });
 
   it('should increment the current tracker value by one when pressing the plus button', async () => {
     mockUseTrackerValues.mockReturnValue({
       loading: false,
-      trackerValues: [{}]
+      trackerValues: [{}],
     } as any);
 
     const upsertTrackerResource = jest.fn();
@@ -129,18 +130,18 @@ describe('Tracker Details', () => {
           {
             datastoreSettings: {},
             upsertTrackerResource,
-            upsertTracker: jest.fn()
+            upsertTracker: jest.fn(),
           } as any
         }
         tracker={
           {
             id: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: '', target: 5, unit: 'unit' }]
+            units: [{ display: '', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     fireEvent.press(await findByText('+'));
@@ -149,16 +150,16 @@ describe('Tracker Details', () => {
       valuesContext,
       expect.objectContaining({
         valueQuantity: expect.objectContaining({
-          value: 1
-        })
-      })
+          value: 1,
+        }),
+      }),
     );
   });
 
   it('should decrement the current tracker value by one when pressing the plus button', async () => {
     mockUseTrackerValues.mockReturnValue({
       loading: false,
-      trackerValues: [{ 'metric-id': [{ value: 5 }] }]
+      trackerValues: [{ 'metric-id': [{ value: 5 }] }],
     } as any);
 
     const upsertTrackerResource = jest.fn();
@@ -169,18 +170,18 @@ describe('Tracker Details', () => {
           {
             datastoreSettings: {},
             upsertTrackerResource,
-            upsertTracker: jest.fn()
+            upsertTracker: jest.fn(),
           } as any
         }
         tracker={
           {
             id: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: '', target: 5, unit: 'unit' }]
+            units: [{ display: '', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     fireEvent.press(await findByText('-'));
@@ -189,16 +190,16 @@ describe('Tracker Details', () => {
       valuesContext,
       expect.objectContaining({
         valueQuantity: expect.objectContaining({
-          value: 4
-        })
-      })
+          value: 4,
+        }),
+      }),
     );
   });
 
   it('should not decrement below zero', async () => {
     mockUseTrackerValues.mockReturnValue({
       loading: false,
-      trackerValues: [{ 'metric-id': [{ value: 0 }] }]
+      trackerValues: [{ 'metric-id': [{ value: 0 }] }],
     } as any);
 
     const upsertTrackerResource = jest.fn();
@@ -211,11 +212,11 @@ describe('Tracker Details', () => {
         tracker={
           {
             id: 'metric-id',
-            units: [{ display: '', target: 5, unit: 'unit' }]
+            units: [{ display: '', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     fireEvent.press(await findByText('-'));
@@ -226,7 +227,7 @@ describe('Tracker Details', () => {
   it("should allow editing a previous day's value", async () => {
     mockUseTrackerValues.mockReturnValue({
       loading: false,
-      trackerValues: [{}]
+      trackerValues: [{}],
     } as any);
 
     const upsertTrackerResource = jest.fn();
@@ -237,18 +238,18 @@ describe('Tracker Details', () => {
           {
             datastoreSettings: {},
             upsertTrackerResource,
-            upsertTracker: jest.fn()
+            upsertTracker: jest.fn(),
           } as any
         }
         tracker={
           {
             id: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: '', target: 5, unit: 'unit' }]
+            units: [{ display: '', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     fireEvent.press(await findByA11yLabel('Go to previous day'));
@@ -261,9 +262,9 @@ describe('Tracker Details', () => {
       expect.objectContaining({
         effectiveDateTime: format(yesterday, "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"),
         valueQuantity: expect.objectContaining({
-          value: 1
-        })
-      })
+          value: 1,
+        }),
+      }),
     );
   });
 
@@ -277,10 +278,10 @@ describe('Tracker Details', () => {
             { id: '1', value: 1 },
             { id: '2', value: 1 },
             { id: '3', value: 1 },
-            { id: '4', value: 1 }
-          ]
-        }
-      ]
+            { id: '4', value: 1 },
+          ],
+        },
+      ],
     } as any);
 
     const deleteTrackerResource = jest.fn().mockResolvedValue(true);
@@ -293,11 +294,11 @@ describe('Tracker Details', () => {
         tracker={
           {
             id: 'metric-id',
-            units: [{ display: '', target: 5, unit: 'unit' }]
+            units: [{ display: '', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     fireEvent.changeText(await findByA11yLabel(/Tracker value/), '1');
@@ -308,16 +309,16 @@ describe('Tracker Details', () => {
     expect(notifierSpy).toHaveBeenCalledWith('valuesChanged', [
       expect.objectContaining({
         tracker: expect.objectContaining({ id: '1' }),
-        drop: true
+        drop: true,
       }),
       expect.objectContaining({
         tracker: expect.objectContaining({ id: '2' }),
-        drop: true
+        drop: true,
       }),
       expect.objectContaining({
         tracker: expect.objectContaining({ id: '3' }),
-        drop: true
-      })
+        drop: true,
+      }),
     ]);
   });
 
@@ -329,10 +330,10 @@ describe('Tracker Details', () => {
         {
           'metric-id': [
             { id: '1', value: 1 },
-            { id: '2', value: 1 }
-          ]
-        }
-      ]
+            { id: '2', value: 1 },
+          ],
+        },
+      ],
     } as any);
 
     const upsertTrackerResource = jest
@@ -345,17 +346,17 @@ describe('Tracker Details', () => {
           {
             datastoreSettings: {},
             upsertTrackerResource,
-            upsertTracker: jest.fn()
+            upsertTracker: jest.fn(),
           } as any
         }
         tracker={
           {
             id: 'metric-id',
-            units: [{ display: '', target: 5, unit: 'unit' }]
+            units: [{ display: '', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     fireEvent.changeText(await findByA11yLabel(/Tracker value/), '5');
@@ -366,8 +367,8 @@ describe('Tracker Details', () => {
     expect(upsertTrackerResource).toHaveBeenCalledTimes(1);
     expect(notifierSpy).toHaveBeenCalledWith('valuesChanged', [
       expect.objectContaining({
-        tracker: expect.objectContaining({ id: '1', value: 4 })
-      })
+        tracker: expect.objectContaining({ id: '1', value: 4 }),
+      }),
     ]);
   });
 
@@ -380,10 +381,10 @@ describe('Tracker Details', () => {
         {
           'metric-id': [
             { id: '1', value: 60 },
-            { id: '2', value: 60 }
-          ]
-        }
-      ]
+            { id: '2', value: 60 },
+          ],
+        },
+      ],
     } as any);
 
     const upsertTrackerResource = jest
@@ -396,18 +397,18 @@ describe('Tracker Details', () => {
           {
             datastoreSettings: {},
             upsertTrackerResource,
-            upsertTracker: jest.fn()
+            upsertTracker: jest.fn(),
           } as any
         }
         tracker={
           {
             id: 'metric-id',
             units: [{ display: '', target: 5, code: 'min', unit: 'min' }],
-            resourceType: 'Procedure'
+            resourceType: 'Procedure',
           } as any
         }
         valuesContext={valuesContext}
-      />
+      />,
     );
 
     fireEvent.changeText(await findByA11yLabel(/Tracker value/), '5');
@@ -419,13 +420,13 @@ describe('Tracker Details', () => {
     expect(toFhirSpy).toHaveBeenCalledWith(
       'Procedure',
       expect.objectContaining({
-        value: 4 // toFhirResource expects data to be in preferred unit format, i.e. minutes
-      })
+        value: 4, // toFhirResource expects data to be in preferred unit format, i.e. minutes
+      }),
     );
     expect(notifierSpy).toHaveBeenCalledWith('valuesChanged', [
       expect.objectContaining({
-        tracker: expect.objectContaining({ id: '1', value: 240 })
-      })
+        tracker: expect.objectContaining({ id: '1', value: 240 }),
+      }),
     ]);
   });
 });

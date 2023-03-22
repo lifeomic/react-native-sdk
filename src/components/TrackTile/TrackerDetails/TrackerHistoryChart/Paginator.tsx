@@ -21,7 +21,7 @@ const hitSlop = {
   top: 15,
   left: 15,
   bottom: 15,
-  right: 15
+  right: 15,
 };
 
 const { shortMonthNumericDayWithYear } = dateFormatters;
@@ -31,7 +31,7 @@ const Paginator: FC<PaginatorProps> = (props) => {
   const styles = useStyleOverrides(defaultStyles);
   const flatStyles = useFlattenedStyles(styles, [
     'trackerHistoryChartPaginatorActiveButtonColor',
-    'trackerHistoryChartPaginatorDisabledButtonColor'
+    'trackerHistoryChartPaginatorDisabledButtonColor',
   ]);
 
   const chevrons = [ChevronLeft, ChevronRight];
@@ -46,7 +46,7 @@ const Paginator: FC<PaginatorProps> = (props) => {
         style={styles.trackerHistoryChartPaginatorStepperButton}
         accessibilityLabel={i18n.t('53ce64deea48bc8554d76f9d22dbbca5', {
           defaultValue: "Previous week's data",
-          ns: 'track-tile-ui'
+          ns: 'track-tile-ui',
         })}
         accessibilityRole="button"
         onPress={() => onChangeRange(-7)}
@@ -71,15 +71,15 @@ const Paginator: FC<PaginatorProps> = (props) => {
           ns: 'track-tile-ui',
           formatParams: {
             start: shortMonthNumericDayWithYear,
-            end: shortMonthNumericDayWithYear
-          }
+            end: shortMonthNumericDayWithYear,
+          },
         })}
       </Text>
       <TouchableOpacity
         testID={tID('history-chart-view-next-week')}
         accessibilityLabel={i18n.t('8c1ecfad31db029ed474399706684492', {
           defaultValue: "Next week's data",
-          ns: 'track-tile-ui'
+          ns: 'track-tile-ui',
         })}
         accessibilityRole="button"
         style={styles.trackerHistoryChartPaginatorStepperButton}
@@ -111,21 +111,21 @@ const defaultStyles = StyleSheet.create({
     paddingHorizontal: 16,
     marginVertical: 24,
     alignItems: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   trackerHistoryChartPaginatorTitle: {
     flex: 1,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   trackerHistoryChartPaginatorStepperButton: {
-    height: 13
+    height: 13,
   },
   trackerHistoryChartPaginatorActiveButtonColor: {
-    color: '#02BFF1'
+    color: '#02BFF1',
   },
   trackerHistoryChartPaginatorDisabledButtonColor: {
-    color: '#BDBDBD'
-  }
+    color: '#BDBDBD',
+  },
 });
 
 export default Paginator;

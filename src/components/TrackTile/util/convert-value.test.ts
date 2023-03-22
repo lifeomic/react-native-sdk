@@ -4,7 +4,7 @@ import {
   getStoredUnitType,
   convertToPreferredUnit,
   convertToStoreUnit,
-  convertToISONumber
+  convertToISONumber,
 } from './convert-value';
 
 const exampleTracker = {
@@ -16,7 +16,7 @@ const exampleTracker = {
       display: 'min',
       system: 'system',
       target: 60,
-      unit: 'min'
+      unit: 'min',
     },
     {
       code: 'h',
@@ -24,10 +24,10 @@ const exampleTracker = {
       display: 'hrs',
       system: 'system',
       target: 1,
-      unit: 'hour'
-    }
+      unit: 'hour',
+    },
   ],
-  unit: 'min'
+  unit: 'min',
 };
 
 describe('Tracker Value Unit Conversions', () => {
@@ -40,7 +40,7 @@ describe('Tracker Value Unit Conversions', () => {
     it('defaults to default unit', async () => {
       const prefUnit = getPreferredUnitType({
         ...exampleTracker,
-        unit: 'unknown-unit'
+        unit: 'unknown-unit',
       });
       expect(prefUnit.code).toEqual('min');
     });
@@ -55,7 +55,7 @@ describe('Tracker Value Unit Conversions', () => {
             display: 'min',
             system: 'system',
             target: 60,
-            unit: 'min'
+            unit: 'min',
           },
           {
             code: 'h',
@@ -63,10 +63,10 @@ describe('Tracker Value Unit Conversions', () => {
             display: 'hrs',
             system: 'system',
             target: 1,
-            unit: 'hour'
-          }
+            unit: 'hour',
+          },
         ],
-        unit: 'unknown'
+        unit: 'unknown',
       });
       expect(value).toEqual(1); // min
     });
@@ -82,7 +82,7 @@ describe('Tracker Value Unit Conversions', () => {
             display: 'c1',
             system: 'system',
             target: 60,
-            unit: 'c1'
+            unit: 'c1',
           },
           {
             code: 'c2',
@@ -90,10 +90,10 @@ describe('Tracker Value Unit Conversions', () => {
             display: 'c2',
             system: 'system',
             target: 1,
-            unit: 'c2'
-          }
+            unit: 'c2',
+          },
         ],
-        unit: 'c1'
+        unit: 'c1',
       });
       expect(value).toEqual(1);
     });
@@ -108,7 +108,7 @@ describe('Tracker Value Unit Conversions', () => {
     it('uses default for Observation', async () => {
       const storeUnit = getStoredUnitType({
         ...exampleTracker,
-        resourceType: 'Observation'
+        resourceType: 'Observation',
       });
       expect(storeUnit.code).toEqual('min');
     });
@@ -124,7 +124,7 @@ describe('Tracker Value Unit Conversions', () => {
             display: 'kg',
             system: 'system',
             target: 10,
-            unit: 'kg'
+            unit: 'kg',
           },
           {
             code: 'lb',
@@ -132,9 +132,9 @@ describe('Tracker Value Unit Conversions', () => {
             display: 'lbs',
             system: 'system',
             target: 10,
-            unit: 'lb'
-          }
-        ]
+            unit: 'lb',
+          },
+        ],
       });
       expect(storeUnit.code).toEqual('kg');
     });
@@ -149,7 +149,7 @@ describe('Tracker Value Unit Conversions', () => {
     it('should convert s to hr', async () => {
       const value = convertToPreferredUnit(60 * 60, {
         ...exampleTracker,
-        unit: 'hour'
+        unit: 'hour',
       });
       expect(value).toEqual(1);
     });
@@ -157,7 +157,7 @@ describe('Tracker Value Unit Conversions', () => {
     it('for edge case of unknown preferred unit, should use default value', async () => {
       const value = convertToPreferredUnit(60, {
         ...exampleTracker,
-        unit: 'unknown'
+        unit: 'unknown',
       });
       expect(value).toEqual(1); // min
     });
@@ -172,7 +172,7 @@ describe('Tracker Value Unit Conversions', () => {
     it('should convert h to s', async () => {
       const value = convertToStoreUnit(1, {
         ...exampleTracker,
-        unit: 'hour'
+        unit: 'hour',
       });
       expect(value).toEqual(60 * 60);
     });
@@ -187,7 +187,7 @@ describe('Tracker Value Unit Conversions', () => {
             display: 's',
             system: 'system',
             target: 60,
-            unit: 'seconds'
+            unit: 'seconds',
           },
           {
             code: 'min',
@@ -195,10 +195,10 @@ describe('Tracker Value Unit Conversions', () => {
             display: 'min',
             system: 'system',
             target: 1,
-            unit: 'min'
-          }
+            unit: 'min',
+          },
         ],
-        unit: 'second'
+        unit: 'second',
       });
       expect(value).toEqual(1);
     });

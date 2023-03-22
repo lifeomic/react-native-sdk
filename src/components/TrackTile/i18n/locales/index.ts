@@ -8,7 +8,7 @@ import tr from './tr.json';
 
 import { ResourceKey } from 'i18next';
 type LocaleData = (
-  language: string
+  language: string,
 ) => () => ResourceKey | boolean | null | undefined;
 
 const TRACK_TILE_UI = 'track-tile-ui';
@@ -33,7 +33,7 @@ const trackTileTranslations: LocaleData = (language) => () => {
 };
 
 const namespaces = {
-  [TRACK_TILE_UI]: trackTileTranslations
+  [TRACK_TILE_UI]: trackTileTranslations,
 };
 
 export { namespaces, trackTileTranslations, TRACK_TILE_UI };

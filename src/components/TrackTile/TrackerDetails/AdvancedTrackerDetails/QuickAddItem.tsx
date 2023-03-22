@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Image,
   Text,
-  ImageSourcePropType
+  ImageSourcePropType,
 } from 'react-native';
 import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
 import { Code } from '../../services/TrackTileService';
@@ -28,13 +28,13 @@ export const QuickAddItem = (props: QuickAddItemProps) => {
       testID={`tile-graphic-${code.display}`}
       accessibilityLabel={i18n.t('quick-add-tracker-value', {
         defaultValue: 'Add {{type}}',
-        type: code.display
+        type: code.display,
       })}
       {...touchableProps}
       style={[
         styles.quickAddItemContainer,
         touchableProps.disabled && styles.quickAddItemDisabled,
-        touchableProps.style
+        touchableProps.style,
       ]}
     >
       <Image style={styles.quickAddItemImage} source={image} />
@@ -44,7 +44,7 @@ export const QuickAddItem = (props: QuickAddItemProps) => {
       >
         {i18n.t('quick-add-label', {
           defaultValue: '+ {{title}}',
-          title: code.display
+          title: code.display,
         })}
       </Text>
     </TouchableOpacity>
@@ -58,21 +58,21 @@ declare module './AdvancedTrackerDetails' {
 const defaultStyles = StyleSheet.create({
   quickAddItemContainer: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   quickAddItemDisabled: {
-    opacity: 0.3
+    opacity: 0.3,
   },
   quickAddItemImage: {
     width: '100%',
     height: 80,
     overflow: 'hidden',
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
   quickAddItemText: {
     marginHorizontal: 12,
     marginVertical: 6,
     lineHeight: 18,
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 });

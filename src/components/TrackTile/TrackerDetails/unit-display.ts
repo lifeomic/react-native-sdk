@@ -13,11 +13,11 @@ export const unitDisplay = ({
   value,
   unit,
   tracker,
-  skipInterpolation = false
+  skipInterpolation = false,
 }: UnitDisplayConfig) => {
   // This should never happen. If it does it means we are missing translations.
   const defaultDisplay = `{{count}} ${unit.display.replace(/^(.)/, (match) =>
-    match.toUpperCase()
+    match.toUpperCase(),
   )}`;
 
   return i18n
@@ -30,7 +30,7 @@ export const unitDisplay = ({
       defaultValue_many: unit.displayMany ?? defaultDisplay,
       defaultValue_other: unit.displayOther ?? defaultDisplay,
       skipInterpolation,
-      ns: 'track-tile-ui'
+      ns: 'track-tile-ui',
     })
     .replace('{{count}}', '')
     .replace(/\s+/g, ' ')

@@ -6,16 +6,16 @@ type Unit = 's' | 'min' | 'h' | string;
 const converters: Record<Unit, Record<Unit, (value: number) => number>> = {
   s: {
     min: (v) => Math.round(v / 60),
-    h: (v) => Math.round(v / (60 * 60))
+    h: (v) => Math.round(v / (60 * 60)),
   },
   min: {
     s: (v) => v * 60,
-    h: (v) => Math.round(v / 60)
+    h: (v) => Math.round(v / 60),
   },
   h: {
     s: (v) => v * 60 * 60,
-    min: (v) => v * 60
-  }
+    min: (v) => v * 60,
+  },
 };
 
 type ConvertableTracker = Pick<Tracker, 'resourceType' | 'units' | 'unit'>;
@@ -39,7 +39,7 @@ export const getStoredUnitType = (tracker: ConvertableTracker): UnitType => {
       display: 'seconds',
       system: 'http://unitsofmeasure.org',
       default: true,
-      target: 0
+      target: 0,
     };
   } else {
     storedUnit = tracker.units.find((u) => u.default) || tracker.units[0];
@@ -49,7 +49,7 @@ export const getStoredUnitType = (tracker: ConvertableTracker): UnitType => {
 
 export const convertToPreferredUnit = (
   value: number,
-  tracker: ConvertableTracker
+  tracker: ConvertableTracker,
 ) => {
   const storedUnit = getStoredUnitType(tracker)?.code;
   const preferredUnit = getPreferredUnitType(tracker)?.code;
@@ -60,7 +60,7 @@ export const convertToPreferredUnit = (
 
 export const convertToStoreUnit = (
   value: number,
-  tracker: ConvertableTracker
+  tracker: ConvertableTracker,
 ) => {
   const storeUnit = getStoredUnitType(tracker)?.code;
   const preferredUnit = getPreferredUnitType(tracker)?.code;
@@ -77,7 +77,7 @@ export const convertToISONumber = (number: string) => {
         .replace(/٫/g, '.')
         .replace(
           /[٠١٢٣٤٥٦٧٨٩]/g,
-          (digit) => (digit.charCodeAt(0) - 1632).toString() // convert Arabic numbers
+          (digit) => (digit.charCodeAt(0) - 1632).toString(), // convert Arabic numbers
         );
     }
     case 'es':
@@ -85,13 +85,7 @@ export const convertToISONumber = (number: string) => {
     case 'fr':
     case 'pt':
     case 'tr': {
-      return (
-        number
-          // eslint-disable-next-line no-irregular-whitespace
-          .replace(/ /g, '')
-          .replace(/\./g, '')
-          .replace(/,/g, '.')
-      );
+      return number.replace(/ /g, '').replace(/\./g, '').replace(/,/g, '.');
     }
     default:
       return number.replace(/,/g, '');

@@ -6,7 +6,7 @@ import {
   startOfToday,
   addDays,
   startOfWeek,
-  endOfWeek
+  endOfWeek,
 } from 'date-fns';
 import Paginator from './Paginator';
 import { convertToPreferredUnit } from '../../util/convert-value';
@@ -29,12 +29,12 @@ const getInitialRange = (dateRangeType: DateRangeType) => {
     case 'calendarWeek':
       return {
         start: startOfWeek(startOfToday(), { weekStartsOn: 1 }),
-        end: endOfWeek(startOfToday(), { weekStartsOn: 1 })
+        end: endOfWeek(startOfToday(), { weekStartsOn: 1 }),
       };
     case 'past7Days':
       return {
         start: addDays(startOfToday(), -6),
-        end: endOfToday()
+        end: endOfToday(),
       };
   }
 };
@@ -45,7 +45,7 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
   const [dateRange, setDateRange] = useState(getInitialRange(dateRangeType));
   const { loading, error, trackerValues } = useTrackerValues(
     valuesContext,
-    dateRange
+    dateRange,
   );
 
   useEffect(() => {
@@ -56,9 +56,9 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
     (shiftByDays: number) =>
       setDateRange(({ start, end }) => ({
         start: addDays(start, shiftByDays),
-        end: addDays(end, shiftByDays)
+        end: addDays(end, shiftByDays),
       })),
-    []
+    [],
   );
 
   const Stepper = (
@@ -80,8 +80,8 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
           convertToPreferredUnit(
             value[metricId]?.reduce((total, { value }) => total + value, 0) ??
               0,
-            tracker
-          )
+            tracker,
+          ),
         )}
       />
       {stepperPosition === 'bottom' && Stepper}

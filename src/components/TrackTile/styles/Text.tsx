@@ -6,64 +6,64 @@ export const fontWeights = StyleSheet.create({
   regular: {
     ...Platform.select({
       ios: {
-        fontFamily: 'System'
+        fontFamily: 'System',
       },
       android: {
-        fontFamily: 'sans-serif'
-      }
-    })
+        fontFamily: 'sans-serif',
+      },
+    }),
   },
   medium: {
     ...Platform.select({
       ios: {
         fontFamily: 'System',
-        fontWeight: '500'
+        fontWeight: '500',
       },
       android: {
-        fontFamily: 'sans-serif-medium'
-      }
-    })
+        fontFamily: 'sans-serif-medium',
+      },
+    }),
   },
   light: {
     ...Platform.select({
       ios: {
         fontFamily: 'System',
-        fontWeight: '300'
+        fontWeight: '300',
       },
       android: {
-        fontFamily: 'sans-serif-light'
-      }
-    })
+        fontFamily: 'sans-serif-light',
+      },
+    }),
   },
   semibold: {
     ...Platform.select({
       ios: {
         fontFamily: 'System',
-        fontWeight: '600'
+        fontWeight: '600',
       },
       android: {
-        fontFamily: 'sans-serif-medium'
-      }
-    })
+        fontFamily: 'sans-serif-medium',
+      },
+    }),
   },
   bold: {
     ...Platform.select({
       ios: {
         fontFamily: 'System',
-        fontWeight: '700'
+        fontWeight: '700',
       },
       android: {
-        fontFamily: 'sans-serif'
-      }
+        fontFamily: 'sans-serif',
+      },
     }),
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });
 
 export type FontWeights = StylesProp<typeof fontWeights>;
 
 export const FontOverridesContext = React.createContext<FontWeights>(
-  undefined as any
+  undefined as any,
 );
 export const FontOverridesProvider = FontOverridesContext.Provider;
 

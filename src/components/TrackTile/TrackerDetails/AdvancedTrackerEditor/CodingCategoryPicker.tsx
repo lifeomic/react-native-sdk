@@ -4,7 +4,7 @@ import {
   Text,
   View,
   StyleSheet,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
 import { Code } from '../../services/TrackTileService';
@@ -21,7 +21,7 @@ export type CodingCategoryPickerProps<T extends Code> = {
 
 // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function CodingCategoryPicker<T extends Code>(
-  props: CodingCategoryPickerProps<T>
+  props: CodingCategoryPickerProps<T>,
 ) {
   const { categoryHeader, codes, onCodePressed, color, selectedCode } = props;
   const styles = useStyleOverrides(defaultStyles);
@@ -53,9 +53,9 @@ export function CodingCategoryPicker<T extends Code>(
                   styles.codingCategoryPickerBubbleSelected,
                   {
                     backgroundColor: color,
-                    borderColor: color
-                  }
-                ]
+                    borderColor: color,
+                  },
+                ],
               ]}
             >
               {code.display}
@@ -75,11 +75,11 @@ const defaultStyles = StyleSheet.create({
   codingCategoryPickerHeader: {
     fontSize: 34,
     lineHeight: 40.8,
-    color: '#35383D'
+    color: '#35383D',
   },
   codingCategoryPickerBubbleContainer: {
     overflow: 'visible',
-    marginTop: 20
+    marginTop: 20,
   },
   codingCategoryPickerBubble: {
     flexDirection: 'row',
@@ -94,9 +94,9 @@ const defaultStyles = StyleSheet.create({
     minWidth: 65,
     marginEnd: 8,
     borderColor: 'black',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   codingCategoryPickerBubbleSelected: {
-    color: 'white'
-  }
+    color: 'white',
+  },
 });

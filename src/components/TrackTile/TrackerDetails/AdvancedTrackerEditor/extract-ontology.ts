@@ -2,7 +2,7 @@ import { flatten, sortBy } from 'lodash';
 import {
   TrackerValue,
   CodedRelationship,
-  Code
+  Code,
 } from '../../services/TrackTileService';
 import { isCodeEqual } from '../../util/is-code-equal';
 
@@ -15,7 +15,7 @@ const unpackLevels = (
   ontologies: CodedRelationshipNode[] = [],
   parent: CodedRelationshipNode,
   levels: CodedRelationshipNode[][] = [],
-  level = 0
+  level = 0,
 ): CodedRelationshipNode[][] => {
   ontologies.forEach((ontology) => {
     levels[level] = levels[level] ?? [];
@@ -29,14 +29,14 @@ const unpackLevels = (
 
 const hasAncestorWithCode = (
   node?: CodedRelationshipNode,
-  code?: Code
+  code?: Code,
 ): boolean =>
   !!node && (isCodeEqual(node, code) || hasAncestorWithCode(node.parent, code));
 
 export const extractOntology = (
   trackerValue: Pick<TrackerValue, 'code'>,
   ontology: CodedRelationship[],
-  tracker: Omit<Code, 'display'>
+  tracker: Omit<Code, 'display'>,
 ) => {
   const selectedValues = trackerValue.code.coding.slice().reverse();
   const defaultTrackerValue =
@@ -48,13 +48,13 @@ export const extractOntology = (
 
   const rootCode: CodedRelationshipNode = {
     ...defaultTrackerValue,
-    specializedBy: ontologyWithoutGroups
+    specializedBy: ontologyWithoutGroups,
   };
 
   const levels = unpackLevels(ontologyWithoutGroups, rootCode).reverse();
 
   const node = flatten(levels).find((n) =>
-    trackerValue.code.coding.some((v) => isCodeEqual(v, n))
+    trackerValue.code.coding.some((v) => isCodeEqual(v, n)),
   );
 
   const [leafs, subs] = levels;
@@ -72,13 +72,14 @@ export const extractOntology = (
 
   const subCategories = leafs?.filter(
     (leaf) =>
-      categories?.some((category) => isCodeEqual(leaf.parent, category)) ?? true
+      categories?.some((category) => isCodeEqual(leaf.parent, category)) ??
+      true,
   );
 
   const baseCode = categories?.[0]?.parent ?? rootCode;
 
   const selectedCategory = categories?.find(
-    (c) => isCodeEqual(node, c) || isCodeEqual(node?.parent, c)
+    (c) => isCodeEqual(node, c) || isCodeEqual(node?.parent, c),
   );
   const selectedSubCategory = subCategories?.find((c) => isCodeEqual(node, c));
 
@@ -87,7 +88,7 @@ export const extractOntology = (
     selectedCategory,
     baseCode,
     categories: categories && sortBy(categories, 'display'),
-    subCategories: subCategories && sortBy(subCategories, 'display')
+    subCategories: subCategories && sortBy(subCategories, 'display'),
   };
 };
 

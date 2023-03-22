@@ -16,13 +16,13 @@ describe('dateFormatters', () => {
     'convert date $format',
     ({
       format,
-      result
+      result,
     }: {
       format: (date: Date) => string;
       result: string;
     }) => {
       expect(format(date)).toEqual(result);
-    }
+    },
   );
 });
 
@@ -39,12 +39,12 @@ describe('numberFormatters', () => {
     'convert number $format',
     ({
       format,
-      result
+      result,
     }: {
       format: (number: number) => string;
       result: string;
     }) => {
       expect(format(number)).toEqual(result);
-    }
+    },
   );
 });

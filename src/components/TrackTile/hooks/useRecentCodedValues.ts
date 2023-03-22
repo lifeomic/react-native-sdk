@@ -32,20 +32,20 @@ export const useRecentCodedValues = (metricId: string) => {
     const handler: ValuesChangedHandler = (updates) => {
       const relevantUpdates = updates.filter(
         ({ saveToRecent = true, tracker, drop }) =>
-          saveToRecent && tracker?.code?.coding[0] && tracker.value && !drop
+          saveToRecent && tracker?.code?.coding[0] && tracker.value && !drop,
       ) as { tracker: TrackerValue }[];
 
       setRecentValues((current) => {
         current.unshift(
           ...relevantUpdates.map(({ tracker }) => ({
             value: tracker.value,
-            code: pick(tracker.code.coding[0], ['code', 'system', 'display'])
-          }))
+            code: pick(tracker.code.coding[0], ['code', 'system', 'display']),
+          })),
         );
 
         current = uniqBy(
           current,
-          ({ code }) => `${code.system}|${code.code}`
+          ({ code }) => `${code.system}|${code.code}`,
         ).slice(0, 5);
 
         AsyncStorage.setItem(toKey(metricId), JSON.stringify(current));

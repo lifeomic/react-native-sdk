@@ -6,7 +6,7 @@ export type StylesProp<T> = Partial<Record<keyof T, NamedStyles[string]>>;
 
 export const composeStyles = <T extends NamedStyles>(
   stylesA: T,
-  stylesB: StylesProp<T> = {}
+  stylesB: StylesProp<T> = {},
 ) => {
   const merged = { ...stylesA };
   let prop: keyof StylesProp<T>;
@@ -14,7 +14,7 @@ export const composeStyles = <T extends NamedStyles>(
     if (prop in stylesB) {
       merged[prop] = StyleSheet.compose(
         stylesA[prop],
-        stylesB[prop] || {}
+        stylesB[prop] || {},
       ) as any;
     }
   }

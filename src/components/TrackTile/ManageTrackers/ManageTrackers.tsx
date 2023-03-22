@@ -6,7 +6,7 @@ import { Tracker, isInstalledMetric } from '../services/TrackTileService';
 import { useTrackers } from '../hooks/useTrackers';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import DraggableFlatList, {
-  RenderItemParams
+  RenderItemParams,
 } from 'react-native-draggable-flatlist';
 import { ManageTrackerRow } from './ManageTrackerRow';
 import { useSyncTrackerOrder } from './useSyncTrackerOrder';
@@ -29,7 +29,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
     'manageTrackersTrackerRowHighlightColor',
     'manageTrackersReorderSwitchThumbColor',
     'manageTrackersReorderSwitchTrueTrackColor',
-    'manageTrackersReorderSwitchFalseTrackColor'
+    'manageTrackersReorderSwitchFalseTrackColor',
   ]);
 
   const { loading, trackers, error } = trackerRequestMeta;
@@ -39,7 +39,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
   const {
     syncTrackerOrder,
     loading: reorderSaving,
-    hasError: hasReorderError = props.hasReorderError
+    hasError: hasReorderError = props.hasReorderError,
   } = useSyncTrackerOrder(orderState);
 
   const setOrderingState = useCallback(
@@ -51,11 +51,11 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
       } else {
         await syncTrackerOrder();
         setOrderState((ts) =>
-          ts?.concat(trackers.filter((t) => !isInstalledMetric(t)))
+          ts?.concat(trackers.filter((t) => !isInstalledMetric(t))),
         );
       }
     },
-    [trackers, syncTrackerOrder]
+    [trackers, syncTrackerOrder],
   );
 
   const trackerList = orderState ?? trackers;
@@ -66,7 +66,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
         <Text variant="semibold" style={styles.manageTrackersHeaderTitle}>
           {i18n.t('5cd43bf61db56cfc95edce3650ce607e', {
             defaultValue: 'Your active items',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
         <View style={styles.manageTrackersHeaderReorderContainer}>
@@ -77,7 +77,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
           >
             {i18n.t('332c80b1838dc515f5031e09da3b7f3f', {
               defaultValue: 'Reorder',
-              ns: 'track-tile-ui'
+              ns: 'track-tile-ui',
             })}
           </Text>
           <Switch
@@ -86,11 +86,11 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
               isReordering
                 ? i18n.t('661088055b4239afd979921576bc7a1d', {
                     defaultValue: 'Save tracker order',
-                    ns: 'track-tile-ui'
+                    ns: 'track-tile-ui',
                   })
                 : i18n.t('e46aea268279b8b71f527d3fedca48e6', {
                     defaultValue: 'Reorder trackers',
-                    ns: 'track-tile-ui'
+                    ns: 'track-tile-ui',
                   })
             }
             value={isReordering}
@@ -99,7 +99,8 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
             thumbColor={flatStyles.manageTrackersReorderSwitchThumbColor.color}
             trackColor={{
               true: flatStyles.manageTrackersReorderSwitchTrueTrackColor.color,
-              false: flatStyles.manageTrackersReorderSwitchFalseTrackColor.color
+              false:
+                flatStyles.manageTrackersReorderSwitchFalseTrackColor.color,
             }}
           />
         </View>
@@ -108,7 +109,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
         <Text variant="semibold" style={styles.manageTrackersError}>
           {i18n.t('b22f9f10b629d85aef19e294f78a0562', {
             defaultValue: 'There was a problem loading the Track-It Items',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
       )}
@@ -116,7 +117,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
         <Text variant="semibold" style={styles.manageTrackersError}>
           {i18n.t('561b721162a7e1e9985e92d5c33ceb34', {
             defaultValue: 'A problem occurred while reordering the items',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
       )}
@@ -172,25 +173,25 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                             name: 'decrement',
                             label: i18n.t('3717ca1e1702edabf06c7cf830e70627', {
                               defaultValue: 'Move Up',
-                              ns: 'track-tile-ui'
-                            })
+                              ns: 'track-tile-ui',
+                            }),
                           },
                           {
                             name: 'increment',
                             label: i18n.t('aa8ea843721d50172c76e0c87b43698e', {
                               defaultValue: 'Move Down',
-                              ns: 'track-tile-ui'
-                            })
-                          }
+                              ns: 'track-tile-ui',
+                            }),
+                          },
                         ]
                       : [
                           {
                             name: 'activate',
                             label: i18n.t('06799e531485986e06f0cad05252907d', {
                               defaultValue: 'Go to tracker',
-                              ns: 'track-tile-ui'
-                            })
-                          }
+                              ns: 'track-tile-ui',
+                            }),
+                          },
                         ]
                     : []
                 }
@@ -205,7 +206,9 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                       const moveDelta = action === 'increment' ? 1 : -1;
 
                       setOrderState((state) => {
-                        if (!state) return state;
+                        if (!state) {
+                          return state;
+                        }
 
                         const from = state.indexOf(tracker);
                         const to = from + moveDelta;
@@ -223,7 +226,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
               />
             );
           },
-          [isReordering, reorderSaving]
+          [isReordering, reorderSaving],
         )}
       />
     </View>
@@ -233,7 +236,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
 const defaultStyles = StyleSheet.create({
   manageTrackersContainer: {
     backgroundColor: '#FFFFFF',
-    flex: 1
+    flex: 1,
   },
   manageTrackersHeader: {
     justifyContent: 'space-between',
@@ -241,25 +244,25 @@ const defaultStyles = StyleSheet.create({
     backgroundColor: '#EEF0F2',
     height: 59,
     alignItems: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   manageTrackersHeaderTitle: {
     color: '#262C32',
     fontSize: 14,
-    letterSpacing: 0.23
+    letterSpacing: 0.23,
   },
   manageTrackersHeaderReorderContainer: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   manageTrackersHeaderReorderText: {
     paddingRight: 8,
     color: '#7B8996',
     fontSize: 16,
-    letterSpacing: 0.23
+    letterSpacing: 0.23,
   },
   manageTrackersHeaderReorderSwitch: {
-    transform: [{ scaleX: 0.78 }, { scaleY: 0.78 }]
+    transform: [{ scaleX: 0.78 }, { scaleY: 0.78 }],
   },
   manageTrackersTrackerRowHighlightColor: { color: '#F1F8EA' },
   manageTrackersReorderSwitchThumbColor: { color: '#FFFFFF' },
@@ -271,11 +274,11 @@ const defaultStyles = StyleSheet.create({
     paddingVertical: 24,
     color: '#7B8996',
     fontSize: 16,
-    letterSpacing: 0.23
+    letterSpacing: 0.23,
   },
   manageTrackersLoading: {
-    padding: 16
+    padding: 16,
   },
   trackerRowLoading: {},
-  draggableFlatListContainer: { flex: 1 }
+  draggableFlatListContainer: { flex: 1 },
 });

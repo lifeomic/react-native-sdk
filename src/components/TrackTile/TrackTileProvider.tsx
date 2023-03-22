@@ -2,12 +2,12 @@ import React, { FC } from 'react';
 import {
   FontOverridesProvider,
   FontWeights,
-  StyleOverridesProvider
+  StyleOverridesProvider,
 } from './styles';
 import { Styles, TrackTile, TrackTileProps } from './TrackTile';
 import {
   TrackTileService,
-  TrackTileServiceProvider
+  TrackTileServiceProvider,
 } from './services/TrackTileService';
 
 export type TrackTileProviderProps = TrackTileProps & {

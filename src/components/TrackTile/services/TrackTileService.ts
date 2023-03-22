@@ -161,7 +161,7 @@ export type TrackTileService = {
   fetchTrackers: (includePublic?: boolean) => Promise<Tracker[]>;
   upsertTracker: (
     metricId: string,
-    settings: InstalledMetricSettings
+    settings: InstalledMetricSettings,
   ) => Promise<InstalledMetric>;
   upsertTrackers: (settings: BulkInstalledMetricSettings[]) => Promise<void>;
   uninstallTracker: (metricId: string) => Promise<void>;
@@ -175,18 +175,18 @@ export type TrackTileService = {
     dates: {
       start: Date;
       end: Date;
-    }
+    },
   ) => Promise<TrackerValues>;
 
   upsertTrackerResource: (
     valuesContext: TrackerValuesContext,
-    resource: TrackerResource
+    resource: TrackerResource,
   ) => Promise<TrackerValue>;
 
   deleteTrackerResource: (
     valuesContext: TrackerValuesContext,
     resourceType: Tracker['resourceType'],
-    id: string
+    id: string,
   ) => Promise<boolean>;
 
   fetchOntology: (code: string) => Promise<CodedRelationship[]>;
@@ -196,28 +196,28 @@ export const TrackTileServiceContext = createContext<
   TrackTileService | undefined
 >(undefined);
 
-export const TrackTileServiceProvider = TrackTileServiceContext.Provider as React.Provider<
-  TrackTileService
->;
+export const TrackTileServiceProvider =
+  TrackTileServiceContext.Provider as React.Provider<TrackTileService>;
 
 export const useTrackTileService = () => {
   const ctx = useContext(TrackTileServiceContext);
 
-  if (!ctx)
+  if (!ctx) {
     throw new Error(
-      'TrackTileService is undefined. Did you forget to provide one via TrackTileServiceProvider?'
+      'TrackTileService is undefined. Did you forget to provide one via TrackTileServiceProvider?',
     );
+  }
 
   return ctx;
 };
 
 export const extractBulkSettings = (
-  install: InstalledMetric
+  install: InstalledMetric,
 ): BulkInstalledMetricSettings =>
   pick(install, ['unit', 'order', 'target', 'metricId']);
 
 export const isInstalledMetric = (
-  tracker: Tracker
+  tracker: Tracker,
 ): tracker is InstalledMetric => {
   return 'metricId' in tracker && 'target' in tracker && 'unit' in tracker;
 };

@@ -5,7 +5,7 @@ import {
   useTrackTileService,
   InstalledMetric,
   isInstalledMetric,
-  extractBulkSettings
+  extractBulkSettings,
 } from '../services/TrackTileService';
 
 export const useSyncTrackerOrder = (orderState: Tracker[] | undefined) => {
@@ -14,7 +14,9 @@ export const useSyncTrackerOrder = (orderState: Tracker[] | undefined) => {
   const [loading, setLoading] = useState(false);
 
   const syncTrackerOrder = useCallback(async () => {
-    if (!orderState) return;
+    if (!orderState) {
+      return;
+    }
 
     const toUpdate: InstalledMetric[] = [];
     const after = orderState.filter(isInstalledMetric);
@@ -26,12 +28,14 @@ export const useSyncTrackerOrder = (orderState: Tracker[] | undefined) => {
       if (trackerOrder !== index) {
         toUpdate.push({
           ...tracker,
-          order: index
+          order: index,
         });
       }
     }
 
-    if (!toUpdate.length) return;
+    if (!toUpdate.length) {
+      return;
+    }
 
     setLoading(true);
 
@@ -54,6 +58,6 @@ export const useSyncTrackerOrder = (orderState: Tracker[] | undefined) => {
   return {
     syncTrackerOrder,
     hasError,
-    loading
+    loading,
   };
 };

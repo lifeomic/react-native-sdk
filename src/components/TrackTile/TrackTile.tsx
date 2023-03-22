@@ -8,7 +8,7 @@ import {
   Tracker,
   TrackerValuesContext,
   TRACKER_CODE,
-  TRACKER_CODE_SYSTEM
+  TRACKER_CODE_SYSTEM,
 } from './services/TrackTileService';
 import { useTrackers } from './hooks/useTrackers';
 import { useTrackerValues } from './hooks/useTrackerValues';
@@ -30,18 +30,17 @@ export const TrackTile: FC<TrackTileProps> = ({
   hideSettingsButton = false,
   title = '',
   background = <TileBackground />,
-  icons
+  icons,
 }) => {
   const styles = useStyleOverrides(defaultStyles);
   const valuesContext: TrackerValuesContext = {
     system: TRACKER_CODE_SYSTEM,
-    codeBelow: TRACKER_CODE
+    codeBelow: TRACKER_CODE,
   };
 
   const { trackers, loading: trackersLoading } = useTrackers();
-  const { trackerValues, loading: valuesLoading } = useTrackerValues(
-    valuesContext
-  );
+  const { trackerValues, loading: valuesLoading } =
+    useTrackerValues(valuesContext);
 
   return (
     <>
@@ -79,21 +78,21 @@ const defaultStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowOffset: {
       height: 0,
-      width: 2
+      width: 2,
     },
-    shadowRadius: 13
+    shadowRadius: 13,
   },
   trackTileBackgroundContainer: {
     alignSelf: 'center',
     width: '100%',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   trackTileHeader: {
     height: 40,
     display: 'flex',
     flexDirection: 'row-reverse',
     alignItems: 'center',
-    padding: 8
+    padding: 8,
   },
   trackTileHeaderTitle: {
     position: 'absolute',
@@ -102,6 +101,6 @@ const defaultStyles = StyleSheet.create({
     right: 0,
     alignSelf: 'center',
     textAlign: 'center',
-    color: '#fff'
-  }
+    color: '#fff',
+  },
 });

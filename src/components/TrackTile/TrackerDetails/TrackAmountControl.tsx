@@ -19,7 +19,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
   const fonts = useFlattenedStyles(styles, [
     'trackAmountControlValueFontSizeLarge',
     'trackAmountControlValueFontSizeMedium',
-    'trackAmountControlValueFontSizeSmall'
+    'trackAmountControlValueFontSizeSmall',
   ]);
 
   const [currentValue, setCurrentValue] = useState(numberFormat(value));
@@ -29,7 +29,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
   const submitChange = useCallback(() => {
     const newValue = coerceToNonnegativeValue(
       convertToISONumber(currentValue),
-      value
+      value,
     );
     onChange(newValue);
     setCurrentValue(numberFormat(newValue));
@@ -49,7 +49,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         testID={tID('decrement-tracker-value-button')}
         accessibilityLabel={i18n.t('a420e9269fa8475365b5aba2596b2dc6', {
           defaultValue: 'Decrement tracker value',
-          ns: 'track-tile-ui'
+          ns: 'track-tile-ui',
         })}
         accessibilityRole="button"
         onPress={() => value > 0 && onChange(value - 1)}
@@ -58,7 +58,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         <Text variant="light" style={styles.trackAmountControlUnaryButton}>
           {i18n.t('336d5ebc5436534e61d16e63ddfca327', {
             defaultValue: '-',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
       </TouchableOpacity>
@@ -67,13 +67,13 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         accessibilityLabel={i18n.t('c606756e12cb4d462eb815d1641016b9', {
           defaultValue: 'Tracker value, {{value}}',
           value,
-          ns: 'track-tile-ui'
+          ns: 'track-tile-ui',
         })}
         style={[
           { color },
           styles.trackAmountControlValue,
           fontWeights.bold,
-          { fontSize }
+          { fontSize },
         ]}
         keyboardType="numeric"
         value={currentValue}
@@ -87,7 +87,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         testID={tID('increment-tracker-value-button')}
         accessibilityLabel={i18n.t('f6d128902f6eaacb070c610c0556fbcd', {
           defaultValue: 'Increment tracker value',
-          ns: 'track-tile-ui'
+          ns: 'track-tile-ui',
         })}
         accessibilityRole="button"
         onPress={() => onChange(value + 1)}
@@ -96,7 +96,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         <Text variant="light" style={styles.trackAmountControlUnaryButton}>
           {i18n.t('26b17225b626fb9238849fd60eabdf60', {
             defaultValue: '+',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
       </TouchableOpacity>
@@ -127,7 +127,7 @@ const defaultStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 24
+    paddingHorizontal: 24,
   },
   trackAmountControlUnaryButton: {
     color: 'black',
@@ -135,21 +135,21 @@ const defaultStyles = StyleSheet.create({
     fontSize: 34,
     letterSpacing: 0.23,
     minWidth: 22,
-    height: 44
+    height: 44,
   },
   trackAmountControlValue: {
     flex: 1,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   trackAmountControlValueFontSizeLarge: {
-    fontSize: 40
+    fontSize: 40,
   },
   trackAmountControlValueFontSizeMedium: {
-    fontSize: 35
+    fontSize: 35,
   },
   trackAmountControlValueFontSizeSmall: {
-    fontSize: 26
-  }
+    fontSize: 26,
+  },
 });
 
 export default TrackAmountControl;

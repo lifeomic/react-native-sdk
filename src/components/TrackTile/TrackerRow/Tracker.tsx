@@ -9,7 +9,7 @@ import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { tID } from '../common/testID';
 import {
   convertToPreferredUnit,
-  getPreferredUnitType
+  getPreferredUnitType,
 } from '../util/convert-value';
 import { numberFormatters } from '../formatters';
 import { SvgProps } from 'react-native-svg';
@@ -26,7 +26,7 @@ export const Tracker: FC<TrackerProps> = (tracker) => {
   const flatStyles = useFlattenedStyles(styles, [
     'trackerIconColor',
     'trackerIconInstalledHeight',
-    'trackerIconInstalledUninstalledHeight'
+    'trackerIconInstalledUninstalledHeight',
   ]);
 
   const unit = getPreferredUnitType(tracker);
@@ -81,11 +81,11 @@ export const Tracker: FC<TrackerProps> = (tracker) => {
           ? i18n.t('8ec46d9188f504c09a64027a742d7fa5', {
               defaultValue: '({{unit}})',
               unit: unitDisplay,
-              ns: 'track-tile-ui'
+              ns: 'track-tile-ui',
             })
           : i18n.t('7ca7a0f6709e2b1ed0e45255c837e0cd', {
               defaultValue: 'Track It!',
-              ns: 'track-tile-ui'
+              ns: 'track-tile-ui',
             })}
       </Text>
     </View>
@@ -99,22 +99,22 @@ const size = 70;
 const defaultStyles = StyleSheet.create({
   trackerName: {
     fontSize: 12,
-    color: 'white'
+    color: 'white',
   },
   trackerNameDisabled: {
-    color: '#7B8996'
+    color: '#7B8996',
   },
   trackerUnit: { fontSize: 10, color: '#7B8996' },
   trackerCurrentValue: {
     fontSize: 14,
     color: 'white',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   tracker: {
     marginBottom: 24,
     marginHorizontal: 10,
     alignItems: 'center',
-    position: 'relative'
+    position: 'relative',
   },
   trackerProgressContainer: {
     width: size,
@@ -122,25 +122,25 @@ const defaultStyles = StyleSheet.create({
     marginBottom: 10.5,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative'
+    position: 'relative',
   },
   trackerIconDisabled: {
-    opacity: 0.5
+    opacity: 0.5,
   },
   trackerIconColor: {
-    color: undefined
+    color: undefined,
   },
   trackerIconInstalledHeight: {
-    height: 20
+    height: 20,
   },
   trackerIconInstalledUninstalledHeight: {
-    height: 25
+    height: 25,
   },
   trackerProgressBarContainer: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0
-  }
+    bottom: 0,
+  },
 });

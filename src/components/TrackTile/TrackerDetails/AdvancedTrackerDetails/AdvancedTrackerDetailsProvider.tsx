@@ -2,27 +2,28 @@ import React, { FC } from 'react';
 import {
   FontOverridesProvider,
   FontWeights,
-  StyleOverridesProvider
+  StyleOverridesProvider,
 } from '../../styles';
 import {
   Styles,
   AdvancedTrackerDetails,
-  AdvancedTrackerDetailsProps
+  AdvancedTrackerDetailsProps,
 } from './AdvancedTrackerDetails';
 import {
   TrackTileService,
-  TrackTileServiceProvider
+  TrackTileServiceProvider,
 } from '../../services/TrackTileService';
 
-export type AdvancedTrackerDetailsProviderProps = AdvancedTrackerDetailsProps & {
-  styles?: Styles;
-  trackTileService: TrackTileService;
-  fonts?: FontWeights;
-};
+export type AdvancedTrackerDetailsProviderProps =
+  AdvancedTrackerDetailsProps & {
+    styles?: Styles;
+    trackTileService: TrackTileService;
+    fonts?: FontWeights;
+  };
 
-export const AdvancedTrackerDetailsProvider: FC<AdvancedTrackerDetailsProviderProps> = (
-  props
-) => {
+export const AdvancedTrackerDetailsProvider: FC<
+  AdvancedTrackerDetailsProviderProps
+> = (props) => {
   const { trackTileService, styles, fonts, ...trackerDetailsProps } = props;
 
   return (

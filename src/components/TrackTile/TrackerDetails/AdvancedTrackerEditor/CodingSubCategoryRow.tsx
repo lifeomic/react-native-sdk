@@ -6,7 +6,7 @@ import {
   View,
   StyleSheet,
   Linking,
-  I18nManager
+  I18nManager,
 } from 'react-native';
 import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
 import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
@@ -26,7 +26,7 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
   const fontWeights = useFontOverrides();
   const Chevron = I18nManager.isRTL ? ChevronLeft : ChevronRight;
   const flatStyles = useFlattenedStyles(styles, [
-    'codingSubCategoryRowContentLink'
+    'codingSubCategoryRowContentLink',
   ]);
 
   return (
@@ -39,7 +39,7 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
           style={[
             fontWeights.semibold,
             styles.codingSubCategoryRowTitle,
-            selected && { color }
+            selected && { color },
           ]}
         >
           {code.display}
@@ -47,16 +47,16 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
         <View
           style={[
             styles.codingSubCategoryRowRadioCircle,
-            selected && { borderColor: color }
+            selected && { borderColor: color },
           ]}
         >
           {selected && (
             <View
               style={[
                 {
-                  backgroundColor: color
+                  backgroundColor: color,
                 },
-                styles.codingSubCategoryRowRadioDot
+                styles.codingSubCategoryRowRadioDot,
               ]}
             />
           )}
@@ -79,11 +79,11 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
               <Text
                 style={[
                   fontWeights.semibold,
-                  styles.codingSubCategoryRowContentLink
+                  styles.codingSubCategoryRowContentLink,
                 ]}
               >
                 {i18n.t('learn-more', {
-                  defaultValue: 'Learn More'
+                  defaultValue: 'Learn More',
                 })}
               </Text>
               <Chevron
@@ -111,14 +111,14 @@ const defaultStyles = StyleSheet.create({
     paddingHorizontal: 35,
     paddingVertical: 12,
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   codingSubCategoryRowTitle: {
     fontSize: 16,
     color: '#35383D',
     marginBottom: 6,
     paddingTop: 6,
-    lineHeight: 19.2
+    lineHeight: 19.2,
   },
   codingSubCategoryRowRadioCircle: {
     width: 24,
@@ -128,32 +128,32 @@ const defaultStyles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   codingSubCategoryRowRadioDot: {
     width: '65%',
     height: '65%',
-    borderRadius: 12
+    borderRadius: 12,
   },
   codingSubCategoryRowContentContainer: {
     paddingHorizontal: 35,
     paddingVertical: 12,
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
     borderBottomWidth: 1,
-    backgroundColor: '#F2F2F2'
+    backgroundColor: '#F2F2F2',
   },
   codingSubCategoryRowContentText: {
     fontSize: 14,
     color: '#35383D',
-    lineHeight: 21
+    lineHeight: 21,
   },
   codingSubCategoryRowContentLinkContainer: {
     flexDirection: 'row',
-    marginTop: 12
+    marginTop: 12,
   },
   codingSubCategoryRowContentLink: {
     fontSize: 16,
     color: '#02BFF1',
-    lineHeight: 19.2
-  }
+    lineHeight: 19.2,
+  },
 });

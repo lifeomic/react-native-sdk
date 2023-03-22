@@ -4,7 +4,7 @@ import {
   TouchableHighlight,
   TouchableHighlightProps,
   StyleSheet,
-  I18nManager
+  I18nManager,
 } from 'react-native';
 import i18n from '@i18n';
 import { Tracker } from '../services/TrackTileService';
@@ -30,7 +30,7 @@ export const ManageTrackerRow: FC<Props> = (props) => {
   const { isBeingDragged, isDraggable, ...highlightProps } = remainingProps;
   const styles = useStyleOverrides(defaultStyles);
   const flatStyles = useFlattenedStyles(styles, [
-    'manageTrackerRowChevronColor'
+    'manageTrackerRowChevronColor',
   ]);
   const inactive = !tracker.metricId;
   const id = tracker.metricId || tracker.id;
@@ -42,13 +42,13 @@ export const ManageTrackerRow: FC<Props> = (props) => {
         <View
           style={[
             styles.manageTrackerRowContainer,
-            isBeingDragged && styles.manageTrackerRowContainerActive
+            isBeingDragged && styles.manageTrackerRowContainerActive,
           ]}
         >
           <View
             style={[
               styles.manageTrackerRowIcon,
-              inactive && styles.manageTrackerRowIconInactive
+              inactive && styles.manageTrackerRowIconInactive,
             ]}
           >
             <Indicator
@@ -63,7 +63,7 @@ export const ManageTrackerRow: FC<Props> = (props) => {
               testID={tID(`tracker-name-${id}`)}
               style={[
                 styles.manageTrackerRowTrackerName,
-                inactive && styles.manageTrackerRowTrackerNameInactive
+                inactive && styles.manageTrackerRowTrackerNameInactive,
               ]}
             >
               {tracker.name}
@@ -73,24 +73,24 @@ export const ManageTrackerRow: FC<Props> = (props) => {
               testID={tID(`install-status-${id}`)}
               style={[
                 styles.manageTrackerRowTrackerStatus,
-                inactive && styles.manageTrackerRowTrackerStatusInactive
+                inactive && styles.manageTrackerRowTrackerStatusInactive,
               ]}
             >
               {inactive
                 ? i18n.t('3cab03c00dbd11bc3569afa0748013f0', {
                     defaultValue: 'Inactive',
-                    ns: 'track-tile-ui'
+                    ns: 'track-tile-ui',
                   })
                 : i18n.t('4d3d769b812b6faa6b76e1a8abaece2d', {
                     defaultValue: 'Active',
-                    ns: 'track-tile-ui'
+                    ns: 'track-tile-ui',
                   })}
             </Text>
           </View>
           <View
             style={styles.manageTrackerRowEndAdornment}
             testID={tID(
-              isDraggable ? `reorder-tracker-${id}` : `go-to-tracker-${id}`
+              isDraggable ? `reorder-tracker-${id}` : `go-to-tracker-${id}`,
             )}
             accessible={false}
             accessibilityLabel={
@@ -99,7 +99,7 @@ export const ManageTrackerRow: FC<Props> = (props) => {
                     defaultValue:
                       'Hold and Drag to Change the Order of {{name}}',
                     name: tracker.name,
-                    ns: 'track-tile-ui'
+                    ns: 'track-tile-ui',
                   })
                 : undefined
             }
@@ -130,47 +130,47 @@ const defaultStyles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 35,
     height: 63,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   manageTrackerRowContainerActive: {
     backgroundColor: 'white',
-    height: 62
+    height: 62,
   },
   manageTrackerRowIcon: {
-    opacity: 1
+    opacity: 1,
   },
   manageTrackerRowIconInactive: {
-    opacity: 0.5
+    opacity: 0.5,
   },
   manageTrackerRowContent: { flex: 1, paddingHorizontal: 18 },
   manageTrackerRowTrackerName: {
     color: '#242536',
     fontSize: 16,
-    letterSpacing: 0.23
+    letterSpacing: 0.23,
   },
   manageTrackerRowTrackerNameInactive: {
-    color: '#7B8996'
+    color: '#7B8996',
   },
   manageTrackerRowTrackerStatus: {
     fontSize: 12,
     letterSpacing: 0.05,
-    color: '#6DBA2D'
+    color: '#6DBA2D',
   },
   manageTrackerRowTrackerStatusInactive: {
-    color: '#7B8996'
+    color: '#7B8996',
   },
   manageTrackerRowEndAdornment: {
     height: 12,
     width: 30,
     marginRight: 7,
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
   },
   manageTrackerRowChevronColor: {
-    color: '#B2B9C0'
+    color: '#B2B9C0',
   },
   manageTrackerRowDivider: {
     height: 1,
     backgroundColor: '#242536',
-    opacity: 0.15
-  }
+    opacity: 0.15,
+  },
 });

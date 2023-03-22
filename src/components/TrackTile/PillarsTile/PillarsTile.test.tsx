@@ -4,14 +4,14 @@ import { PillarsTileProvider } from './PillarsTileProvider';
 import {
   Tracker,
   TRACKER_PILLAR_CODE,
-  TRACKER_PILLAR_CODE_SYSTEM
+  TRACKER_PILLAR_CODE_SYSTEM,
 } from '../services/TrackTileService';
 import { startOfToday } from 'date-fns';
 import debounce from 'lodash/debounce';
 
 jest.mock('lodash/debounce', () => jest.fn((fn) => fn));
 
-const mockDebounce = (debounce as any) as jest.Mock<typeof debounce>;
+const mockDebounce = debounce as any as jest.Mock<typeof debounce>;
 
 const examplePillar: Tracker = {
   id: '1',
@@ -25,8 +25,8 @@ const examplePillar: Tracker = {
       display: 'min',
       system: 'system',
       target: 60,
-      unit: 'min'
-    }
+      unit: 'min',
+    },
   ],
   unit: 'min',
   system: TRACKER_PILLAR_CODE_SYSTEM,
@@ -36,7 +36,7 @@ const examplePillar: Tracker = {
   color: 'red',
   description: 'desc',
   icon: 'src/icon.png',
-  lifePoints: 0
+  lifePoints: 0,
 };
 
 const observationPillar: Tracker = {
@@ -51,8 +51,8 @@ const observationPillar: Tracker = {
       display: 'serving',
       system: 'system',
       target: 5,
-      unit: "[arb'U]"
-    }
+      unit: "[arb'U]",
+    },
   ],
   unit: "[arb'U]",
   system: TRACKER_PILLAR_CODE_SYSTEM,
@@ -62,12 +62,12 @@ const observationPillar: Tracker = {
   color: 'red',
   description: 'desc',
   icon: 'src/icon.png',
-  lifePoints: 0
+  lifePoints: 0,
 };
 
 const pillarValueCtx = {
   system: TRACKER_PILLAR_CODE_SYSTEM,
-  codeBelow: TRACKER_PILLAR_CODE
+  codeBelow: TRACKER_PILLAR_CODE,
 };
 
 describe('Track Tile', () => {
@@ -77,11 +77,11 @@ describe('Track Tile', () => {
         trackTileService={
           {
             fetchTrackers: jest.fn(() => new Promise(jest.fn)),
-            fetchTrackerValues: jest.fn().mockResolvedValue({})
+            fetchTrackerValues: jest.fn().mockResolvedValue({}),
           } as any
         }
         onOpenDetails={jest.fn()}
-      />
+      />,
     );
 
     expect(await findByA11yRole('progressbar')).toBeDefined();
@@ -95,11 +95,11 @@ describe('Track Tile', () => {
             fetchTrackers: jest.fn().mockResolvedValue([examplePillar]),
             fetchTrackerValues: jest
               .fn()
-              .mockImplementation(() => new Promise(jest.fn))
+              .mockImplementation(() => new Promise(jest.fn)),
           } as any
         }
         onOpenDetails={jest.fn()}
-      />
+      />,
     );
 
     const pillarLoadingView = await findByTestId('pillar-loading-1');
@@ -115,13 +115,13 @@ describe('Track Tile', () => {
               .fn()
               .mockResolvedValue([
                 examplePillar,
-                { ...examplePillar, id: '2', metricId: '2' }
+                { ...examplePillar, id: '2', metricId: '2' },
               ]),
-            fetchTrackerValues: jest.fn().mockResolvedValue({})
+            fetchTrackerValues: jest.fn().mockResolvedValue({}),
           } as any
         }
         onOpenDetails={jest.fn()}
-      />
+      />,
     );
 
     const pillar1Value = await findByTestId('pillar-value-1');
@@ -138,18 +138,18 @@ describe('Track Tile', () => {
         trackTileService={
           {
             fetchTrackers: jest.fn().mockResolvedValue([examplePillar]),
-            fetchTrackerValues: jest.fn().mockResolvedValue({})
+            fetchTrackerValues: jest.fn().mockResolvedValue({}),
           } as any
         }
         onOpenDetails={onOpenDetails}
-      />
+      />,
     );
 
     fireEvent.press(await findByTestId('pillar-tracker-1'));
 
     expect(onOpenDetails).toHaveBeenCalledWith(examplePillar, {
       system: TRACKER_PILLAR_CODE_SYSTEM,
-      codeBelow: TRACKER_PILLAR_CODE
+      codeBelow: TRACKER_PILLAR_CODE,
     });
   });
 
@@ -163,13 +163,13 @@ describe('Track Tile', () => {
             fetchTrackers: jest.fn().mockResolvedValue([examplePillar]),
             fetchTrackerValues: jest.fn().mockResolvedValue({
               [startOfToday().toUTCString()]: {
-                [examplePillar.metricId!]: [{ value: trackerValue }]
-              }
-            })
+                [examplePillar.metricId!]: [{ value: trackerValue }],
+              },
+            }),
           } as any
         }
         onOpenDetails={jest.fn()}
-      />
+      />,
     );
 
     const minutesValue = trackerValue / 60;
@@ -184,12 +184,12 @@ describe('Track Tile', () => {
         trackTileService={
           {
             fetchTrackers: jest.fn().mockResolvedValue([examplePillar]),
-            fetchTrackerValues: jest.fn().mockResolvedValue({})
+            fetchTrackerValues: jest.fn().mockResolvedValue({}),
           } as any
         }
         onOpenDetails={jest.fn()}
         onSaveNewValueOverride={onSaveNewValueOverride}
-      />
+      />,
     );
 
     fireEvent.press(await findByTestId('pillar-increment-1'));
@@ -197,14 +197,16 @@ describe('Track Tile', () => {
     expect(onSaveNewValueOverride).toHaveBeenCalledWith(
       examplePillar,
       1,
-      undefined // Previous TrackerValue
+      undefined, // Previous TrackerValue
     );
   });
 
   it('clicking a pillar increment button updates the pillar value', async () => {
     let handler: () => any | undefined;
-    mockDebounce.mockImplementation((fn: any) => (...args) =>
-      (handler = () => fn(...args)) as any
+    mockDebounce.mockImplementation(
+      (fn: any) =>
+        (...args) =>
+          (handler = () => fn(...args)) as any,
     );
     const upsertTrackerResource = jest.fn().mockResolvedValue({ value: 1 });
     const { findByTestId, findByText } = render(
@@ -214,11 +216,11 @@ describe('Track Tile', () => {
             fetchTrackers: jest.fn().mockResolvedValue([observationPillar]),
             fetchTrackerValues: jest.fn().mockResolvedValue({ data: {} }),
             upsertTrackerResource,
-            datastoreSettings: {}
+            datastoreSettings: {},
           } as any
         }
         onOpenDetails={jest.fn()}
-      />
+      />,
     );
 
     await waitFor(async () => expect(await findByText('0')).toBeDefined());
@@ -230,16 +232,18 @@ describe('Track Tile', () => {
       pillarValueCtx,
       expect.objectContaining({
         valueQuantity: expect.objectContaining({
-          value: 1
-        })
-      })
+          value: 1,
+        }),
+      }),
     );
   });
 
   it('clicking a pillar increment button multiple times updates the pillar value and then upserts the value', async () => {
     let handler: () => any | undefined;
-    mockDebounce.mockImplementation((fn: any) => (...args) =>
-      (handler = () => fn(...args)) as any
+    mockDebounce.mockImplementation(
+      (fn: any) =>
+        (...args) =>
+          (handler = () => fn(...args)) as any,
     );
     const upsertTrackerResource = jest.fn().mockResolvedValue({ value: 3 });
     const { findByTestId, findByText } = render(
@@ -249,11 +253,11 @@ describe('Track Tile', () => {
             fetchTrackers: jest.fn().mockResolvedValue([observationPillar]),
             fetchTrackerValues: jest.fn().mockResolvedValue({ data: {} }),
             upsertTrackerResource,
-            datastoreSettings: {}
+            datastoreSettings: {},
           } as any
         }
         onOpenDetails={jest.fn()}
-      />
+      />,
     );
 
     await waitFor(async () => expect(await findByText('0')).toBeDefined());
@@ -270,9 +274,9 @@ describe('Track Tile', () => {
       pillarValueCtx,
       expect.objectContaining({
         valueQuantity: expect.objectContaining({
-          value: 3
-        })
-      })
+          value: 3,
+        }),
+      }),
     );
   });
 });

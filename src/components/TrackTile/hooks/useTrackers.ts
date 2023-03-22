@@ -4,7 +4,7 @@ import {
   isInstalledMetric,
   Tracker,
   TRACKER_PILLAR_CODE_SYSTEM,
-  useTrackTileService
+  useTrackTileService,
 } from '../services/TrackTileService';
 import omit from 'lodash/omit';
 
@@ -20,7 +20,9 @@ export const useTrackers = () => {
     const onChange = (...trackers: Tracker[]) => {
       const installedMetrics = trackers.filter(isInstalledMetric);
 
-      if (!installedMetrics.length) return;
+      if (!installedMetrics.length) {
+        return;
+      }
 
       setTrackers((trackers) =>
         sortTrackers(
@@ -28,11 +30,11 @@ export const useTrackers = () => {
             ?.filter(
               (t) =>
                 !installedMetrics.find(
-                  ({ id, metricId }) => t.id === id || t.id === metricId
-                )
+                  ({ id, metricId }) => t.id === id || t.id === metricId,
+                ),
             )
-            .concat(installedMetrics)
-        )
+            .concat(installedMetrics),
+        ),
       );
     };
 
@@ -44,12 +46,12 @@ export const useTrackers = () => {
               if (t.id === tracker.id) {
                 return {
                   ...omit(t, ['target', 'unit', 'metricId']),
-                  id: tracker.metricId
+                  id: tracker.metricId,
                 };
               }
               return t;
-            })
-          )
+            }),
+          ),
         );
       }
     };
@@ -71,10 +73,10 @@ export const useTrackers = () => {
         try {
           const allTrackers = await svc.fetchTrackers();
           const pillarTileTrackers = allTrackers.filter(
-            (t) => t.system === TRACKER_PILLAR_CODE_SYSTEM
+            (t) => t.system === TRACKER_PILLAR_CODE_SYSTEM,
           );
           const trackTileTrackers = allTrackers.filter(
-            (t) => !pillarTileTrackers.includes(t)
+            (t) => !pillarTileTrackers.includes(t),
           );
 
           setTrackers(sortTrackers(trackTileTrackers));
@@ -98,7 +100,7 @@ export const useTrackers = () => {
     trackers: trackers ?? [],
     pillarTrackers: pillarTrackers ?? [],
     loading,
-    error
+    error,
   };
 };
 
@@ -109,12 +111,24 @@ const sortTrackers = (trackers?: Tracker[]) => {
     const aOrder = a.order ?? Infinity;
     const bOrder = b.order ?? Infinity;
 
-    if (aIsInstalled && !bIsInstalled) return -1;
-    if (bIsInstalled && !aIsInstalled) return 1;
-    if (aOrder < bOrder) return -1;
-    if (aOrder > bOrder) return 1;
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
+    if (aIsInstalled && !bIsInstalled) {
+      return -1;
+    }
+    if (bIsInstalled && !aIsInstalled) {
+      return 1;
+    }
+    if (aOrder < bOrder) {
+      return -1;
+    }
+    if (aOrder > bOrder) {
+      return 1;
+    }
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
 
     return 0;
   });

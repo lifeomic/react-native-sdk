@@ -31,7 +31,7 @@ const Bar: FC<BarProps> = (props) => {
       useNativeDriver: false,
       toValue: percentComplete,
       easing: Easing.inOut(Easing.exp),
-      duration: 500
+      duration: 500,
     }).start();
   }, [percentComplete]);
 
@@ -42,15 +42,15 @@ const Bar: FC<BarProps> = (props) => {
         {
           height: ref.current.interpolate({
             inputRange: [0, 1],
-            outputRange: ['-0.1%', '100%']
-          })
+            outputRange: ['-0.1%', '100%'],
+          }),
         },
         barStyle,
         style,
         {
           backgroundColor:
-            color || flatStyles.chartBarBackgroundColor.backgroundColor
-        }
+            color || flatStyles.chartBarBackgroundColor.backgroundColor,
+        },
       ]}
     />
   );
@@ -62,15 +62,15 @@ declare module '../TrackerDetails' {
 
 const defaultStyles = StyleSheet.create({
   chartBarBackgroundColor: {
-    backgroundColor: '#EEF0F2'
+    backgroundColor: '#EEF0F2',
   },
   chartBarDefault: {
     borderRadius: 30,
-    width: 14
+    width: 14,
   },
   chartBarFlat: {
-    width: 23.33
-  }
+    width: 23.33,
+  },
 });
 
 export default Bar;

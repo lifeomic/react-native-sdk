@@ -35,10 +35,7 @@ export const Chart: FC<ChartProps> = (props) => {
 
   const max = Math.max(...values, target ?? 0);
   const desiredTicks = Math.min(max, 10);
-  const scale = scaleLinear()
-    .domain([0, max])
-    .range([0, desiredTicks])
-    .nice();
+  const scale = scaleLinear().domain([0, max]).range([0, desiredTicks]).nice();
 
   const ticks = scale.ticks(desiredTicks);
   const ticksMax = ticks[ticks.length - 1];
@@ -48,12 +45,12 @@ export const Chart: FC<ChartProps> = (props) => {
   const variantStyles = isDefault
     ? {
         chartValueBar: styles.chartValueBarDefault,
-        chartXTitle: styles.chartXTitleDefault
+        chartXTitle: styles.chartXTitleDefault,
       }
     : isFlat
     ? {
         chartValueBar: styles.chartValueBarFlat,
-        chartXTitle: styles.chartXTitleFlat
+        chartXTitle: styles.chartXTitleFlat,
       }
     : undefined;
 
@@ -67,9 +64,9 @@ export const Chart: FC<ChartProps> = (props) => {
               key={tick}
               style={[
                 {
-                  bottom: `${(tick / ticksMax) * 100}%`
+                  bottom: `${(tick / ticksMax) * 100}%`,
                 },
-                styles.chartTickContainer
+                styles.chartTickContainer,
               ]}
             >
               {tick > 0 && (
@@ -112,7 +109,7 @@ export const Chart: FC<ChartProps> = (props) => {
                     style={!isToday(day) && isFlat ? { opacity: 0.35 } : {}}
                     color={darkenHexColor(
                       color,
-                      isToday(day) || isDefault ? 0 : 45
+                      isToday(day) || isDefault ? 0 : 45,
                     )}
                     testID={tID(`history-chart-value-bar-${index}`)}
                     percentComplete={values[index] / ticksMax}
@@ -129,7 +126,7 @@ export const Chart: FC<ChartProps> = (props) => {
                 day: format(day, 'iiii, MMMM do'),
                 value: values[index],
                 unit,
-                ns: 'track-tile-ui'
+                ns: 'track-tile-ui',
               })}
             >
               {shortWeekday(day)
@@ -155,7 +152,7 @@ export const Chart: FC<ChartProps> = (props) => {
           <Text variant="semibold" style={styles.chartError}>
             {i18n.t('aa16bb8028cd4767568a48d382e64d0a', {
               defaultValue: 'Could not load your data\nPlease try again later',
-              ns: 'track-tile-ui'
+              ns: 'track-tile-ui',
             })}
           </Text>
         </ChartContent>
@@ -191,32 +188,32 @@ declare module '../TrackerDetails' {
 const defaultStyles = StyleSheet.create({
   chartValueBarDefault: {
     alignItems: 'center',
-    marginLeft: -7
+    marginLeft: -7,
   },
   chartValueBarFlat: {
     alignItems: 'center',
-    marginLeft: 3.5
+    marginLeft: 3.5,
   },
   chartBarContainer: {
     alignItems: 'flex-end',
     flex: 1,
     flexDirection: 'row',
-    minWidth: 21
+    minWidth: 21,
   },
   chartBarFloatingValue: {
     fontSize: 14,
-    color: '#242536'
+    color: '#242536',
   },
   chartContainer: {
     flex: 1,
     position: 'relative',
-    height: 250
+    height: 250,
   },
   chartContentContainer: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    position: 'relative'
+    position: 'relative',
   },
   chartContentWrapper: {
     bottom: 0,
@@ -224,10 +221,10 @@ const defaultStyles = StyleSheet.create({
     left: 0,
     position: 'absolute',
     right: 0,
-    top: 0
+    top: 0,
   },
   chartDataContainer: {
-    marginVertical: 7
+    marginVertical: 7,
   },
   chartError: {
     alignSelf: 'center',
@@ -235,23 +232,23 @@ const defaultStyles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 0.23,
     padding: 8,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   chartTick: {
     backgroundColor: '#EEF0F2',
     flex: 1,
-    height: 1
+    height: 1,
   },
   chartTickContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    position: 'absolute'
+    position: 'absolute',
   },
   chartXAxisContainer: {
     flex: 1,
     marginTop: 16,
     marginBottom: 26,
-    position: 'relative'
+    position: 'relative',
   },
   chartXTitleDefault: {
     color: '#7B8996',
@@ -259,13 +256,13 @@ const defaultStyles = StyleSheet.create({
     letterSpacing: 0.5,
     lineHeight: 18,
     paddingTop: 11,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   chartXTitleFlat: {
     color: '#242536',
     fontSize: 12,
     paddingTop: 12,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   yTitle: {
     color: '#7B8996',
@@ -273,6 +270,6 @@ const defaultStyles = StyleSheet.create({
     letterSpacing: 0.5,
     lineHeight: 18,
     paddingRight: 7,
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });

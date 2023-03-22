@@ -5,10 +5,10 @@ import { StyleSheet } from 'react-native';
 
 export const useFlattenedStyles = <T extends NamedStyles, K extends keyof T>(
   styles: T,
-  styleNames: K[]
+  styleNames: K[],
 ) => {
   return useMemo(
     () => mapValues(pick(styles, styleNames), StyleSheet.flatten) as Pick<T, K>,
-    [styles, ...styleNames]
+    [styles, ...styleNames],
   );
 };

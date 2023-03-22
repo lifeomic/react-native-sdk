@@ -9,7 +9,7 @@ jest.mock('react-native', () => {
   delete RN.Picker;
   RN.Picker = mockComponent('@react-native-community/picker/js/Picker');
   RN.Picker.Item = mockComponent(
-    '@react-native-community/picker/js/PickerItem'
+    '@react-native-community/picker/js/PickerItem',
   );
   return RN;
 });
@@ -17,7 +17,7 @@ jest.mock('@react-native-community/picker', () => {
   const mockComponent = jest.requireActual('react-native/jest/mockComponent');
   const PickerIOS = mockComponent('@react-native-community/picker/js/Picker');
   PickerIOS.Item = mockComponent(
-    '@react-native-community/picker/js/PickerItem'
+    '@react-native-community/picker/js/PickerItem',
   );
 
   return { PickerIOS };
@@ -30,7 +30,7 @@ const units: UnitPickerProps['units'] = [
     system: 's1',
     target: 1,
     unit: 'u1',
-    default: true
+    default: true,
   },
   {
     code: 'c2',
@@ -38,8 +38,8 @@ const units: UnitPickerProps['units'] = [
     system: 's2',
     target: 2,
     unit: 'u2',
-    default: false
-  }
+    default: false,
+  },
 ];
 
 describe('Unit Picker', () => {
@@ -50,7 +50,7 @@ describe('Unit Picker', () => {
 
     it('should display the current value', async () => {
       const { findByText } = render(
-        <UnitPicker value="u1" units={units} onChange={jest.fn()} />
+        <UnitPicker value="u1" units={units} onChange={jest.fn()} />,
       );
 
       expect(await findByText('Unit 1')).toBeDefined();
@@ -59,7 +59,7 @@ describe('Unit Picker', () => {
     it('should allow changing to another value', async () => {
       const onChange = jest.fn();
       const { findByA11yRole } = render(
-        <UnitPicker value="u1" units={units} onChange={onChange} />
+        <UnitPicker value="u1" units={units} onChange={onChange} />,
       );
 
       // Simulate Picker Change
@@ -76,7 +76,7 @@ describe('Unit Picker', () => {
 
     it('should display the current value', async () => {
       const { findByText } = render(
-        <UnitPicker value="u1" units={units} onChange={jest.fn()} />
+        <UnitPicker value="u1" units={units} onChange={jest.fn()} />,
       );
 
       expect(await findByText('Unit 1')).toBeDefined();
@@ -85,7 +85,7 @@ describe('Unit Picker', () => {
     it('should allow changing to another value', async () => {
       const onChange = jest.fn();
       const { findByText, findByA11yRole } = render(
-        <UnitPicker value="u1" units={units} onChange={onChange} />
+        <UnitPicker value="u1" units={units} onChange={onChange} />,
       );
 
       fireEvent.press(await findByText('Unit 1'));

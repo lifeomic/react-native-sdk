@@ -6,7 +6,7 @@ import {
   TrackerValuesContext,
   TRACKER_CODE,
   TRACKER_CODE_SYSTEM,
-  Tracker
+  Tracker,
 } from '../../services/TrackTileService';
 import { addDays, format } from 'date-fns';
 import { useRecentCodedValues } from '../../hooks/useRecentCodedValues';
@@ -16,12 +16,14 @@ jest.mock('../../hooks/useTrackerValues');
 jest.mock('../../hooks/useRecentCodedValues');
 jest.mock('lodash/debounce', () => jest.fn((fn) => fn));
 
-const mockUseTrackerValues: jest.Mock<typeof useTrackerValues> = useTrackerValues as any;
-const mockUseRecentCodedValues: jest.Mock<typeof useRecentCodedValues> = useRecentCodedValues as any;
+const mockUseTrackerValues: jest.Mock<typeof useTrackerValues> =
+  useTrackerValues as any;
+const mockUseRecentCodedValues: jest.Mock<typeof useRecentCodedValues> =
+  useRecentCodedValues as any;
 
 const valuesContext: TrackerValuesContext = {
   system: TRACKER_CODE_SYSTEM,
-  codeBelow: TRACKER_CODE
+  codeBelow: TRACKER_CODE,
 };
 
 describe('Tracker Advanced Details', () => {
@@ -45,9 +47,9 @@ describe('Tracker Advanced Details', () => {
           unit: 'unit-unit',
           default: true,
           displayOne: '{{count}} Serving',
-          displayOther: '{{count}} Servings'
-        }
-      ]
+          displayOther: '{{count}} Servings',
+        },
+      ],
     } as Tracker;
     mockUseTrackerValues.mockReturnValue({
       loading: false,
@@ -59,39 +61,39 @@ describe('Tracker Advanced Details', () => {
               code: {
                 coding: [
                   {
-                    display: 'Some Value'
-                  }
-                ]
+                    display: 'Some Value',
+                  },
+                ],
               },
-              value: 0.5
+              value: 0.5,
             },
             {
               id: 'second-value',
               code: {
                 coding: [
                   {
-                    display: 'Some Second Value'
-                  }
-                ]
+                    display: 'Some Second Value',
+                  },
+                ],
               },
-              value: 1
-            }
-          ]
-        }
-      ]
+              value: 1,
+            },
+          ],
+        },
+      ],
     } as any);
 
     const { findByText, findAllByText } = render(
       <AdvancedTrackerDetailsProvider
         trackTileService={
           {
-            fetchOntology: jest.fn().mockRejectedValue('fake error')
+            fetchOntology: jest.fn().mockRejectedValue('fake error'),
           } as any
         }
         tracker={tracker as any}
         valuesContext={valuesContext}
         onEditValue={jest.fn()}
-      />
+      />,
     );
 
     expect(await findByText("Today's Servings")).toBeDefined();
@@ -118,15 +120,15 @@ describe('Tracker Advanced Details', () => {
               code: {
                 coding: [
                   {
-                    display: 'Some Value'
-                  }
-                ]
+                    display: 'Some Value',
+                  },
+                ],
               },
-              value: 0.5
-            }
-          ]
-        }
-      ]
+              value: 0.5,
+            },
+          ],
+        },
+      ],
     } as any);
 
     const upsertTrackerResource = jest.fn().mockResolvedValue({ value: 1 });
@@ -137,10 +139,10 @@ describe('Tracker Advanced Details', () => {
             id: 'fruit-id',
             code: 'fruit-code',
             display: 'Fruits',
-            system: 'http://lifeomic.com/fhir/nutrition'
-          }
-        ]
-      }
+            system: 'http://lifeomic.com/fhir/nutrition',
+          },
+        ],
+      },
     ]);
 
     const { findByText } = render(
@@ -149,7 +151,7 @@ describe('Tracker Advanced Details', () => {
           {
             datastoreSettings: {},
             upsertTrackerResource,
-            fetchOntology
+            fetchOntology,
           } as any
         }
         tracker={
@@ -157,12 +159,12 @@ describe('Tracker Advanced Details', () => {
             id: 'tracker-id',
             metricId: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: 'Serving of Fruit', target: 5, unit: 'unit' }]
+            units: [{ display: 'Serving of Fruit', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
         onEditValue={jest.fn()}
-      />
+      />,
     );
 
     fireEvent.press(await findByText('+ Fruits'));
@@ -172,10 +174,10 @@ describe('Tracker Advanced Details', () => {
         valuesContext,
         expect.objectContaining({
           valueQuantity: expect.objectContaining({
-            value: 1
-          })
-        })
-      )
+            value: 1,
+          }),
+        }),
+      ),
     );
 
     expect(notifierSpy).toHaveBeenCalledWith('valuesChanged', [
@@ -183,15 +185,15 @@ describe('Tracker Advanced Details', () => {
         valuesContext,
         metricId: 'metric-id',
         tracker: expect.objectContaining({ value: 1 }),
-        saveToRecent: false
-      }
+        saveToRecent: false,
+      },
     ]);
   });
 
   it('should call onError when an error occurs while adding new value from the quick add item list', async () => {
     mockUseTrackerValues.mockReturnValue({
       loading: false,
-      trackerValues: [{}]
+      trackerValues: [{}],
     } as any);
 
     const upsertTrackerResource = jest.fn().mockRejectedValue('Some Error');
@@ -202,10 +204,10 @@ describe('Tracker Advanced Details', () => {
             id: 'fruit-id',
             code: 'fruit-code',
             display: 'Fruits',
-            system: 'http://lifeomic.com/fhir/nutrition'
-          }
-        ]
-      }
+            system: 'http://lifeomic.com/fhir/nutrition',
+          },
+        ],
+      },
     ]);
     const onError = jest.fn();
 
@@ -215,7 +217,7 @@ describe('Tracker Advanced Details', () => {
           {
             datastoreSettings: {},
             upsertTrackerResource,
-            fetchOntology
+            fetchOntology,
           } as any
         }
         tracker={
@@ -223,13 +225,13 @@ describe('Tracker Advanced Details', () => {
             id: 'tracker-id',
             metricId: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: 'Some Unit', target: 5, unit: 'unit' }]
+            units: [{ display: 'Some Unit', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
         onEditValue={jest.fn()}
         onError={onError}
-      />
+      />,
     );
 
     fireEvent.press(await findByText('+ Fruits'));
@@ -240,7 +242,7 @@ describe('Tracker Advanced Details', () => {
   it('can navigate to different days', async () => {
     mockUseTrackerValues.mockReturnValue({
       loading: false,
-      trackerValues: [{}]
+      trackerValues: [{}],
     } as any);
 
     const upsertTrackerResource = jest.fn();
@@ -255,13 +257,13 @@ describe('Tracker Advanced Details', () => {
             id: 'tracker-id',
             metricId: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: 'Servings', target: 5, unit: 'unit' }]
+            units: [{ display: 'Servings', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
         onEditValue={jest.fn()}
         onError={onError}
-      />
+      />,
     );
 
     expect(await findByText("Today's Servings")).toBeDefined();
@@ -271,7 +273,7 @@ describe('Tracker Advanced Details', () => {
 
     fireEvent.press(await findByA11yLabel('Go to previous day'));
     expect(
-      await findByText(format(addDays(new Date(), -1), 'iiii, MMMM d'))
+      await findByText(format(addDays(new Date(), -1), 'iiii, MMMM d')),
     ).toBeDefined();
 
     fireEvent.press(await findByA11yLabel('Go to next day'));
@@ -286,7 +288,7 @@ describe('Tracker Advanced Details', () => {
     fireEvent.press(await findByA11yLabel('Go to previous day'));
     fireEvent.press(await findByA11yLabel('Go to previous day'));
     expect(
-      await findByText('Unable to adjust data this far in the past.')
+      await findByText('Unable to adjust data this far in the past.'),
     ).toBeDefined();
   });
 
@@ -296,19 +298,19 @@ describe('Tracker Advanced Details', () => {
       code: {
         coding: [
           {
-            display: 'Some Value'
-          }
-        ]
+            display: 'Some Value',
+          },
+        ],
       },
-      value: 1
+      value: 1,
     };
     mockUseTrackerValues.mockReturnValue({
       loading: false,
       trackerValues: [
         {
-          'metric-id': [trackerValue]
-        }
-      ]
+          'metric-id': [trackerValue],
+        },
+      ],
     } as any);
 
     const fetchOntology = jest.fn().mockResolvedValue([]);
@@ -322,12 +324,12 @@ describe('Tracker Advanced Details', () => {
             id: 'tracker-id',
             metricId: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: 'Serving of Fruit', target: 5, unit: 'unit' }]
+            units: [{ display: 'Serving of Fruit', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
         onEditValue={onEditValue}
-      />
+      />,
     );
 
     fireEvent.press(await findByText('1 Serving of Fruit'));
@@ -342,19 +344,19 @@ describe('Tracker Advanced Details', () => {
       code: {
         coding: [
           {
-            display: 'Some Value'
-          }
-        ]
+            display: 'Some Value',
+          },
+        ],
       },
-      value: 1
+      value: 1,
     };
     mockUseTrackerValues.mockReturnValue({
       loading: false,
       trackerValues: [
         {
-          'metric-id': [trackerValue]
-        }
-      ]
+          'metric-id': [trackerValue],
+        },
+      ],
     } as any);
 
     const upsertTrackerResource = jest.fn().mockResolvedValue({ value: 1 });
@@ -364,14 +366,14 @@ describe('Tracker Advanced Details', () => {
           {
             code: 'code-1',
             system: 'system',
-            display: 'Recent History Item'
-          }
-        ]
-      }
+            display: 'Recent History Item',
+          },
+        ],
+      },
     ]);
     const onEditValue = jest.fn();
     mockUseRecentCodedValues.mockReturnValue([
-      { value: 1, code: { code: 'code-1', system: 'system' } }
+      { value: 1, code: { code: 'code-1', system: 'system' } },
     ] as any);
 
     const { findByText } = render(
@@ -380,7 +382,7 @@ describe('Tracker Advanced Details', () => {
           {
             datastoreSettings: {},
             fetchOntology,
-            upsertTrackerResource
+            upsertTrackerResource,
           } as any
         }
         tracker={
@@ -388,12 +390,12 @@ describe('Tracker Advanced Details', () => {
             id: 'tracker-id',
             metricId: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: 'Servings', target: 5, unit: 'unit' }]
+            units: [{ display: 'Servings', target: 5, unit: 'unit' }],
           } as any
         }
         valuesContext={valuesContext}
         onEditValue={onEditValue}
-      />
+      />,
     );
 
     fireEvent.press(await findByText('Recent History Item'));
@@ -406,15 +408,15 @@ describe('Tracker Advanced Details', () => {
             coding: expect.arrayContaining([
               {
                 code: 'code-1',
-                system: 'system'
-              }
-            ])
+                system: 'system',
+              },
+            ]),
           },
           valueQuantity: expect.objectContaining({
-            value: 1
-          })
-        })
-      )
+            value: 1,
+          }),
+        }),
+      ),
     );
 
     expect(notifierSpy).toHaveBeenCalledWith('valuesChanged', [
@@ -422,8 +424,8 @@ describe('Tracker Advanced Details', () => {
         valuesContext,
         metricId: 'metric-id',
         tracker: expect.objectContaining({ value: 1 }),
-        saveToRecent: false
-      }
+        saveToRecent: false,
+      },
     ]);
   });
 });

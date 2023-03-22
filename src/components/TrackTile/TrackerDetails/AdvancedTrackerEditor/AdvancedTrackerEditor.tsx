@@ -6,20 +6,20 @@ import {
   StylesProp,
   NamedStyles,
   useFontOverrides,
-  useStyleOverrides
+  useStyleOverrides,
 } from '../../styles';
 import {
   Tracker,
   TrackerValue,
   TrackerValuesContext,
-  useTrackTileService
+  useTrackTileService,
 } from '../../services/TrackTileService';
 import { CodingSubCategoryRow } from './CodingSubCategoryRow';
 import { CodingCategoryPicker } from './CodingCategoryPicker';
 import {
   convertToPreferredUnit,
   convertToStoreUnit,
-  getPreferredUnitType
+  getPreferredUnitType,
 } from '../../util/convert-value';
 import { isCodeEqual } from '../../util/is-code-equal';
 import { CodeNode, CategoryTypes, extractOntology } from './extract-ontology';
@@ -50,7 +50,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
   const {
     stepAmount = 1,
     display,
-    displayOne = display
+    displayOne = display,
   } = getPreferredUnitType(tracker);
   const stepAmountInStoreUnits = convertToStoreUnit(stepAmount, tracker);
   const metricId = tracker.metricId ?? tracker.id;
@@ -58,7 +58,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
   useEffect(() => {
     const handler: EventTypeHandler<'saveEditTrackerValue'> = async (
       resolve,
-      reject
+      reject,
     ) => {
       try {
         const newCode = subCategory || category || trackerValue.code.coding[0];
@@ -83,25 +83,25 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
                 tracker,
                 // This gets converted by toFhirResource to the store value
                 // and expects the value to come in as the tracker unit
-                value: convertToPreferredUnit(value, tracker)
+                value: convertToPreferredUnit(value, tracker),
               },
-              newCode
-            )
+              newCode,
+            ),
           );
           notifier.emit('valuesChanged', [
-            { valuesContext, metricId, tracker: res }
+            { valuesContext, metricId, tracker: res },
           ]);
           resolve?.(res);
         } else {
           const removed = await svc.deleteTrackerResource(
             valuesContext,
             tracker.resourceType,
-            trackerValue.id
+            trackerValue.id,
           );
 
           if (removed) {
             notifier.emit('valuesChanged', [
-              { valuesContext, metricId, tracker: trackerValue, drop: true }
+              { valuesContext, metricId, tracker: trackerValue, drop: true },
             ]);
             return resolve?.(undefined);
           }
@@ -126,7 +126,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
     subCategory,
     value,
     trackerValue,
-    tracker
+    tracker,
   ]);
 
   useEffect(() => {
@@ -155,7 +155,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
         return isCodeEqual(current, code) && !subCategory ? undefined : code;
       });
     },
-    [subCategory]
+    [subCategory],
   );
 
   const toggleElement = useCallback(
@@ -165,7 +165,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
         return isCodeEqual(current, code) ? undefined : code;
       });
     },
-    []
+    [],
   );
 
   return (
@@ -184,7 +184,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
             stepAmount={stepAmountInStoreUnits}
             style={[
               styles.advancedEditorSection,
-              styles.advancedEditorHorizontalLayout
+              styles.advancedEditorHorizontalLayout,
             ]}
           />
 
@@ -193,7 +193,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
               <CodingCategoryPicker
                 categoryHeader={i18n.t('editor-selection-header', {
                   defaultValue: 'Select {{code}}',
-                  code: categoryTypes.baseCode.display
+                  code: categoryTypes.baseCode.display,
                 })}
                 codes={categoryTypes.categories}
                 color={tracker.color}
@@ -214,12 +214,12 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
                   categoryName:
                     subCategory?.display ||
                     category?.display ||
-                    categoryTypes.baseCode.display
+                    categoryTypes.baseCode.display,
                 }}
                 components={{
                   bold: ((categoryName?: string) => (
                     <Text style={fontWeights.bold}>{categoryName}</Text>
-                  ))()
+                  ))(),
                 }}
               />
             </View>
@@ -248,18 +248,18 @@ const defaultStyles = StyleSheet.create({
   advancedEditorSection: {
     padding: 35,
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   advancedEditorHorizontalLayout: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   advancedEditorSelectedContainer: {
     paddingHorizontal: 35,
     paddingVertical: 8,
     backgroundColor: '#F2F2F2',
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
-    borderBottomWidth: 1
-  }
+    borderBottomWidth: 1,
+  },
 });

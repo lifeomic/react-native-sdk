@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import {
   StylesProp,
   useFontOverrides,
-  useStyleOverrides
+  useStyleOverrides,
 } from '../../../styles';
 import i18n from '@i18n';
 import { Tracker } from '../../../services/TrackTileService';
@@ -23,7 +23,7 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
     value,
     observationUnit,
     onSelectUnitType,
-    editUnitType
+    editUnitType,
   } = props;
   const styles = useStyleOverrides(defaultStyles);
   const fontWeights = useFontOverrides();
@@ -57,19 +57,19 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
             fontWeights.light,
             styles.advancedEditorProcedureUnit,
             editUnitType === 'hour' &&
-              styles.advancedEditorProcedureUnitSelected
+              styles.advancedEditorProcedureUnitSelected,
           ]}
         >
           {i18n.t('time-value-hours', {
             defaultValue: 'hrs',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
       </TouchableOpacity>
       <Text style={[fontWeights.bold, styles.advancedEditorTrackerValue]}>
         {i18n.t('time-value-separator', {
           defaultValue: ':',
-          ns: 'track-tile-ui'
+          ns: 'track-tile-ui',
         })}
       </Text>
       <TouchableOpacity
@@ -83,12 +83,13 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
           style={[
             fontWeights.light,
             styles.advancedEditorProcedureUnit,
-            editUnitType === 'min' && styles.advancedEditorProcedureUnitSelected
+            editUnitType === 'min' &&
+              styles.advancedEditorProcedureUnitSelected,
           ]}
         >
           {i18n.t('time-value-minutes', {
             defaultValue: 'min',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
       </TouchableOpacity>
@@ -102,30 +103,30 @@ declare module '../AdvancedTrackerEditor' {
 
 const defaultStyles = StyleSheet.create({
   advancedEditorTrackerValueContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   advancedEditorTrackerValue: {
     fontSize: 34,
     lineHeight: 40.8,
-    color: '#35383D'
+    color: '#35383D',
   },
   advancedEditorTrackerUnit: {
     fontSize: 12,
     lineHeight: 14.4,
     color: '#35383D',
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
   },
   advancedEditorProcedureUnit: {
     fontSize: 14,
     lineHeight: 21,
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
   },
   advancedEditorProcedureTimePartContainer: {
-    alignItems: 'center'
+    alignItems: 'center',
   },
   advancedEditorProcedureUnitSelected: {
     height: 3,
     backgroundColor: '#C8CCD0',
-    width: '100%'
-  }
+    width: '100%',
+  },
 });

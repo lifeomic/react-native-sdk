@@ -22,7 +22,7 @@ import {
   Soda,
   Star,
   Steps,
-  Chroma
+  Chroma,
 } from '@lifeomic/chromicons-native';
 
 type IndicatorProps = {
@@ -43,14 +43,14 @@ const Indicator = ({
   const svgProps: SvgProps = {
     width: '100%',
     height: '100%',
-    ...rest
+    ...rest,
   };
 
   return (
     <View
       style={{
         width: INDICATOR_HEIGHT * scale,
-        height: INDICATOR_HEIGHT * scale
+        height: INDICATOR_HEIGHT * scale,
       }}
     >
       {(!!CustomIcon && <CustomIcon {...svgProps} />) ||
@@ -74,7 +74,7 @@ const Indicator = ({
           soda: <Soda {...svgProps} />,
           star: <Star {...svgProps} />,
           walking: <Steps {...svgProps} />,
-          water: <Droplet {...svgProps} />
+          water: <Droplet {...svgProps} />,
         }[name] ?? <Helix {...svgProps} />)}
     </View>
   );

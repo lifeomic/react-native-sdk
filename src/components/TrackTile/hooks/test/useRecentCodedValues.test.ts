@@ -1,19 +1,19 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import AsyncStorage, {
-  AsyncStorageStatic
+  AsyncStorageStatic,
 } from '@react-native-async-storage/async-storage';
 import { useRecentCodedValues } from '../useRecentCodedValues';
 import { notifier } from '../../services/EmitterService';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   getItem: jest.fn(),
-  setItem: jest.fn()
+  setItem: jest.fn(),
 }));
 
-const getItem = (AsyncStorage.getItem as any) as jest.Mock<
+const getItem = AsyncStorage.getItem as any as jest.Mock<
   AsyncStorageStatic['getItem']
 >;
-const setItem = (AsyncStorage.setItem as any) as jest.Mock<
+const setItem = AsyncStorage.setItem as any as jest.Mock<
   AsyncStorageStatic['setItem']
 >;
 
@@ -21,22 +21,22 @@ describe('useTrackerValues', () => {
   it('should get the recent values by id', async () => {
     getItem.mockReturnValue(
       JSON.stringify([
-        { value: 5, code: { code: 'value-code', system: 'value-system' } }
-      ]) as never
+        { value: 5, code: { code: 'value-code', system: 'value-system' } },
+      ]) as never,
     );
 
     const { result, waitFor } = renderHook(() =>
-      useRecentCodedValues('metricId')
+      useRecentCodedValues('metricId'),
     );
 
     await waitFor(() =>
       expect(result.current).toEqual([
-        { value: 5, code: { code: 'value-code', system: 'value-system' } }
-      ])
+        { value: 5, code: { code: 'value-code', system: 'value-system' } },
+      ]),
     );
 
     expect(getItem).toHaveBeenCalledWith(
-      '@lifeomic/track-tile/recent-values/metricId'
+      '@lifeomic/track-tile/recent-values/metricId',
     );
   });
 
@@ -44,7 +44,7 @@ describe('useTrackerValues', () => {
     getItem.mockReturnValue(undefined as never);
 
     const { result, waitFor } = renderHook(() =>
-      useRecentCodedValues('metricId')
+      useRecentCodedValues('metricId'),
     );
 
     await waitFor(() => expect(result.current).toEqual([]));
@@ -53,18 +53,18 @@ describe('useTrackerValues', () => {
   it('can add a new value to the recent items', async () => {
     getItem.mockReturnValue(
       JSON.stringify([
-        { value: 5, code: { code: 'value-code', system: 'value-system' } }
-      ]) as never
+        { value: 5, code: { code: 'value-code', system: 'value-system' } },
+      ]) as never,
     );
 
     const { result, waitFor } = renderHook(() =>
-      useRecentCodedValues('metricId')
+      useRecentCodedValues('metricId'),
     );
 
     await waitFor(() =>
       expect(result.current).toEqual([
-        { value: 5, code: { code: 'value-code', system: 'value-system' } }
-      ])
+        { value: 5, code: { code: 'value-code', system: 'value-system' } },
+      ]),
     );
 
     act(() => {
@@ -75,43 +75,43 @@ describe('useTrackerValues', () => {
           tracker: {
             value: 3,
             code: {
-              coding: [{ code: 'new', system: 'newSys', display: 'NEW' }]
-            }
-          }
-        }
+              coding: [{ code: 'new', system: 'newSys', display: 'NEW' }],
+            },
+          },
+        },
       ]);
     });
 
     await waitFor(() =>
       expect(result.current).toEqual([
         { value: 3, code: { code: 'new', system: 'newSys', display: 'NEW' } },
-        { value: 5, code: { code: 'value-code', system: 'value-system' } }
-      ])
+        { value: 5, code: { code: 'value-code', system: 'value-system' } },
+      ]),
     );
 
     expect(setItem).toHaveBeenLastCalledWith(
       '@lifeomic/track-tile/recent-values/metricId',
       JSON.stringify([
         { value: 3, code: { code: 'new', system: 'newSys', display: 'NEW' } },
-        { value: 5, code: { code: 'value-code', system: 'value-system' } }
-      ])
+        { value: 5, code: { code: 'value-code', system: 'value-system' } },
+      ]),
     );
   });
 
   it('only saves 5 most recent values', async () => {
     getItem.mockReturnValue(
       JSON.stringify([
-        { value: 0, code: { code: 'code-0', system: 'system' } }
-      ]) as never
+        { value: 0, code: { code: 'code-0', system: 'system' } },
+      ]) as never,
     );
 
     const { result, waitFor } = renderHook(() =>
-      useRecentCodedValues('metricId')
+      useRecentCodedValues('metricId'),
     );
 
     await waitFor(() => {
       expect(result.current).toEqual([
-        { value: 0, code: { code: 'code-0', system: 'system' } }
+        { value: 0, code: { code: 'code-0', system: 'system' } },
       ]);
     });
 
@@ -128,12 +128,12 @@ describe('useTrackerValues', () => {
                   {
                     code: 'code-' + value,
                     system: 'system',
-                    display: 'display'
-                  }
-                ]
-              }
-            }
-          }
+                    display: 'display',
+                  },
+                ],
+              },
+            },
+          },
         ]);
       }
     });
@@ -142,25 +142,25 @@ describe('useTrackerValues', () => {
       expect(result.current).toEqual([
         {
           value: 9,
-          code: { code: 'code-9', system: 'system', display: 'display' }
+          code: { code: 'code-9', system: 'system', display: 'display' },
         },
         {
           value: 8,
-          code: { code: 'code-8', system: 'system', display: 'display' }
+          code: { code: 'code-8', system: 'system', display: 'display' },
         },
         {
           value: 7,
-          code: { code: 'code-7', system: 'system', display: 'display' }
+          code: { code: 'code-7', system: 'system', display: 'display' },
         },
         {
           value: 6,
-          code: { code: 'code-6', system: 'system', display: 'display' }
+          code: { code: 'code-6', system: 'system', display: 'display' },
         },
         {
           value: 5,
-          code: { code: 'code-5', system: 'system', display: 'display' }
-        }
-      ])
+          code: { code: 'code-5', system: 'system', display: 'display' },
+        },
+      ]),
     );
   });
 
@@ -169,7 +169,7 @@ describe('useTrackerValues', () => {
     getItem.mockReturnValue(JSON.stringify([{ value: 0, code }]) as never);
 
     const { result, waitFor } = renderHook(() =>
-      useRecentCodedValues('metricId')
+      useRecentCodedValues('metricId'),
     );
 
     await waitFor(() => expect(result.current).toEqual([{ value: 0, code }]));
@@ -181,9 +181,9 @@ describe('useTrackerValues', () => {
           metricId: 'metricId',
           tracker: {
             value: 1,
-            code: { coding: [code] }
-          }
-        }
+            code: { coding: [code] },
+          },
+        },
       ]);
     });
 

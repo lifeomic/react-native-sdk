@@ -14,7 +14,7 @@ import {
   ContextTrackerValues,
   TrackerValuesContext,
   Code,
-  CodedRelationship
+  CodedRelationship,
 } from '../services/TrackTileService';
 import {
   startOfDay,
@@ -22,7 +22,7 @@ import {
   endOfDay,
   min as minDate,
   max as maxDate,
-  differenceInSeconds
+  differenceInSeconds,
 } from 'date-fns';
 import { pick, merge, pickBy, omit, fromPairs } from 'lodash';
 
@@ -36,8 +36,8 @@ type Props = Pick<
 const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
   headers: {
     'LifeOmic-Account': obj.account,
-    [TRACK_TILE_CAPABILITIES_VERSION_HEADER]: TRACK_TILE_CAPABILITIES_VERSION
-  }
+    [TRACK_TILE_CAPABILITIES_VERSION_HEADER]: TRACK_TILE_CAPABILITIES_VERSION,
+  },
 });
 
 export const useAxiosTrackTileService = (props: Props): TrackTileService => {
@@ -52,10 +52,12 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
 
   const updateSettingsInCache = (settings: BulkInstalledMetricSettings) => {
     const tracker = cache.trackers?.find(
-      ({ id, metricId }) => (metricId ?? id) === settings.metricId
+      ({ id, metricId }) => (metricId ?? id) === settings.metricId,
     );
 
-    if (!tracker) return;
+    if (!tracker) {
+      return;
+    }
 
     const newSettings = pick(settings, ['order', 'target', 'unit', 'metricId']);
     const mergedTracker = merge({}, tracker, newSettings);
@@ -83,12 +85,13 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
     patientId,
 
     fetchTrackers: async () => {
-      if (cache.trackers && includePublicTrackers === cache.includePublic)
+      if (cache.trackers && includePublicTrackers === cache.includePublic) {
         return cache.trackers;
+      }
 
       const queryParams = {
         project: accountSettings?.project,
-        'include-public': includePublicTrackers
+        'include-public': includePublicTrackers,
       };
       const params = Object.entries(pickBy(queryParams))
         .map(([k, v]) => `${k}=${v}`)
@@ -98,7 +101,7 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
 
       const res = await axiosInstance.get(
         url,
-        axiosConfig(accountSettings ?? datastoreSettings)
+        axiosConfig(accountSettings ?? datastoreSettings),
       );
       const fetchedTrackers: Tracker[] = res.data;
 
@@ -112,7 +115,7 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
       const res = await axiosInstance.put<InstalledMetric>(
         `/track-tiles/metrics/installs/${metricId}`,
         settings,
-        axiosConfig(accountSettings ?? datastoreSettings)
+        axiosConfig(accountSettings ?? datastoreSettings),
       );
 
       return updateSettingsInCache(res.data) || res.data;
@@ -131,7 +134,7 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
         if (t.metricId === metricId) {
           return {
             ...omit(t, ['target', 'unit', 'metricId']),
-            id: metricId
+            id: metricId,
           };
         }
         return t;
@@ -158,18 +161,18 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
           variables: {
             dates: [`ge${start}`, `le${end}`],
             codeBelow: valuesContext.codeBelow,
-            patientId
+            patientId,
           },
-          query: FETCH_TRACKER_VALUES_BY_DATES_QUERY
+          query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
         },
-        axiosConfig(datastoreSettings)
+        axiosConfig(datastoreSettings),
       );
 
       const trackerValues = extractTrackerValues(res.data);
       Object.assign(
         cached,
         fromPairs(toDateKeys(missingDays).map((d) => [d, {}])),
-        trackerValues
+        trackerValues,
       );
       return pick(cached, toDateKeys(dayRange));
     },
@@ -179,9 +182,9 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
         '/graphql',
         {
           query: DELETE_RESOURCE(resourceType),
-          variables: { id }
+          variables: { id },
         },
-        axiosConfig(datastoreSettings)
+        axiosConfig(datastoreSettings),
       );
 
       if (!res.data.data) {
@@ -193,7 +196,7 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
         Object.entries(cached).forEach(([dateKey, metricValues]) => {
           Object.entries(metricValues).forEach(([metricKey, trackerValues]) => {
             cached[dateKey][metricKey] = trackerValues.filter(
-              (trackerValue) => trackerValue.id !== id
+              (trackerValue) => trackerValue.id !== id,
             );
           });
         });
@@ -212,9 +215,9 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
             resource.resourceType === 'Observation'
               ? MUTATE_OBSERVATION_RESOURCE(resource.id ? 'Update' : 'Create')
               : MUTATE_PROCEDURE_RESOURCE(resource.id ? 'Update' : 'Create'),
-          variables: { resource }
+          variables: { resource },
         },
-        axiosConfig(datastoreSettings)
+        axiosConfig(datastoreSettings),
       );
 
       if (!res.data.data) {
@@ -233,33 +236,35 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
           ...resource,
           id: modifiedResource.id,
           createdDate: new Date(modifiedResource.effectiveDateTime),
-          value: modifiedResource.valueQuantity.value || 0
+          value: modifiedResource.valueQuantity.value || 0,
         };
       } else {
         const modifiedResource = res.data.data.resource as Procedure['node'];
         resourceDateKey = toDateKey(resource.performedPeriod.end);
         const resourceValue = performedPeriodToTimeInSeconds(
-          resource.performedPeriod
+          resource.performedPeriod,
         );
 
         trackerValue = {
           ...resource,
           id: modifiedResource.id,
           createdDate: new Date(modifiedResource.performedPeriod.end),
-          value: resourceValue
+          value: resourceValue,
         };
       }
 
       if (resourceCoding && resourceDateKey) {
         const cached = getCachedValues(valuesContext);
 
-        if (!cached[resourceDateKey]) cached[resourceDateKey] = {};
+        if (!cached[resourceDateKey]) {
+          cached[resourceDateKey] = {};
+        }
 
         cached[resourceDateKey][resourceCoding.code] = [
           ...(cached[resourceDateKey][resourceCoding.code] ?? []).filter(
-            (v) => v.id !== trackerValue.id
+            (v) => v.id !== trackerValue.id,
           ),
-          trackerValue
+          trackerValue,
         ];
       }
 
@@ -268,7 +273,9 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
 
     fetchOntology: async (codeBelow: string) => {
       const cachedData = cache.ontologies[codeBelow];
-      if (cachedData) return cachedData;
+      if (cachedData) {
+        return cachedData;
+      }
 
       const res = await axiosInstance.post<QueryOntologyResponse>(
         '/graphql',
@@ -276,10 +283,10 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
           query: QUERY_ONTOLOGY,
           variables: {
             project: datastoreSettings.project,
-            code: codeBelow
-          }
+            code: codeBelow,
+          },
         },
-        axiosConfig(datastoreSettings)
+        axiosConfig(datastoreSettings),
       );
 
       if (!res.data.data) {
@@ -287,15 +294,17 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
       }
 
       const parseRelationship = (
-        relationship: CodeNode['relationshipConnection']
+        relationship: CodeNode['relationshipConnection'],
       ): CodedRelationship[] => {
-        if (!relationship) return [];
+        if (!relationship) {
+          return [];
+        }
 
         return relationship.edges.map(
           ({ node: { relationshipConnection, ...rest } }) => ({
             ...rest,
-            specializedBy: parseRelationship(relationshipConnection)
-          })
+            specializedBy: parseRelationship(relationshipConnection),
+          }),
         );
       };
 
@@ -304,7 +313,7 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
       cache.ontologies[codeBelow] = data;
 
       return data;
-    }
+    },
   };
 };
 
@@ -330,7 +339,7 @@ export const extractTrackerValues = (data: FetchTrackerResponse) => {
         id: observation.id,
         createdDate: new Date(observation.effectiveDateTime),
         value: observation.valueQuantity.value,
-        code: observation.code
+        code: observation.code,
       });
     }
   });
@@ -350,7 +359,7 @@ export const extractTrackerValues = (data: FetchTrackerResponse) => {
         id: procedure.id,
         createdDate: new Date(procedure.performedPeriod.end),
         value: performedPeriodToTimeInSeconds(procedure.performedPeriod),
-        code: procedure.code
+        code: procedure.code,
       });
     }
   });
@@ -362,11 +371,11 @@ export const extractMetricId = (codes: Observation['node']['code']['coding']) =>
   extractMetricCoding(codes)?.code;
 
 export const extractMetricCoding = (
-  codes: Observation['node']['code']['coding']
+  codes: Observation['node']['code']['coding'],
 ) =>
   codes.find(
     ({ system }) =>
-      system === TRACKER_CODE_SYSTEM || system === TRACKER_PILLAR_CODE_SYSTEM
+      system === TRACKER_CODE_SYSTEM || system === TRACKER_PILLAR_CODE_SYSTEM,
   );
 
 const toDateKeys = (dates: Date[]) => dates.map(toDateKey);
@@ -374,7 +383,7 @@ export const toDateKey = (date: string | Date) =>
   startOfDay(new Date(date)).toUTCString();
 
 const performedPeriodToTimeInSeconds = (
-  performedPeriod: Procedure['node']['performedPeriod']
+  performedPeriod: Procedure['node']['performedPeriod'],
 ): number => {
   const start = new Date(performedPeriod.start);
   const end = new Date(performedPeriod.end);

@@ -3,7 +3,7 @@ import React, {
   useCallback,
   useLayoutEffect,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { Animated, Easing, View, StyleSheet } from 'react-native';
 import { Svg, Circle } from 'react-native-svg';
@@ -39,7 +39,7 @@ export const RadialProgress: FC<Props> = (props) => {
   const styles = useStyleOverrides(defaultStyles);
   const flatStyles = useFlattenedStyles(styles, [
     'trackerCircleBorder',
-    'trackerCircleBorderDisabled'
+    'trackerCircleBorderDisabled',
   ]);
 
   const moveProgressTo = useCallback(
@@ -48,11 +48,13 @@ export const RadialProgress: FC<Props> = (props) => {
       ref.current.setValue(value);
       setAnimationValue(value);
     },
-    [circumference]
+    [circumference],
   );
 
   useLayoutEffect(() => {
-    if (!hasChanged || value < 0) return;
+    if (!hasChanged || value < 0) {
+      return;
+    }
 
     const hasExceededTarget = value > target;
     const isIncreasing = !lastValue || value > lastValue;
@@ -71,7 +73,9 @@ export const RadialProgress: FC<Props> = (props) => {
     const animationMax = 2 * target + (isIncreasing ? 1 : 0);
 
     // Don't animate if greater than twice the target
-    if (value >= animationMax && !animationValue) return;
+    if (value >= animationMax && !animationValue) {
+      return;
+    }
 
     if (value === 0 && isIncreasing) {
       return moveProgressTo('start');
@@ -88,7 +92,7 @@ export const RadialProgress: FC<Props> = (props) => {
       useNativeDriver: true,
       toValue: newValue,
       easing: Easing.inOut(Easing.exp),
-      duration: 450
+      duration: 450,
     }).start(() => {
       setAnimationValue(newValue);
       if (value <= 0) {
@@ -109,7 +113,7 @@ export const RadialProgress: FC<Props> = (props) => {
     target,
     lastValue,
     moveProgressTo,
-    hasChanged
+    hasChanged,
   ]);
 
   return (
@@ -146,7 +150,7 @@ export const RadialProgress: FC<Props> = (props) => {
           viewBox={`0 0 ${size} ${size}`}
           style={[
             styles.trackerOverflowProgress,
-            backgroundVisible && styles.trackerOverflowProgressShadow
+            backgroundVisible && styles.trackerOverflowProgressShadow,
           ]}
         >
           <AnimatedCircle
@@ -173,22 +177,22 @@ declare module '../TrackTile' {
 
 const defaultStyles = StyleSheet.create({
   trackerCircleBorderDisabled: {
-    opacity: 0.3
+    opacity: 0.3,
   },
   trackerCircleBorder: {
     borderWidth: 1,
     opacity: 0.4,
     borderColor: '#B2B9C0',
-    backgroundColor: undefined
+    backgroundColor: undefined,
   },
   trackerOverflowProgress: {
-    position: 'absolute'
+    position: 'absolute',
   },
   trackerOverflowProgressShadow: {
     elevation: 1,
     shadowOpacity: 0.65,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 3
-  }
+    shadowRadius: 3,
+  },
 });

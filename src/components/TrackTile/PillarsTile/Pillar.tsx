@@ -4,7 +4,7 @@ import {
   Animated,
   Easing,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import { Text } from '../styles';
 import Svg, { Rect, Pattern, Defs, Path, SvgProps } from 'react-native-svg';
@@ -13,7 +13,7 @@ import {
   Tracker,
   TrackerValue,
   TrackerValuesContext,
-  useTrackTileService
+  useTrackTileService,
 } from '../services/TrackTileService';
 import debounce from 'lodash/debounce';
 import { toFhirResource } from '../TrackerDetails/to-fhir-resource';
@@ -21,7 +21,7 @@ import { notifier } from '../services/EmitterService';
 import { tID } from '../common/testID';
 import {
   convertToPreferredUnit,
-  getPreferredUnitType
+  getPreferredUnitType,
 } from '../util/convert-value';
 import { StylesProp, useStyleOverrides } from '../styles';
 import { isCodeEqual } from '../util/is-code-equal';
@@ -50,7 +50,7 @@ export const Pillar: FC<PillarProps> = (props) => {
     onError,
     tracker,
     valuesContext,
-    icons
+    icons,
   } = props;
   const { color, icon, target: installTarget } = tracker;
   const selectedUnit = getPreferredUnitType(tracker);
@@ -58,16 +58,16 @@ export const Pillar: FC<PillarProps> = (props) => {
   const styles = useStyleOverrides(defaultStyles);
   const flatStyles = useFlattenedStyles(styles, [
     'pillarIconGoalMet',
-    'pillarIconGoalNotMet'
+    'pillarIconGoalNotMet',
   ]);
   const target = installTarget ?? unitDefaultTarget;
   const metGoalColor = processCurrentColor(
     flatStyles.pillarIconGoalMet.color,
-    color
+    color,
   );
   const notMetGoalColor = processCurrentColor(
     flatStyles.pillarIconGoalNotMet.color,
-    color
+    color,
   );
 
   const { current: progressHeight } = useRef(new Animated.Value(100));
@@ -75,7 +75,7 @@ export const Pillar: FC<PillarProps> = (props) => {
   const { current: opacityAnimation } = useRef(new Animated.Value(0));
   const value = convertToPreferredUnit(
     trackerValues?.reduce((total, { value }) => total + value, 0) ?? 0,
-    tracker
+    tracker,
   );
   const [currentValue, setCurrentValue] = useState(value);
 
@@ -96,8 +96,8 @@ export const Pillar: FC<PillarProps> = (props) => {
         const trackerValue = trackerValues?.find((value) =>
           isCodeEqual(value.code.coding[0], {
             system: tracker.system,
-            code: metricId
-          })
+            code: metricId,
+          }),
         );
         const res = await svc.upsertTrackerResource(
           valuesContext,
@@ -106,23 +106,23 @@ export const Pillar: FC<PillarProps> = (props) => {
             createDate: trackerValue?.createdDate || new Date(),
             id: trackerValue?.id,
             value: newValue,
-            tracker
-          })
+            tracker,
+          }),
         );
         notifier.emit('valuesChanged', [
-          { valuesContext, metricId, tracker: res }
+          { valuesContext, metricId, tracker: res },
         ]);
       } catch (e) {
         onError?.(e);
         setCurrentValue(
           convertToPreferredUnit(
             trackerValues?.reduce((total, { value }) => total + value, 0) ?? 0,
-            tracker
-          )
+            tracker,
+          ),
         );
       }
     }, 800),
-    [svc, tracker, metricId, trackerValues, onError]
+    [svc, tracker, metricId, trackerValues, onError],
   );
 
   const onAddData = useCallback(
@@ -134,17 +134,17 @@ export const Pillar: FC<PillarProps> = (props) => {
       setCurrentValue((displayedValue) => {
         const storedValue = convertToPreferredUnit(
           trackerValues?.reduce((total, { value }) => total + value, 0) ?? 0,
-          tracker
+          tracker,
         );
 
         const defaultCodingValue = convertToPreferredUnit(
           trackerValues?.find((value) =>
             isCodeEqual(value.code.coding[0], {
               system: tracker.system,
-              code: metricId
-            })
+              code: metricId,
+            }),
           )?.value ?? 0,
-          tracker
+          tracker,
         );
 
         const delta = displayedValue - storedValue + increaseBy;
@@ -156,7 +156,7 @@ export const Pillar: FC<PillarProps> = (props) => {
         return displayedValue + increaseBy;
       });
     },
-    [saveNewValue, metricId, tracker, trackerValues, value]
+    [saveNewValue, metricId, tracker, trackerValues, value],
   );
 
   useEffect(() => {
@@ -172,8 +172,8 @@ export const Pillar: FC<PillarProps> = (props) => {
           100 - Math.max(Math.min((currentValue / target) * 100, 100), 0),
         useNativeDriver: false,
         duration: 250,
-        easing: Easing.out(Easing.linear)
-      })
+        easing: Easing.out(Easing.linear),
+      }),
     ];
 
     if (hasMetGoal) {
@@ -183,7 +183,7 @@ export const Pillar: FC<PillarProps> = (props) => {
           Animated.timing(opacityAnimation, {
             toValue: 1,
             useNativeDriver: false,
-            duration: 350
+            duration: 350,
           }),
           Animated.spring(rotateAnimation, {
             velocity: 1,
@@ -191,9 +191,9 @@ export const Pillar: FC<PillarProps> = (props) => {
             useNativeDriver: false,
             stiffness: 120,
             mass: 1.5,
-            damping: 22
-          })
-        ])
+            damping: 22,
+          }),
+        ]),
       );
     }
 
@@ -204,7 +204,7 @@ export const Pillar: FC<PillarProps> = (props) => {
     hasMetGoal,
     progressHeight,
     opacityAnimation,
-    rotateAnimation
+    rotateAnimation,
   ]);
 
   return (
@@ -261,12 +261,12 @@ export const Pillar: FC<PillarProps> = (props) => {
                         {
                           translateY: progressHeight.interpolate({
                             inputRange: [0, 100],
-                            outputRange: [0, 200]
-                          })
-                        }
+                            outputRange: [0, 200],
+                          }),
+                        },
                       ],
-                      backgroundColor: color
-                    }
+                      backgroundColor: color,
+                    },
                   ]}
                 />
                 {hasMetGoal && (
@@ -279,10 +279,10 @@ export const Pillar: FC<PillarProps> = (props) => {
                             rotateZ: rotateAnimation.interpolate({
                               inputRange: [-1, 1],
                               outputRange: ['-45rad', '45rad'],
-                              easing: Easing.inOut(Easing.linear)
-                            })
-                          }
-                        ]
+                              easing: Easing.inOut(Easing.linear),
+                            }),
+                          },
+                        ],
                       }}
                     >
                       <Indicator
@@ -334,11 +334,11 @@ const defaultStyles = StyleSheet.create({
   pillarViewWrapper: {
     alignItems: 'center',
     paddingVertical: 16,
-    width: defaultPillarWidth * 2
+    width: defaultPillarWidth * 2,
   },
   pillarView: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   pillarBase: {
     position: 'relative',
@@ -346,18 +346,18 @@ const defaultStyles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginVertical: 8,
     borderRadius: defaultPillarWidth,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   pillarBackground: {
     position: 'absolute',
     width: defaultPillarWidth,
     height: '100%',
-    backgroundColor: '#2D4B67'
+    backgroundColor: '#2D4B67',
   },
   pillarFill: {
     width: defaultPillarWidth,
     height: '100%',
-    borderRadius: defaultPillarWidth
+    borderRadius: defaultPillarWidth,
   },
   pillarStarBackground: {
     position: 'absolute',
@@ -370,21 +370,21 @@ const defaultStyles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#272b2f'
+    backgroundColor: '#272b2f',
   },
   pillarLoading: {
-    width: defaultPillarWidth
+    width: defaultPillarWidth,
   },
   /**
    * @property {string} color - Set to 'currentValue' to use the tracker's color
    */
   pillarIconGoalMet: {
-    color: 'currentColor'
+    color: 'currentColor',
   },
   /**
    * @property {string} color - Set to 'currentValue' to use the tracker's color
    */
   pillarIconGoalNotMet: {
-    color: 'white'
-  }
+    color: 'white',
+  },
 });

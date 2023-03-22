@@ -11,12 +11,12 @@ describe('Track Tile', () => {
         trackTileService={
           {
             fetchTrackers: jest.fn(() => new Promise(jest.fn)),
-            fetchTrackerValues: jest.fn().mockResolvedValue({})
+            fetchTrackerValues: jest.fn().mockResolvedValue({}),
           } as any
         }
         onOpenSettings={jest.fn()}
         onOpenTracker={jest.fn()}
-      />
+      />,
     );
 
     expect(await findByA11yRole('progressbar')).toBeDefined();
@@ -28,12 +28,12 @@ describe('Track Tile', () => {
         trackTileService={
           {
             fetchTrackers: jest.fn().mockResolvedValue([]),
-            fetchTrackerValues: jest.fn(() => new Promise(jest.fn))
+            fetchTrackerValues: jest.fn(() => new Promise(jest.fn)),
           } as any
         }
         onOpenSettings={jest.fn()}
         onOpenTracker={jest.fn()}
-      />
+      />,
     );
 
     expect(await findByA11yRole('progressbar')).toBeDefined();
@@ -46,14 +46,14 @@ describe('Track Tile', () => {
           {
             fetchTrackers: jest.fn().mockResolvedValue([
               { id: '1', name: 'Tracker A', units: [] },
-              { id: '2', name: 'Tracker B', units: [] }
+              { id: '2', name: 'Tracker B', units: [] },
             ]),
-            fetchTrackerValues: jest.fn().mockResolvedValue({})
+            fetchTrackerValues: jest.fn().mockResolvedValue({}),
           } as any
         }
         onOpenSettings={jest.fn()}
         onOpenTracker={jest.fn()}
-      />
+      />,
     );
 
     expect(await findByText('Tracker A')).toBeDefined();
@@ -69,19 +69,19 @@ describe('Track Tile', () => {
         trackTileService={
           {
             fetchTrackers: jest.fn().mockResolvedValue([tracker]),
-            fetchTrackerValues: jest.fn().mockResolvedValue({})
+            fetchTrackerValues: jest.fn().mockResolvedValue({}),
           } as any
         }
         onOpenSettings={jest.fn()}
         onOpenTracker={onOpenTracker}
-      />
+      />,
     );
 
     fireEvent.press(await findByText(tracker.name));
 
     expect(onOpenTracker).toHaveBeenCalledWith(tracker, {
       system: TRACKER_CODE_SYSTEM,
-      codeBelow: TRACKER_CODE
+      codeBelow: TRACKER_CODE,
     });
   });
 
@@ -93,12 +93,12 @@ describe('Track Tile', () => {
         trackTileService={
           {
             fetchTrackers: jest.fn().mockResolvedValue([]),
-            fetchTrackerValues: jest.fn(() => new Promise(jest.fn))
+            fetchTrackerValues: jest.fn(() => new Promise(jest.fn)),
           } as any
         }
         onOpenSettings={onOpenSettings}
         onOpenTracker={jest.fn()}
-      />
+      />,
     );
 
     fireEvent.press(await findByLabelText('Open Tracker Settings'));
@@ -117,14 +117,14 @@ describe('Track Tile', () => {
             fetchTrackers: jest.fn().mockResolvedValue([tracker]),
             fetchTrackerValues: jest.fn().mockResolvedValue({
               [startOfToday().toUTCString()]: {
-                [tracker.metricId]: [{ value: trackerValue }]
-              }
-            })
+                [tracker.metricId]: [{ value: trackerValue }],
+              },
+            }),
           } as any
         }
         onOpenSettings={jest.fn()}
         onOpenTracker={jest.fn()}
-      />
+      />,
     );
 
     expect(await findByText(trackerValue)).toBeDefined();

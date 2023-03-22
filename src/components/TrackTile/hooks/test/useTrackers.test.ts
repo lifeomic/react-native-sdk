@@ -3,22 +3,23 @@ import { useTrackers } from '../useTrackers';
 import {
   isInstalledMetric,
   TRACKER_PILLAR_CODE_SYSTEM,
-  useTrackTileService
+  useTrackTileService,
 } from '../../services/TrackTileService';
 import { notifier, notifyTrackerRemoved } from '../../services/EmitterService';
 
 jest.mock('../../services/TrackTileService', () => ({
   ...jest.requireActual('../../services/TrackTileService'),
-  useTrackTileService: jest.fn()
+  useTrackTileService: jest.fn(),
 }));
 
-const mockUseTrackTileService: jest.Mock<typeof useTrackTileService> = useTrackTileService as any;
+const mockUseTrackTileService: jest.Mock<typeof useTrackTileService> =
+  useTrackTileService as any;
 
 describe('useTrackers', () => {
   it('should fetch installed metrics on mount', () => {
     const fetchTrackers = jest.fn().mockReturnValue(new Promise(jest.fn()));
     mockUseTrackTileService.mockReturnValue({
-      fetchTrackers
+      fetchTrackers,
     } as any);
 
     const { result } = renderHook(() => useTrackers());
@@ -33,8 +34,8 @@ describe('useTrackers', () => {
         .fn()
         .mockResolvedValue([
           { name: 'metric' },
-          { name: 'metric2', system: TRACKER_PILLAR_CODE_SYSTEM }
-        ])
+          { name: 'metric2', system: TRACKER_PILLAR_CODE_SYSTEM },
+        ]),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(() => useTrackers());
@@ -44,13 +45,13 @@ describe('useTrackers', () => {
     expect(result.current.loading).toBe(false);
     expect(result.current.trackers).toEqual([{ name: 'metric' }]);
     expect(result.current.pillarTrackers).toEqual([
-      { name: 'metric2', system: TRACKER_PILLAR_CODE_SYSTEM }
+      { name: 'metric2', system: TRACKER_PILLAR_CODE_SYSTEM },
     ]);
   });
 
   it('should set the API error if one is present', async () => {
     mockUseTrackTileService.mockReturnValue({
-      fetchTrackers: jest.fn().mockRejectedValue({ error: 'Some API Error' })
+      fetchTrackers: jest.fn().mockRejectedValue({ error: 'Some API Error' }),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(() => useTrackers());
@@ -66,8 +67,8 @@ describe('useTrackers', () => {
       fetchTrackers: jest
         .fn()
         .mockResolvedValue([
-          { id: 'tracker-id', metricId: '1', unit: 'u', target: 1 }
-        ])
+          { id: 'tracker-id', metricId: '1', unit: 'u', target: 1 },
+        ]),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(() => useTrackers());
@@ -75,7 +76,7 @@ describe('useTrackers', () => {
     await waitForNextUpdate();
 
     expect(result.current.trackers).toEqual([
-      expect.objectContaining({ target: 1 })
+      expect.objectContaining({ target: 1 }),
     ]);
 
     act(() => {
@@ -83,12 +84,12 @@ describe('useTrackers', () => {
         id: 'tracker-id',
         metricId: '1',
         unit: 'u',
-        target: 999
+        target: 999,
       } as any);
     });
 
     expect(result.current.trackers).toEqual([
-      expect.objectContaining({ target: 999 })
+      expect.objectContaining({ target: 999 }),
     ]);
   });
 
@@ -97,8 +98,8 @@ describe('useTrackers', () => {
       fetchTrackers: jest
         .fn()
         .mockResolvedValue([
-          { id: 'tracker-id', metricId: '1', unit: 'u', target: 1 }
-        ])
+          { id: 'tracker-id', metricId: '1', unit: 'u', target: 1 },
+        ]),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(() => useTrackers());
@@ -112,7 +113,7 @@ describe('useTrackers', () => {
         id: 'tracker-id',
         metricId: '1',
         unit: 'u',
-        target: 999
+        target: 999,
       } as any);
     });
 
@@ -132,15 +133,15 @@ describe('useTrackers', () => {
           name: 'A',
           order: 2,
           metricId: 'A',
-          system: TRACKER_PILLAR_CODE_SYSTEM
+          system: TRACKER_PILLAR_CODE_SYSTEM,
         },
         {
           name: 'B',
           order: 1,
           metricId: 'B',
-          system: TRACKER_PILLAR_CODE_SYSTEM
-        }
-      ])
+          system: TRACKER_PILLAR_CODE_SYSTEM,
+        },
+      ]),
     } as any);
 
     const updatedTracker: any = {
@@ -148,7 +149,7 @@ describe('useTrackers', () => {
       metricId: 'C',
       unit: 'u',
       target: 1,
-      order: 1
+      order: 1,
     };
 
     const { result, waitForNextUpdate } = renderHook(() => useTrackers());
@@ -165,16 +166,21 @@ describe('useTrackers', () => {
       { name: 'B', order: 2, metricId: 'B' },
       { name: 'D', order: 3, metricId: 'D' },
       { name: 'E', id: 'E' },
-      { name: 'F', id: 'F' }
+      { name: 'F', id: 'F' },
     ]);
     expect(result.current.pillarTrackers).toEqual([
       {
         name: 'B',
         order: 1,
         metricId: 'B',
-        system: TRACKER_PILLAR_CODE_SYSTEM
+        system: TRACKER_PILLAR_CODE_SYSTEM,
       },
-      { name: 'A', order: 2, metricId: 'A', system: TRACKER_PILLAR_CODE_SYSTEM }
+      {
+        name: 'A',
+        order: 2,
+        metricId: 'A',
+        system: TRACKER_PILLAR_CODE_SYSTEM,
+      },
     ]);
   });
 });

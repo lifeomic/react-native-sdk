@@ -10,7 +10,7 @@ const defaultResource = (resource: Partial<ResourceSettings> = {}) => ({
   datastoreSettings: {
     account: 'datastore-account',
     project: 'id',
-    ...resource.datastoreSettings
+    ...resource.datastoreSettings,
   },
   id: '1',
   value: 6,
@@ -26,12 +26,12 @@ const defaultResource = (resource: Partial<ResourceSettings> = {}) => ({
         display: 'unit',
         system: 'system',
         target: 5,
-        unit: 'unit'
-      }
+        unit: 'unit',
+      },
     ],
     unit: 'unit',
-    system: 'http://lifeomic.com/fhir/custom-tracker-system'
-  }
+    system: 'http://lifeomic.com/fhir/custom-tracker-system',
+  },
 });
 
 describe('toObservationResource', () => {
@@ -47,27 +47,27 @@ describe('toObservationResource', () => {
           code: "[arb'U]",
           system: 'system',
           unit: 'unit',
-          value: 6
+          value: 6,
         },
         meta: {
           tag: [
             {
               code: 'id',
-              system: 'http://lifeomic.com/fhir/dataset'
-            }
-          ]
+              system: 'http://lifeomic.com/fhir/dataset',
+            },
+          ],
         },
         code: {
           coding: [
             {
               system: 'http://lifeomic.com/fhir/custom-tracker-system',
               code: '1',
-              display: 'test'
-            }
-          ]
+              display: 'test',
+            },
+          ],
         },
-        status: 'final'
-      })
+        status: 'final',
+      }),
     );
   });
 
@@ -84,11 +84,11 @@ describe('toObservationResource', () => {
             {
               system: 'http://lifeomic.com/fhir/custom-tracker-system',
               code: 'uninstalled-id',
-              display: 'test'
-            }
-          ]
-        }
-      })
+              display: 'test',
+            },
+          ],
+        },
+      }),
     );
   });
 
@@ -96,9 +96,9 @@ describe('toObservationResource', () => {
     const resourceIn = defaultResource({
       datastoreSettings: {
         account: 'account-id',
-        project: 'project-id'
+        project: 'project-id',
       },
-      patientId: 'patient-id'
+      patientId: 'patient-id',
     });
     const res = toFhirObservationResource(resourceIn);
 
@@ -108,14 +108,14 @@ describe('toObservationResource', () => {
           tag: [
             {
               code: 'project-id',
-              system: 'http://lifeomic.com/fhir/dataset'
-            }
-          ]
+              system: 'http://lifeomic.com/fhir/dataset',
+            },
+          ],
         },
         subject: {
-          reference: 'Patient/patient-id'
-        }
-      })
+          reference: 'Patient/patient-id',
+        },
+      }),
     );
   });
 });

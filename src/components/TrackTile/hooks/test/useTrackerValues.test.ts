@@ -4,26 +4,27 @@ import {
   TrackerValuesContext,
   TRACKER_CODE,
   TRACKER_CODE_SYSTEM,
-  useTrackTileService
+  useTrackTileService,
 } from '../../services/TrackTileService';
 import { notifier } from '../../services/EmitterService';
 import {
   startOfToday,
   endOfToday,
   startOfDay,
-  startOfTomorrow
+  startOfTomorrow,
 } from 'date-fns';
 
 jest.mock('../../services/TrackTileService', () => ({
   ...jest.requireActual('../../services/TrackTileService'),
-  useTrackTileService: jest.fn()
+  useTrackTileService: jest.fn(),
 }));
 
-const mockUseTrackTileService: jest.Mock<typeof useTrackTileService> = useTrackTileService as any;
+const mockUseTrackTileService: jest.Mock<typeof useTrackTileService> =
+  useTrackTileService as any;
 
 const valuesContext: TrackerValuesContext = {
   system: TRACKER_CODE_SYSTEM,
-  codeBelow: TRACKER_CODE
+  codeBelow: TRACKER_CODE,
 };
 
 describe('useTrackerValues', () => {
@@ -32,14 +33,14 @@ describe('useTrackerValues', () => {
       .fn()
       .mockReturnValue(new Promise(jest.fn()));
     mockUseTrackTileService.mockReturnValue({
-      fetchTrackerValues
+      fetchTrackerValues,
     } as any);
 
     const { result } = renderHook(() => useTrackerValues(valuesContext));
 
     expect(fetchTrackerValues).toHaveBeenCalledWith(valuesContext, {
       start: startOfToday(),
-      end: endOfToday()
+      end: endOfToday(),
     });
     expect(result.current.loading).toBe(true);
   });
@@ -49,19 +50,19 @@ describe('useTrackerValues', () => {
       .fn()
       .mockReturnValue(new Promise(jest.fn()));
     mockUseTrackTileService.mockReturnValue({
-      fetchTrackerValues
+      fetchTrackerValues,
     } as any);
 
     const start = new Date(1);
     const end = new Date(2);
 
     const { result } = renderHook(() =>
-      useTrackerValues(valuesContext, { start, end })
+      useTrackerValues(valuesContext, { start, end }),
     );
 
     expect(fetchTrackerValues).toHaveBeenCalledWith(valuesContext, {
       start,
-      end
+      end,
     });
     expect(result.current.loading).toBe(true);
   });
@@ -71,26 +72,26 @@ describe('useTrackerValues', () => {
       .fn()
       .mockReturnValue(new Promise(jest.fn()));
     mockUseTrackTileService.mockReturnValue({
-      fetchTrackerValues
+      fetchTrackerValues,
     } as any);
 
     const start = new Date(1);
     const end = new Date(2);
     const customValuesContext = {
       ...valuesContext,
-      codeBelow: 'custom-code-below'
+      codeBelow: 'custom-code-below',
     };
 
     const { result } = renderHook(() =>
       useTrackerValues(customValuesContext, {
         start,
-        end
-      })
+        end,
+      }),
     );
 
     expect(fetchTrackerValues).toHaveBeenCalledWith(customValuesContext, {
       start,
-      end
+      end,
     });
     expect(result.current.loading).toBe(true);
   });
@@ -99,16 +100,16 @@ describe('useTrackerValues', () => {
     mockUseTrackTileService.mockReturnValue({
       fetchTrackerValues: jest.fn().mockResolvedValue({
         [dateKey('2021-07-01')]: { metric1: [{ value: 1 }] },
-        [dateKey('2021-07-03')]: { metric1: [{ value: 2 }] }
-      })
+        [dateKey('2021-07-03')]: { metric1: [{ value: 2 }] },
+      }),
     } as any);
 
     const range = {
       start: new Date('2021-07-01'),
-      end: new Date('2021-07-03')
+      end: new Date('2021-07-03'),
     };
     const { result, waitForNextUpdate } = renderHook(() =>
-      useTrackerValues(valuesContext, range)
+      useTrackerValues(valuesContext, range),
     );
 
     await waitForNextUpdate();
@@ -117,13 +118,13 @@ describe('useTrackerValues', () => {
     expect(result.current.trackerValues).toEqual([
       { metric1: [{ value: 1 }] }, // 2021-07-01
       {}, // 2021-07-02
-      { metric1: [{ value: 2 }] } // 2021-07-03
+      { metric1: [{ value: 2 }] }, // 2021-07-03
     ]);
   });
 
   it('should set the error when fetchTrackerValues throws', async () => {
     mockUseTrackTileService.mockReturnValue({
-      fetchTrackerValues: jest.fn().mockRejectedValue('Some Error')
+      fetchTrackerValues: jest.fn().mockRejectedValue('Some Error'),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(useTrackerValues);
@@ -138,20 +139,20 @@ describe('useTrackerValues', () => {
     mockUseTrackTileService.mockReturnValue({
       fetchTrackerValues: jest.fn().mockResolvedValue({
         [dateKey(startOfToday())]: {
-          metric1: [{ value: 1, createdDate: startOfToday(), id: 'id' }]
-        }
-      })
+          metric1: [{ value: 1, createdDate: startOfToday(), id: 'id' }],
+        },
+      }),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(() =>
-      useTrackerValues(valuesContext)
+      useTrackerValues(valuesContext),
     );
 
     await waitForNextUpdate();
 
     expect(result.current.loading).toBe(false);
     expect(result.current.trackerValues).toEqual([
-      { metric1: [{ value: 1, createdDate: startOfToday(), id: 'id' }] }
+      { metric1: [{ value: 1, createdDate: startOfToday(), id: 'id' }] },
     ]);
 
     act(() => {
@@ -162,14 +163,14 @@ describe('useTrackerValues', () => {
           tracker: {
             id: 'id',
             createdDate: startOfToday(),
-            value: 5
-          }
-        }
+            value: 5,
+          },
+        },
       ]);
     });
 
     expect(result.current.trackerValues).toEqual([
-      { metric1: [{ value: 5, createdDate: startOfToday(), id: 'id' }] }
+      { metric1: [{ value: 5, createdDate: startOfToday(), id: 'id' }] },
     ]);
   });
 
@@ -177,20 +178,20 @@ describe('useTrackerValues', () => {
     mockUseTrackTileService.mockReturnValue({
       fetchTrackerValues: jest.fn().mockResolvedValue({
         [dateKey(startOfToday())]: {
-          metric1: [{ value: 1, createdDate: startOfToday() }]
-        }
-      })
+          metric1: [{ value: 1, createdDate: startOfToday() }],
+        },
+      }),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(() =>
-      useTrackerValues(valuesContext)
+      useTrackerValues(valuesContext),
     );
 
     await waitForNextUpdate();
 
     expect(result.current.loading).toBe(false);
     expect(result.current.trackerValues).toEqual([
-      { metric1: [{ value: 1, createdDate: startOfToday() }] }
+      { metric1: [{ value: 1, createdDate: startOfToday() }] },
     ]);
 
     act(() => {
@@ -200,14 +201,14 @@ describe('useTrackerValues', () => {
           metricId: 'metric1',
           tracker: {
             createdDate: startOfToday(),
-            value: 5
-          }
-        }
+            value: 5,
+          },
+        },
       ]);
     });
 
     expect(result.current.trackerValues).toEqual([
-      { metric1: [{ value: 1, createdDate: startOfToday() }] }
+      { metric1: [{ value: 1, createdDate: startOfToday() }] },
     ]);
   });
 
@@ -217,14 +218,14 @@ describe('useTrackerValues', () => {
         [dateKey(startOfToday())]: {
           metric1: [
             { id: 'value-id-1', value: 1, createdDate: startOfToday() },
-            { id: 'value-id-2', value: 1, createdDate: startOfToday() }
-          ]
-        }
-      })
+            { id: 'value-id-2', value: 1, createdDate: startOfToday() },
+          ],
+        },
+      }),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(() =>
-      useTrackerValues(valuesContext)
+      useTrackerValues(valuesContext),
     );
 
     await waitForNextUpdate();
@@ -234,9 +235,9 @@ describe('useTrackerValues', () => {
       {
         metric1: [
           { id: 'value-id-1', value: 1, createdDate: startOfToday() },
-          { id: 'value-id-2', value: 1, createdDate: startOfToday() }
-        ]
-      }
+          { id: 'value-id-2', value: 1, createdDate: startOfToday() },
+        ],
+      },
     ]);
 
     act(() => {
@@ -247,14 +248,16 @@ describe('useTrackerValues', () => {
           metricId: 'metric1',
           tracker: {
             createdDate: startOfToday(),
-            id: 'value-id-1'
-          }
-        }
+            id: 'value-id-1',
+          },
+        },
       ]);
     });
 
     expect(result.current.trackerValues).toEqual([
-      { metric1: [{ id: 'value-id-2', value: 1, createdDate: startOfToday() }] }
+      {
+        metric1: [{ id: 'value-id-2', value: 1, createdDate: startOfToday() }],
+      },
     ]);
   });
 
@@ -262,20 +265,20 @@ describe('useTrackerValues', () => {
     mockUseTrackTileService.mockReturnValue({
       fetchTrackerValues: jest.fn().mockResolvedValue({
         [dateKey(startOfToday())]: {
-          metric1: [{ id: 'value-id', value: 1, createdDate: startOfToday() }]
-        }
-      })
+          metric1: [{ id: 'value-id', value: 1, createdDate: startOfToday() }],
+        },
+      }),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(() =>
-      useTrackerValues(valuesContext)
+      useTrackerValues(valuesContext),
     );
 
     await waitForNextUpdate();
 
     expect(result.current.loading).toBe(false);
     expect(result.current.trackerValues).toEqual([
-      { metric1: [{ id: 'value-id', value: 1, createdDate: startOfToday() }] }
+      { metric1: [{ id: 'value-id', value: 1, createdDate: startOfToday() }] },
     ]);
 
     act(() => {
@@ -286,14 +289,14 @@ describe('useTrackerValues', () => {
           metricId: 'metric1',
           tracker: {
             createdDate: startOfToday(),
-            id: 'value-id'
-          }
-        }
+            id: 'value-id',
+          },
+        },
       ]);
     });
 
     expect(result.current.trackerValues).toEqual([
-      { metric1: [{ id: 'value-id', value: 1, createdDate: startOfToday() }] }
+      { metric1: [{ id: 'value-id', value: 1, createdDate: startOfToday() }] },
     ]);
   });
 
@@ -309,7 +312,7 @@ describe('useTrackerValues', () => {
       then: (cb: (val: any) => void) => {
         act(() => cb({}));
         return { catch: jest.fn() };
-      }
+      },
     }));
     mockUseTrackTileService.mockReturnValue({ fetchTrackerValues } as any);
 

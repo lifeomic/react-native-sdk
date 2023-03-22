@@ -9,7 +9,7 @@ import {
   TrackerValue,
   TrackerValuesContext,
   TRACKER_PILLAR_CODE,
-  TRACKER_PILLAR_CODE_SYSTEM
+  TRACKER_PILLAR_CODE_SYSTEM,
 } from '../services/TrackTileService';
 import { NamedStyles, StylesProp, useStyleOverrides } from '../styles';
 import { Pillar } from './Pillar';
@@ -20,12 +20,12 @@ export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 export type PillarsTileProps = {
   onOpenDetails: (
     tracker: Tracker,
-    valuesContext: TrackerValuesContext
+    valuesContext: TrackerValuesContext,
   ) => void;
   onSaveNewValueOverride?: (
     tracker: Tracker,
     newValue: number,
-    originalTrackerValues?: TrackerValue[]
+    originalTrackerValues?: TrackerValue[],
   ) => void;
   background?: ReactNode;
   icons?: Record<string, React.ComponentType<SvgProps>>;
@@ -35,18 +35,17 @@ export const PillarsTile = ({
   onOpenDetails,
   onSaveNewValueOverride,
   background = <PillarsBackground />,
-  icons
+  icons,
 }: PillarsTileProps) => {
   const styles = useStyleOverrides(defaultStyles);
   const valuesContext: TrackerValuesContext = {
     system: TRACKER_PILLAR_CODE_SYSTEM,
-    codeBelow: TRACKER_PILLAR_CODE
+    codeBelow: TRACKER_PILLAR_CODE,
   };
 
   const { pillarTrackers, loading: trackersLoading } = useTrackers();
-  const { trackerValues, loading: valuesLoading } = useTrackerValues(
-    valuesContext
-  );
+  const { trackerValues, loading: valuesLoading } =
+    useTrackerValues(valuesContext);
 
   return (
     <>
@@ -81,7 +80,7 @@ export const PillarsTile = ({
                           onSaveNewValueOverride(
                             tracker,
                             newValue,
-                            trackerDayValues
+                            trackerDayValues,
                           )
                       : undefined
                   }
@@ -104,20 +103,20 @@ const defaultStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowOffset: {
       height: 0,
-      width: 2
+      width: 2,
     },
     shadowRadius: 13,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   pillarsTileBackgroundContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    height: 326
+    height: 326,
   },
   pillarsTileLoadingIndicator: {
     height: '100%',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 });

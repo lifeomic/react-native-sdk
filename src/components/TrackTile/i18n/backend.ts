@@ -1,12 +1,9 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 import {
   BackendModule,
   InitOptions,
   ReadCallback,
   ResourceKey,
-  Services
+  Services,
 } from 'i18next';
 
 type BackendOptions = {
@@ -26,7 +23,7 @@ class NamespaceLoader implements BackendModule<BackendOptions> {
   constructor(
     _services: Services,
     backendOptions: BackendOptions,
-    _i18nextOptions: InitOptions
+    _i18nextOptions: InitOptions,
   ) {
     this.backendOptions = backendOptions;
     this.init(_services, backendOptions, _i18nextOptions);
@@ -35,7 +32,7 @@ class NamespaceLoader implements BackendModule<BackendOptions> {
   init(
     _services: Services,
     backendOptions: BackendOptions,
-    _i18nextOptions: InitOptions
+    _i18nextOptions: InitOptions,
   ) {
     this.backendOptions = backendOptions;
   }
@@ -54,7 +51,7 @@ class NamespaceLoader implements BackendModule<BackendOptions> {
     } else {
       return callback(
         new Error(`Unsupported language ${language} in ${namespace}`),
-        null
+        null,
       );
     }
   }

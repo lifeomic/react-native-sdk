@@ -5,9 +5,9 @@ export const SupportedLocales = [
   'es',
   'fr',
   'pt',
-  'tr'
+  'tr',
 ] as const;
 
 // Generate a union type from the values of SupportedLocales
-export type Locale = typeof SupportedLocales[number];
+export type Locale = (typeof SupportedLocales)[number];
 export type LocaleProviding<T> = Record<Locale, T>;

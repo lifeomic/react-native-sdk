@@ -8,7 +8,7 @@ export { AdvancedTrackerEditorProvider as AdvancedTrackerEditor } from './Tracke
 export { ManageTrackers } from './ManageTrackers';
 export {
   notifyTrackerRemoved,
-  notifySaveEditTrackerValue
+  notifySaveEditTrackerValue,
 } from './services/EmitterService';
 
 // These imports below are needed in order to capture

@@ -3,33 +3,33 @@ import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Pillar } from './Pillar';
 import {
   Tracker,
-  TrackTileServiceProvider
+  TrackTileServiceProvider,
 } from '../services/TrackTileService';
 import debounce from 'lodash/debounce';
 
 jest.mock('lodash/debounce', () => jest.fn((fn) => fn));
 
-const mockDebounce = (debounce as any) as jest.Mock<typeof debounce>;
+const mockDebounce = debounce as any as jest.Mock<typeof debounce>;
 
-const tracker: Tracker = ({
+const tracker: Tracker = {
   metricId: '1',
   resourceType: 'Observation',
   units: [{}],
   system: 'system',
   code: '1',
-  target: 3
-} as Partial<Tracker>) as any;
+  target: 3,
+} as Partial<Tracker> as any;
 
 const renderWithProviders = (children: React.ReactNode) => {
   const providers = {
     datastoreSettings: {},
-    upsertTrackerResource: jest.fn()
+    upsertTrackerResource: jest.fn(),
   };
 
   const result = render(
     <TrackTileServiceProvider value={providers as any}>
       {children}
-    </TrackTileServiceProvider>
+    </TrackTileServiceProvider>,
   );
 
   return { ...providers, ...result };
@@ -43,7 +43,7 @@ describe('Pillar', () => {
         tracker={tracker}
         valuesContext={{} as any}
         loading
-      />
+      />,
     );
 
     expect(await findByTestId('pillar-loading-1')).toBeDefined();
@@ -51,21 +51,20 @@ describe('Pillar', () => {
 
   it('should allow adding multiple values', async () => {
     let handler: () => any | undefined;
-    mockDebounce.mockImplementation((fn: any) => (...args) =>
-      (handler = () => fn(...args)) as any
+    mockDebounce.mockImplementation(
+      (fn: any) =>
+        (...args) =>
+          (handler = () => fn(...args)) as any,
     );
 
-    const {
-      findByTestId,
-      findByText,
-      upsertTrackerResource
-    } = renderWithProviders(
-      <Pillar
-        onOpenDetails={jest.fn()}
-        tracker={tracker}
-        valuesContext={{} as any}
-      />
-    );
+    const { findByTestId, findByText, upsertTrackerResource } =
+      renderWithProviders(
+        <Pillar
+          onOpenDetails={jest.fn()}
+          tracker={tracker}
+          valuesContext={{} as any}
+        />,
+      );
 
     upsertTrackerResource.mockResolvedValue({ value: 3 });
 
@@ -83,43 +82,42 @@ describe('Pillar', () => {
       expect.anything(),
       expect.objectContaining({
         valueQuantity: expect.objectContaining({
-          value: 3
-        })
-      })
+          value: 3,
+        }),
+      }),
     );
   });
 
   it('should update only the default tracker type', async () => {
     let handler: () => any | undefined;
-    mockDebounce.mockImplementation((fn: any) => (...args) =>
-      (handler = () => fn(...args)) as any
+    mockDebounce.mockImplementation(
+      (fn: any) =>
+        (...args) =>
+          (handler = () => fn(...args)) as any,
     );
 
-    const {
-      findByTestId,
-      findByText,
-      upsertTrackerResource
-    } = renderWithProviders(
-      <Pillar
-        onOpenDetails={jest.fn()}
-        tracker={tracker}
-        valuesContext={{} as any}
-        trackerValues={[
-          {
-            code: { coding: [{ system: 'system', code: '1' } as any] },
-            createdDate: new Date(),
-            id: 'id',
-            value: 1
-          },
-          {
-            code: { coding: [{ system: 'other', code: '1' } as any] },
-            createdDate: new Date(),
-            id: 'id2',
-            value: 1
-          }
-        ]}
-      />
-    );
+    const { findByTestId, findByText, upsertTrackerResource } =
+      renderWithProviders(
+        <Pillar
+          onOpenDetails={jest.fn()}
+          tracker={tracker}
+          valuesContext={{} as any}
+          trackerValues={[
+            {
+              code: { coding: [{ system: 'system', code: '1' } as any] },
+              createdDate: new Date(),
+              id: 'id',
+              value: 1,
+            },
+            {
+              code: { coding: [{ system: 'other', code: '1' } as any] },
+              createdDate: new Date(),
+              id: 'id2',
+              value: 1,
+            },
+          ]}
+        />,
+      );
 
     upsertTrackerResource.mockResolvedValue({ value: 2 });
 
@@ -139,42 +137,41 @@ describe('Pillar', () => {
           coding: [
             expect.objectContaining({
               system: 'system',
-              code: '1'
-            })
-          ]
+              code: '1',
+            }),
+          ],
         },
         valueQuantity: expect.objectContaining({
-          value: 2
-        })
-      })
+          value: 2,
+        }),
+      }),
     );
   });
 
   it('should handle no default tracker type existing', async () => {
     let handler: () => any | undefined;
-    mockDebounce.mockImplementation((fn: any) => (...args) =>
-      (handler = () => fn(...args)) as any
+    mockDebounce.mockImplementation(
+      (fn: any) =>
+        (...args) =>
+          (handler = () => fn(...args)) as any,
     );
 
-    const {
-      findByTestId,
-      findByText,
-      upsertTrackerResource
-    } = renderWithProviders(
-      <Pillar
-        onOpenDetails={jest.fn()}
-        tracker={tracker}
-        valuesContext={{} as any}
-        trackerValues={[
-          {
-            code: { coding: [{ system: 'other', code: '1' } as any] }, // Not default code
-            createdDate: new Date(),
-            id: 'id2',
-            value: 1
-          }
-        ]}
-      />
-    );
+    const { findByTestId, findByText, upsertTrackerResource } =
+      renderWithProviders(
+        <Pillar
+          onOpenDetails={jest.fn()}
+          tracker={tracker}
+          valuesContext={{} as any}
+          trackerValues={[
+            {
+              code: { coding: [{ system: 'other', code: '1' } as any] }, // Not default code
+              createdDate: new Date(),
+              id: 'id2',
+              value: 1,
+            },
+          ]}
+        />,
+      );
 
     upsertTrackerResource.mockResolvedValue({ value: 1 });
 
@@ -193,44 +190,43 @@ describe('Pillar', () => {
           coding: [
             expect.objectContaining({
               system: 'system',
-              code: '1'
-            })
-          ]
+              code: '1',
+            }),
+          ],
         },
         valueQuantity: expect.objectContaining({
-          value: 1
-        })
-      })
+          value: 1,
+        }),
+      }),
     );
   });
 
   it('should reset tracker value on error', async () => {
     const onError = jest.fn();
     let handler: () => any | undefined;
-    mockDebounce.mockImplementation((fn: any) => (...args) =>
-      (handler = () => fn(...args)) as any
+    mockDebounce.mockImplementation(
+      (fn: any) =>
+        (...args) =>
+          (handler = () => fn(...args)) as any,
     );
 
-    const {
-      findByTestId,
-      findByText,
-      upsertTrackerResource
-    } = renderWithProviders(
-      <Pillar
-        onOpenDetails={jest.fn()}
-        tracker={tracker}
-        valuesContext={{} as any}
-        onError={onError}
-        trackerValues={[
-          {
-            code: { coding: [{ system: 'other', code: '1' } as any] },
-            createdDate: new Date(),
-            id: 'id2',
-            value: 1
-          }
-        ]}
-      />
-    );
+    const { findByTestId, findByText, upsertTrackerResource } =
+      renderWithProviders(
+        <Pillar
+          onOpenDetails={jest.fn()}
+          tracker={tracker}
+          valuesContext={{} as any}
+          onError={onError}
+          trackerValues={[
+            {
+              code: { coding: [{ system: 'other', code: '1' } as any] },
+              createdDate: new Date(),
+              id: 'id2',
+              value: 1,
+            },
+          ]}
+        />,
+      );
 
     upsertTrackerResource.mockRejectedValue('Simulated Error');
 

@@ -1,7 +1,7 @@
 import {
   Tracker,
   TrackerResource,
-  TrackTileService
+  TrackTileService,
 } from '../services/TrackTileService';
 import { toFhirProcedureResource } from './to-procedure-resource';
 import { toFhirObservationResource } from './to-observation-resource';
@@ -23,7 +23,7 @@ export type Code = TrackerResource['code']['coding'][number];
 const toFhirResource = (
   resourceType: 'Procedure' | 'Observation',
   from: ResourceSettings,
-  codeIn?: Code
+  codeIn?: Code,
 ): TrackerResource => {
   const code = codeIn && pick(codeIn, 'system', 'code', 'display');
 

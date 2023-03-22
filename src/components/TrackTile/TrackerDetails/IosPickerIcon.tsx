@@ -20,6 +20,6 @@ declare module './TrackerDetails' {
 
 const defaultStyles = StyleSheet.create({
   iosPickerIcon: {
-    flex: 1
-  }
+    flex: 1,
+  },
 });

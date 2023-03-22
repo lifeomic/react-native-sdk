@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, act } from '@testing-library/react-native';
 import {
   ManageTrackersProvider,
-  ManageTrackersProviderProps
+  ManageTrackersProviderProps,
 } from './ManageTrackersProvider';
 import { merge } from 'lodash';
 
@@ -18,7 +18,7 @@ type PartialDeep<T> = T extends {}
   : T;
 
 const renderManageTrackers = (
-  args: PartialDeep<ManageTrackersProviderProps>
+  args: PartialDeep<ManageTrackersProviderProps>,
 ) => {
   return render(
     <ManageTrackersProvider
@@ -31,13 +31,13 @@ const renderManageTrackers = (
             trackers: [],
             errors: {
               metricsError: undefined,
-              trackersError: undefined
-            }
-          }
+              trackersError: undefined,
+            },
+          },
         } as any,
-        args
+        args,
       ) as ManageTrackersProviderProps)}
-    />
+    />,
   );
 };
 
@@ -45,8 +45,8 @@ describe('Manage Trackers', () => {
   it('should display loading icon when trackers are loading', async () => {
     const { findByA11yRole } = renderManageTrackers({
       trackerRequestMeta: {
-        loading: true
-      }
+        loading: true,
+      },
     });
 
     expect(await findByA11yRole('progressbar')).toBeDefined();
@@ -55,22 +55,22 @@ describe('Manage Trackers', () => {
   it('should display an error when a tracker fetch error occurs', async () => {
     const { findByText } = renderManageTrackers({
       trackerRequestMeta: {
-        error: true
-      }
+        error: true,
+      },
     });
 
     expect(
-      await findByText('There was a problem loading the Track-It Items')
+      await findByText('There was a problem loading the Track-It Items'),
     ).toBeDefined();
   });
 
   it('should display an error when a reorder error occurs', async () => {
     const { findByText } = renderManageTrackers({
-      hasReorderError: true
+      hasReorderError: true,
     });
 
     expect(
-      await findByText('A problem occurred while reordering the items')
+      await findByText('A problem occurred while reordering the items'),
     ).toBeDefined();
   });
 
@@ -80,8 +80,8 @@ describe('Manage Trackers', () => {
     const { findByText } = renderManageTrackers({
       onOpenTracker,
       trackerRequestMeta: {
-        trackers: [tracker]
-      }
+        trackers: [tracker],
+      },
     });
 
     fireEvent.press(await findByText(tracker.name));
@@ -95,24 +95,24 @@ describe('Manage Trackers', () => {
       unit: 'A',
       target: 1,
       metricId: 'A',
-      order: 0
+      order: 0,
     };
     const trackerB = {
       name: 'Tracker B',
       unit: 'B',
       target: 1,
       metricId: 'B',
-      order: 1
+      order: 1,
     };
     const upsertTrackers = jest.fn();
 
     const { findByA11yLabel, findByText } = renderManageTrackers({
       trackTileService: {
-        upsertTrackers
+        upsertTrackers,
       },
       trackerRequestMeta: {
-        trackers: [trackerA, trackerB]
-      }
+        trackers: [trackerA, trackerB],
+      },
     });
 
     await act(async () => {
@@ -121,21 +121,21 @@ describe('Manage Trackers', () => {
       fireEvent(await findByText(trackerB.name), 'pressIn');
 
       fireEvent(await findByText(trackerB.name), 'dragEnd', {
-        data: [trackerB, trackerA]
+        data: [trackerB, trackerA],
       });
 
       fireEvent(
         await findByA11yLabel('Save tracker order'),
         'valueChange',
-        false
+        false,
       );
     });
 
     expect(upsertTrackers).toHaveBeenCalledWith(
       expect.arrayContaining([
         { metricId: 'B', unit: 'B', target: 1, order: 0 },
-        { metricId: 'A', unit: 'A', target: 1, order: 1 }
-      ])
+        { metricId: 'A', unit: 'A', target: 1, order: 1 },
+      ]),
     );
   });
 });

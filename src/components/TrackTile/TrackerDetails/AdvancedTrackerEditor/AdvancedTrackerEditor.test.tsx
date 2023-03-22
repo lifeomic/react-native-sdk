@@ -6,11 +6,11 @@ import {
   CodedRelationship,
   TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
-  TrackerValuesContext
+  TrackerValuesContext,
 } from '../../services/TrackTileService';
 import {
   notifier,
-  notifySaveEditTrackerValue
+  notifySaveEditTrackerValue,
 } from '../../services/EmitterService';
 
 const tracker: Tracker = {
@@ -32,27 +32,27 @@ const tracker: Tracker = {
       display: 'value-display',
       target: 1,
       default: true,
-      displayOne: '{{count}} Unit Display'
-    }
-  ]
+      displayOne: '{{count}} Unit Display',
+    },
+  ],
 };
 
 const valuesContext: TrackerValuesContext = {
   codeBelow: TRACKER_PILLAR_CODE,
-  system: TRACKER_PILLAR_CODE_SYSTEM
+  system: TRACKER_PILLAR_CODE_SYSTEM,
 };
 
 const codedRelationship = (
   code: string,
   subCodes?: () => CodedRelationship[],
-  details?: Partial<CodedRelationship>
+  details?: Partial<CodedRelationship>,
 ): CodedRelationship => ({
   id: code,
   code,
   display: code,
   specializedBy: subCodes?.() ?? [],
   system: `${code}|system`,
-  ...details
+  ...details,
 });
 
 describe('Tracker Advanced Details', () => {
@@ -62,16 +62,16 @@ describe('Tracker Advanced Details', () => {
       .mockReturnValue([
         codedRelationship('group', () => [
           codedRelationship('category-1', () => [
-            codedRelationship('subCategory-1')
-          ])
-        ])
+            codedRelationship('subCategory-1'),
+          ]),
+        ]),
       ]);
 
     const { findByText } = render(
       <AdvancedTrackerEditorProvider
         trackTileService={
           {
-            fetchOntology
+            fetchOntology,
           } as any
         }
         valuesContext={valuesContext}
@@ -84,17 +84,17 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'value-code',
                 system: 'value-system',
-                display: 'Parent Category'
-              }
-            ]
+                display: 'Parent Category',
+              },
+            ],
           },
-          value: 0.5
+          value: 0.5,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     expect(await findByText('0.5')).toBeDefined();
@@ -111,16 +111,16 @@ describe('Tracker Advanced Details', () => {
       .mockReturnValue([
         codedRelationship('group', () => [
           codedRelationship('category-1', () => [
-            codedRelationship('subCategory-1')
-          ])
-        ])
+            codedRelationship('subCategory-1'),
+          ]),
+        ]),
       ]);
 
     const { findByText } = render(
       <AdvancedTrackerEditorProvider
         trackTileService={
           {
-            fetchOntology
+            fetchOntology,
           } as any
         }
         valuesContext={valuesContext}
@@ -133,22 +133,22 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'category-1',
                 system: 'category-1|system',
-                display: 'category-1'
+                display: 'category-1',
               },
               {
                 code: 'value-code',
                 system: 'value-system',
-                display: 'Parent Category'
-              }
-            ]
+                display: 'Parent Category',
+              },
+            ],
           },
-          value: 0.5
+          value: 0.5,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     expect(await findByText('Select Parent Category')).toBeDefined();
@@ -162,18 +162,18 @@ describe('Tracker Advanced Details', () => {
           codedRelationship('subCategory-1', undefined, {
             educationContent: {
               description: 'Detail description',
-              url: 'http://learnmore.org'
-            }
-          })
-        ])
-      ])
+              url: 'http://learnmore.org',
+            },
+          }),
+        ]),
+      ]),
     ]);
 
     const { findByText } = render(
       <AdvancedTrackerEditorProvider
         trackTileService={
           {
-            fetchOntology
+            fetchOntology,
           } as any
         }
         valuesContext={valuesContext}
@@ -186,22 +186,22 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'subCategory-1',
                 system: 'subCategory-1|system',
-                display: 'subCategory-1'
+                display: 'subCategory-1',
               },
               {
                 code: 'value-code',
                 system: 'value-system',
-                display: 'Parent Category'
-              }
-            ]
+                display: 'Parent Category',
+              },
+            ],
           },
-          value: 0.5
+          value: 0.5,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     expect(await findByText('Select Parent Category')).toBeDefined();
@@ -216,19 +216,19 @@ describe('Tracker Advanced Details', () => {
       .mockReturnValue([
         codedRelationship('group', () => [
           codedRelationship('category-1', () => [
-            codedRelationship('subCategory-1')
+            codedRelationship('subCategory-1'),
           ]),
           codedRelationship('category-2', () => [
-            codedRelationship('subCategory-2')
-          ])
-        ])
+            codedRelationship('subCategory-2'),
+          ]),
+        ]),
       ]);
 
     const { findByText, findByTestId, queryByTestId, findAllByText } = render(
       <AdvancedTrackerEditorProvider
         trackTileService={
           {
-            fetchOntology
+            fetchOntology,
           } as any
         }
         valuesContext={valuesContext}
@@ -241,17 +241,17 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'value-code',
                 system: 'value-system',
-                display: 'Parent Category'
-              }
-            ]
+                display: 'Parent Category',
+              },
+            ],
           },
-          value: 0.5
+          value: 0.5,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     fireEvent.press(await findByText('category-1'));
@@ -301,7 +301,7 @@ describe('Tracker Advanced Details', () => {
       <AdvancedTrackerEditorProvider
         trackTileService={
           {
-            fetchOntology
+            fetchOntology,
           } as any
         }
         valuesContext={valuesContext}
@@ -311,21 +311,21 @@ describe('Tracker Advanced Details', () => {
           units: [
             {
               ...tracker.units[0],
-              stepAmount: 0.5
-            }
-          ]
+              stepAmount: 0.5,
+            },
+          ],
         }}
         trackerValue={{
           id: 'value',
           createdDate: new Date(),
           code: { coding: [] },
-          value: 0.5
+          value: 0.5,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     expect(await findByText('0.5')).toBeDefined();
@@ -348,7 +348,7 @@ describe('Tracker Advanced Details', () => {
       <AdvancedTrackerEditorProvider
         trackTileService={
           {
-            fetchOntology
+            fetchOntology,
           } as any
         }
         valuesContext={valuesContext}
@@ -359,21 +359,21 @@ describe('Tracker Advanced Details', () => {
             {
               ...tracker.units[0],
               code: 'min',
-              stepAmount: 5 // 5 minutes
-            }
-          ]
+              stepAmount: 5, // 5 minutes
+            },
+          ],
         }}
         trackerValue={{
           id: 'value',
           createdDate: new Date(),
           code: { coding: [] },
-          value: 55 * 60 // 55 minutes in seconds
+          value: 55 * 60, // 55 minutes in seconds
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     expect(await findByText('00')).toBeDefined();
@@ -416,9 +416,9 @@ describe('Tracker Advanced Details', () => {
       .mockReturnValue([
         codedRelationship('group', () => [
           codedRelationship('category-coding', () => [
-            codedRelationship('detail-coding')
-          ])
-        ])
+            codedRelationship('detail-coding'),
+          ]),
+        ]),
       ]);
     const upsertTrackerResource = jest
       .fn()
@@ -430,7 +430,7 @@ describe('Tracker Advanced Details', () => {
           {
             datastoreSettings: {},
             fetchOntology,
-            upsertTrackerResource
+            upsertTrackerResource,
           } as any
         }
         valuesContext={valuesContext}
@@ -443,17 +443,17 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'detail-coding',
                 display: 'detail-coding',
-                system: 'detail-coding|system'
-              }
-            ]
+                system: 'detail-coding|system',
+              },
+            ],
           },
-          value: 1
+          value: 1,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     const spy = jest.spyOn(notifier, 'addListener').mockClear();
@@ -471,23 +471,23 @@ describe('Tracker Advanced Details', () => {
           {
             code: 'detail-coding',
             display: 'detail-coding',
-            system: 'detail-coding|system'
+            system: 'detail-coding|system',
           },
           {
             code: 'tracker-id',
             display: 'Tracker',
-            system: TRACKER_PILLAR_CODE_SYSTEM
-          }
-        ]
+            system: TRACKER_PILLAR_CODE_SYSTEM,
+          },
+        ],
       },
       id: 'value',
       meta: {
         tag: [
           {
             code: undefined,
-            system: 'http://lifeomic.com/fhir/dataset'
-          }
-        ]
+            system: 'http://lifeomic.com/fhir/dataset',
+          },
+        ],
       },
       resourceType: 'Observation',
       status: 'final',
@@ -496,8 +496,8 @@ describe('Tracker Advanced Details', () => {
         code: 'value-code',
         system: 'value-system',
         unit: 'value-unit',
-        value: 2 // new value
-      }
+        value: 2, // new value
+      },
     });
   });
 
@@ -508,9 +508,9 @@ describe('Tracker Advanced Details', () => {
         codedRelationship('group', () => [
           codedRelationship('category-coding', () => [
             codedRelationship('detail-coding-1'),
-            codedRelationship('detail-coding-2')
-          ])
-        ])
+            codedRelationship('detail-coding-2'),
+          ]),
+        ]),
       ]);
     const upsertTrackerResource = jest
       .fn()
@@ -522,7 +522,7 @@ describe('Tracker Advanced Details', () => {
           {
             datastoreSettings: {},
             fetchOntology,
-            upsertTrackerResource
+            upsertTrackerResource,
           } as any
         }
         valuesContext={valuesContext}
@@ -535,17 +535,17 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'detail-coding-1',
                 display: 'detail-coding-1',
-                system: 'detail-coding-1|system'
-              }
-            ]
+                system: 'detail-coding-1|system',
+              },
+            ],
           },
-          value: 1
+          value: 1,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     const spy = jest.spyOn(notifier, 'addListener').mockClear();
@@ -564,23 +564,23 @@ describe('Tracker Advanced Details', () => {
           {
             code: 'detail-coding-2',
             display: 'detail-coding-2',
-            system: 'detail-coding-2|system'
+            system: 'detail-coding-2|system',
           },
           {
             code: 'tracker-id',
             display: 'Tracker',
-            system: TRACKER_PILLAR_CODE_SYSTEM
-          }
-        ]
+            system: TRACKER_PILLAR_CODE_SYSTEM,
+          },
+        ],
       },
       id: 'value',
       meta: {
         tag: [
           {
             code: undefined,
-            system: 'http://lifeomic.com/fhir/dataset'
-          }
-        ]
+            system: 'http://lifeomic.com/fhir/dataset',
+          },
+        ],
       },
       resourceType: 'Observation',
       status: 'final',
@@ -589,8 +589,8 @@ describe('Tracker Advanced Details', () => {
         code: 'value-code',
         system: 'value-system',
         unit: 'value-unit',
-        value: 1
-      }
+        value: 1,
+      },
     });
   });
 
@@ -600,9 +600,9 @@ describe('Tracker Advanced Details', () => {
       .mockReturnValue([
         codedRelationship('group', () => [
           codedRelationship('category-coding', () => [
-            codedRelationship('detail-coding')
-          ])
-        ])
+            codedRelationship('detail-coding'),
+          ]),
+        ]),
       ]);
     const deleteTrackerResource = jest.fn().mockReturnValue(true);
 
@@ -611,7 +611,7 @@ describe('Tracker Advanced Details', () => {
         trackTileService={
           {
             fetchOntology,
-            deleteTrackerResource
+            deleteTrackerResource,
           } as any
         }
         valuesContext={valuesContext}
@@ -624,17 +624,17 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'detail-coding',
                 display: 'detail-coding',
-                system: 'detail-coding|system'
-              }
-            ]
+                system: 'detail-coding|system',
+              },
+            ],
           },
-          value: 1
+          value: 1,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     const spy = jest.spyOn(notifier, 'addListener').mockClear();
@@ -649,7 +649,7 @@ describe('Tracker Advanced Details', () => {
     expect(deleteTrackerResource).toHaveBeenCalledWith(
       valuesContext,
       tracker.resourceType,
-      'value-id'
+      'value-id',
     );
   });
 
@@ -659,9 +659,9 @@ describe('Tracker Advanced Details', () => {
       .mockReturnValue([
         codedRelationship('group', () => [
           codedRelationship('category-coding', () => [
-            codedRelationship('detail-coding')
-          ])
-        ])
+            codedRelationship('detail-coding'),
+          ]),
+        ]),
       ]);
     const deleteTrackerResource = jest.fn().mockReturnValue(false);
 
@@ -670,7 +670,7 @@ describe('Tracker Advanced Details', () => {
         trackTileService={
           {
             fetchOntology,
-            deleteTrackerResource
+            deleteTrackerResource,
           } as any
         }
         valuesContext={valuesContext}
@@ -683,17 +683,17 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'detail-coding',
                 display: 'detail-coding',
-                system: 'detail-coding|system'
-              }
-            ]
+                system: 'detail-coding|system',
+              },
+            ],
           },
-          value: 1
+          value: 1,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     const spy = jest.spyOn(notifier, 'addListener').mockClear();
@@ -704,7 +704,7 @@ describe('Tracker Advanced Details', () => {
     await waitFor(() => expect(spy).toHaveBeenCalledTimes(1));
 
     expect(
-      async () => await new Promise(notifySaveEditTrackerValue)
+      async () => await new Promise(notifySaveEditTrackerValue),
     ).rejects.toThrowError('Could not delete the value');
   });
 
@@ -714,9 +714,9 @@ describe('Tracker Advanced Details', () => {
       .mockReturnValue([
         codedRelationship('group', () => [
           codedRelationship('category-coding', () => [
-            codedRelationship('detail-coding')
-          ])
-        ])
+            codedRelationship('detail-coding'),
+          ]),
+        ]),
       ]);
     const upsertTrackerResource = jest
       .fn()
@@ -727,7 +727,7 @@ describe('Tracker Advanced Details', () => {
         trackTileService={
           {
             fetchOntology,
-            upsertTrackerResource
+            upsertTrackerResource,
           } as any
         }
         valuesContext={valuesContext}
@@ -740,17 +740,17 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'detail-coding',
                 display: 'detail-coding',
-                system: 'detail-coding|system'
-              }
-            ]
+                system: 'detail-coding|system',
+              },
+            ],
           },
-          value: 1
+          value: 1,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     await new Promise(notifySaveEditTrackerValue);
@@ -769,7 +769,7 @@ describe('Tracker Advanced Details', () => {
           {
             datastoreSettings: {},
             fetchOntology,
-            upsertTrackerResource
+            upsertTrackerResource,
           } as any
         }
         valuesContext={valuesContext}
@@ -782,17 +782,17 @@ describe('Tracker Advanced Details', () => {
               {
                 code: 'detail-coding',
                 display: 'detail-coding',
-                system: 'detail-coding|system'
-              }
-            ]
+                system: 'detail-coding|system',
+              },
+            ],
           },
-          value: 1
+          value: 1,
         }}
-      />
+      />,
     );
 
     await waitFor(() =>
-      expect(fetchOntology).toHaveBeenCalledWith(tracker.code)
+      expect(fetchOntology).toHaveBeenCalledWith(tracker.code),
     );
 
     const spy = jest.spyOn(notifier, 'addListener').mockClear();
@@ -803,7 +803,7 @@ describe('Tracker Advanced Details', () => {
     await waitFor(() => expect(spy).toHaveBeenCalledTimes(1));
 
     expect(
-      async () => await new Promise(notifySaveEditTrackerValue)
+      async () => await new Promise(notifySaveEditTrackerValue),
     ).rejects.toThrowError(expectedError);
   });
 });

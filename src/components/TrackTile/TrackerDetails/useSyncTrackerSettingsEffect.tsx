@@ -3,13 +3,13 @@ import {
   Tracker,
   InstalledMetricSettings,
   useTrackTileService,
-  isInstalledMetric
+  isInstalledMetric,
 } from '../services/TrackTileService';
 import { notifier } from '../services/EmitterService';
 
 export const useSyncTrackerSettingsEffect = (
   tracker: Tracker,
-  settings: Pick<InstalledMetricSettings, 'unit' | 'target'>
+  settings: Pick<InstalledMetricSettings, 'unit' | 'target'>,
 ) => {
   const { unit, target } = settings;
   const { order = Number.MAX_SAFE_INTEGER } = tracker;
@@ -24,7 +24,7 @@ export const useSyncTrackerSettingsEffect = (
         const updatedTracker = await svc.upsertTracker(metricId, {
           unit,
           target,
-          order: isInstalledMetric(tracker) ? order : Number.MAX_SAFE_INTEGER
+          order: isInstalledMetric(tracker) ? order : Number.MAX_SAFE_INTEGER,
         });
 
         notifier.emit('trackerChanged', { ...tracker, ...updatedTracker });

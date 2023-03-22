@@ -13,7 +13,7 @@ const Chevron: React.FC<Props> = (props) => {
     left: '0deg',
     right: '180deg',
     up: '90deg',
-    down: '-90deg'
+    down: '-90deg',
   }[direction];
 
   return (

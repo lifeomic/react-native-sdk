@@ -6,7 +6,7 @@ import {
   ViewProps,
   FlatList,
   Platform,
-  Dimensions
+  Dimensions,
 } from 'react-native';
 
 export interface QuickAddProps {
@@ -20,29 +20,29 @@ export interface QuickAddProps {
 const windowWidth = Dimensions.get('window').width;
 const sizeCutoff = 340;
 export const itemMinWidth = Math.floor(
-  windowWidth / (windowWidth > sizeCutoff ? 2.5 : 2)
+  windowWidth / (windowWidth > sizeCutoff ? 2.5 : 2),
 );
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
-    marginVertical: 20
+    marginVertical: 20,
   },
   containerSingleItem: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   leftItem: {
-    marginHorizontal: 12 / 2
+    marginHorizontal: 12 / 2,
   },
   rightItem: {
-    marginStart: 12 / 2
+    marginStart: 12 / 2,
   },
   centerItem: {
-    marginHorizontal: 12 / 2
+    marginHorizontal: 12 / 2,
   },
   list: {
-    overflow: 'visible'
+    overflow: 'visible',
   },
   tile: {
     backgroundColor: 'white',
@@ -55,14 +55,14 @@ const styles = StyleSheet.create({
       ios: {
         shadowOffset: {
           width: 0,
-          height: 4
-        }
+          height: 4,
+        },
       },
       android: {
-        elevation: 4
-      }
-    })
-  }
+        elevation: 4,
+      },
+    }),
+  },
 });
 
 const renderItem = (count: number) => {
@@ -94,7 +94,7 @@ const HorizontalScrollLayout: React.FC<ViewProps> = (props) => {
       contentContainerStyle={[
         styles.container,
         data?.length === 1 && styles.containerSingleItem,
-        props.style
+        props.style,
       ]}
       style={styles.list}
       data={data}

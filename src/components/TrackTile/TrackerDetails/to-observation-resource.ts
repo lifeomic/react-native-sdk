@@ -1,6 +1,6 @@
 import {
   TrackerResource,
-  TRACKER_CODE_SYSTEM
+  TRACKER_CODE_SYSTEM,
 } from '../services/TrackTileService';
 import { format } from 'date-fns';
 import { ResourceSettings, Code } from './to-fhir-resource';
@@ -8,7 +8,7 @@ import { convertToStoreUnit, getStoredUnitType } from '../util/convert-value';
 
 const toFhirObservationResource = (
   from: ResourceSettings,
-  code?: Code
+  code?: Code,
 ): TrackerResource => {
   const { tracker, value, createDate } = from;
   const { id, datastoreSettings, patientId } = from;
@@ -32,22 +32,22 @@ const toFhirObservationResource = (
       code: unit.code,
       system: unit.system,
       unit: unit.unit,
-      value: storeValue
+      value: storeValue,
     },
     ...(patientId
       ? {
           subject: {
-            reference: `Patient/${patientId}`
-          }
+            reference: `Patient/${patientId}`,
+          },
         }
       : undefined),
     meta: {
       tag: [
         {
           code: datastoreSettings.project,
-          system: 'http://lifeomic.com/fhir/dataset'
-        }
-      ]
+          system: 'http://lifeomic.com/fhir/dataset',
+        },
+      ],
     },
     code: {
       coding: [
@@ -55,11 +55,11 @@ const toFhirObservationResource = (
         {
           system: system ?? TRACKER_CODE_SYSTEM,
           code: metricId,
-          display: metricName
-        }
-      ]
+          display: metricName,
+        },
+      ],
     },
-    status: 'final'
+    status: 'final',
   };
 };
 

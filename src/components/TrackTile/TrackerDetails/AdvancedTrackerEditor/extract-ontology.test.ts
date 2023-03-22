@@ -1,7 +1,7 @@
 import {
   TrackerValue as BaseTrackerValue,
   Code as BaseCode,
-  CodedRelationship
+  CodedRelationship,
 } from '../../services/TrackTileService';
 import { extractOntology } from './extract-ontology';
 
@@ -10,23 +10,23 @@ type Code = Omit<BaseCode, 'display' | 'id'>;
 
 const trackerCode: Code = {
   code: '1',
-  system: 'sys'
+  system: 'sys',
 };
 
 const trackerValue = (...coding: Code[]): TrackerValue => ({
   code: {
-    coding: coding as BaseCode[]
-  }
+    coding: coding as BaseCode[],
+  },
 });
 
 const ontology = (
   code: string,
-  subCodes?: () => CodedRelationship[]
+  subCodes?: () => CodedRelationship[],
 ): CodedRelationship => ({
   code,
   display: code,
   specializedBy: subCodes?.() as CodedRelationship[],
-  system: `${code}|system`
+  system: `${code}|system`,
 });
 
 describe('Extract Ontology Levles', () => {
@@ -38,7 +38,7 @@ describe('Extract Ontology Levles', () => {
       selectedSubCategory: undefined,
       baseCode: expect.objectContaining(trackerCode),
       categories: undefined,
-      subCategories: undefined
+      subCategories: undefined,
     });
   });
 
@@ -47,15 +47,15 @@ describe('Extract Ontology Levles', () => {
       trackerValue(
         {
           code: '1',
-          system: '2'
+          system: '2',
         },
         {
           code: '3',
-          system: '4'
-        }
+          system: '4',
+        },
       ),
       [],
-      trackerCode
+      trackerCode,
     );
 
     expect(res).toEqual({
@@ -63,10 +63,10 @@ describe('Extract Ontology Levles', () => {
       selectedSubCategory: undefined,
       baseCode: expect.objectContaining({
         code: '3',
-        system: '4'
+        system: '4',
       }),
       categories: undefined,
-      subCategories: undefined
+      subCategories: undefined,
     });
   });
 
@@ -75,22 +75,22 @@ describe('Extract Ontology Levles', () => {
       trackerValue(
         {
           code: '1',
-          system: '2'
+          system: '2',
         },
         {
           code: 'match',
-          system: 'match-system'
+          system: 'match-system',
         },
         {
           code: '3',
-          system: '4'
-        }
+          system: '4',
+        },
       ),
       [],
       {
         code: 'match',
-        system: 'match-system'
-      }
+        system: 'match-system',
+      },
     );
 
     expect(res).toEqual({
@@ -98,10 +98,10 @@ describe('Extract Ontology Levles', () => {
       selectedSubCategory: undefined,
       baseCode: expect.objectContaining({
         code: 'match',
-        system: 'match-system'
+        system: 'match-system',
       }),
       categories: undefined,
-      subCategories: undefined
+      subCategories: undefined,
     });
   });
 
@@ -113,12 +113,12 @@ describe('Extract Ontology Levles', () => {
           ontology('cat-1', () => [ontology('sub-cat-1')]),
           ontology('cat-2', () => [
             ontology('sub-cat-2'),
-            ontology('sub-cat-3')
+            ontology('sub-cat-3'),
           ]),
-          ontology('cat-3')
-        ])
+          ontology('cat-3'),
+        ]),
       ],
-      trackerCode
+      trackerCode,
     );
 
     expect(res).toEqual({
@@ -128,13 +128,13 @@ describe('Extract Ontology Levles', () => {
       categories: [
         expect.objectContaining({ code: 'cat-1' }),
         expect.objectContaining({ code: 'cat-2' }),
-        expect.objectContaining({ code: 'cat-3' })
+        expect.objectContaining({ code: 'cat-3' }),
       ],
       subCategories: [
         expect.objectContaining({ code: 'sub-cat-1' }),
         expect.objectContaining({ code: 'sub-cat-2' }),
-        expect.objectContaining({ code: 'sub-cat-3' })
-      ]
+        expect.objectContaining({ code: 'sub-cat-3' }),
+      ],
     });
   });
 
@@ -146,12 +146,12 @@ describe('Extract Ontology Levles', () => {
           ontology('cat-1', () => [ontology('sub-cat-1')]),
           ontology('cat-2', () => [
             ontology('sub-cat-2'),
-            ontology('sub-cat-3')
+            ontology('sub-cat-3'),
           ]),
-          ontology('cat-3')
-        ])
+          ontology('cat-3'),
+        ]),
       ],
-      trackerCode
+      trackerCode,
     );
 
     expect(res).toEqual({
@@ -161,31 +161,31 @@ describe('Extract Ontology Levles', () => {
       categories: [
         expect.objectContaining({
           code: 'cat-1',
-          parent: expect.objectContaining(trackerCode)
+          parent: expect.objectContaining(trackerCode),
         }),
         expect.objectContaining({
           code: 'cat-2',
-          parent: expect.objectContaining(trackerCode)
+          parent: expect.objectContaining(trackerCode),
         }),
         expect.objectContaining({
           code: 'cat-3',
-          parent: expect.objectContaining(trackerCode)
-        })
+          parent: expect.objectContaining(trackerCode),
+        }),
       ],
       subCategories: [
         expect.objectContaining({
           code: 'sub-cat-1',
-          parent: expect.objectContaining({ code: 'cat-1' })
+          parent: expect.objectContaining({ code: 'cat-1' }),
         }),
         expect.objectContaining({
           code: 'sub-cat-2',
-          parent: expect.objectContaining({ code: 'cat-2' })
+          parent: expect.objectContaining({ code: 'cat-2' }),
         }),
         expect.objectContaining({
           code: 'sub-cat-3',
-          parent: expect.objectContaining({ code: 'cat-2' })
-        })
-      ]
+          parent: expect.objectContaining({ code: 'cat-2' }),
+        }),
+      ],
     });
   });
 
@@ -196,10 +196,10 @@ describe('Extract Ontology Levles', () => {
         ontology('group', () => [
           ontology('cat-1'),
           ontology('cat-2'),
-          ontology('cat-3')
-        ])
+          ontology('cat-3'),
+        ]),
       ],
-      trackerCode
+      trackerCode,
     );
 
     expect(res).toEqual({
@@ -210,8 +210,8 @@ describe('Extract Ontology Levles', () => {
       subCategories: [
         expect.objectContaining({ code: 'cat-1' }),
         expect.objectContaining({ code: 'cat-2' }),
-        expect.objectContaining({ code: 'cat-3' })
-      ]
+        expect.objectContaining({ code: 'cat-3' }),
+      ],
     });
   });
 
@@ -219,7 +219,7 @@ describe('Extract Ontology Levles', () => {
     const res = extractOntology(
       trackerValue({
         code: 'b-1',
-        system: 'b-1|system'
+        system: 'b-1|system',
       }),
       [
         ontology('group', () => [
@@ -227,14 +227,14 @@ describe('Extract Ontology Levles', () => {
             ontology('b-1', () => [
               ontology('c-1', () => [ontology('d-1'), ontology('d-2')]),
               ontology('c-2', () => [ontology('d-3'), ontology('d-4')]),
-              ontology('c-3')
-            ])
+              ontology('c-3'),
+            ]),
           ]),
           ontology('a-2', () => [ontology('b-2')]),
-          ontology('a-3', () => [ontology('b-3')])
-        ])
+          ontology('a-3', () => [ontology('b-3')]),
+        ]),
       ],
-      trackerCode
+      trackerCode,
     );
 
     expect(res).toEqual({
@@ -242,19 +242,19 @@ describe('Extract Ontology Levles', () => {
       selectedSubCategory: undefined,
       baseCode: expect.objectContaining({
         code: 'b-1',
-        system: 'b-1|system'
+        system: 'b-1|system',
       }),
       categories: [
         expect.objectContaining({ code: 'c-1' }),
         expect.objectContaining({ code: 'c-2' }),
-        expect.objectContaining({ code: 'c-3' })
+        expect.objectContaining({ code: 'c-3' }),
       ],
       subCategories: [
         expect.objectContaining({ code: 'd-1' }),
         expect.objectContaining({ code: 'd-2' }),
         expect.objectContaining({ code: 'd-3' }),
-        expect.objectContaining({ code: 'd-4' })
-      ]
+        expect.objectContaining({ code: 'd-4' }),
+      ],
     });
   });
 
@@ -263,52 +263,52 @@ describe('Extract Ontology Levles', () => {
       trackerValue(
         {
           code: 'c-3',
-          system: 'c-3|system'
+          system: 'c-3|system',
         },
         {
           code: 'b-3',
-          system: 'b-3|system'
+          system: 'b-3|system',
         },
         {
           code: 'a-1',
-          system: 'a-1|system'
-        }
+          system: 'a-1|system',
+        },
       ),
       [
         ontology('group', () => [
           ontology('a-1', () => [
             ontology('b-1', () => [ontology('c-1')]),
             ontology('b-2', () => [ontology('c-2')]),
-            ontology('b-3', () => [ontology('c-3')])
-          ])
-        ])
+            ontology('b-3', () => [ontology('c-3')]),
+          ]),
+        ]),
       ],
-      trackerCode
+      trackerCode,
     );
 
     expect(res).toEqual({
       selectedCategory: expect.objectContaining({
         code: 'b-3',
-        system: 'b-3|system'
+        system: 'b-3|system',
       }),
       selectedSubCategory: expect.objectContaining({
         code: 'c-3',
-        system: 'c-3|system'
+        system: 'c-3|system',
       }),
       baseCode: expect.objectContaining({
         code: 'a-1',
-        system: 'a-1|system'
+        system: 'a-1|system',
       }),
       categories: [
         expect.objectContaining({ code: 'b-1' }),
         expect.objectContaining({ code: 'b-2' }),
-        expect.objectContaining({ code: 'b-3' })
+        expect.objectContaining({ code: 'b-3' }),
       ],
       subCategories: [
         expect.objectContaining({ code: 'c-1' }),
         expect.objectContaining({ code: 'c-2' }),
-        expect.objectContaining({ code: 'c-3' })
-      ]
+        expect.objectContaining({ code: 'c-3' }),
+      ],
     });
   });
 });

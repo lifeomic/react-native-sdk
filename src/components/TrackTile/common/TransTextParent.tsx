@@ -10,7 +10,9 @@ export const TransTextParent: React.FC<ViewProps> = (props) => {
   return (
     <View {...viewProps}>
       {React.Children.map(children, (item) => {
-        if (typeof item === 'string') return <Text>{item}</Text>;
+        if (typeof item === 'string') {
+          return <Text>{item}</Text>;
+        }
 
         return item;
       })}

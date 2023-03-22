@@ -6,7 +6,7 @@ import {
   Image,
   Text,
   ImageSourcePropType,
-  View
+  View,
 } from 'react-native';
 import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
 import { Edit } from '@lifeomic/chromicons-native';
@@ -33,9 +33,9 @@ export const TrackerValueRow = (props: TrackerValueRowProps) => {
       style={[
         hasBorderTop && {
           borderTopWidth: flatStyles.trackerValueRowContainer.borderBottomWidth,
-          borderTopColor: flatStyles.trackerValueRowContainer.borderBottomColor
+          borderTopColor: flatStyles.trackerValueRowContainer.borderBottomColor,
         },
-        styles.trackerValueRowContainer
+        styles.trackerValueRowContainer,
       ]}
     >
       <View>
@@ -52,9 +52,9 @@ export const TrackerValueRow = (props: TrackerValueRowProps) => {
         <View
           style={[
             {
-              backgroundColor: color
+              backgroundColor: color,
             },
-            styles.trackerValueRowImage
+            styles.trackerValueRowImage,
           ]}
         >
           <Edit color={'white'} />
@@ -76,7 +76,7 @@ const defaultStyles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(36, 37, 54, 0.15)'
+    borderBottomColor: 'rgba(36, 37, 54, 0.15)',
   },
   trackerValueRowTitle: { fontSize: 16, marginBottom: 6, lineHeight: 19.2 },
   trackerValueRowSubTitle: { fontSize: 12, lineHeight: 14.4 },
@@ -85,26 +85,26 @@ const defaultStyles = StyleSheet.create({
     height: 50,
     borderRadius: 50,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   quickAddItemContainer: {
     flex: 1,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   quickAddItemDisabled: {
-    opacity: 0.3
+    opacity: 0.3,
   },
   quickAddItemImage: {
     width: '100%',
     height: 80,
     overflow: 'hidden',
-    resizeMode: 'cover'
+    resizeMode: 'cover',
   },
   quickAddItemText: {
     marginHorizontal: 12,
     marginVertical: 6,
     lineHeight: 18,
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 });

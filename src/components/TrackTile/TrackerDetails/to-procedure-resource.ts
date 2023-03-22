@@ -1,6 +1,6 @@
 import {
   TrackerResource,
-  TRACKER_CODE_SYSTEM
+  TRACKER_CODE_SYSTEM,
 } from '../services/TrackTileService';
 import { format, addSeconds, startOfDay } from 'date-fns';
 import { Code, ResourceSettings } from './to-fhir-resource';
@@ -10,7 +10,7 @@ export const TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSxxx";
 
 const toFhirProcedureResource = (
   from: ResourceSettings,
-  code?: Code
+  code?: Code,
 ): TrackerResource => {
   const { tracker, value, createDate } = from;
   const { id, datastoreSettings, patientId } = from;
@@ -29,22 +29,22 @@ const toFhirProcedureResource = (
     resourceType: 'Procedure',
     performedPeriod: {
       start: startTime,
-      end: format(endTime, TIME_FORMAT)
+      end: format(endTime, TIME_FORMAT),
     },
     ...(patientId
       ? {
           subject: {
-            reference: `Patient/${patientId}`
-          }
+            reference: `Patient/${patientId}`,
+          },
         }
       : undefined),
     meta: {
       tag: [
         {
           code: datastoreSettings.project,
-          system: 'http://lifeomic.com/fhir/dataset'
-        }
-      ]
+          system: 'http://lifeomic.com/fhir/dataset',
+        },
+      ],
     },
     code: {
       coding: [
@@ -52,11 +52,11 @@ const toFhirProcedureResource = (
         {
           system: system ?? TRACKER_CODE_SYSTEM,
           code: metricId,
-          display: metricName
-        }
-      ]
+          display: metricName,
+        },
+      ],
     },
-    status: 'completed'
+    status: 'completed',
   };
 };
 

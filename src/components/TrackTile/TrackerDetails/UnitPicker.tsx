@@ -4,7 +4,7 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Picker
+  Picker,
 } from 'react-native';
 import { StylesProp, useStyleOverrides, Text } from '../styles';
 import React, { FC, useCallback, useState } from 'react';
@@ -33,8 +33,8 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
     onChange,
     placeholder = i18n.t('9031f0b71c20458a79410b99b2e3d521', {
       defaultValue: 'Choose a Unit',
-      ns: 'track-tile-ui'
-    })
+      ns: 'track-tile-ui',
+    }),
   } = props;
   const styles = useStyleOverrides(defaultStyles);
   const [width, setWidth] = useState(0);
@@ -43,7 +43,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
   const flatStyles = useFlattenedStyles(styles, [
     'unitPickerLabelAndroid',
     'unitPickerSelectedColorAndroid',
-    'unitPickerUnselectedColorAndroid'
+    'unitPickerUnselectedColorAndroid',
   ]);
 
   if (Platform.OS === 'ios') {
@@ -63,7 +63,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
           onPress={openInput}
           accessibilityLabel={i18n.t('ae96a9f2fdf142f2c5da6a70ab8bbce2', {
             defaultValue: 'Unit type',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
           accessibilityRole="menu"
           testID={tID('open-unit-picker-button')}
@@ -90,7 +90,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
                 >
                   {i18n.t('f92965e2c8a7afb3c1b9a5c09a263636', {
                     defaultValue: 'Done',
-                    ns: 'track-tile-ui'
+                    ns: 'track-tile-ui',
                   })}
                 </Text>
               </TouchableOpacity>
@@ -138,10 +138,10 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
               width:
                 width +
                 flatStyles.unitPickerLabelAndroid.paddingLeft +
-                flatStyles.unitPickerLabelAndroid.paddingRight
+                flatStyles.unitPickerLabelAndroid.paddingRight,
             },
-            styles.unitPickerLabelAndroid
-          ]
+            styles.unitPickerLabelAndroid,
+          ],
         })}
       >
         {units.map(({ unit, display }) => (
@@ -165,14 +165,14 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
 const defaultStyles = StyleSheet.create({
   unitPickerContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
   },
   unitPickerLabel: {
     letterSpacing: 0.23,
     color: '#262C32',
     fontSize: 16,
     lineHeight: 18,
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
   unitPickerIconIOS: {
     marginLeft: 4,
@@ -180,15 +180,15 @@ const defaultStyles = StyleSheet.create({
     width: 7,
     transform: [
       {
-        translateY: -8
-      }
-    ]
+        translateY: -8,
+      },
+    ],
   },
   unitPickerPopupContainerIOS: {
     marginTop: 'auto',
     height: 215,
     justifyContent: 'center',
-    backgroundColor: '#D0D4DA'
+    backgroundColor: '#D0D4DA',
   },
   unitPickerPopupAccessoryContainerIOS: {
     height: 45,
@@ -199,25 +199,25 @@ const defaultStyles = StyleSheet.create({
     backgroundColor: '#F8F8F8',
     borderTopWidth: 1,
     borderTopColor: '#DEDEDE',
-    zIndex: 2
+    zIndex: 2,
   },
   unitPickerPopupAccessoryDoneTextIOS: {
     color: '#007AFF',
     fontSize: 17,
     paddingTop: 1,
-    paddingRight: 11
+    paddingRight: 11,
   },
   unitPickerLabelAndroid: {
     color: 'transparent',
     height: 16,
     paddingRight: 28,
     paddingLeft: 5,
-    marginRight: -15
+    marginRight: -15,
   },
   unitPickerSelectedColorAndroid: {
-    color: '#30D4FF'
+    color: '#30D4FF',
   },
   unitPickerUnselectedColorAndroid: {
-    color: undefined
-  }
+    color: undefined,
+  },
 });

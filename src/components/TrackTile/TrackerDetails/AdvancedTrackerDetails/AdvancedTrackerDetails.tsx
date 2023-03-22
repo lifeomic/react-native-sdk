@@ -4,7 +4,7 @@ import {
   StyleSheet,
   ImageSourcePropType,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import i18n, { Trans } from '@i18n';
 import {
@@ -12,7 +12,7 @@ import {
   StylesProp,
   useStyleOverrides,
   Text,
-  useFontOverrides
+  useFontOverrides,
 } from '../../styles';
 import {
   Tracker,
@@ -20,7 +20,7 @@ import {
   TrackerValuesContext,
   useTrackTileService,
   CodedRelationship,
-  Code
+  Code,
 } from '../../services/TrackTileService';
 import { TrackerHistoryChart } from '../TrackerHistoryChart';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -29,7 +29,7 @@ import { useTrackerValues } from '../../hooks/useTrackerValues';
 import {
   convertToPreferredUnit,
   getPreferredUnitType,
-  getStoredUnitType
+  getStoredUnitType,
 } from '../../util/convert-value';
 import { numberFormatters } from '../../formatters';
 import { addDays, endOfToday, startOfToday, isBefore } from 'date-fns';
@@ -62,7 +62,7 @@ const { numberFormat } = numberFormatters;
 const extractCodeImage = (
   code: Code | undefined,
   codings: Code[],
-  icons: Record<string, ImageSourcePropType>
+  icons: Record<string, ImageSourcePropType>,
 ): ImageSourcePropType => {
   const matchingCode = codings.find((c) => isCodeEqual(c, code));
 
@@ -82,17 +82,17 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
   const svc = useTrackTileService();
   const [dateRange, setDateRange] = useState({
     start: startOfToday(),
-    end: endOfToday()
+    end: endOfToday(),
   });
   const {
-    trackerValues: [activeValues]
+    trackerValues: [activeValues],
   } = useTrackerValues(valuesContext, dateRange);
   const metricId = tracker.metricId ?? tracker.id;
   const recentCodedValues = useRecentCodedValues(metricId);
   const currentRecords = activeValues[metricId ?? ''] ?? [];
   const currentValue = convertToPreferredUnit(
     currentRecords.reduce((total, value) => total + value.value, 0),
-    tracker
+    tracker,
   );
   const selectedUnit = getPreferredUnitType(tracker) || defaultUnit;
   const targetAmount = tracker.target ?? selectedUnit.target;
@@ -101,12 +101,12 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
   const [codings, setCodings] = useState<Code[]>([]);
   const [relationships, setRelationships] = useState<CodedRelationship[]>();
   const recentValues = recentCodedValues.filter(({ code }) =>
-    codings.some((coding) => isCodeEqual(code, coding))
+    codings.some((coding) => isCodeEqual(code, coding)),
   );
   const color = tracker.color;
   const editsDisabled = isBefore(
     dateRange.start,
-    addDays(startOfToday(), -editsDisabledAfterNumberOfDays)
+    addDays(startOfToday(), -editsDisabledAfterNumberOfDays),
   );
 
   const unitDisplay = (value: number, skipInterpolation?: boolean) =>
@@ -114,7 +114,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
       tracker,
       unit: selectedUnit,
       value,
-      skipInterpolation
+      skipInterpolation,
     });
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
          * underlying Code Trees.
          */
         const relationships = flattenDepth(
-          res?.map((code) => code.specializedBy) ?? []
+          res?.map((code) => code.specializedBy) ?? [],
         );
 
         setRelationships(
@@ -141,9 +141,9 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                 {
                   ...tracker,
                   display: tracker.name,
-                  specializedBy: []
-                }
-              ]
+                  specializedBy: [],
+                },
+              ],
         );
         setCodings(
           flattenDepth(
@@ -151,11 +151,11 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
               code,
               ...(code.specializedBy?.map((code2) => [
                 code2,
-                ...(code2.specializedBy?.map((code3) => code3) ?? [])
-              ]) ?? [])
+                ...(code2.specializedBy?.map((code3) => code3) ?? []),
+              ]) ?? []),
             ]),
-            2
-          ) as Code[]
+            2,
+          ) as Code[],
         );
       })
       .catch(() => setRelationships([]));
@@ -164,7 +164,9 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
   const addTrackerResource = useCallback(
     // This makes it so the user doesn't add too many records at once
     throttle(async (code: Code, value = quickAddAmount) => {
-      if (editsDisabled) return;
+      if (editsDisabled) {
+        return;
+      }
 
       try {
         const res = await svc.upsertTrackerResource(
@@ -175,24 +177,24 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
               ...svc,
               createDate: dateRange.start,
               value,
-              tracker
+              tracker,
             },
-            code
-          )
+            code,
+          ),
         );
         notifier.emit('valuesChanged', [
           {
             valuesContext,
             metricId,
             tracker: res,
-            saveToRecent: false // don't add to recent items. It is already there or is a root option. LX has this functionality
-          }
+            saveToRecent: false, // don't add to recent items. It is already there or is a root option. LX has this functionality
+          },
         ]);
       } catch (e) {
         onError?.(e);
       }
     }, 800),
-    [tracker, svc, dateRange.start, editsDisabled, quickAddAmount]
+    [tracker, svc, dateRange.start, editsDisabled, quickAddAmount],
   );
 
   return (
@@ -215,7 +217,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         defaults="<value>{{value}}</value><divider>/</divider><target>{{target}}</target>"
         values={{
           value: currentValue,
-          target
+          target,
         }}
         components={{
           value: ((valueText?: string) => (
@@ -223,7 +225,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
               accessibilityLabel={i18n.t('c606756e12cb4d462eb815d1641016b9', {
                 defaultValue: 'Tracker value, {{value}}',
                 value: currentValue,
-                ns: 'track-tile-ui'
+                ns: 'track-tile-ui',
               })}
               style={[fontWeights.regular, styles.advancedDetailsTrackerValue]}
             >
@@ -235,7 +237,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
               accessibilityElementsHidden
               style={[
                 fontWeights.regular,
-                styles.advancedDetailsTrackerValueDivider
+                styles.advancedDetailsTrackerValueDivider,
               ]}
             >
               {dividerText}
@@ -246,16 +248,16 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
               accessibilityLabel={i18n.t('c606756e12cb4d462eb815d1641016b9', {
                 defaultValue: 'Tracker target, {{value}}',
                 value: target,
-                ns: 'track-tile-ui'
+                ns: 'track-tile-ui',
               })}
               style={[
                 fontWeights.semibold,
-                styles.advancedDetailsTrackerTarget
+                styles.advancedDetailsTrackerTarget,
               ]}
             >
               {targetText}
             </Text>
-          ))()
+          ))(),
         }}
       />
 
@@ -263,7 +265,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         <Text style={{ textAlign: 'center' }}>
           {i18n.t('edits-not-allowed', {
             defaultValue: 'Unable to adjust data this far in the past.',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
       )}
@@ -286,12 +288,12 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
               <Text
                 style={[
                   fontWeights.semibold,
-                  styles.advancedDetailsRecentHistoryTitle
+                  styles.advancedDetailsRecentHistoryTitle,
                 ]}
               >
                 {i18n.t('add-recent', {
                   defaultValue: 'Add Recent',
-                  ns: 'track-tile-ui'
+                  ns: 'track-tile-ui',
                 })}
               </Text>
               <ScrollView
@@ -315,26 +317,26 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                             code,
                             isProcedure
                               ? convertToPreferredUnit(value, tracker)
-                              : undefined
+                              : undefined,
                           )
                         }
                         key={`${code.system}|${code.code}`}
                         style={[
                           { backgroundColor: color },
-                          styles.advancedDetailsRecentHistoryPill
+                          styles.advancedDetailsRecentHistoryPill,
                         ]}
                       >
                         <Text
                           style={[
                             fontWeights.semibold,
-                            styles.advancedDetailsRecentHistoryPillText
+                            styles.advancedDetailsRecentHistoryPillText,
                           ]}
                         >
                           {i18n
                             .t('recent-item-text', {
                               defaultValue: '{{codeDisplay}} {{unit}}',
                               codeDisplay: display,
-                              unit: isProcedure ? unitDisplay(value) : ''
+                              unit: isProcedure ? unitDisplay(value) : '',
                             })
                             .trim()}
                         </Text>
@@ -371,7 +373,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
           {i18n.t('science-of-prefix', {
             defaultValue: 'The science of',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
@@ -388,14 +390,14 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
           {i18n.t('weekly-metrics-prefix', {
             defaultValue: 'Weekly Metrics',
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
           {i18n.t('total-daily-units', {
             defaultValue: 'Total Daily {{unit}}',
             unit: unitDisplay(targetAmount, true),
-            ns: 'track-tile-ui'
+            ns: 'track-tile-ui',
           })}
         </Text>
 
@@ -422,57 +424,57 @@ const defaultStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginVertical: 16,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   advancedDetailsTrackerValue: {
-    fontSize: 48
+    fontSize: 48,
   },
   advancedDetailsTrackerValueDivider: {
     fontSize: 48,
-    marginHorizontal: 12
+    marginHorizontal: 12,
   },
   advancedDetailsTrackerTarget: {
-    fontSize: 24
+    fontSize: 24,
   },
   advancedDetailsSection: {
     padding: 35,
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
   },
   advancedDetailsSectionPrefix: {
     textTransform: 'uppercase',
     fontSize: 12,
-    color: '#52566A'
+    color: '#52566A',
   },
   advancedDetailsSectionTitle: {
     fontSize: 34,
     color: '#35383D',
-    lineHeight: 40.8
+    lineHeight: 40.8,
   },
   advancedDetailsDescription: {
     fontSize: 14,
     lineHeight: 21,
-    marginTop: 24
+    marginTop: 24,
   },
   advancedDetailsChartContainer: {
-    marginTop: 30
+    marginTop: 30,
   },
   advancedDetailsRecentHistoryContainer: {
     paddingHorizontal: 35,
-    paddingBottom: 20
+    paddingBottom: 20,
   },
   advancedDetailsRecentHistoryTitle: {
     fontSize: 14,
     color: '#35383D',
     marginBottom: 12,
-    lineHeight: 21
+    lineHeight: 21,
   },
   advancedDetailsRecentHistoryScrollView: {
     overflow: 'visible',
-    marginHorizontal: -35
+    marginHorizontal: -35,
   },
   advancedDetailsRecentHistoryScrollViewContent: {
-    paddingHorizontal: 35
+    paddingHorizontal: 35,
   },
   advancedDetailsRecentHistoryPill: {
     flexDirection: 'row',
@@ -482,9 +484,9 @@ const defaultStyles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 38,
     minWidth: 65,
-    marginEnd: 8
+    marginEnd: 8,
   },
   advancedDetailsRecentHistoryPillText: {
-    color: 'white'
-  }
+    color: 'white',
+  },
 });

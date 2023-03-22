@@ -2,12 +2,12 @@ import React, { FC } from 'react';
 import {
   FontOverridesProvider,
   FontWeights,
-  StyleOverridesProvider
+  StyleOverridesProvider,
 } from '../styles';
 import { Styles, TrackerDetails, TrackerDetailsProps } from './TrackerDetails';
 import {
   TrackTileService,
-  TrackTileServiceProvider
+  TrackTileServiceProvider,
 } from '../services/TrackTileService';
 
 export type TrackerDetailsProviderProps = TrackerDetailsProps & {
@@ -17,7 +17,7 @@ export type TrackerDetailsProviderProps = TrackerDetailsProps & {
 };
 
 export const TrackerDetailsProvider: FC<TrackerDetailsProviderProps> = (
-  props
+  props,
 ) => {
   const { trackTileService, styles, fonts, ...trackerDetailsProps } = props;
 

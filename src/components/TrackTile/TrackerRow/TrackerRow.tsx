@@ -4,14 +4,14 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { SvgProps } from 'react-native-svg';
 import { convertToPreferredUnit } from '../util/convert-value';
 import { tID } from '../common/testID';
 import {
   Tracker as TrackerType,
-  TrackerValues
+  TrackerValues,
 } from '../services/TrackTileService';
 import { StylesProp, useStyleOverrides } from '../styles';
 import { Tracker } from './Tracker';
@@ -48,7 +48,7 @@ export const TrackerRow: FC<TrackerRowProps> = (props) => {
         trackers.map((tracker) => (
           <TouchableOpacity
             testID={tID(
-              `open-tracker-details-button-${tracker.metricId || tracker.id}`
+              `open-tracker-details-button-${tracker.metricId || tracker.id}`,
             )}
             key={tracker.metricId}
             onPress={() => onOpenTracker(tracker)}
@@ -60,9 +60,9 @@ export const TrackerRow: FC<TrackerRowProps> = (props) => {
               value={convertToPreferredUnit(
                 values[tracker.metricId ?? '']?.reduce(
                   (total, { value }) => total + value,
-                  0
+                  0,
                 ),
-                tracker
+                tracker,
               )}
             />
           </TouchableOpacity>
@@ -80,12 +80,12 @@ const defaultStyles = StyleSheet.create({
     height: 131,
     paddingHorizontal: 16,
     justifyContent: 'center',
-    paddingBottom: 40
+    paddingBottom: 40,
   },
   trackerRowContainer: {
     minWidth: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingHorizontal: 10
-  }
+    paddingHorizontal: 10,
+  },
 });

@@ -4,7 +4,7 @@ import {
   View,
   StyleSheet,
   ViewStyle,
-  StyleProp
+  StyleProp,
 } from 'react-native';
 import { StylesProp, useStyleOverrides } from '../../../styles';
 import { Tracker } from '../../../services/TrackTileService';
@@ -35,10 +35,10 @@ export const ValueEditor = (props: ValueEditorProps) => {
         dir * (editUnitType === 'hour' ? HOUR_IN_SECONDS : stepAmount);
       onValueChange(
         Math.round(Math.max(value + changeByAmount, 0) / changeByAmount) *
-          changeByAmount
+          changeByAmount,
       );
     },
-    [onValueChange, value, stepAmount, editUnitType]
+    [onValueChange, value, stepAmount, editUnitType],
   );
 
   return (
@@ -77,14 +77,14 @@ declare module '../AdvancedTrackerEditor' {
 const defaultStyles = StyleSheet.create({
   advancedEditorCircleButton: {
     width: 30,
-    height: 30
+    height: 30,
   },
   advancedEditorTrackerContainer: {
-    alignItems: 'center'
+    alignItems: 'center',
   },
   advancedEditorTrackerValue: {
     fontSize: 34,
     lineHeight: 40.8,
-    color: '#35383D'
-  }
+    color: '#35383D',
+  },
 });

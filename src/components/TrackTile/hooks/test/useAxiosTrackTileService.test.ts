@@ -12,33 +12,33 @@ import {
   TRACKER_CODE,
   TRACKER_CODE_SYSTEM,
   TRACKER_PILLAR_CODE,
-  TRACKER_PILLAR_CODE_SYSTEM
+  TRACKER_PILLAR_CODE_SYSTEM,
 } from '../../services/TrackTileService';
 import {
   MUTATE_OBSERVATION_RESOURCE,
   FETCH_TRACKER_VALUES_BY_DATES_QUERY,
   useAxiosTrackTileService,
   MUTATE_PROCEDURE_RESOURCE,
-  DELETE_RESOURCE
+  DELETE_RESOURCE,
 } from '../useAxiosTrackTileService';
 
 const valuesContext: TrackerValuesContext = {
   system: TRACKER_CODE_SYSTEM,
-  codeBelow: TRACKER_CODE
+  codeBelow: TRACKER_CODE,
 };
 
 const DATASTORE_HEADERS = {
   headers: expect.objectContaining({
     'LifeOmic-TrackTile-Capabilities-Version': 2,
-    'LifeOmic-Account': 'datastore-account'
-  })
+    'LifeOmic-Account': 'datastore-account',
+  }),
 };
 
 const ACCOUNT_HEADERS = {
   headers: expect.objectContaining({
     'LifeOmic-TrackTile-Capabilities-Version': 2,
-    'LifeOmic-Account': 'account'
-  })
+    'LifeOmic-Account': 'account',
+  }),
 };
 
 describe('useAxiosTrackTileService', () => {
@@ -47,19 +47,19 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: axios.create()
-      })
+        axiosInstance: axios.create(),
+      }),
     );
 
     expect(result.current).toEqual(
       expect.objectContaining({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
-        }
-      })
+          project: 'datastore-project',
+        },
+      }),
     );
   });
 
@@ -70,10 +70,10 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { get } as any
-      })
+        axiosInstance: { get } as any,
+      }),
     );
 
     let returnedMetrics: any;
@@ -83,7 +83,7 @@ describe('useAxiosTrackTileService', () => {
 
     expect(get).toHaveBeenCalledWith(
       '/track-tiles/trackers?include-public=true',
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
     expect(returnedMetrics).toEqual([{ id: 'metric-id' }]);
   });
@@ -95,10 +95,10 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { get } as any
-      })
+        axiosInstance: { get } as any,
+      }),
     );
 
     let first: any, second: any;
@@ -118,15 +118,15 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
         accountSettings: {
           account: 'account',
           project: 'account-project',
-          includePublicTrackers: false
+          includePublicTrackers: false,
         },
-        axiosInstance: { get } as any
-      })
+        axiosInstance: { get } as any,
+      }),
     );
 
     let returnedTrackers: any;
@@ -136,7 +136,7 @@ describe('useAxiosTrackTileService', () => {
 
     expect(get).toHaveBeenCalledWith(
       '/track-tiles/trackers?project=account-project',
-      ACCOUNT_HEADERS
+      ACCOUNT_HEADERS,
     );
     expect(returnedTrackers).toEqual([{ id: 'metric-id' }]);
   });
@@ -148,10 +148,10 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { get } as any
-      })
+        axiosInstance: { get } as any,
+      }),
     );
 
     await act(async () => {
@@ -160,7 +160,7 @@ describe('useAxiosTrackTileService', () => {
 
     expect(get).toHaveBeenCalledWith(
       '/track-tiles/trackers?include-public=true',
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
   });
 
@@ -171,15 +171,15 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
         axiosInstance: { get } as any,
         accountSettings: {
           account: 'account',
           project: 'account-project',
-          includePublicTrackers: true
-        }
-      })
+          includePublicTrackers: true,
+        },
+      }),
     );
 
     await act(async () => {
@@ -188,7 +188,7 @@ describe('useAxiosTrackTileService', () => {
 
     expect(get).toHaveBeenCalledWith(
       '/track-tiles/trackers?project=account-project&include-public=true',
-      ACCOUNT_HEADERS
+      ACCOUNT_HEADERS,
     );
   });
 
@@ -197,7 +197,7 @@ describe('useAxiosTrackTileService', () => {
       metricId: 'metric-id',
       order: 1,
       target: 2,
-      unit: '3'
+      unit: '3',
     };
     const put = jest.fn().mockResolvedValue({ data: settings });
 
@@ -205,24 +205,24 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'project'
+          project: 'project',
         },
-        axiosInstance: { put } as any
-      })
+        axiosInstance: { put } as any,
+      }),
     );
 
     let upsertResult: any;
     await act(async () => {
       upsertResult = await result.current.upsertTracker(
         settings.metricId,
-        settings
+        settings,
       );
     });
 
     expect(put).toHaveBeenCalledWith(
       '/track-tiles/metrics/installs/metric-id',
       settings,
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
     expect(upsertResult).toEqual(settings);
   });
@@ -233,7 +233,7 @@ describe('useAxiosTrackTileService', () => {
       color: 'red',
       order: 1,
       target: 2,
-      unit: '3'
+      unit: '3',
     };
     const put = jest
       .fn()
@@ -244,10 +244,10 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'project'
+          project: 'project',
         },
-        axiosInstance: { put, get } as any
-      })
+        axiosInstance: { put, get } as any,
+      }),
     );
 
     let cachedResult: any;
@@ -257,7 +257,7 @@ describe('useAxiosTrackTileService', () => {
       // update settings
       await result.current.upsertTracker(settings.metricId, {
         ...settings,
-        order: 2
+        order: 2,
       });
       // fetch trackers from cache
       cachedResult = await result.current.fetchTrackers();
@@ -266,8 +266,8 @@ describe('useAxiosTrackTileService', () => {
     expect(cachedResult).toEqual([
       {
         ...settings,
-        order: 2 // cached value has been updated
-      }
+        order: 2, // cached value has been updated
+      },
     ]);
   });
 
@@ -278,7 +278,7 @@ describe('useAxiosTrackTileService', () => {
       color: 'red',
       order: 1,
       target: 2,
-      unit: '3'
+      unit: '3',
     };
     const put = jest
       .fn()
@@ -289,10 +289,10 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'project'
+          project: 'project',
         },
-        axiosInstance: { put, get } as any
-      })
+        axiosInstance: { put, get } as any,
+      }),
     );
 
     let cachedResult: any;
@@ -302,7 +302,7 @@ describe('useAxiosTrackTileService', () => {
       // update settings
       await result.current.upsertTracker(settings.metricId, {
         ...settings,
-        order: 2
+        order: 2,
       });
       // fetch trackers from cache
       cachedResult = await result.current.fetchTrackers();
@@ -311,8 +311,8 @@ describe('useAxiosTrackTileService', () => {
     expect(cachedResult).toEqual([
       {
         ...settings,
-        order: 2 // cached value has been updated
-      }
+        order: 2, // cached value has been updated
+      },
     ]);
   });
 
@@ -321,7 +321,7 @@ describe('useAxiosTrackTileService', () => {
     const tracker2: Partial<Tracker> = { id: 'b', metricId: '2', order: 2 };
     const updatedSettings = [
       { ...tracker2, order: 1 },
-      { ...tracker1, order: 2 }
+      { ...tracker1, order: 2 },
     ];
 
     const patch = jest.fn().mockResolvedValue({ data: updatedSettings });
@@ -331,10 +331,10 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'project'
+          project: 'project',
         },
-        axiosInstance: { patch, get } as any
-      })
+        axiosInstance: { patch, get } as any,
+      }),
     );
 
     let cachedResult: any;
@@ -349,7 +349,7 @@ describe('useAxiosTrackTileService', () => {
 
     expect(patch).toHaveBeenCalledWith(
       '/track-tiles/metrics/installs',
-      updatedSettings
+      updatedSettings,
     );
     expect(cachedResult).toEqual(updatedSettings);
   });
@@ -364,10 +364,10 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'project'
+          project: 'project',
         },
-        axiosInstance: { delete: deleteFn, get } as any
-      })
+        axiosInstance: { delete: deleteFn, get } as any,
+      }),
     );
 
     let cachedResult: any, initialCacheValue: any;
@@ -381,7 +381,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(deleteFn).toHaveBeenCalledWith(
-      `/track-tiles/metrics/installs/${tracker.metricId}`
+      `/track-tiles/metrics/installs/${tracker.metricId}`,
     );
     expect(initialCacheValue.every(isInstalledMetric)).toEqual(true);
     expect(cachedResult.every(isInstalledMetric)).toEqual(false);
@@ -394,34 +394,34 @@ describe('useAxiosTrackTileService', () => {
           {
             metricId: 'metric-id-1',
             effectiveDateTime: '2021-07-23',
-            value: 1
-          }
+            value: 1,
+          },
         ],
         [
           {
             metricId: 'metric-id-2',
             effectiveDateTime: '2021-07-23',
-            value: 3
-          }
-        ]
-      )
+            value: 3,
+          },
+        ],
+      ),
     );
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'project'
+          project: 'project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     let fetchResult: any;
     await act(async () => {
       fetchResult = await result.current.fetchTrackerValues(valuesContext, {
         start: new Date('2021-07-23'),
-        end: new Date('2021-07-30')
+        end: new Date('2021-07-30'),
       });
     });
 
@@ -430,11 +430,11 @@ describe('useAxiosTrackTileService', () => {
       {
         variables: {
           dates: ['ge2021-07-23T00:00:00.000Z', 'le2021-07-30T00:00:00.000Z'],
-          codeBelow: valuesContext.codeBelow
+          codeBelow: valuesContext.codeBelow,
         },
-        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY
+        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
     expect(fetchResult).toEqual({
       [startOfDay(new Date('2021-07-24')).toUTCString()]: {},
@@ -454,11 +454,11 @@ describe('useAxiosTrackTileService', () => {
               coding: [
                 {
                   code: 'metric-id-1',
-                  system: 'http://lifeomic.com/fhir/track-tile-value'
-                }
-              ]
-            }
-          }
+                  system: 'http://lifeomic.com/fhir/track-tile-value',
+                },
+              ],
+            },
+          },
         ],
         'metric-id-2': [
           {
@@ -469,13 +469,13 @@ describe('useAxiosTrackTileService', () => {
               coding: [
                 {
                   code: 'metric-id-2',
-                  system: 'http://lifeomic.com/fhir/track-tile-value'
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  system: 'http://lifeomic.com/fhir/track-tile-value',
+                },
+              ],
+            },
+          },
+        ],
+      },
     });
   });
 
@@ -486,38 +486,38 @@ describe('useAxiosTrackTileService', () => {
           {
             metricId: 'metric-id-1',
             effectiveDateTime: '2021-07-23',
-            value: 1
-          }
+            value: 1,
+          },
         ],
         [
           {
             metricId: 'metric-id-2',
             effectiveDateTime: '2021-07-23',
-            value: 3
-          }
-        ]
-      )
+            value: 3,
+          },
+        ],
+      ),
     );
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'project'
+          project: 'project',
         },
         accountSettings: {
           account: 'account',
           project: 'account-project',
-          includePublicTrackers: false
+          includePublicTrackers: false,
         },
         axiosInstance: { post } as any,
-        patientId: 'patient-id'
-      })
+        patientId: 'patient-id',
+      }),
     );
 
     const customValuesContext = {
       ...valuesContext,
-      codeBelow: 'custom-code-below'
+      codeBelow: 'custom-code-below',
     };
 
     let fetchResult: any;
@@ -526,8 +526,8 @@ describe('useAxiosTrackTileService', () => {
         customValuesContext,
         {
           start: new Date('2021-07-23'),
-          end: new Date('2021-07-30')
-        }
+          end: new Date('2021-07-30'),
+        },
       );
     });
 
@@ -537,11 +537,11 @@ describe('useAxiosTrackTileService', () => {
         variables: {
           dates: ['ge2021-07-23T00:00:00.000Z', 'le2021-07-30T00:00:00.000Z'],
           codeBelow: customValuesContext.codeBelow,
-          patientId: 'patient-id'
+          patientId: 'patient-id',
         },
-        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY
+        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
     expect(fetchResult).toEqual({
       [startOfDay(new Date('2021-07-24')).toUTCString()]: {},
@@ -561,11 +561,11 @@ describe('useAxiosTrackTileService', () => {
               coding: [
                 {
                   code: 'metric-id-1',
-                  system: 'http://lifeomic.com/fhir/track-tile-value'
-                }
-              ]
-            }
-          }
+                  system: 'http://lifeomic.com/fhir/track-tile-value',
+                },
+              ],
+            },
+          },
         ],
         'metric-id-2': [
           {
@@ -576,13 +576,13 @@ describe('useAxiosTrackTileService', () => {
               coding: [
                 {
                   code: 'metric-id-2',
-                  system: 'http://lifeomic.com/fhir/track-tile-value'
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  system: 'http://lifeomic.com/fhir/track-tile-value',
+                },
+              ],
+            },
+          },
+        ],
+      },
     });
   });
 
@@ -594,38 +594,38 @@ describe('useAxiosTrackTileService', () => {
           {
             metricId: 'metric-id-1',
             effectiveDateTime: '2021-07-23',
-            value: 1
-          }
-        ])
+            value: 1,
+          },
+        ]),
       )
       .mockResolvedValueOnce(
         toGraphQLResult([
           {
             metricId: 'metric-id-1',
             effectiveDateTime: '2021-07-24',
-            value: 2
-          }
-        ])
+            value: 2,
+          },
+        ]),
       );
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'project'
+          project: 'project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     await act(async () => {
       await result.current.fetchTrackerValues(valuesContext, {
         start: startOfDay(new Date('2021-07-23')),
-        end: endOfDay(new Date('2021-07-23'))
+        end: endOfDay(new Date('2021-07-23')),
       });
       await result.current.fetchTrackerValues(valuesContext, {
         start: startOfDay(new Date('2021-07-23')),
-        end: endOfDay(new Date('2021-07-24'))
+        end: endOfDay(new Date('2021-07-24')),
       });
     });
 
@@ -636,13 +636,13 @@ describe('useAxiosTrackTileService', () => {
         variables: {
           dates: [
             `ge${startOfDay(new Date('2021-07-23')).toISOString()}`,
-            `le${endOfDay(new Date('2021-07-23')).toISOString()}`
+            `le${endOfDay(new Date('2021-07-23')).toISOString()}`,
           ],
-          codeBelow: valuesContext.codeBelow
+          codeBelow: valuesContext.codeBelow,
         },
-        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY
+        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
     expect(post).toHaveBeenNthCalledWith(
       2,
@@ -651,13 +651,13 @@ describe('useAxiosTrackTileService', () => {
         variables: {
           dates: [
             `ge${startOfDay(new Date('2021-07-24')).toISOString()}`,
-            `le${endOfDay(new Date('2021-07-24')).toISOString()}`
+            `le${endOfDay(new Date('2021-07-24')).toISOString()}`,
           ],
-          codeBelow: valuesContext.codeBelow
+          codeBelow: valuesContext.codeBelow,
         },
-        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY
+        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
   });
 
@@ -667,34 +667,34 @@ describe('useAxiosTrackTileService', () => {
         {
           metricId: 'metric-id-1',
           effectiveDateTime: '2021-07-23',
-          value: 1
+          value: 1,
         },
         {
           metricId: 'metric-id-1',
           effectiveDateTime: '2021-07-24',
-          value: 2
-        }
-      ])
+          value: 2,
+        },
+      ]),
     );
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     await act(async () => {
       await result.current.fetchTrackerValues(valuesContext, {
         start: startOfDay(new Date('2021-07-23')),
-        end: endOfDay(new Date('2021-07-24'))
+        end: endOfDay(new Date('2021-07-24')),
       });
       await result.current.fetchTrackerValues(valuesContext, {
         start: startOfDay(new Date('2021-07-24')),
-        end: endOfDay(new Date('2021-07-24'))
+        end: endOfDay(new Date('2021-07-24')),
       });
     });
 
@@ -707,39 +707,39 @@ describe('useAxiosTrackTileService', () => {
         {
           metricId: 'metric-id-1',
           effectiveDateTime: '2021-07-23',
-          value: 1
+          value: 1,
         },
         {
           metricId: 'metric-id-1',
           effectiveDateTime: '2021-07-24',
-          value: 2
-        }
-      ])
+          value: 2,
+        },
+      ]),
     );
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     const pillarValuesContext = {
       system: TRACKER_PILLAR_CODE_SYSTEM,
-      codeBelow: TRACKER_PILLAR_CODE
+      codeBelow: TRACKER_PILLAR_CODE,
     };
 
     await act(async () => {
       await result.current.fetchTrackerValues(pillarValuesContext, {
         start: startOfDay(new Date('2021-07-23')),
-        end: endOfDay(new Date('2021-07-24'))
+        end: endOfDay(new Date('2021-07-24')),
       });
       await result.current.fetchTrackerValues(pillarValuesContext, {
         start: startOfDay(new Date('2021-07-24')),
-        end: endOfDay(new Date('2021-07-24'))
+        end: endOfDay(new Date('2021-07-24')),
       });
     });
 
@@ -751,13 +751,13 @@ describe('useAxiosTrackTileService', () => {
         variables: {
           dates: [
             `ge${startOfDay(new Date('2021-07-23')).toISOString()}`,
-            `le${endOfDay(new Date('2021-07-24')).toISOString()}`
+            `le${endOfDay(new Date('2021-07-24')).toISOString()}`,
           ],
-          codeBelow: pillarValuesContext.codeBelow
+          codeBelow: pillarValuesContext.codeBelow,
         },
-        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY
+        query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
   });
 
@@ -768,22 +768,22 @@ describe('useAxiosTrackTileService', () => {
           {
             system: TRACKER_CODE_SYSTEM,
             code: 'metric-id-1',
-            display: 'test'
-          }
-        ]
+            display: 'test',
+          },
+        ],
       },
       effectiveDateTime: startOfDay(new Date('2021-07-23')).toISOString(),
       meta: {
-        tag: []
+        tag: [],
       },
       resourceType: 'Observation',
       valueQuantity: {
         value: 1,
         code: '',
         system: '',
-        unit: ''
+        unit: '',
       },
-      status: 'final'
+      status: 'final',
     };
     const post = jest.fn().mockResolvedValueOnce({
       data: {
@@ -791,20 +791,20 @@ describe('useAxiosTrackTileService', () => {
           resource: toObservation({
             metricId: 'metric-id-1',
             effectiveDateTime: startOfDay(new Date('2021-07-23')).toISOString(),
-            value: 1
-          })
-        }
-      }
+            value: 1,
+          }),
+        },
+      },
     });
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     await act(async () => {
@@ -815,9 +815,9 @@ describe('useAxiosTrackTileService', () => {
       '/graphql',
       {
         query: MUTATE_OBSERVATION_RESOURCE('Create'),
-        variables: { resource: newResource }
+        variables: { resource: newResource },
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
   });
 
@@ -825,20 +825,20 @@ describe('useAxiosTrackTileService', () => {
     const newResource: TrackerResource = {
       id: 'existing',
       code: {
-        coding: []
+        coding: [],
       },
       effectiveDateTime: startOfDay(new Date('2021-07-23')).toISOString(),
       meta: {
-        tag: []
+        tag: [],
       },
       resourceType: 'Observation',
       valueQuantity: {
         value: 1,
         code: '',
         system: '',
-        unit: ''
+        unit: '',
       },
-      status: 'completed'
+      status: 'completed',
     };
     const post = jest.fn().mockResolvedValueOnce({
       data: {
@@ -846,20 +846,20 @@ describe('useAxiosTrackTileService', () => {
           resource: toObservation({
             metricId: 'metric-id-1',
             effectiveDateTime: startOfDay(new Date('2021-07-23')).toISOString(),
-            value: 1
-          })
-        }
-      }
+            value: 1,
+          }),
+        },
+      },
     });
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     await act(async () => {
@@ -870,9 +870,9 @@ describe('useAxiosTrackTileService', () => {
       '/graphql',
       {
         query: MUTATE_OBSERVATION_RESOURCE('Update'),
-        variables: { resource: newResource }
+        variables: { resource: newResource },
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
   });
 
@@ -883,19 +883,19 @@ describe('useAxiosTrackTileService', () => {
           {
             system: TRACKER_CODE_SYSTEM,
             code: 'metric-id-1',
-            display: 'test'
-          }
-        ]
+            display: 'test',
+          },
+        ],
       },
       meta: {
-        tag: []
+        tag: [],
       },
       resourceType: 'Procedure',
       performedPeriod: {
         start: startOfDay(new Date('2021-07-23')).toISOString(),
-        end: addSeconds(startOfDay(new Date('2021-07-23')), 4).toISOString()
+        end: addSeconds(startOfDay(new Date('2021-07-23')), 4).toISOString(),
       },
-      status: 'completed'
+      status: 'completed',
     };
     const post = jest.fn().mockResolvedValueOnce({
       data: {
@@ -903,20 +903,20 @@ describe('useAxiosTrackTileService', () => {
           resource: toProcedure({
             metricId: 'metric-id-1',
             effectiveDateTime: startOfDay(new Date('2021-07-23')).toISOString(),
-            value: 4
-          })
-        }
-      }
+            value: 4,
+          }),
+        },
+      },
     });
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     await act(async () => {
@@ -927,9 +927,9 @@ describe('useAxiosTrackTileService', () => {
       '/graphql',
       {
         query: MUTATE_PROCEDURE_RESOURCE('Create'),
-        variables: { resource: newResource }
+        variables: { resource: newResource },
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
   });
 
@@ -941,19 +941,19 @@ describe('useAxiosTrackTileService', () => {
           {
             system: TRACKER_CODE_SYSTEM,
             code: 'metric-id-1',
-            display: 'test'
-          }
-        ]
+            display: 'test',
+          },
+        ],
       },
       meta: {
-        tag: []
+        tag: [],
       },
       resourceType: 'Procedure',
       performedPeriod: {
         start: startOfDay(new Date('2021-07-23')).toISOString(),
-        end: addSeconds(startOfDay(new Date('2021-07-23')), 4).toISOString()
+        end: addSeconds(startOfDay(new Date('2021-07-23')), 4).toISOString(),
       },
-      status: 'completed'
+      status: 'completed',
     };
     const post = jest.fn().mockResolvedValueOnce({
       data: {
@@ -961,20 +961,20 @@ describe('useAxiosTrackTileService', () => {
           resource: toProcedure({
             metricId: 'metric-id-1',
             effectiveDateTime: startOfDay(new Date('2021-07-23')).toISOString(),
-            value: 4
-          })
-        }
-      }
+            value: 4,
+          }),
+        },
+      },
     });
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     await act(async () => {
@@ -985,9 +985,9 @@ describe('useAxiosTrackTileService', () => {
       '/graphql',
       {
         query: MUTATE_PROCEDURE_RESOURCE('Update'),
-        variables: { resource: newResource }
+        variables: { resource: newResource },
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
   });
 
@@ -998,16 +998,16 @@ describe('useAxiosTrackTileService', () => {
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     await expect(
       result.current.upsertTrackerResource(valuesContext, {
-        resourceType: 'Observation'
-      } as any)
+        resourceType: 'Observation',
+      } as any),
     ).rejects.toThrowError('Failed to upsert the TrackerResource');
   });
 
@@ -1015,26 +1015,26 @@ describe('useAxiosTrackTileService', () => {
     const post = jest.fn().mockResolvedValueOnce({
       data: {
         data: {
-          success: true
-        }
-      }
+          success: true,
+        },
+      },
     });
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     await act(async () => {
       await result.current.deleteTrackerResource(
         valuesContext,
         'Procedure',
-        'procedureId'
+        'procedureId',
       );
     });
 
@@ -1042,9 +1042,9 @@ describe('useAxiosTrackTileService', () => {
       '/graphql',
       {
         query: DELETE_RESOURCE('Procedure'),
-        variables: { id: 'procedureId' }
+        variables: { id: 'procedureId' },
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
   });
 
@@ -1052,26 +1052,26 @@ describe('useAxiosTrackTileService', () => {
     const post = jest.fn().mockResolvedValueOnce({
       data: {
         data: {
-          success: true
-        }
-      }
+          success: true,
+        },
+      },
     });
 
     const { result } = renderHook(() =>
       useAxiosTrackTileService({
         datastoreSettings: {
           account: 'datastore-account',
-          project: 'datastore-project'
+          project: 'datastore-project',
         },
-        axiosInstance: { post } as any
-      })
+        axiosInstance: { post } as any,
+      }),
     );
 
     await act(async () => {
       await result.current.deleteTrackerResource(
         valuesContext,
         'Observation',
-        'observationId'
+        'observationId',
       );
     });
 
@@ -1079,9 +1079,9 @@ describe('useAxiosTrackTileService', () => {
       '/graphql',
       {
         query: DELETE_RESOURCE('Observation'),
-        variables: { id: 'observationId' }
+        variables: { id: 'observationId' },
       },
-      DATASTORE_HEADERS
+      DATASTORE_HEADERS,
     );
   });
 });
@@ -1096,17 +1096,17 @@ const toObservation = (value: GraphQlValue, id?: string) => ({
   id,
   effectiveDateTime: value.effectiveDateTime,
   valueQuantity: {
-    value: value.value
+    value: value.value,
   },
   code: {
     coding: [
       {
         code: value.metricId,
-        system: TRACKER_CODE_SYSTEM
-      }
-    ]
+        system: TRACKER_CODE_SYSTEM,
+      },
+    ],
   },
-  status: 'final'
+  status: 'final',
 });
 
 const toProcedure = (value: GraphQlValue, id?: string) => ({
@@ -1114,39 +1114,39 @@ const toProcedure = (value: GraphQlValue, id?: string) => ({
   performedPeriod: {
     start: subSeconds(
       new Date(value.effectiveDateTime),
-      value.value
+      value.value,
     ).toISOString(),
-    end: value.effectiveDateTime
+    end: value.effectiveDateTime,
   },
   code: {
     coding: [
       {
         code: value.metricId,
-        system: TRACKER_CODE_SYSTEM
-      }
-    ]
+        system: TRACKER_CODE_SYSTEM,
+      },
+    ],
   },
-  status: 'completed'
+  status: 'completed',
 });
 
 const toGraphQLResult = (
   observationValues: GraphQlValue[],
-  procedureValues: GraphQlValue[] = []
+  procedureValues: GraphQlValue[] = [],
 ) => ({
   data: {
     data: {
       patient: {
         observationsConnection: {
           edges: observationValues.map((value, id) => ({
-            node: toObservation(value, `observation-${id}`)
-          }))
+            node: toObservation(value, `observation-${id}`),
+          })),
         },
         proceduresConnection: {
           edges: procedureValues.map((value, id) => ({
-            node: toProcedure(value, `procedure-${id}`)
-          }))
-        }
-      }
-    }
-  }
+            node: toProcedure(value, `procedure-${id}`),
+          })),
+        },
+      },
+    },
+  },
 });

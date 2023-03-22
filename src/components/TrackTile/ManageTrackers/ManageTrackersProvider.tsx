@@ -2,12 +2,12 @@ import React, { FC } from 'react';
 import {
   FontOverridesProvider,
   FontWeights,
-  StyleOverridesProvider
+  StyleOverridesProvider,
 } from '../styles';
 import { Styles, ManageTrackersProps, ManageTrackers } from './ManageTrackers';
 import {
   TrackTileService,
-  TrackTileServiceProvider
+  TrackTileServiceProvider,
 } from '../services/TrackTileService';
 
 export type ManageTrackersProviderProps = ManageTrackersProps & {
@@ -17,7 +17,7 @@ export type ManageTrackersProviderProps = ManageTrackersProps & {
 };
 
 export const ManageTrackersProvider: FC<ManageTrackersProviderProps> = (
-  props
+  props,
 ) => {
   const { trackTileService, styles, fonts, ...manageTrackersProps } = props;
 

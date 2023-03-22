@@ -40,23 +40,23 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
     (step: number) => () => {
       onChange((range) => ({
         start: addDays(range.start, step),
-        end: addDays(range.end, step)
+        end: addDays(range.end, step),
       }));
     },
-    [onChange]
+    [onChange],
   );
 
   return (
     <View
       style={[
         styles.datePickerContainer,
-        { justifyContent: 'space-between', paddingHorizontal: 35 }
+        { justifyContent: 'space-between', paddingHorizontal: 35 },
       ]}
     >
       <TouchableOpacity
         accessibilityLabel={i18n.t('go-to-previous-day', {
           defaultValue: 'Go to previous day',
-          ns: 'track-tile-ui'
+          ns: 'track-tile-ui',
         })}
         onPress={shiftRangeByDays(-1)}
       >
@@ -70,16 +70,16 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
                 tracker,
                 unit,
                 value: target,
-                skipInterpolation: true
+                skipInterpolation: true,
               }),
-              ns: 'track-tile-ui'
+              ns: 'track-tile-ui',
             })
           : format(dateRange.start, 'iiii, MMMM d')}
       </Text>
       <TouchableOpacity
         accessibilityLabel={i18n.t('go-to-next-day', {
           defaultValue: 'Go to next day',
-          ns: 'track-tile-ui'
+          ns: 'track-tile-ui',
         })}
         disabled={isToday(dateRange.start)}
         onPress={shiftRangeByDays(1)}
@@ -96,6 +96,6 @@ const defaultStyles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 16,
     alignItems: 'center',
-    width: '100%'
-  }
+    width: '100%',
+  },
 });

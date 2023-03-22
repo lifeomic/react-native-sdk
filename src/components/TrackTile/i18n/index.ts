@@ -7,7 +7,7 @@ export { Trans } from 'react-i18next';
 const configure = () => {
   return i18next.use(NamespaceLoader).init({
     backend: {
-      namespaces
+      namespaces,
     },
     ns: Object.keys(namespaces),
 
@@ -15,12 +15,12 @@ const configure = () => {
     debug: false && __DEV__ && process.env.NODE_ENV !== 'test', // Remove `false` to debug locally
 
     react: {
-      useSuspense: true
+      useSuspense: true,
     },
 
     interpolation: {
-      escapeValue: false
-    }
+      escapeValue: false,
+    },
   });
 };
 
@@ -30,7 +30,8 @@ if (process.env.NODE_ENV === 'test') {
   configure();
 }
 
-if (!i18next.hasLoadedNamespace(TRACK_TILE_UI))
+if (!i18next.hasLoadedNamespace(TRACK_TILE_UI)) {
   i18next.loadNamespaces(TRACK_TILE_UI);
+}
 
 export default i18next;
