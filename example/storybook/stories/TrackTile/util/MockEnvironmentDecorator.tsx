@@ -32,9 +32,6 @@ export const MockEnvironmentDecorator = ({
     },
   } as FetchTrackerResponse,
 } = {}) => {
-  // const axiosInstance = axios.create();
-  // const mock = new MockAdapter(axiosInstance);
-
   mock.onGet(/\/track-tiles\/trackers.*/).reply(200, trackers);
   mock.onPost('/graphql').reply((req) => {
     const body = JSON.parse(req.data ?? '{}');
