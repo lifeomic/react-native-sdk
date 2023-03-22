@@ -11,5 +11,9 @@
     "src": ["./src"],
     "lib": ["./lib"]
   },
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/components/TrackTile/**/*"
+  ]
 }
