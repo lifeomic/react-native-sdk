@@ -4,10 +4,10 @@ import { AppTile } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
 import { useNavigation } from '@react-navigation/native';
-import { HomeScreenNavigation } from 'src/screens';
+import { HomeScreenNavigation } from '../../screens/HomeScreen';
 import { useStyles } from '../../hooks';
 import { spacing } from '../BrandConfigProvider/theme/base';
-import { createStyles } from '..';
+import { createStyles } from '../BrandConfigProvider';
 
 export interface TilesListProps {
   tiles?: AppTile[];

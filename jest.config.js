@@ -7,7 +7,10 @@ module.exports = {
     '<rootDir>/src/**/*.test.{js,jsx,ts,tsx}',
   ],
   moduleFileExtensions: ['js', 'json', 'ts', 'tsx', 'jsx', 'node', 'mjs'],
-  modulePathIgnorePatterns: ['<rootDir>[/\\\\](|coverage|node_modules)[/\\\\]'],
+  modulePathIgnorePatterns: [
+    '<rootDir>[/\\\\](|coverage|node_modules)[/\\\\]',
+    'src/components/TrackTile'
+  ],
   preset: 'react-native',
   setupFilesAfterEnv: [
     '@testing-library/jest-native/extend-expect',
@@ -22,7 +25,7 @@ module.exports = {
     'src/common/RootProviders',
     'src/common/LoggedInProviders',
     'src/common/ThemedNavigationContainer',
-    'src/navigators'
+    'src/navigators', 'src/components/TrackTile'
   ],
   coverageThreshold: {
     global: {
