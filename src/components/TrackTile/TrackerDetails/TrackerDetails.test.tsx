@@ -232,7 +232,7 @@ describe('Tracker Details', () => {
 
     const upsertTrackerResource = jest.fn();
 
-    const { findByText, findByA11yLabel } = render(
+    const { findByText, findByLabelText } = render(
       <TrackerDetailsProvider
         trackTileService={
           {
@@ -252,7 +252,7 @@ describe('Tracker Details', () => {
       />,
     );
 
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
     fireEvent.press(await findByText('+'));
 
     const yesterday = startOfYesterday();
@@ -286,7 +286,7 @@ describe('Tracker Details', () => {
 
     const deleteTrackerResource = jest.fn().mockResolvedValue(true);
 
-    const { findByA11yLabel } = render(
+    const { findByLabelText } = render(
       <TrackerDetailsProvider
         trackTileService={
           { deleteTrackerResource, upsertTracker: jest.fn() } as any
@@ -301,8 +301,8 @@ describe('Tracker Details', () => {
       />,
     );
 
-    fireEvent.changeText(await findByA11yLabel(/Tracker value/), '1');
-    fireEvent(await findByA11yLabel(/Tracker value/), 'submitEditing');
+    fireEvent.changeText(await findByLabelText(/Tracker value/), '1');
+    fireEvent(await findByLabelText(/Tracker value/), 'submitEditing');
 
     await waitFor(() => expect(deleteTrackerResource).toHaveBeenCalledTimes(3));
 
@@ -340,7 +340,7 @@ describe('Tracker Details', () => {
       .fn()
       .mockResolvedValue({ id: '1', value: 4 });
 
-    const { findByA11yLabel } = render(
+    const { findByLabelText } = render(
       <TrackerDetailsProvider
         trackTileService={
           {
@@ -359,8 +359,8 @@ describe('Tracker Details', () => {
       />,
     );
 
-    fireEvent.changeText(await findByA11yLabel(/Tracker value/), '5');
-    fireEvent(await findByA11yLabel(/Tracker value/), 'submitEditing');
+    fireEvent.changeText(await findByLabelText(/Tracker value/), '5');
+    fireEvent(await findByLabelText(/Tracker value/), 'submitEditing');
 
     await waitFor(() => expect(notifierSpy).toHaveBeenCalled());
 
@@ -391,7 +391,7 @@ describe('Tracker Details', () => {
       .fn()
       .mockResolvedValue({ id: '1', value: 240 });
 
-    const { findByA11yLabel } = render(
+    const { findByLabelText } = render(
       <TrackerDetailsProvider
         trackTileService={
           {
@@ -411,8 +411,8 @@ describe('Tracker Details', () => {
       />,
     );
 
-    fireEvent.changeText(await findByA11yLabel(/Tracker value/), '5');
-    fireEvent(await findByA11yLabel(/Tracker value/), 'submitEditing');
+    fireEvent.changeText(await findByLabelText(/Tracker value/), '5');
+    fireEvent(await findByLabelText(/Tracker value/), 'submitEditing');
 
     await waitFor(() => expect(upsertTrackerResource).toHaveBeenCalled());
 

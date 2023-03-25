@@ -72,7 +72,7 @@ const pillarValueCtx = {
 
 describe('Track Tile', () => {
   it('should show the loading indicator when pillar-trackers are loading', async () => {
-    const { findByA11yRole } = render(
+    const { findByRole } = render(
       <PillarsTileProvider
         trackTileService={
           {
@@ -84,7 +84,7 @@ describe('Track Tile', () => {
       />,
     );
 
-    expect(await findByA11yRole('progressbar')).toBeDefined();
+    expect(await findByRole('progressbar')).toBeDefined();
   });
 
   it('should show different loading indication when only tracker values are loading', async () => {

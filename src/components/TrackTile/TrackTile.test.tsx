@@ -6,7 +6,7 @@ import { TRACKER_CODE, TRACKER_CODE_SYSTEM } from './services/TrackTileService';
 
 describe('Track Tile', () => {
   it('should show the loading indicator when trackers are loading', async () => {
-    const { findByA11yRole } = render(
+    const { findByRole } = render(
       <TrackTileProvider
         trackTileService={
           {
@@ -19,11 +19,11 @@ describe('Track Tile', () => {
       />,
     );
 
-    expect(await findByA11yRole('progressbar')).toBeDefined();
+    expect(await findByRole('progressbar')).toBeDefined();
   });
 
   it('should show the loading indicator when tracker values are loading', async () => {
-    const { findByA11yRole } = render(
+    const { findByRole } = render(
       <TrackTileProvider
         trackTileService={
           {
@@ -36,7 +36,7 @@ describe('Track Tile', () => {
       />,
     );
 
-    expect(await findByA11yRole('progressbar')).toBeDefined();
+    expect(await findByRole('progressbar')).toBeDefined();
   });
 
   it('should display all returned trackers', async () => {

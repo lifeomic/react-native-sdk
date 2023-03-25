@@ -43,13 +43,13 @@ const renderManageTrackers = (
 
 describe('Manage Trackers', () => {
   it('should display loading icon when trackers are loading', async () => {
-    const { findByA11yRole } = renderManageTrackers({
+    const { findByRole } = renderManageTrackers({
       trackerRequestMeta: {
         loading: true,
       },
     });
 
-    expect(await findByA11yRole('progressbar')).toBeDefined();
+    expect(await findByRole('progressbar')).toBeDefined();
   });
 
   it('should display an error when a tracker fetch error occurs', async () => {
@@ -106,7 +106,7 @@ describe('Manage Trackers', () => {
     };
     const upsertTrackers = jest.fn();
 
-    const { findByA11yLabel, findByText } = renderManageTrackers({
+    const { findByLabelText, findByText } = renderManageTrackers({
       trackTileService: {
         upsertTrackers,
       },
@@ -116,7 +116,7 @@ describe('Manage Trackers', () => {
     });
 
     await act(async () => {
-      fireEvent(await findByA11yLabel('Reorder trackers'), 'valueChange', true);
+      fireEvent(await findByLabelText('Reorder trackers'), 'valueChange', true);
 
       fireEvent(await findByText(trackerB.name), 'pressIn');
 
@@ -125,7 +125,7 @@ describe('Manage Trackers', () => {
       });
 
       fireEvent(
-        await findByA11yLabel('Save tracker order'),
+        await findByLabelText('Save tracker order'),
         'valueChange',
         false,
       );

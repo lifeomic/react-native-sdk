@@ -58,12 +58,12 @@ describe('Unit Picker', () => {
 
     it('should allow changing to another value', async () => {
       const onChange = jest.fn();
-      const { findByA11yRole } = render(
+      const { findByRole } = render(
         <UnitPicker value="u1" units={units} onChange={onChange} />,
       );
 
       // Simulate Picker Change
-      fireEvent(await findByA11yRole('combobox'), 'valueChange', 'u2');
+      fireEvent(await findByRole('combobox'), 'valueChange', 'u2');
 
       expect(onChange).toHaveBeenCalledWith('u2');
     });
@@ -84,13 +84,13 @@ describe('Unit Picker', () => {
 
     it('should allow changing to another value', async () => {
       const onChange = jest.fn();
-      const { findByText, findByA11yRole } = render(
+      const { findByText, findByRole } = render(
         <UnitPicker value="u1" units={units} onChange={onChange} />,
       );
 
       fireEvent.press(await findByText('Unit 1'));
       // Simulate Picker Change
-      fireEvent(await findByA11yRole('combobox'), 'valueChange', 'u2');
+      fireEvent(await findByRole('combobox'), 'valueChange', 'u2');
       fireEvent.press(await findByText('Done'));
 
       expect(onChange).toHaveBeenCalledWith('u2');
