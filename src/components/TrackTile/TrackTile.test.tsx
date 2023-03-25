@@ -4,6 +4,8 @@ import { TrackTileProvider } from './TrackTileProvider';
 import { startOfToday } from 'date-fns';
 import { TRACKER_CODE, TRACKER_CODE_SYSTEM } from './services/TrackTileService';
 
+jest.unmock('i18next');
+
 describe('Track Tile', () => {
   it('should show the loading indicator when trackers are loading', async () => {
     const { findByRole } = render(

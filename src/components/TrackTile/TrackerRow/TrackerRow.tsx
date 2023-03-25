@@ -45,12 +45,12 @@ export const TrackerRow: FC<TrackerRowProps> = (props) => {
         </View>
       )}
       {!loading &&
-        trackers.map((tracker) => (
+        trackers.map((tracker, i) => (
           <TouchableOpacity
             testID={tID(
               `open-tracker-details-button-${tracker.metricId || tracker.id}`,
             )}
-            key={tracker.metricId}
+            key={i}
             onPress={() => onOpenTracker(tracker)}
             activeOpacity={0.5}
           >
