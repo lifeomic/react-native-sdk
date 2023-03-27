@@ -32,7 +32,7 @@ const examplePillar: Tracker = {
   system: TRACKER_PILLAR_CODE_SYSTEM,
   code: 'unit-test-code',
 
-  account: 'lifeomiclife',
+  account: 'accountid',
   color: 'red',
   description: 'desc',
   icon: 'src/icon.png',
@@ -58,7 +58,7 @@ const observationPillar: Tracker = {
   system: TRACKER_PILLAR_CODE_SYSTEM,
   code: 'unit-test-code',
 
-  account: 'lifeomiclife',
+  account: 'accountid',
   color: 'red',
   description: 'desc',
   icon: 'src/icon.png',
