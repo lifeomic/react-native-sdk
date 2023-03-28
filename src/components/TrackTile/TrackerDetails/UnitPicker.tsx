@@ -87,10 +87,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
                   variant="semibold"
                   style={styles.unitPickerPopupAccessoryDoneTextIOS}
                 >
-                  {i18n.t('f92965e2c8a7afb3c1b9a5c09a263636', {
-                    defaultValue: 'Done',
-                    ns: 'track-tile-ui',
-                  })}
+                  {i18n.t('track-tile-done', 'Done')}
                 </Text>
               </TouchableOpacity>
             </View>
