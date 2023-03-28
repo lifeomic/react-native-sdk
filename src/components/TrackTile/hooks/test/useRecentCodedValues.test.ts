@@ -43,11 +43,13 @@ describe('useTrackerValues', () => {
   it('should handle no saved data', async () => {
     getItem.mockReturnValue(undefined as never);
 
-    const { result, waitFor } = renderHook(() =>
+    const { result, waitForNextUpdate } = renderHook(() =>
       useRecentCodedValues('metricId'),
     );
 
-    await waitFor(() => expect(result.current).toEqual([]));
+    await waitForNextUpdate();
+
+    expect(result.current).toEqual([]);
   });
 
   it('can add a new value to the recent items', async () => {

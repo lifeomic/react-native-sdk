@@ -7,18 +7,14 @@ jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');
   const mockComponent = jest.requireActual('react-native/jest/mockComponent');
   delete RN.Picker;
-  RN.Picker = mockComponent('@react-native-community/picker/js/Picker');
-  RN.Picker.Item = mockComponent(
-    '@react-native-community/picker/js/PickerItem',
-  );
+  RN.Picker = mockComponent('@react-native-picker/picker/js/Picker');
+  RN.Picker.Item = mockComponent('@react-native-picker/picker/js/PickerItem');
   return RN;
 });
-jest.mock('@react-native-community/picker', () => {
+jest.mock('@react-native-picker/picker', () => {
   const mockComponent = jest.requireActual('react-native/jest/mockComponent');
-  const PickerIOS = mockComponent('@react-native-community/picker/js/Picker');
-  PickerIOS.Item = mockComponent(
-    '@react-native-community/picker/js/PickerItem',
-  );
+  const PickerIOS = mockComponent('@react-native-picker/picker/js/Picker');
+  PickerIOS.Item = mockComponent('@react-native-picker/picker/js/PickerItem');
 
   return { PickerIOS };
 });

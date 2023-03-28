@@ -7,6 +7,8 @@ import {
   convertToISONumber,
 } from './convert-value';
 
+jest.unmock('i18next');
+
 const exampleTracker = {
   resourceType: 'Procedure' as any,
   units: [

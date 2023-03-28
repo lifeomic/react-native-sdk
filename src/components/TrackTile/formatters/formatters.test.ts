@@ -1,6 +1,8 @@
 import i18n from '@i18n';
 import { dateFormatters, numberFormatters } from '.';
 
+jest.unmock('i18next');
+
 describe('dateFormatters', () => {
   const date = new Date(2020, 11, 1, 0);
   beforeEach(() => {
