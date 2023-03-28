@@ -14,6 +14,8 @@ export const composeStyles = <T extends NamedStyles>(
     if (prop in stylesB) {
       merged[prop] = StyleSheet.compose(
         stylesA[prop],
+        // Ignore for the moment, this file will be replaced by the new createStyles
+        // @ts-ignore
         stylesB[prop] || {},
       ) as any;
     }

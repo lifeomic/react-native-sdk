@@ -301,7 +301,7 @@ describe('useTrackerValues', () => {
   });
 
   it('should refetch the values when the date changes to tomorrow', async () => {
-    jest.useFakeTimers('modern');
+    jest.useFakeTimers();
 
     const today = +startOfToday();
     const tomorrow = +startOfTomorrow();

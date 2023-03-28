@@ -5,6 +5,7 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "jsx": "react",
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "noUnusedLocals": true,

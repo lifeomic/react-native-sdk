@@ -4,11 +4,10 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  Picker,
 } from 'react-native';
 import { StylesProp, useStyleOverrides, Text } from '../styles';
 import React, { FC, useCallback, useState } from 'react';
-import { PickerIOS } from '@react-native-community/picker';
+import { Picker, PickerIOS } from '@react-native-picker/picker';
 import i18n from '@i18n';
 import { MetricType } from '../services/TrackTileService';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';

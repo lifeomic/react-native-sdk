@@ -82,7 +82,8 @@ export const useTrackers = () => {
           setTrackers(sortTrackers(trackTileTrackers));
           setPillarTrackers(sortTrackers(pillarTileTrackers));
           setLoading(false);
-        } catch (e) {
+        } catch (error) {
+          const e = error as { error: unknown };
           setError(e?.error || e);
           setLoading(false);
 

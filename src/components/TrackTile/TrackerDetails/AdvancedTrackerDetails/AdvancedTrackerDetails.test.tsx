@@ -249,7 +249,7 @@ describe('Tracker Advanced Details', () => {
     const fetchOntology = jest.fn().mockResolvedValue([]);
     const onError = jest.fn();
 
-    const { findByText, findByA11yLabel } = render(
+    const { findByText, findByLabelText } = render(
       <AdvancedTrackerDetailsProvider
         trackTileService={{ upsertTrackerResource, fetchOntology } as any}
         tracker={
@@ -268,25 +268,25 @@ describe('Tracker Advanced Details', () => {
 
     expect(await findByText("Today's Servings")).toBeDefined();
 
-    fireEvent.press(await findByA11yLabel('Go to next day'));
+    fireEvent.press(await findByLabelText('Go to next day'));
     expect(await findByText("Today's Servings")).toBeDefined(); // Title does not change since you can't advance past today
 
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
     expect(
       await findByText(format(addDays(new Date(), -1), 'iiii, MMMM d')),
     ).toBeDefined();
 
-    fireEvent.press(await findByA11yLabel('Go to next day'));
+    fireEvent.press(await findByLabelText('Go to next day'));
     expect(await findByText("Today's Servings")).toBeDefined();
 
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
-    fireEvent.press(await findByA11yLabel('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
+    fireEvent.press(await findByLabelText('Go to previous day'));
     expect(
       await findByText('Unable to adjust data this far in the past.'),
     ).toBeDefined();
