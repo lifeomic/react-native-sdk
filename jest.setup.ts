@@ -1,6 +1,4 @@
-// @ts-ignore
 import mockDeviceInfo from 'react-native-device-info/jest/react-native-device-info-mock';
-// @ts-ignore
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock';
 
 jest.mock('react-native-device-info', () => mockDeviceInfo);
