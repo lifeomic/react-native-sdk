@@ -4,9 +4,11 @@ import { NavigatorScreenParams } from '@react-navigation/native';
 import { t } from 'i18next';
 import { SettingsStack, SettingsStackParamList } from './SettingsStack';
 import { HomeStack } from './HomeStack';
+import { NotificationsStack } from './NotificationsStack';
 
 export type TabParamList = {
   HomeTab: undefined;
+  NotificationsTab: undefined;
   SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
 };
 
@@ -21,6 +23,15 @@ export function TabNavigator() {
         options={{
           tabBarLabel: t('tabs-home', 'Home'),
           tabBarIcon: 'home',
+        }}
+      />
+      <Tab.Screen
+        name="NotificationsTab"
+        component={NotificationsStack}
+        options={{
+          tabBarLabel: t('tabs-notifications', 'Notifications'),
+          tabBarIcon: 'bell',
+          tabBarBadge: false, //TODO: set dynamically for new notifications
         }}
       />
       <Tab.Screen
