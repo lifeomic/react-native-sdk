@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { Trans } from 'react-i18next';
 import {
   StylesProp,
@@ -191,7 +191,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
           {categoryTypes?.categories && (
             <View style={styles.advancedEditorSection}>
               <CodingCategoryPicker
-                categoryHeader={i18n.t('track-tile.editor-selection-header', {
+                categoryHeader={t('track-tile.editor-selection-header', {
                   defaultValue: 'Select {{code}}',
                   code: categoryTypes.baseCode.display,
                 })}

@@ -1,4 +1,4 @@
-import i18next from 'i18next';
+import i18next, { t } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { NamespaceLoader } from './backend';
 import { namespaces, TRACK_TILE_UI } from './locales';
@@ -49,4 +49,5 @@ if (!i18next.hasLoadedNamespace(TRACK_TILE_UI)) {
   i18next.loadNamespaces(TRACK_TILE_UI);
 }
 
+export { t };
 export default i18next;

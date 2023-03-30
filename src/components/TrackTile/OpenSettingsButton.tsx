@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import {
   TouchableOpacity,
   TouchableOpacityProps,
@@ -16,7 +16,7 @@ const OpenSettingsButton: FC<TouchableOpacityProps> = (props) => {
     <TouchableOpacity
       testID={tID('open-tracker-settings-button')}
       accessibilityRole="button"
-      accessibilityLabel={i18n.t('track-tile.open-tracker-settings', {
+      accessibilityLabel={t('track-tile.open-tracker-settings', {
         defaultValue: 'Open Tracker Settings',
         ns: 'track-tile-ui',
       })}

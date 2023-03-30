@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { StyleSheet, View, TouchableOpacity, I18nManager } from 'react-native';
 import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
 import { StylesProp, useStyleOverrides, Text } from '../../styles';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { tID } from '../../common/testID';
 import { dateFormatters } from '../../formatters';
 import { ChevronLeft, ChevronRight } from '@lifeomic/chromicons-native';
@@ -44,7 +44,7 @@ const Paginator: FC<PaginatorProps> = (props) => {
       <TouchableOpacity
         testID={tID('history-chart-view-previous-week')}
         style={styles.trackerHistoryChartPaginatorStepperButton}
-        accessibilityLabel={i18n.t('track-tile.previous-weeks-data', {
+        accessibilityLabel={t('track-tile.previous-weeks-data', {
           defaultValue: "Previous week's data",
           ns: 'track-tile-ui',
         })}
@@ -64,7 +64,7 @@ const Paginator: FC<PaginatorProps> = (props) => {
         accessible={false}
         style={styles.trackerHistoryChartPaginatorTitle}
       >
-        {i18n.t('date-range', {
+        {t('date-range', {
           defaultValue: '{{start}} - {{end}}',
           start: shortMonthNumericDayWithYear(range.start),
           end: shortMonthNumericDayWithYear(range.end),
@@ -77,7 +77,7 @@ const Paginator: FC<PaginatorProps> = (props) => {
       </Text>
       <TouchableOpacity
         testID={tID('history-chart-view-next-week')}
-        accessibilityLabel={i18n.t('track-tile.next-weeks-data', {
+        accessibilityLabel={t('track-tile.next-weeks-data', {
           defaultValue: "Next week's data",
           ns: 'track-tile-ui',
         })}

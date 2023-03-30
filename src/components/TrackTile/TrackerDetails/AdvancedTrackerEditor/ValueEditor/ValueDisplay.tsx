@@ -5,7 +5,7 @@ import {
   useFontOverrides,
   useStyleOverrides,
 } from '../../../styles';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { Tracker } from '../../../services/TrackTileService';
 
 type ValueDisplayProps = {
@@ -60,14 +60,14 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
               styles.advancedEditorProcedureUnitSelected,
           ]}
         >
-          {i18n.t('track-tile.time-value-hours', {
+          {t('track-tile.time-value-hours', {
             defaultValue: 'hrs',
             ns: 'track-tile-ui',
           })}
         </Text>
       </TouchableOpacity>
       <Text style={[fontWeights.bold, styles.advancedEditorTrackerValue]}>
-        {i18n.t('track-tile.time-value-separator', {
+        {t('track-tile.time-value-separator', {
           defaultValue: ':',
           ns: 'track-tile-ui',
         })}
@@ -87,7 +87,7 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
               styles.advancedEditorProcedureUnitSelected,
           ]}
         >
-          {i18n.t('track-tile.time-value-minutes', {
+          {t('track-tile.time-value-minutes', {
             defaultValue: 'min',
             ns: 'track-tile-ui',
           })}

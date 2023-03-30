@@ -9,7 +9,7 @@ import {
   TRACKER_CODE,
   TRACKER_CODE_SYSTEM,
 } from 'src/components/TrackTile/services/TrackTileService';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { boolean, withKnobs, object } from '@storybook/addon-knobs';
 import { Anchor } from '@lifeomic/chromicons-native';
 import {
@@ -40,7 +40,7 @@ storiesOf('TrackerDetails', module)
             name: 'Example',
             color: 'cadetblue',
             resourceType: 'Observation',
-            description: i18n.t(
+            description: t(
               'track-tile.example-description',
               'This is an example description for the track tile that is to be added',
             ),

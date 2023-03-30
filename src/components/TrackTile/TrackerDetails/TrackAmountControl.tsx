@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { StylesProp, useStyleOverrides, Text, fontWeights } from '../styles';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { tID } from '../common/testID';
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
@@ -47,7 +47,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
     <View style={styles.trackAmountControlContainer}>
       <TouchableOpacity
         testID={tID('decrement-tracker-value-button')}
-        accessibilityLabel={i18n.t('track-tile.decrement-tracker-value', {
+        accessibilityLabel={t('track-tile.decrement-tracker-value', {
           defaultValue: 'Decrement tracker value',
           ns: 'track-tile-ui',
         })}
@@ -56,7 +56,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
       >
         <Text variant="light" style={styles.trackAmountControlUnaryButton}>
-          {i18n.t('track-tile.dash-symbol', {
+          {t('track-tile.dash-symbol', {
             defaultValue: '-',
             ns: 'track-tile-ui',
           })}
@@ -64,7 +64,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
       </TouchableOpacity>
       <TextInput
         testID={tID('current-tracker-value')}
-        accessibilityLabel={i18n.t('track-tile.tracker-value-value', {
+        accessibilityLabel={t('track-tile.tracker-value-value', {
           defaultValue: 'Tracker value, {{value}}',
           value,
           ns: 'track-tile-ui',
@@ -85,7 +85,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
       />
       <TouchableOpacity
         testID={tID('increment-tracker-value-button')}
-        accessibilityLabel={i18n.t('track-tile.increment-tracker-value', {
+        accessibilityLabel={t('track-tile.increment-tracker-value', {
           defaultValue: 'Increment tracker value',
           ns: 'track-tile-ui',
         })}
@@ -94,7 +94,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
       >
         <Text variant="light" style={styles.trackAmountControlUnaryButton}>
-          {i18n.t('track-tile.plus-symbol', {
+          {t('track-tile.plus-symbol', {
             defaultValue: '+',
             ns: 'track-tile-ui',
           })}

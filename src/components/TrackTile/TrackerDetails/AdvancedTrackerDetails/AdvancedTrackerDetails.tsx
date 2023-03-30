@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import i18n, { Trans } from '@i18n';
+import i18n, { Trans, t } from '@i18n';
 import {
   NamedStyles,
   StylesProp,
@@ -222,7 +222,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         components={{
           value: ((valueText?: string) => (
             <Text
-              accessibilityLabel={i18n.t('track-tile.tracker-value-value', {
+              accessibilityLabel={t('track-tile.tracker-value-value', {
                 defaultValue: 'Tracker value, {{value}}',
                 value: currentValue,
                 ns: 'track-tile-ui',
@@ -245,7 +245,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
           ))(),
           target: ((targetText?: string) => (
             <Text
-              accessibilityLabel={i18n.t('track-tile.tracker-value-value', {
+              accessibilityLabel={t('track-tile.tracker-value-value', {
                 defaultValue: 'Tracker target, {{value}}',
                 value: target,
                 ns: 'track-tile-ui',
@@ -263,7 +263,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       {editsDisabled && (
         <Text style={{ textAlign: 'center' }}>
-          {i18n.t('track-tile.edits-not-allowed', {
+          {t('track-tile.edits-not-allowed', {
             defaultValue: 'Unable to adjust data this far in the past.',
             ns: 'track-tile-ui',
           })}
@@ -291,7 +291,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                   styles.advancedDetailsRecentHistoryTitle,
                 ]}
               >
-                {i18n.t('track-tile.add-recent', {
+                {t('track-tile.add-recent', {
                   defaultValue: 'Add Recent',
                   ns: 'track-tile-ui',
                 })}
@@ -332,13 +332,11 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                             styles.advancedDetailsRecentHistoryPillText,
                           ]}
                         >
-                          {i18n
-                            .t('recent-item-text', {
-                              defaultValue: '{{codeDisplay}} {{unit}}',
-                              codeDisplay: display,
-                              unit: isProcedure ? unitDisplay(value) : '',
-                            })
-                            .trim()}
+                          {t('recent-item-text', {
+                            defaultValue: '{{codeDisplay}} {{unit}}',
+                            codeDisplay: display,
+                            unit: isProcedure ? unitDisplay(value) : '',
+                          }).trim()}
                         </Text>
                       </TouchableOpacity>
                     )
@@ -371,7 +369,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       <View style={styles.advancedDetailsSection}>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
-          {i18n.t('track-tile.science-of-prefix', {
+          {t('track-tile.science-of-prefix', {
             defaultValue: 'The science of',
             ns: 'track-tile-ui',
           })}
@@ -388,13 +386,13 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       <View style={styles.advancedDetailsSection}>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
-          {i18n.t('track-tile.weekly-metrics-prefix', {
+          {t('track-tile.weekly-metrics-prefix', {
             defaultValue: 'Weekly Metrics',
             ns: 'track-tile-ui',
           })}
         </Text>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
-          {i18n.t('track-tile.total-daily-units', {
+          {t('track-tile.total-daily-units', {
             defaultValue: 'Total Daily {{unit}}',
             unit: unitDisplay(targetAmount, true),
             ns: 'track-tile-ui',

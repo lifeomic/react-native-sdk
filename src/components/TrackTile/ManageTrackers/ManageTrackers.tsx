@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Switch } from 'react-native';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { useStyleOverrides, StylesProp, NamedStyles, Text } from '../styles';
 import { Tracker, isInstalledMetric } from '../services/TrackTileService';
 import { useTrackers } from '../hooks/useTrackers';
@@ -64,7 +64,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
     <View style={styles.manageTrackersContainer}>
       <View style={styles.manageTrackersHeader}>
         <Text variant="semibold" style={styles.manageTrackersHeaderTitle}>
-          {i18n.t('track-tile.your-active-items', {
+          {t('track-tile.your-active-items', {
             defaultValue: 'Your active items',
             ns: 'track-tile-ui',
           })}
@@ -75,7 +75,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
             variant="semibold"
             style={styles.manageTrackersHeaderReorderText}
           >
-            {i18n.t('track-tile.reorder', {
+            {t('track-tile.reorder', {
               defaultValue: 'Reorder',
               ns: 'track-tile-ui',
             })}
@@ -84,11 +84,11 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
             testID={tID('reorder-trackers-switch')}
             accessibilityLabel={
               isReordering
-                ? i18n.t('track-tile.save-tracker-order', {
+                ? t('track-tile.save-tracker-order', {
                     defaultValue: 'Save tracker order',
                     ns: 'track-tile-ui',
                   })
-                : i18n.t('track-tile.reorder-trackers', {
+                : t('track-tile.reorder-trackers', {
                     defaultValue: 'Reorder trackers',
                     ns: 'track-tile-ui',
                   })
@@ -107,7 +107,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
       </View>
       {error && (
         <Text variant="semibold" style={styles.manageTrackersError}>
-          {i18n.t('track-tile.problem-loading-track-it-items', {
+          {t('track-tile.problem-loading-track-it-items', {
             defaultValue: 'There was a problem loading the Track-It Items',
             ns: 'track-tile-ui',
           })}
@@ -115,7 +115,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
       )}
       {hasReorderError && (
         <Text variant="semibold" style={styles.manageTrackersError}>
-          {i18n.t('track-tile.problem-occurred-while-reordering-items', {
+          {t('track-tile.problem-occurred-while-reordering-items', {
             defaultValue: 'A problem occurred while reordering the items',
             ns: 'track-tile-ui',
           })}
@@ -171,14 +171,14 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                       ? [
                           {
                             name: 'decrement',
-                            label: i18n.t('track-tile.move-up', {
+                            label: t('track-tile.move-up', {
                               defaultValue: 'Move Up',
                               ns: 'track-tile-ui',
                             }),
                           },
                           {
                             name: 'increment',
-                            label: i18n.t('track-tile.move-down', {
+                            label: t('track-tile.move-down', {
                               defaultValue: 'Move Down',
                               ns: 'track-tile-ui',
                             }),
@@ -187,7 +187,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                       : [
                           {
                             name: 'activate',
-                            label: i18n.t('track-tile.go-to-tracker', {
+                            label: t('track-tile.go-to-tracker', {
                               defaultValue: 'Go to tracker',
                               ns: 'track-tile-ui',
                             }),

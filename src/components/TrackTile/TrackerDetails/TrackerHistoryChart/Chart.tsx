@@ -3,7 +3,7 @@ import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { StylesProp, useStyleOverrides, Text } from '../../styles';
 import { scaleLinear } from 'd3-scale';
 import { eachDayOfInterval, format, isToday } from 'date-fns';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import Bar from './Bar';
 import { tID } from '../../common/testID';
 import { numberFormatters, dateFormatters } from '../../formatters';
@@ -121,7 +121,7 @@ export const Chart: FC<ChartProps> = (props) => {
             <Text
               testID={tID(`history-chart-x-axis-label-${index}`)}
               style={variantStyles?.chartXTitle}
-              accessibilityLabel={i18n.t('track-tile.day-value-unit-display', {
+              accessibilityLabel={t('track-tile.day-value-unit-display', {
                 defaultValue: '{{day}}: {{value}} {{unit}}',
                 day: format(day, 'iiii, MMMM do'),
                 value: values[index],
@@ -150,7 +150,7 @@ export const Chart: FC<ChartProps> = (props) => {
       {hasError && (
         <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
           <Text variant="semibold" style={styles.chartError}>
-            {i18n.t('track-tile.could-not-load-your-data', {
+            {t('track-tile.could-not-load-your-data', {
               defaultValue: 'Could not load your data\nPlease try again later',
               ns: 'track-tile-ui',
             })}
