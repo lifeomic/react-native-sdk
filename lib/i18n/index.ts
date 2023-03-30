@@ -23,7 +23,6 @@ export function configure() {
       },
       ns: Object.keys(namespaces),
 
-      // compatibilityJSON: 'v3',
       fallbackLng: 'en',
       debug: false && __DEV__ && process.env.NODE_ENV !== 'test', // Remove `false` to debug locally
 
