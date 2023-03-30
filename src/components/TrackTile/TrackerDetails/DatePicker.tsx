@@ -54,7 +54,7 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
       ]}
     >
       <TouchableOpacity
-        accessibilityLabel={i18n.t('go-to-previous-day', {
+        accessibilityLabel={i18n.t('track-tile.go-to-previous-day', {
           defaultValue: 'Go to previous day',
           ns: 'track-tile-ui',
         })}
@@ -64,7 +64,7 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
       </TouchableOpacity>
       <Text>
         {isToday(dateRange.start)
-          ? i18n.t('todays-units', {
+          ? i18n.t('track-tile.todays-units', {
               defaultValue: "Today's {{unit}}",
               unit: unitDisplay({
                 tracker,
@@ -77,7 +77,7 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
           : format(dateRange.start, 'iiii, MMMM d')}
       </Text>
       <TouchableOpacity
-        accessibilityLabel={i18n.t('go-to-next-day', {
+        accessibilityLabel={i18n.t('track-tile.go-to-next-day', {
           defaultValue: 'Go to next day',
           ns: 'track-tile-ui',
         })}

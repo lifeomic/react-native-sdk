@@ -60,14 +60,14 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
               styles.advancedEditorProcedureUnitSelected,
           ]}
         >
-          {i18n.t('time-value-hours', {
+          {i18n.t('track-tile.time-value-hours', {
             defaultValue: 'hrs',
             ns: 'track-tile-ui',
           })}
         </Text>
       </TouchableOpacity>
       <Text style={[fontWeights.bold, styles.advancedEditorTrackerValue]}>
-        {i18n.t('time-value-separator', {
+        {i18n.t('track-tile.time-value-separator', {
           defaultValue: ':',
           ns: 'track-tile-ui',
         })}
@@ -87,7 +87,7 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
               styles.advancedEditorProcedureUnitSelected,
           ]}
         >
-          {i18n.t('time-value-minutes', {
+          {i18n.t('track-tile.time-value-minutes', {
             defaultValue: 'min',
             ns: 'track-tile-ui',
           })}

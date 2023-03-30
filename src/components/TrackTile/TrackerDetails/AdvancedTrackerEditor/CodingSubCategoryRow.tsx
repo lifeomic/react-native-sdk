@@ -82,7 +82,7 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
                   styles.codingSubCategoryRowContentLink,
                 ]}
               >
-                {i18n.t('learn-more', {
+                {i18n.t('track-tile.learn-more', {
                   defaultValue: 'Learn More',
                 })}
               </Text>

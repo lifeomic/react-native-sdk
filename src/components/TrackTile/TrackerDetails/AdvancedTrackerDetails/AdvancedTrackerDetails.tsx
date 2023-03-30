@@ -263,7 +263,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       {editsDisabled && (
         <Text style={{ textAlign: 'center' }}>
-          {i18n.t('edits-not-allowed', {
+          {i18n.t('track-tile.edits-not-allowed', {
             defaultValue: 'Unable to adjust data this far in the past.',
             ns: 'track-tile-ui',
           })}
@@ -291,7 +291,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                   styles.advancedDetailsRecentHistoryTitle,
                 ]}
               >
-                {i18n.t('add-recent', {
+                {i18n.t('track-tile.add-recent', {
                   defaultValue: 'Add Recent',
                   ns: 'track-tile-ui',
                 })}

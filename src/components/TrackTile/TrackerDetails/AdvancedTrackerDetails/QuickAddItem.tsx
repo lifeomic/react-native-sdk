@@ -26,7 +26,7 @@ export const QuickAddItem = (props: QuickAddItemProps) => {
     <TouchableOpacity
       accessibilityRole="button"
       testID={`tile-graphic-${code.display}`}
-      accessibilityLabel={i18n.t('quick-add-tracker-value', {
+      accessibilityLabel={i18n.t('track-tile.quick-add-tracker-value', {
         defaultValue: 'Add {{type}}',
         type: code.display,
       })}
@@ -42,7 +42,7 @@ export const QuickAddItem = (props: QuickAddItemProps) => {
         accessibilityElementsHidden
         style={[fontWeights.semibold, styles.quickAddItemText]}
       >
-        {i18n.t('quick-add-label', {
+        {i18n.t('track-tile.quick-add-label', {
           defaultValue: '+ {{title}}',
           title: code.display,
         })}

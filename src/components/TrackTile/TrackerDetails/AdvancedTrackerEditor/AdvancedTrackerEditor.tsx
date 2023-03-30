@@ -191,7 +191,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
           {categoryTypes?.categories && (
             <View style={styles.advancedEditorSection}>
               <CodingCategoryPicker
-                categoryHeader={i18n.t('editor-selection-header', {
+                categoryHeader={i18n.t('track-tile.editor-selection-header', {
                   defaultValue: 'Select {{code}}',
                   code: categoryTypes.baseCode.display,
                 })}

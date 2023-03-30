@@ -7,7 +7,7 @@ import {
 } from './dateFormatters';
 
 const format = (date: Date, dateOptions?: Intl.DateTimeFormatOptions) => {
-  return i18n.t('intlDateTime', {
+  return i18n.t('track-tile.intl-date-time', {
     val: date,
     ns: 'track-tile-ui',
     formatParams: {
