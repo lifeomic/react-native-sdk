@@ -3,6 +3,8 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { UnitPicker, UnitPickerProps } from './UnitPicker';
 import { Platform } from 'react-native';
 
+jest.unmock('i18next');
+
 jest.mock('@react-native-picker/picker', () => {
   const mockComponent = jest.requireActual('react-native/jest/mockComponent');
   const PickerIOS = mockComponent('@react-native-picker/picker/js/Picker');

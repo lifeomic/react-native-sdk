@@ -2,6 +2,8 @@ import { toFhirObservationResource } from './to-observation-resource';
 import { format } from 'date-fns';
 import { ResourceSettings } from './to-fhir-resource';
 
+jest.unmock('i18next');
+
 const createDate = new Date('2021-09-21T12:00:00.000');
 
 const defaultResource = (resource: Partial<ResourceSettings> = {}) => ({
