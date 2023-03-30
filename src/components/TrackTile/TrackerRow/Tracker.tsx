@@ -81,12 +81,8 @@ export const Tracker: FC<TrackerProps> = (tracker) => {
           ? t('track-tile.unit-display', {
               defaultValue: '({{unit}})',
               unit: unitDisplay,
-              ns: 'track-tile-ui',
             })
-          : t('track-tile.track-it', {
-              defaultValue: 'Track It!',
-              ns: 'track-tile-ui',
-            })}
+          : t('track-tile.track-it', 'Track It!')}
       </Text>
     </View>
   );

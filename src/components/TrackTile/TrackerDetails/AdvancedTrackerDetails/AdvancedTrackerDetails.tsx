@@ -225,7 +225,6 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
               accessibilityLabel={t('track-tile.tracker-value-value', {
                 defaultValue: 'Tracker value, {{value}}',
                 value: currentValue,
-                ns: 'track-tile-ui',
               })}
               style={[fontWeights.regular, styles.advancedDetailsTrackerValue]}
             >
@@ -248,7 +247,6 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
               accessibilityLabel={t('track-tile.tracker-value-value', {
                 defaultValue: 'Tracker target, {{value}}',
                 value: target,
-                ns: 'track-tile-ui',
               })}
               style={[
                 fontWeights.semibold,
@@ -263,10 +261,10 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       {editsDisabled && (
         <Text style={{ textAlign: 'center' }}>
-          {t('track-tile.edits-not-allowed', {
-            defaultValue: 'Unable to adjust data this far in the past.',
-            ns: 'track-tile-ui',
-          })}
+          {t(
+            'track-tile.edits-not-allowed',
+            'Unable to adjust data this far in the past.',
+          )}
         </Text>
       )}
       {relationships ? (
@@ -291,10 +289,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                   styles.advancedDetailsRecentHistoryTitle,
                 ]}
               >
-                {t('track-tile.add-recent', {
-                  defaultValue: 'Add Recent',
-                  ns: 'track-tile-ui',
-                })}
+                {t('track-tile.add-recent', 'Add Recent')}
               </Text>
               <ScrollView
                 horizontal
@@ -369,10 +364,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       <View style={styles.advancedDetailsSection}>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
-          {t('track-tile.science-of-prefix', {
-            defaultValue: 'The science of',
-            ns: 'track-tile-ui',
-          })}
+          {t('track-tile.science-of-prefix', 'The science of')}
         </Text>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
           {tracker.name}
@@ -386,16 +378,12 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       <View style={styles.advancedDetailsSection}>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
-          {t('track-tile.weekly-metrics-prefix', {
-            defaultValue: 'Weekly Metrics',
-            ns: 'track-tile-ui',
-          })}
+          {t('track-tile.weekly-metrics-prefix', 'Weekly Metrics')}
         </Text>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
           {t('track-tile.total-daily-units', {
             defaultValue: 'Total Daily {{unit}}',
             unit: unitDisplay(targetAmount, true),
-            ns: 'track-tile-ui',
           })}
         </Text>
 

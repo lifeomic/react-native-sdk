@@ -77,14 +77,8 @@ export const ManageTrackerRow: FC<Props> = (props) => {
               ]}
             >
               {inactive
-                ? t('track-tile.inactive', {
-                    defaultValue: 'Inactive',
-                    ns: 'track-tile-ui',
-                  })
-                : t('track-tile.active', {
-                    defaultValue: 'Active',
-                    ns: 'track-tile-ui',
-                  })}
+                ? t('track-tile.inactive', 'Inactive')
+                : t('track-tile.active', 'Active')}
             </Text>
           </View>
           <View
@@ -99,7 +93,6 @@ export const ManageTrackerRow: FC<Props> = (props) => {
                     defaultValue:
                       'Hold and Drag to Change the Order of {{name}}',
                     name: tracker.name,
-                    ns: 'track-tile-ui',
                   })
                 : undefined
             }

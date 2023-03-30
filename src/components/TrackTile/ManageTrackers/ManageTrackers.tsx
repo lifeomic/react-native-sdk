@@ -64,10 +64,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
     <View style={styles.manageTrackersContainer}>
       <View style={styles.manageTrackersHeader}>
         <Text variant="semibold" style={styles.manageTrackersHeaderTitle}>
-          {t('track-tile.your-active-items', {
-            defaultValue: 'Your active items',
-            ns: 'track-tile-ui',
-          })}
+          {t('track-tile.your-active-items', 'Your active items')}
         </Text>
         <View style={styles.manageTrackersHeaderReorderContainer}>
           <Text
@@ -75,23 +72,14 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
             variant="semibold"
             style={styles.manageTrackersHeaderReorderText}
           >
-            {t('track-tile.reorder', {
-              defaultValue: 'Reorder',
-              ns: 'track-tile-ui',
-            })}
+            {t('track-tile.reorder', 'Reorder')}
           </Text>
           <Switch
             testID={tID('reorder-trackers-switch')}
             accessibilityLabel={
               isReordering
-                ? t('track-tile.save-tracker-order', {
-                    defaultValue: 'Save tracker order',
-                    ns: 'track-tile-ui',
-                  })
-                : t('track-tile.reorder-trackers', {
-                    defaultValue: 'Reorder trackers',
-                    ns: 'track-tile-ui',
-                  })
+                ? t('track-tile.save-tracker-order', 'Save tracker order')
+                : t('track-tile.reorder-trackers', 'Reorder trackers')
             }
             value={isReordering}
             onValueChange={setOrderingState}
@@ -107,18 +95,18 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
       </View>
       {error && (
         <Text variant="semibold" style={styles.manageTrackersError}>
-          {t('track-tile.problem-loading-track-it-items', {
-            defaultValue: 'There was a problem loading the Track-It Items',
-            ns: 'track-tile-ui',
-          })}
+          {t(
+            'track-tile.problem-loading-track-it-items',
+            'There was a problem loading the Track-It Items',
+          )}
         </Text>
       )}
       {hasReorderError && (
         <Text variant="semibold" style={styles.manageTrackersError}>
-          {t('track-tile.problem-occurred-while-reordering-items', {
-            defaultValue: 'A problem occurred while reordering the items',
-            ns: 'track-tile-ui',
-          })}
+          {t(
+            'track-tile.problem-occurred-while-reordering-items',
+            'A problem occurred while reordering the items',
+          )}
         </Text>
       )}
       {loading && (
@@ -171,26 +159,20 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                       ? [
                           {
                             name: 'decrement',
-                            label: t('track-tile.move-up', {
-                              defaultValue: 'Move Up',
-                              ns: 'track-tile-ui',
-                            }),
+                            label: t('track-tile.move-up', 'Move Up'),
                           },
                           {
                             name: 'increment',
-                            label: t('track-tile.move-down', {
-                              defaultValue: 'Move Down',
-                              ns: 'track-tile-ui',
-                            }),
+                            label: t('track-tile.move-down', 'Move Down'),
                           },
                         ]
                       : [
                           {
                             name: 'activate',
-                            label: t('track-tile.go-to-tracker', {
-                              defaultValue: 'Go to tracker',
-                              ns: 'track-tile-ui',
-                            }),
+                            label: t(
+                              'track-tile.go-to-tracker',
+                              'Go to tracker',
+                            ),
                           },
                         ]
                     : []

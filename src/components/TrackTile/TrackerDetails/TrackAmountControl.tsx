@@ -47,19 +47,16 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
     <View style={styles.trackAmountControlContainer}>
       <TouchableOpacity
         testID={tID('decrement-tracker-value-button')}
-        accessibilityLabel={t('track-tile.decrement-tracker-value', {
-          defaultValue: 'Decrement tracker value',
-          ns: 'track-tile-ui',
-        })}
+        accessibilityLabel={t(
+          'track-tile.decrement-tracker-value',
+          'Decrement tracker value',
+        )}
         accessibilityRole="button"
         onPress={() => value > 0 && onChange(value - 1)}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
       >
         <Text variant="light" style={styles.trackAmountControlUnaryButton}>
-          {t('track-tile.dash-symbol', {
-            defaultValue: '-',
-            ns: 'track-tile-ui',
-          })}
+          {t('track-tile.dash-symbol', '-')}
         </Text>
       </TouchableOpacity>
       <TextInput
@@ -67,7 +64,6 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         accessibilityLabel={t('track-tile.tracker-value-value', {
           defaultValue: 'Tracker value, {{value}}',
           value,
-          ns: 'track-tile-ui',
         })}
         style={[
           { color },
@@ -85,19 +81,16 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
       />
       <TouchableOpacity
         testID={tID('increment-tracker-value-button')}
-        accessibilityLabel={t('track-tile.increment-tracker-value', {
-          defaultValue: 'Increment tracker value',
-          ns: 'track-tile-ui',
-        })}
+        accessibilityLabel={t(
+          'track-tile.increment-tracker-value',
+          'Increment tracker value',
+        )}
         accessibilityRole="button"
         onPress={() => onChange(value + 1)}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
       >
         <Text variant="light" style={styles.trackAmountControlUnaryButton}>
-          {t('track-tile.plus-symbol', {
-            defaultValue: '+',
-            ns: 'track-tile-ui',
-          })}
+          {t('track-tile.plus-symbol', '+')}
         </Text>
       </TouchableOpacity>
     </View>

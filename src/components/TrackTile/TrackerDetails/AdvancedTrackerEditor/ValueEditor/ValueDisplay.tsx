@@ -60,17 +60,11 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
               styles.advancedEditorProcedureUnitSelected,
           ]}
         >
-          {t('track-tile.time-value-hours', {
-            defaultValue: 'hrs',
-            ns: 'track-tile-ui',
-          })}
+          {t('track-tile.time-value-hours', 'hrs')}
         </Text>
       </TouchableOpacity>
       <Text style={[fontWeights.bold, styles.advancedEditorTrackerValue]}>
-        {t('track-tile.time-value-separator', {
-          defaultValue: ':',
-          ns: 'track-tile-ui',
-        })}
+        {t('track-tile.time-value-separator', ':')}
       </Text>
       <TouchableOpacity
         onPress={() => onSelectUnitType('min')}
@@ -87,10 +81,7 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
               styles.advancedEditorProcedureUnitSelected,
           ]}
         >
-          {t('track-tile.time-value-minutes', {
-            defaultValue: 'min',
-            ns: 'track-tile-ui',
-          })}
+          {t('track-tile.time-value-minutes', 'min')}
         </Text>
       </TouchableOpacity>
     </View>

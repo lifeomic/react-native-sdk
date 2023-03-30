@@ -30,10 +30,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
     value,
     units,
     onChange,
-    placeholder = t('track-tile.choose-a-unit', {
-      defaultValue: 'Choose a Unit',
-      ns: 'track-tile-ui',
-    }),
+    placeholder = t('track-tile.choose-a-unit', 'Choose a Unit'),
   } = props;
   const styles = useStyleOverrides(defaultStyles);
   const [width, setWidth] = useState(0);
@@ -60,10 +57,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
       <View>
         <TouchableOpacity
           onPress={openInput}
-          accessibilityLabel={t('track-tile.unit-type', {
-            defaultValue: 'Unit type',
-            ns: 'track-tile-ui',
-          })}
+          accessibilityLabel={t('track-tile.unit-type', 'Unit type')}
           accessibilityRole="menu"
           testID={tID('open-unit-picker-button')}
         >

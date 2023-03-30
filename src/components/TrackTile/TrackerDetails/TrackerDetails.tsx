@@ -207,17 +207,11 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
             style={styles.trackerDetailsMyTarget}
             numberOfLines={1}
           >
-            {t('track-tile.my-target', {
-              defaultValue: 'My Target',
-              ns: 'track-tile-ui',
-            })}
+            {t('track-tile.my-target', 'My Target')}
           </Text>
           <TextInput
             testID={tID('tracker-target-input')}
-            accessibilityLabel={t('track-tile.target-input', {
-              defaultValue: 'Target Input',
-              ns: 'track-tile-ui',
-            })}
+            accessibilityLabel={t('track-tile.target-input', 'Target Input')}
             value={target}
             style={[fontWeights.semibold, styles.trackerDetailsTargetInput]}
             onChangeText={setTarget}

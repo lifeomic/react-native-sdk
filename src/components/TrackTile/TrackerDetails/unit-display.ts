@@ -29,7 +29,6 @@ export const unitDisplay = ({
     defaultValue_many: unit.displayMany ?? defaultDisplay,
     defaultValue_other: unit.displayOther ?? defaultDisplay,
     skipInterpolation,
-    ns: 'track-tile-ui',
   })
     .replace('{{count}}', '')
     .replace(/\s+/g, ' ')

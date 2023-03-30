@@ -9,7 +9,6 @@ import {
 const format = (date: Date, dateOptions?: Intl.DateTimeFormatOptions) => {
   return t('track-tile.intl-date-time', {
     val: date,
-    ns: 'track-tile-ui',
     formatParams: {
       val: dateOptions,
     },

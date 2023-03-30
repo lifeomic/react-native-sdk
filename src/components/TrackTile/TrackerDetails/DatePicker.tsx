@@ -54,10 +54,10 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
       ]}
     >
       <TouchableOpacity
-        accessibilityLabel={t('track-tile.go-to-previous-day', {
-          defaultValue: 'Go to previous day',
-          ns: 'track-tile-ui',
-        })}
+        accessibilityLabel={t(
+          'track-tile.go-to-previous-day',
+          'Go to previous day',
+        )}
         onPress={shiftRangeByDays(-1)}
       >
         <ChevronLeft color={color} />
@@ -72,15 +72,11 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
                 value: target,
                 skipInterpolation: true,
               }),
-              ns: 'track-tile-ui',
             })
           : format(dateRange.start, 'iiii, MMMM d')}
       </Text>
       <TouchableOpacity
-        accessibilityLabel={t('track-tile.go-to-next-day', {
-          defaultValue: 'Go to next day',
-          ns: 'track-tile-ui',
-        })}
+        accessibilityLabel={t('track-tile.go-to-next-day', 'Go to next day')}
         disabled={isToday(dateRange.start)}
         onPress={shiftRangeByDays(1)}
       >

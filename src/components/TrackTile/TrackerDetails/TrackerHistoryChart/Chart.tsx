@@ -126,7 +126,6 @@ export const Chart: FC<ChartProps> = (props) => {
                 day: format(day, 'iiii, MMMM do'),
                 value: values[index],
                 unit,
-                ns: 'track-tile-ui',
               })}
             >
               {shortWeekday(day)
@@ -150,10 +149,10 @@ export const Chart: FC<ChartProps> = (props) => {
       {hasError && (
         <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
           <Text variant="semibold" style={styles.chartError}>
-            {t('track-tile.could-not-load-your-data', {
-              defaultValue: 'Could not load your data\nPlease try again later',
-              ns: 'track-tile-ui',
-            })}
+            {t(
+              'track-tile.could-not-load-your-data',
+              'Could not load your data\nPlease try again later',
+            )}
           </Text>
         </ChartContent>
       )}
