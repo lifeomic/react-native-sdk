@@ -60,11 +60,11 @@ const Paginator: FC<PaginatorProps> = (props) => {
         />
       </TouchableOpacity>
       <Text
-        testID={tID('history-chart-active-date-range')}
+        testID={tID('history-chart-active-track-tile.date-range')}
         accessible={false}
         style={styles.trackerHistoryChartPaginatorTitle}
       >
-        {t('date-range', {
+        {t('track-tile.date-range', {
           defaultValue: '{{start}} - {{end}}',
           start: shortMonthNumericDayWithYear(range.start),
           end: shortMonthNumericDayWithYear(range.end),

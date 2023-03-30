@@ -208,7 +208,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
               <Trans
                 i18n={i18n}
                 parent={Text}
-                i18nKey="editor-selected-category-header"
+                i18nKey="track-tile.editor-selected-category-header"
                 defaults="Selected: <bold>{{categoryName}}</bold>"
                 values={{
                   categoryName:

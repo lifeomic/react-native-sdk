@@ -327,7 +327,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                             styles.advancedDetailsRecentHistoryPillText,
                           ]}
                         >
-                          {t('recent-item-text', {
+                          {t('track-tile.recent-item-text', {
                             defaultValue: '{{codeDisplay}} {{unit}}',
                             codeDisplay: display,
                             unit: isProcedure ? unitDisplay(value) : '',
