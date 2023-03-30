@@ -7,8 +7,8 @@ import {
 import {
   WearableIntegration,
   WearableIntegrationStatus,
-} from '@lifeomic/wearables-sync';
-import { WearableStateSyncType } from '@lifeomic/ehr-core';
+  WearableStateSyncType,
+} from './WearableTypes';
 import { fireEvent, render } from '@testing-library/react-native';
 
 const onUpdate = jest.fn();

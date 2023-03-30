@@ -23,7 +23,7 @@ export const SelectorRow: FC<SelectorRowProps> = (props) => {
     (id: string) => () => {
       onSelected(id);
     },
-    [],
+    [onSelected],
   );
 
   return (

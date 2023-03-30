@@ -6,19 +6,19 @@ import { boolean, object, withKnobs } from '@storybook/addon-knobs';
 import {
   SwitchRowDefaultStyles,
   SwitchRowProps,
-} from '../../../../src/components/Wearables//SwitchRow';
+} from '../../../../src/components/Wearables/SwitchRow';
 import {
   WearableRow,
   WearableRowDefaultStyles,
   WearableRowProps,
-} from '../../../../src/components/Wearables//WearableRow';
+} from '../../../../src/components/Wearables/WearableRow';
 import {
+  EHRType,
   ToggleWearableResult,
   WearableIntegration,
   WearableIntegrationStatus,
-} from '@lifeomic/wearables-sync';
+} from '../../../../src/components/Wearables/WearableTypes';
 import { Button } from 'react-native';
-import { EHRType } from '@lifeomic/ehr-core';
 
 storiesOf('Wearable Row', module)
   .addDecorator(withKnobs)
@@ -52,9 +52,9 @@ storiesOf('Wearable Row', module)
     }
     const CustomSwitchRow: FC<CustomSwitchRowProps> = (props) => {
       const [value, toggleValue] = useReducer((state) => {
-        props.onValueChange(!state);
+        props.onValueChange?.(!state);
         return !state;
-      }, props.value);
+      }, props.value ?? false);
       return (
         <>
           <Text>{props.name}</Text>

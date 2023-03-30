@@ -6,8 +6,10 @@ import {
   SyncTypeSelectionView,
   SyncTypeSelectionViewProps,
 } from '../../../../src/components/Wearables//SyncTypeSelectionView';
-import { WearableIntegration } from '@lifeomic/wearables-sync';
-import { WearableStateSyncType } from '@lifeomic/ehr-core';
+import {
+  WearableIntegration,
+  WearableStateSyncType,
+} from '../../../../src/components/Wearables/WearableTypes';
 import { SyncTypeSelectionRowDefaultStyles } from '../../../../src/components/Wearables//SyncTypeSelectionRow';
 import { SelectorViewDefaultStyles } from '../../../../src/components/Wearables//SelectorView';
 import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables//SelectorRow';

@@ -11,9 +11,10 @@ import {
   SyncTypeSettings,
   WearableIntegration,
   WearableIntegrationStatus,
-} from '@lifeomic/wearables-sync';
+  EHRType,
+  WearableStateSyncType,
+} from '../../../../src/components/Wearables/WearableTypes';
 import { rowActions } from './WearableRow.stories';
-import { EHRType, WearableStateSyncType } from '@lifeomic/ehr-core';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, withKnobs } from '@storybook/addon-knobs';
 import { WearableRowDefaultStyles } from '../../../../src/components/Wearables//WearableRow';
@@ -40,27 +41,6 @@ storiesOf('Wearables View', module)
   ));
 
 const mockWearables: WearableIntegration[] = [
-  {
-    // NOTE: Should only show on iOS simulator
-    ehrId: EHRType.HealthKit,
-    ehrType: EHRType.HealthKit,
-    name: 'Apple Health',
-    enabled: false,
-    supportedSyncTypes: [
-      WearableStateSyncType.BodyMass,
-      WearableStateSyncType.MindfulSession,
-      WearableStateSyncType.SleepAnalysis,
-      WearableStateSyncType.Workout,
-    ],
-    syncTypes: [WearableStateSyncType.MindfulSession],
-  },
-  {
-    // NOTE: Should only show on Samsung emulator
-    ehrId: EHRType.SamsungHealth,
-    ehrType: EHRType.SamsungHealth,
-    name: 'Samsung Health',
-    enabled: false,
-  },
   {
     ehrId: EHRType.Garmin,
     ehrType: EHRType.Garmin,
@@ -186,21 +166,6 @@ const DefaultView: FC<DefaultViewProps> = ({
     onRefreshNeeded();
   };
 
-  const nativeWearablesSync = Platform.select({
-    ios: {
-      isHealthKitAllowed: () => Promise.resolve(true),
-      isSamsungHealthAllowed: () => Promise.resolve(false),
-      authorizeHealthKit: () => Promise.resolve(),
-      requestPermissions: () => Promise.resolve(),
-    },
-    android: {
-      isHealthKitAllowed: () => Promise.resolve(false),
-      isSamsungHealthAllowed: () => Promise.resolve(true),
-      authorizeHealthKit: () => Promise.resolve(),
-      requestPermissions: () => Promise.resolve(),
-    },
-  });
-
   return (
     <WearablesView
       {...viewActions}
@@ -209,7 +174,6 @@ const DefaultView: FC<DefaultViewProps> = ({
         !!enableMultiWearable,
       )}
       loading={boolean('loading', loading)}
-      nativeWearablesSync={nativeWearablesSync}
       onRefreshNeeded={onRefreshNeeded}
       onSyncTypeSelectionsUpdate={onSyncTypeSelectionsUpdate}
       onToggleWearable={onToggleWearable}

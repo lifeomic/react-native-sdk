@@ -1,9 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { WearableRow, WearableRowProps } from './WearableRow';
-import { WearableIntegrationStatus } from '@lifeomic/wearables-sync';
-import { act } from 'react-test-renderer';
-import { EHRType, WearableStateSyncType } from '@lifeomic/ehr-core';
+import { EHRType, WearableIntegrationStatus } from './WearableTypes';
 
 const rowActions = {
   onError: jest.fn(),
@@ -35,21 +33,9 @@ const getWearable = (ehrType: string) => {
   };
 };
 
-const nativeWearablesSync = {
-  isHealthKitAllowed: jest.fn(),
-  isSamsungHealthAllowed: jest.fn(),
-  authorizeHealthKit: jest.fn(),
-  requestPermissions: jest.fn(),
-};
-
 beforeEach(() => {
   rowActions.onRefreshNeeded.mockResolvedValue({});
   rowActions.onToggleWearable.mockResolvedValue({});
-
-  nativeWearablesSync.isHealthKitAllowed.mockResolvedValue(false);
-  nativeWearablesSync.isSamsungHealthAllowed.mockResolvedValue(false);
-  nativeWearablesSync.authorizeHealthKit.mockResolvedValue({});
-  nativeWearablesSync.requestPermissions.mockResolvedValue({});
 });
 
 describe('WearableRow', () => {
@@ -107,13 +93,11 @@ describe('WearableRow', () => {
 
   it('should render all wearable ehr types', () => {
     const wearableTypes = [
-      EHRType.HealthKit,
       EHRType.Fitbit,
       EHRType.Oura,
       EHRType.Garmin,
       EHRType.ReadoutHealth,
       EHRType.KetoMojo,
-      EHRType.SamsungHealth,
       EHRType.GoogleFit,
       EHRType.Dexcom,
     ];
@@ -167,157 +151,6 @@ describe('WearableRow', () => {
     expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
   });
 
-  it('should allow for enabling (native) healthKit', async () => {
-    nativeWearablesSync.isHealthKitAllowed.mockResolvedValue(true);
-    const { getByTestId } = render(
-      <WearableRow
-        {...baseProps}
-        wearable={{
-          ...exampleWearable,
-          ehrId: EHRType.HealthKit,
-          ehrType: EHRType.HealthKit,
-          enabled: false,
-        }}
-        nativeSyncTypesToRequest={[WearableStateSyncType.BodyMass]}
-        nativeWearablesSync={nativeWearablesSync}
-      />,
-    );
-
-    const toggle = getByTestId('toggle-healthKit');
-    expect(toggle).toBeDefined();
-
-    await act(async () => {
-      fireEvent(toggle, 'onPress');
-    });
-
-    expect(nativeWearablesSync.isHealthKitAllowed).toHaveBeenCalledTimes(1);
-    expect(nativeWearablesSync.authorizeHealthKit).toHaveBeenCalledTimes(1);
-    expect(nativeWearablesSync.authorizeHealthKit.mock.calls[0]).toEqual([
-      [WearableStateSyncType.BodyMass],
-    ]);
-
-    expect(rowActions.onToggleWearable).toHaveBeenCalledTimes(1);
-    expect(rowActions.onToggleWearable.mock.calls[0]).toEqual([
-      'healthKit',
-      true,
-    ]);
-    expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
-  });
-
-  it('should allow for toggling (native) healthKit background sync', async () => {
-    nativeWearablesSync.isHealthKitAllowed.mockResolvedValue(true);
-    const healthKit = {
-      ...exampleWearable,
-      ehrId: EHRType.HealthKit,
-      ehrType: EHRType.HealthKit,
-      enabled: true,
-    };
-    const { queryByTestId } = render(
-      <WearableRow
-        {...baseProps}
-        wearable={healthKit}
-        nativeSyncTypesToRequest={[WearableStateSyncType.BodyMass]}
-        nativeWearablesSync={nativeWearablesSync}
-      />,
-    );
-
-    // NOTE: using queryByTestId as a sanity check that it works,
-    // so the test showing it returns null is futher verified.
-    const backgroundToggle = queryByTestId(
-      'toggle-healthKit-background-sync-switch',
-    );
-    expect(backgroundToggle).toBeDefined();
-
-    // Toggle on:
-    await act(async () => {
-      fireEvent(backgroundToggle!, 'onValueChange', true);
-    });
-    expect(rowActions.onToggleBackgroundSync).toHaveBeenCalledTimes(1);
-    expect(rowActions.onToggleBackgroundSync.mock.calls[0]).toEqual([
-      healthKit,
-      true,
-    ]);
-    expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
-
-    // Toggle off:
-    await act(async () => {
-      fireEvent(backgroundToggle!, 'onValueChange', false);
-    });
-
-    expect(rowActions.onToggleBackgroundSync).toHaveBeenCalledTimes(2);
-    expect(rowActions.onToggleBackgroundSync.mock.calls[1]).toEqual([
-      healthKit,
-      false,
-    ]);
-    expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(2);
-  });
-
-  it('should not render background sync if onToggleBackgroundSync not passed', async () => {
-    nativeWearablesSync.isHealthKitAllowed.mockResolvedValue(true);
-    const { queryByTestId } = render(
-      <WearableRow
-        {...baseProps}
-        wearable={{
-          ...exampleWearable,
-          ehrId: EHRType.HealthKit,
-          ehrType: EHRType.HealthKit,
-          enabled: true,
-        }}
-        nativeSyncTypesToRequest={[WearableStateSyncType.BodyMass]}
-        nativeWearablesSync={nativeWearablesSync}
-        // NOTE: overriding baseProps here:
-        onToggleBackgroundSync={undefined}
-      />,
-    );
-
-    const backgroundToggle = queryByTestId(
-      'toggle-healthKit-background-sync-switch',
-    );
-    expect(backgroundToggle).toBeNull();
-  });
-
-  it('should allow for enabling (native) samsungHealth', async () => {
-    nativeWearablesSync.isSamsungHealthAllowed.mockResolvedValue(true);
-    const { getByTestId } = render(
-      <WearableRow
-        {...baseProps}
-        wearable={{
-          ...exampleWearable,
-          ehrId: EHRType.SamsungHealth,
-          ehrType: EHRType.SamsungHealth,
-          enabled: false,
-        }}
-        nativeSyncTypesToRequest={[
-          WearableStateSyncType.BodyMass,
-          WearableStateSyncType.SleepAnalysis,
-          WearableStateSyncType.Workout,
-          'unsupported-type-doesnt-explode-just-gets-ignored',
-        ]}
-        nativeWearablesSync={nativeWearablesSync}
-      />,
-    );
-
-    const toggle = getByTestId('toggle-shealth');
-    expect(toggle).toBeDefined();
-
-    await act(async () => {
-      fireEvent(toggle, 'onPress');
-    });
-
-    expect(nativeWearablesSync.requestPermissions).toHaveBeenCalledTimes(1);
-    expect(nativeWearablesSync.requestPermissions.mock.calls[0]).toEqual([
-      'shealth',
-      ['weight', 'sleep', 'exercise'],
-    ]);
-
-    expect(rowActions.onToggleWearable).toHaveBeenCalledTimes(1);
-    expect(rowActions.onToggleWearable.mock.calls[0]).toEqual([
-      'shealth',
-      true,
-    ]);
-    expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
-  });
-
   it('should allow for clicking learn more link', () => {
     const { getByTestId } = render(<WearableRow {...baseProps} />);
 
@@ -352,37 +185,6 @@ describe('WearableRow', () => {
 
     expect(rowActions.onError).toHaveBeenCalledTimes(1);
     expect(rowActions.onError.mock.calls[0]).toEqual([error, 'fitbit', true]);
-    expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
-  });
-
-  it('should call onError if error occurs toggling background-sync', async () => {
-    const error = new Error('uh oh');
-    rowActions.onToggleBackgroundSync.mockRejectedValue(error);
-    const { getByTestId } = render(
-      <WearableRow
-        {...baseProps}
-        wearable={{
-          ...exampleWearable,
-          ehrId: EHRType.HealthKit,
-          ehrType: EHRType.HealthKit,
-          enabled: true,
-        }}
-      />,
-    );
-
-    const toggle = getByTestId('toggle-healthKit-background-sync-switch');
-    expect(toggle).toBeDefined();
-
-    await act(async () => {
-      fireEvent(toggle, 'onValueChange', true);
-    });
-
-    expect(rowActions.onError).toHaveBeenCalledTimes(1);
-    expect(rowActions.onError.mock.calls[0]).toEqual([
-      error,
-      'healthKit',
-      true,
-    ]);
     expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
   });
 });

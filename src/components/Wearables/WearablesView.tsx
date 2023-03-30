@@ -14,11 +14,10 @@ import {
   SyncTypeSettings,
   WearableIntegration,
   WearableIntegrationStatus,
-} from '@lifeomic/wearables-sync';
-import { EHRType, WearableStateSyncType } from '@lifeomic/ehr-core';
+} from './WearableTypes';
+import { EHRType, WearableStateSyncType } from './WearableTypes';
 import { Colors, Margin } from './defaultTheme';
 import { WearableRow, WearableRowProps } from './WearableRow';
-import { WearablesSyncModule } from './NativeWearablesSync';
 import { SyncTypeSelectionView } from './SyncTypeSelectionView';
 
 export interface WearablesViewProps extends Omit<WearableRowProps, 'wearable'> {
@@ -53,7 +52,6 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
   const {
     enableMultiWearable,
     loading: wearablesLoading,
-    nativeWearablesSync,
     onError,
     onRefreshNeeded,
     onSyncTypeSelectionsUpdate,
@@ -65,12 +63,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
 
   useEffect(() => {
     setSanitizing(true);
-    sanitizeWearables(
-      wearables,
-      nativeWearablesSync,
-      enableMultiWearable,
-      legacySort,
-    )
+    sanitizeWearables(wearables, enableMultiWearable, legacySort)
       .then((result) => {
         setSanitizedWearables(result);
         setSanitizing(false);
@@ -81,7 +74,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
         }
         setSanitizing(false);
       });
-  }, [JSON.stringify(wearables)]);
+  }, [enableMultiWearable, legacySort, onError, wearables]);
 
   const updateSyncTypeSelections = useCallback(
     async (settings: SyncTypeSettings) => {
@@ -93,7 +86,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
         }
       }
     },
-    [],
+    [onError, onSyncTypeSelectionsUpdate],
   );
 
   const styles = merge({}, defaultStyles, propStyles);
@@ -141,7 +134,6 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
           onRefreshNeeded={onRefreshNeeded}
           styles={styles.wearableRow}
           wearable={wearable}
-          nativeWearablesSync={nativeWearablesSync}
           {...otherRowProps}
         />
       ))}
@@ -156,31 +148,14 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
  */
 export const sanitizeWearables = async (
   wearables: WearableIntegration[],
-  nativeWearablesSync?: WearablesSyncModule,
   enableMultiWearable?: boolean,
   legacySort?: boolean,
 ) => {
   let resultItems = [...wearables];
-
-  const healthKitAllowed =
-    nativeWearablesSync && (await nativeWearablesSync.isHealthKitAllowed());
-  const samsungHealthAllowed =
-    nativeWearablesSync && (await nativeWearablesSync.isSamsungHealthAllowed());
-
   const readoutHealthEHR = wearables.find(
     (i) => i.ehrType === EHRType.ReadoutHealth,
   );
   const ketoMojoEHR = resultItems.find((i) => i.ehrType === 'ketoMojo');
-
-  if (!healthKitAllowed) {
-    resultItems = resultItems.filter((i) => i.ehrType !== EHRType.HealthKit);
-  }
-
-  if (!samsungHealthAllowed) {
-    resultItems = resultItems.filter(
-      (i) => i.ehrType !== EHRType.SamsungHealth,
-    );
-  }
 
   if (!enableMultiWearable) {
     // If any integrations are enabled, hide the others.

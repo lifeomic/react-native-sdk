@@ -9,7 +9,7 @@ import {
 import merge from 'lodash/merge';
 
 import { Colors, Margin, Padding } from './defaultTheme';
-import { WearableIntegration } from '@lifeomic/wearables-sync';
+import { WearableIntegration } from './WearableTypes';
 import { SelectorView } from './SelectorView';
 import Chevron from './icons/Chevron';
 
@@ -36,7 +36,7 @@ export const SyncTypeSelectionRow: FC<SyncTypeSelectionRowProps> = (props) => {
 
   const toggleSelecting = useCallback(() => {
     LayoutAnimation.easeInEaseOut();
-    setSelecting(!selecting);
+    setSelecting((selected) => !selected);
   }, []);
 
   const _onUpdate = useCallback(

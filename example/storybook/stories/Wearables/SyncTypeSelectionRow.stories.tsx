@@ -5,9 +5,9 @@ import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
 import {
   SyncTypeSelectionRow,
   SyncTypeSelectionRowDefaultStyles,
-} from '../../../../src/components/Wearables//SyncTypeSelectionRow';
-import { WearableIntegration } from '@lifeomic/wearables-sync';
-import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables//SelectorRow';
+} from '../../../../src/components/Wearables/SyncTypeSelectionRow';
+import { WearableIntegration } from '../../../../src/components/Wearables/WearableTypes';
+import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables/SelectorRow';
 
 export const exampleProps = {
   selectedEHRId: 'garmin',

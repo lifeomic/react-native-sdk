@@ -1,9 +1,9 @@
-import { WearableStateSyncType } from '@lifeomic/ehr-core';
+import { WearableStateSyncType } from './WearableTypes';
 import {
   SyncTypeSettings,
   WearableIntegration,
   WearableIntegrationStatus,
-} from '@lifeomic/wearables-sync';
+} from './WearableTypes';
 import i18n from 'format-message';
 import React, { FC, useCallback } from 'react';
 
@@ -50,7 +50,7 @@ export const SyncTypeSelectionView: FC<SyncTypeSelectionViewProps> = (
       }
       onUpdate(settings);
     },
-    [onUpdate],
+    [onUpdate, settings],
   );
 
   return (

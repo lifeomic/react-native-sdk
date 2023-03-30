@@ -1,4 +1,3 @@
-export * from './NativeWearablesSync';
 export * from './SwitchRow';
 export * from './WearableRowHeader';
 export * from './WearableRowDetailSection';
