@@ -32,7 +32,6 @@
   "track-tile.editor-selection-header": "Select {{code}}",
   "track-tile.edits-not-allowed": "Unable to adjust data this far in the past.",
   "track-tile.increment-tracker-value": "قيمة متعقب الزيادة",
-  "f92965e2c8a7afb3c1b9a5c09a263636": "تم",
   "track-tile.hold-drag-to-change-order-of": "اضغط مع الاستمرار واسحب لتغيير ترتيب {{name}}",
   "track-tile.go-to-next-day": "Go to next day",
   "track-tile.go-to-previous-day": "Go to previous day",

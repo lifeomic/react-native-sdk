@@ -32,7 +32,6 @@
   "track-tile.editor-selection-header": "Select {{code}}",
   "track-tile.edits-not-allowed": "Unable to adjust data this far in the past.",
   "track-tile.increment-tracker-value": "Takipçi değerini artır",
-  "f92965e2c8a7afb3c1b9a5c09a263636": "Bitti",
   "track-tile.hold-drag-to-change-order-of": "{{name}} Sırasını Değiştirmek için Tutup Sürükleyin",
   "track-tile.go-to-next-day": "Go to next day",
   "track-tile.go-to-previous-day": "Go to previous day",

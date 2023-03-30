@@ -32,7 +32,6 @@
   "track-tile.editor-selection-header": "Select {{code}}",
   "track-tile.edits-not-allowed": "Unable to adjust data this far in the past.",
   "track-tile.increment-tracker-value": "Aumentar o valor do rastreador",
-  "f92965e2c8a7afb3c1b9a5c09a263636": "Feito",
   "track-tile.hold-drag-to-change-order-of": "Segurar e arrastar para mudar a ordem de {{name}}",
   "track-tile.go-to-next-day": "Go to next day",
   "track-tile.go-to-previous-day": "Go to previous day",
