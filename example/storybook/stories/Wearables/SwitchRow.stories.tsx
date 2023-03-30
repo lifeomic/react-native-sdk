@@ -2,7 +2,10 @@ import React, { FC, useState } from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
-import { SwitchRow, SwitchRowDefaultStyles } from '../../src/SwitchRow';
+import {
+  SwitchRow,
+  SwitchRowDefaultStyles,
+} from '../../../../src/components/Wearables//SwitchRow';
 
 storiesOf('Switch Row', module)
   .addDecorator(withKnobs)
@@ -24,7 +27,7 @@ const DefaultView: FC<{ disabled?: boolean }> = ({ disabled }) => {
     rowStyle: {},
     testID: 'switch-row-test-id',
     title: 'Title',
-    value
+    value,
   };
 
   return (

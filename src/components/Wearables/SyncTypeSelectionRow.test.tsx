@@ -2,8 +2,8 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import {
   SyncTypeSelectionRow,
-  SyncTypeSelectionRowProps
-} from '../src/SyncTypeSelectionRow';
+  SyncTypeSelectionRowProps,
+} from './SyncTypeSelectionRow';
 
 const onUpdate = jest.fn();
 const baseProps: SyncTypeSelectionRowProps = {
@@ -15,16 +15,16 @@ const baseProps: SyncTypeSelectionRowProps = {
       ehrId: 'ehr1',
       ehrType: 'ehr1',
       name: 'Wearable 1',
-      enabled: true
+      enabled: true,
     },
     {
       ehrId: 'ehr2',
       ehrType: 'ehr2',
       name: 'Wearable 2',
-      enabled: true
-    }
+      enabled: true,
+    },
   ],
-  testID: 'unit-test'
+  testID: 'unit-test',
 };
 
 describe('SyncTypeSelectionRow', () => {
@@ -54,7 +54,7 @@ describe('SyncTypeSelectionRow', () => {
 
   it('does not explode if given invalid selectedEHRId', () => {
     const { getByText } = render(
-      <SyncTypeSelectionRow {...baseProps} selectedEHRId="ehr3" />
+      <SyncTypeSelectionRow {...baseProps} selectedEHRId="ehr3" />,
     );
     expect(getByText('Sync Type')).toBeDefined();
   });

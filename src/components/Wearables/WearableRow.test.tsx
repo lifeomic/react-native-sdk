@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { WearableRow, WearableRowProps } from '../src/WearableRow';
+import { WearableRow, WearableRowProps } from './WearableRow';
 import { WearableIntegrationStatus } from '@lifeomic/wearables-sync';
 import { act } from 'react-test-renderer';
 import { EHRType, WearableStateSyncType } from '@lifeomic/ehr-core';
@@ -11,7 +11,7 @@ const rowActions = {
   onShowWearableAuth: jest.fn(),
   onShowLearnMore: jest.fn(),
   onToggleWearable: jest.fn(),
-  onToggleBackgroundSync: jest.fn()
+  onToggleBackgroundSync: jest.fn(),
 };
 
 const exampleWearable = {
@@ -19,19 +19,19 @@ const exampleWearable = {
   ehrType: EHRType.Fitbit,
   name: 'Fitbit',
   enabled: true,
-  status: WearableIntegrationStatus.Syncing
+  status: WearableIntegrationStatus.Syncing,
 };
 
 const baseProps = {
   ...rowActions,
-  wearable: exampleWearable
+  wearable: exampleWearable,
 } as WearableRowProps;
 
 const getWearable = (ehrType: string) => {
   return {
     ...exampleWearable,
     ehrType,
-    ehrId: ehrType
+    ehrId: ehrType,
   };
 };
 
@@ -39,7 +39,7 @@ const nativeWearablesSync = {
   isHealthKitAllowed: jest.fn(),
   isSamsungHealthAllowed: jest.fn(),
   authorizeHealthKit: jest.fn(),
-  requestPermissions: jest.fn()
+  requestPermissions: jest.fn(),
 };
 
 beforeEach(() => {
@@ -55,14 +55,14 @@ beforeEach(() => {
 describe('WearableRow', () => {
   it('should render a wearable row', () => {
     const { getByA11yLabel, getByText } = render(
-      <WearableRow {...baseProps} />
+      <WearableRow {...baseProps} />,
     );
 
     expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
     expect(
       getByText(
-        "Fitbit records will be ingested once they are available from Fitbit's cloud. You may need to sync with the Fitbit app if records appear to be missing."
-      )
+        "Fitbit records will be ingested once they are available from Fitbit's cloud. You may need to sync with the Fitbit app if records appear to be missing.",
+      ),
     ).toBeDefined();
     expect(getByText('Learn More')).toBeDefined();
   });
@@ -73,16 +73,16 @@ describe('WearableRow', () => {
         {...baseProps}
         wearable={{
           ...exampleWearable,
-          status: WearableIntegrationStatus.NeedsAuthorization
+          status: WearableIntegrationStatus.NeedsAuthorization,
         }}
-      />
+      />,
     );
 
     expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
     expect(
       getByText(
-        'Your data is not syncing. Please toggle back on to reauthorize.'
-      )
+        'Your data is not syncing. Please toggle back on to reauthorize.',
+      ),
     ).toBeDefined();
   });
 
@@ -92,16 +92,16 @@ describe('WearableRow', () => {
         {...baseProps}
         wearable={{
           ...exampleWearable,
-          syncTypes: []
+          syncTypes: [],
         }}
-      />
+      />,
     );
 
     expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
     expect(
       getByText(
-        'Your data is not syncing because it is not configured as a Data Source above.'
-      )
+        'Your data is not syncing because it is not configured as a Data Source above.',
+      ),
     ).toBeDefined();
   });
 
@@ -115,13 +115,13 @@ describe('WearableRow', () => {
       EHRType.KetoMojo,
       EHRType.SamsungHealth,
       EHRType.GoogleFit,
-      EHRType.Dexcom
+      EHRType.Dexcom,
     ];
 
     for (const ehrType of wearableTypes) {
       const wearable = getWearable(ehrType);
       const { getByTestId } = render(
-        <WearableRow {...baseProps} wearable={wearable} />
+        <WearableRow {...baseProps} wearable={wearable} />,
       );
 
       expect(getByTestId(`toggle-${ehrType}`)).toBeDefined();
@@ -132,7 +132,7 @@ describe('WearableRow', () => {
     const ehrType = 'valid-but-unexpected-type-that-shouldnt-blow-things-up';
     const wearable = getWearable(ehrType);
     const { getByTestId } = render(
-      <WearableRow {...baseProps} wearable={wearable} />
+      <WearableRow {...baseProps} wearable={wearable} />,
     );
 
     expect(getByTestId(`toggle-${ehrType}`)).toBeDefined();
@@ -140,14 +140,14 @@ describe('WearableRow', () => {
 
   it('should allow for enabling oauth-based wearable', async () => {
     rowActions.onToggleWearable.mockResolvedValue({
-      authorizationUrl: 'link-to-authorize-phc'
+      authorizationUrl: 'link-to-authorize-phc',
     });
     const wearable = {
       ...getWearable(EHRType.Fitbit),
-      enabled: false
+      enabled: false,
     };
     const { getByTestId } = render(
-      <WearableRow {...baseProps} wearable={wearable} />
+      <WearableRow {...baseProps} wearable={wearable} />,
     );
 
     const toggle = getByTestId('toggle-fitbit');
@@ -159,7 +159,7 @@ describe('WearableRow', () => {
 
     expect(rowActions.onShowWearableAuth).toHaveBeenCalledTimes(1);
     expect(rowActions.onShowWearableAuth.mock.calls[0]).toEqual([
-      'link-to-authorize-phc'
+      'link-to-authorize-phc',
     ]);
 
     expect(rowActions.onToggleWearable).toHaveBeenCalledTimes(1);
@@ -176,11 +176,11 @@ describe('WearableRow', () => {
           ...exampleWearable,
           ehrId: EHRType.HealthKit,
           ehrType: EHRType.HealthKit,
-          enabled: false
+          enabled: false,
         }}
         nativeSyncTypesToRequest={[WearableStateSyncType.BodyMass]}
         nativeWearablesSync={nativeWearablesSync}
-      />
+      />,
     );
 
     const toggle = getByTestId('toggle-healthKit');
@@ -193,13 +193,13 @@ describe('WearableRow', () => {
     expect(nativeWearablesSync.isHealthKitAllowed).toHaveBeenCalledTimes(1);
     expect(nativeWearablesSync.authorizeHealthKit).toHaveBeenCalledTimes(1);
     expect(nativeWearablesSync.authorizeHealthKit.mock.calls[0]).toEqual([
-      [WearableStateSyncType.BodyMass]
+      [WearableStateSyncType.BodyMass],
     ]);
 
     expect(rowActions.onToggleWearable).toHaveBeenCalledTimes(1);
     expect(rowActions.onToggleWearable.mock.calls[0]).toEqual([
       'healthKit',
-      true
+      true,
     ]);
     expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
   });
@@ -210,7 +210,7 @@ describe('WearableRow', () => {
       ...exampleWearable,
       ehrId: EHRType.HealthKit,
       ehrType: EHRType.HealthKit,
-      enabled: true
+      enabled: true,
     };
     const { queryByTestId } = render(
       <WearableRow
@@ -218,13 +218,13 @@ describe('WearableRow', () => {
         wearable={healthKit}
         nativeSyncTypesToRequest={[WearableStateSyncType.BodyMass]}
         nativeWearablesSync={nativeWearablesSync}
-      />
+      />,
     );
 
     // NOTE: using queryByTestId as a sanity check that it works,
     // so the test showing it returns null is futher verified.
     const backgroundToggle = queryByTestId(
-      'toggle-healthKit-background-sync-switch'
+      'toggle-healthKit-background-sync-switch',
     );
     expect(backgroundToggle).toBeDefined();
 
@@ -235,7 +235,7 @@ describe('WearableRow', () => {
     expect(rowActions.onToggleBackgroundSync).toHaveBeenCalledTimes(1);
     expect(rowActions.onToggleBackgroundSync.mock.calls[0]).toEqual([
       healthKit,
-      true
+      true,
     ]);
     expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
 
@@ -247,7 +247,7 @@ describe('WearableRow', () => {
     expect(rowActions.onToggleBackgroundSync).toHaveBeenCalledTimes(2);
     expect(rowActions.onToggleBackgroundSync.mock.calls[1]).toEqual([
       healthKit,
-      false
+      false,
     ]);
     expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(2);
   });
@@ -261,17 +261,17 @@ describe('WearableRow', () => {
           ...exampleWearable,
           ehrId: EHRType.HealthKit,
           ehrType: EHRType.HealthKit,
-          enabled: true
+          enabled: true,
         }}
         nativeSyncTypesToRequest={[WearableStateSyncType.BodyMass]}
         nativeWearablesSync={nativeWearablesSync}
         // NOTE: overriding baseProps here:
         onToggleBackgroundSync={undefined}
-      />
+      />,
     );
 
     const backgroundToggle = queryByTestId(
-      'toggle-healthKit-background-sync-switch'
+      'toggle-healthKit-background-sync-switch',
     );
     expect(backgroundToggle).toBeNull();
   });
@@ -285,16 +285,16 @@ describe('WearableRow', () => {
           ...exampleWearable,
           ehrId: EHRType.SamsungHealth,
           ehrType: EHRType.SamsungHealth,
-          enabled: false
+          enabled: false,
         }}
         nativeSyncTypesToRequest={[
           WearableStateSyncType.BodyMass,
           WearableStateSyncType.SleepAnalysis,
           WearableStateSyncType.Workout,
-          'unsupported-type-doesnt-explode-just-gets-ignored'
+          'unsupported-type-doesnt-explode-just-gets-ignored',
         ]}
         nativeWearablesSync={nativeWearablesSync}
-      />
+      />,
     );
 
     const toggle = getByTestId('toggle-shealth');
@@ -307,13 +307,13 @@ describe('WearableRow', () => {
     expect(nativeWearablesSync.requestPermissions).toHaveBeenCalledTimes(1);
     expect(nativeWearablesSync.requestPermissions.mock.calls[0]).toEqual([
       'shealth',
-      ['weight', 'sleep', 'exercise']
+      ['weight', 'sleep', 'exercise'],
     ]);
 
     expect(rowActions.onToggleWearable).toHaveBeenCalledTimes(1);
     expect(rowActions.onToggleWearable.mock.calls[0]).toEqual([
       'shealth',
-      true
+      true,
     ]);
     expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
   });
@@ -328,7 +328,7 @@ describe('WearableRow', () => {
 
     expect(rowActions.onShowLearnMore).toHaveBeenCalledTimes(1);
     expect(rowActions.onShowLearnMore.mock.calls[0]).toEqual([
-      'https://lifeapps.io/ia/wearables-sync-fitbit/'
+      'https://lifeapps.io/ia/wearables-sync-fitbit/',
     ]);
   });
 
@@ -337,10 +337,10 @@ describe('WearableRow', () => {
     rowActions.onToggleWearable.mockRejectedValue(error);
     const wearable = {
       ...getWearable(EHRType.Fitbit),
-      enabled: false
+      enabled: false,
     };
     const { getByTestId } = render(
-      <WearableRow {...baseProps} wearable={wearable} />
+      <WearableRow {...baseProps} wearable={wearable} />,
     );
 
     const toggle = getByTestId('toggle-fitbit');
@@ -365,9 +365,9 @@ describe('WearableRow', () => {
           ...exampleWearable,
           ehrId: EHRType.HealthKit,
           ehrType: EHRType.HealthKit,
-          enabled: true
+          enabled: true,
         }}
-      />
+      />,
     );
 
     const toggle = getByTestId('toggle-healthKit-background-sync-switch');
@@ -381,7 +381,7 @@ describe('WearableRow', () => {
     expect(rowActions.onError.mock.calls[0]).toEqual([
       error,
       'healthKit',
-      true
+      true,
     ]);
     expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
   });

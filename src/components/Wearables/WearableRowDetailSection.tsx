@@ -11,7 +11,7 @@ export interface WearableRowDetailSection {
 }
 
 export const WearableRowDetailSection: FC<WearableRowDetailSection> = (
-  props
+  props,
 ) => {
   const { icon, children } = props;
 
@@ -29,16 +29,16 @@ export const WearableRowDetailSectionDefaultStyles = {
   iconAndDetails: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginTop: Margin.standard
+    marginTop: Margin.standard,
   },
   iconWrapper: {
-    width: 30
+    width: 30,
   },
   sectionDetails: {
     flex: 1,
-    flexShrink: 1
-  }
+    flexShrink: 1,
+  },
 };
 const defaultStyles = StyleSheet.create(
-  WearableRowDetailSectionDefaultStyles as any
+  WearableRowDetailSectionDefaultStyles as any,
 );

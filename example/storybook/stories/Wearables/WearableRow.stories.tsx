@@ -3,16 +3,19 @@ import { Text, View } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, withKnobs } from '@storybook/addon-knobs';
-import { SwitchRowDefaultStyles, SwitchRowProps } from '../../src/SwitchRow';
+import {
+  SwitchRowDefaultStyles,
+  SwitchRowProps,
+} from '../../../../src/components/Wearables//SwitchRow';
 import {
   WearableRow,
   WearableRowDefaultStyles,
-  WearableRowProps
-} from '../../src/WearableRow';
+  WearableRowProps,
+} from '../../../../src/components/Wearables//WearableRow';
 import {
   ToggleWearableResult,
   WearableIntegration,
-  WearableIntegrationStatus
+  WearableIntegrationStatus,
 } from '@lifeomic/wearables-sync';
 import { Button } from 'react-native';
 import { EHRType } from '@lifeomic/ehr-core';
@@ -26,7 +29,7 @@ storiesOf('Wearable Row', module)
       {...baseProps}
       wearable={{
         ...exampleWearable,
-        status: WearableIntegrationStatus.NeedsAuthorization
+        status: WearableIntegrationStatus.NeedsAuthorization,
       }}
     />
   ))
@@ -35,7 +38,7 @@ storiesOf('Wearable Row', module)
       {...baseProps}
       wearable={{
         ...exampleWearable,
-        syncTypes: []
+        syncTypes: [],
       }}
     />
   ))
@@ -83,18 +86,18 @@ export const rowActions = {
   onToggleWearable: async (ehrId: string, enabled: boolean) => {
     action('onToggleWearable')(ehrId, enabled);
     return {
-      authorizationUrl: 'url-for-oauth-flow'
+      authorizationUrl: 'url-for-oauth-flow',
     } as ToggleWearableResult;
   },
   onToggleBackgroundSync: async (
     wearable: WearableIntegration,
-    enabled: boolean
+    enabled: boolean,
   ) => {
     action('onToggleBackgroundSync')(wearable, enabled);
     return {
-      authorizationUrl: 'url-for-oauth-flow'
+      authorizationUrl: 'url-for-oauth-flow',
     } as ToggleWearableResult;
-  }
+  },
 };
 
 const exampleWearable = {
@@ -102,12 +105,12 @@ const exampleWearable = {
   ehrType: EHRType.Fitbit,
   name: 'Fitbit',
   enabled: true,
-  status: WearableIntegrationStatus.Syncing
+  status: WearableIntegrationStatus.Syncing,
 };
 
 const baseProps = {
   ...rowActions,
-  wearable: exampleWearable
+  wearable: exampleWearable,
 } as WearableRowProps;
 
 interface Props {
@@ -125,7 +128,7 @@ const DefaultView: FC<Props> = (props) => {
 
   const onToggleBackgroundSync = async (
     enabledWearable: WearableIntegration,
-    enabled: boolean
+    enabled: boolean,
   ) => {
     const result = rowActions.onToggleBackgroundSync(enabledWearable, enabled);
     setEnabled(enabled);
@@ -137,11 +140,11 @@ const DefaultView: FC<Props> = (props) => {
     wearable: {
       ...exampleWearable,
       enabled: enabled,
-      status: enabled ? WearableIntegrationStatus.Syncing : undefined
+      status: enabled ? WearableIntegrationStatus.Syncing : undefined,
     },
     onToggleWearable,
     onToggleBackgroundSync,
-    CustomSwitchRow: props.CustomSwitchRow
+    CustomSwitchRow: props.CustomSwitchRow,
   } as WearableRowProps;
 
   return (
@@ -150,7 +153,7 @@ const DefaultView: FC<Props> = (props) => {
       disabled={boolean('disabled', !!defaultProps.disabled)}
       styles={object('styles', {
         ...WearableRowDefaultStyles,
-        switchRow: SwitchRowDefaultStyles
+        switchRow: SwitchRowDefaultStyles,
       })}
       wearable={object('wearable', defaultProps.wearable)}
     />

@@ -2,7 +2,7 @@ import { WearableStateSyncType } from '@lifeomic/ehr-core';
 import {
   SyncTypeSettings,
   WearableIntegration,
-  WearableIntegrationStatus
+  WearableIntegrationStatus,
 } from '@lifeomic/wearables-sync';
 import i18n from 'format-message';
 import React, { FC, useCallback } from 'react';
@@ -18,7 +18,7 @@ export interface SyncTypeSelectionViewProps {
 }
 
 export const SyncTypeSelectionView: FC<SyncTypeSelectionViewProps> = (
-  props
+  props,
 ) => {
   const { disabled, onUpdate, selectionRowStyles, wearables } = props;
 
@@ -26,7 +26,7 @@ export const SyncTypeSelectionView: FC<SyncTypeSelectionViewProps> = (
   const syncTypeOptions = getSyncTypeOptions(wearables);
   const sortedKeys = Object.keys(settings).sort((syncTypeA, syncTypeB) => {
     return getDisplayValueForSyncType(syncTypeA).localeCompare(
-      getDisplayValueForSyncType(syncTypeB)
+      getDisplayValueForSyncType(syncTypeB),
     );
   });
 
@@ -38,7 +38,7 @@ export const SyncTypeSelectionView: FC<SyncTypeSelectionViewProps> = (
         console.info(
           'User reaffirmed the existing selection, no need to update',
           syncType,
-          ehrId
+          ehrId,
         );
         return;
       }
@@ -50,7 +50,7 @@ export const SyncTypeSelectionView: FC<SyncTypeSelectionViewProps> = (
       }
       onUpdate(settings);
     },
-    [onUpdate]
+    [onUpdate],
   );
 
   return (
@@ -127,7 +127,7 @@ export const getSyncTypeOptions = (wearables: WearableIntegration[]) => {
       ehrId: 'none',
       ehrType: 'none',
       name: i18n('Do not sync'),
-      enabled: false
+      enabled: false,
     });
   }
 
@@ -135,7 +135,7 @@ export const getSyncTypeOptions = (wearables: WearableIntegration[]) => {
 };
 
 export const getDisplayValueForSyncType = (
-  syncType: WearableStateSyncType | string
+  syncType: WearableStateSyncType | string,
 ) => {
   switch (syncType) {
     case WearableStateSyncType.BloodGlucose:

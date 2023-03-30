@@ -2,11 +2,11 @@ import React from 'react';
 import {
   getSyncTypesFromWearables,
   SyncTypeSelectionView,
-  SyncTypeSelectionViewProps
-} from '../src/SyncTypeSelectionView';
+  SyncTypeSelectionViewProps,
+} from './SyncTypeSelectionView';
 import {
   WearableIntegration,
-  WearableIntegrationStatus
+  WearableIntegrationStatus,
 } from '@lifeomic/wearables-sync';
 import { WearableStateSyncType } from '@lifeomic/ehr-core';
 import { fireEvent, render } from '@testing-library/react-native';
@@ -24,9 +24,9 @@ const baseProps: SyncTypeSelectionViewProps = {
       supportedSyncTypes: [
         WearableStateSyncType.BodyMass,
         WearableStateSyncType.SleepAnalysis,
-        WearableStateSyncType.Workout
+        WearableStateSyncType.Workout,
       ],
-      syncTypes: [WearableStateSyncType.SleepAnalysis]
+      syncTypes: [WearableStateSyncType.SleepAnalysis],
     },
     {
       ehrId: 'ehr2',
@@ -35,9 +35,9 @@ const baseProps: SyncTypeSelectionViewProps = {
       enabled: true,
       supportedSyncTypes: [
         WearableStateSyncType.BodyMass,
-        WearableStateSyncType.Workout
+        WearableStateSyncType.Workout,
       ],
-      syncTypes: [WearableStateSyncType.BodyMass]
+      syncTypes: [WearableStateSyncType.BodyMass],
     },
     {
       ehrId: 'ehr3',
@@ -45,16 +45,16 @@ const baseProps: SyncTypeSelectionViewProps = {
       name: 'Wearable 3',
       enabled: true,
       supportedSyncTypes: [WearableStateSyncType.Workout],
-      syncTypes: []
+      syncTypes: [],
     },
     {
       ehrId: 'ehr4',
       ehrType: 'ehr4',
       name: 'Wearable 4',
       enabled: false,
-      supportedSyncTypes: [WearableStateSyncType.MindfulSession]
-    }
-  ]
+      supportedSyncTypes: [WearableStateSyncType.MindfulSession],
+    },
+  ],
 };
 
 describe('SyncTypeSelectionRow', () => {
@@ -92,17 +92,17 @@ describe('SyncTypeSelectionRow', () => {
               ehrId: 'ehr1',
               ehrType: 'ehr1',
               name: 'Wearable 1',
-              enabled: true
+              enabled: true,
             },
             {
               ehrId: 'ehr2',
               ehrType: 'ehr2',
               name: 'Wearable 2',
-              enabled: true
-            }
+              enabled: true,
+            },
           ]}
-        />
-      )
+        />,
+      ),
     ).not.toThrow();
   });
 
@@ -119,7 +119,7 @@ describe('SyncTypeSelectionRow', () => {
     expect(onUpdate).toHaveBeenCalledWith({
       [WearableStateSyncType.BodyMass]: 'ehr2',
       [WearableStateSyncType.SleepAnalysis]: 'ehr1',
-      [WearableStateSyncType.Workout]: 'ehr3'
+      [WearableStateSyncType.Workout]: 'ehr3',
     });
   });
 
@@ -134,10 +134,10 @@ describe('SyncTypeSelectionRow', () => {
             name: 'Wearable 3',
             enabled: true,
             supportedSyncTypes: [WearableStateSyncType.Workout],
-            syncTypes: [WearableStateSyncType.Workout]
-          }
+            syncTypes: [WearableStateSyncType.Workout],
+          },
         ]}
-      />
+      />,
     );
 
     fireEvent.press(getByText('Activity'));
@@ -156,7 +156,7 @@ describe('SyncTypeSelectionRow', () => {
 
     expect(onUpdate).toHaveBeenCalledWith({
       [WearableStateSyncType.BodyMass]: 'ehr2',
-      [WearableStateSyncType.SleepAnalysis]: 'ehr1'
+      [WearableStateSyncType.SleepAnalysis]: 'ehr1',
       // NOTE the missing [WearableStateSyncType.Workout]
     });
   });
@@ -184,12 +184,12 @@ describe('SyncTypeSelectionRow', () => {
               WearableStateSyncType.RestingHeartRate,
 
               // An unexpected type being used:
-              WearableStateSyncType.ActiveEnergyBurned
+              WearableStateSyncType.ActiveEnergyBurned,
             ],
-            syncTypes: []
-          }
+            syncTypes: [],
+          },
         ]}
-      />
+      />,
     );
 
     expect(getByText('Weight')).toBeDefined();
@@ -208,31 +208,31 @@ describe('SyncTypeSelectionRow', () => {
 
 describe('getSyncTypesFromWearables', () => {
   it('should return syncType settings given wearables', () => {
-    const wearables = ([
+    const wearables = [
       {
         ehrId: 'ehr1',
         enabled: true,
         supportedSyncTypes: [WearableStateSyncType.SleepAnalysis],
-        syncTypes: [WearableStateSyncType.SleepAnalysis]
+        syncTypes: [WearableStateSyncType.SleepAnalysis],
       },
       {
         ehrId: 'ehr2',
         enabled: true,
         supportedSyncTypes: [
           WearableStateSyncType.BodyMass,
-          WearableStateSyncType.Workout
+          WearableStateSyncType.Workout,
         ],
         syncTypes: [
           WearableStateSyncType.BodyMass,
-          WearableStateSyncType.Workout
-        ]
-      }
-    ] as any) as WearableIntegration[];
+          WearableStateSyncType.Workout,
+        ],
+      },
+    ] as any as WearableIntegration[];
 
     expect(getSyncTypesFromWearables(wearables)).toEqual({
       [WearableStateSyncType.SleepAnalysis]: 'ehr1',
       [WearableStateSyncType.BodyMass]: 'ehr2',
-      [WearableStateSyncType.Workout]: 'ehr2'
+      [WearableStateSyncType.Workout]: 'ehr2',
     });
   });
 
@@ -242,32 +242,32 @@ describe('getSyncTypesFromWearables', () => {
         ehrId: 'ehr1',
         enabled: true,
         supportedSyncTypes: [WearableStateSyncType.SleepAnalysis],
-        syncTypes: [WearableStateSyncType.SleepAnalysis]
+        syncTypes: [WearableStateSyncType.SleepAnalysis],
       },
       {
         ehrId: 'ehr2',
         enabled: false,
         supportedSyncTypes: [
           WearableStateSyncType.BodyMass,
-          WearableStateSyncType.Workout
+          WearableStateSyncType.Workout,
         ],
         syncTypes: [
           WearableStateSyncType.BodyMass,
-          WearableStateSyncType.Workout
-        ]
+          WearableStateSyncType.Workout,
+        ],
       },
       {
         ehrId: 'ehr3',
         enabled: false,
         status: WearableIntegrationStatus.NeedsAuthorization,
         supportedSyncTypes: [WearableStateSyncType.MindfulSession],
-        syncTypes: [WearableStateSyncType.MindfulSession]
-      }
+        syncTypes: [WearableStateSyncType.MindfulSession],
+      },
     ] as WearableIntegration[];
 
     expect(getSyncTypesFromWearables(wearables)).toEqual({
       [WearableStateSyncType.SleepAnalysis]: 'ehr1',
-      [WearableStateSyncType.MindfulSession]: 'ehr3'
+      [WearableStateSyncType.MindfulSession]: 'ehr3',
     });
   });
 
@@ -278,13 +278,13 @@ describe('getSyncTypesFromWearables', () => {
         enabled: true,
         syncTypes: [
           WearableStateSyncType.BodyMass,
-          WearableStateSyncType.BloodGlucose
+          WearableStateSyncType.BloodGlucose,
         ],
-        supportedSyncTypes: [WearableStateSyncType.BodyMass]
-      }
+        supportedSyncTypes: [WearableStateSyncType.BodyMass],
+      },
     ] as WearableIntegration[];
     expect(getSyncTypesFromWearables(wearables)).toEqual({
-      [WearableStateSyncType.BodyMass]: 'ehr1'
+      [WearableStateSyncType.BodyMass]: 'ehr1',
     });
   });
 });

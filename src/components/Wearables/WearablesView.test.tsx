@@ -4,11 +4,11 @@ import cloneDeep from 'lodash/cloneDeep';
 import {
   sanitizeWearables,
   WearablesView,
-  WearablesViewProps
-} from '../src/WearablesView';
+  WearablesViewProps,
+} from './WearablesView';
 import {
   WearableIntegration,
-  WearableIntegrationStatus
+  WearableIntegrationStatus,
 } from '@lifeomic/wearables-sync';
 import { EHRType, WearableStateSyncType } from '@lifeomic/ehr-core';
 
@@ -20,12 +20,12 @@ const fitbit = {
   supportedSyncTypes: [
     WearableStateSyncType.BodyMass,
     WearableStateSyncType.SleepAnalysis,
-    WearableStateSyncType.Workout
+    WearableStateSyncType.Workout,
   ],
   syncTypes: [
     WearableStateSyncType.Workout,
-    WearableStateSyncType.SleepAnalysis
-  ]
+    WearableStateSyncType.SleepAnalysis,
+  ],
 };
 const healthKit = {
   ehrId: EHRType.HealthKit,
@@ -36,9 +36,9 @@ const healthKit = {
     WearableStateSyncType.BodyMass,
     WearableStateSyncType.MindfulSession,
     WearableStateSyncType.SleepAnalysis,
-    WearableStateSyncType.Workout
+    WearableStateSyncType.Workout,
   ],
-  syncTypes: [WearableStateSyncType.BodyMass]
+  syncTypes: [WearableStateSyncType.BodyMass],
 };
 const samsungHealth = {
   ehrId: EHRType.SamsungHealth,
@@ -49,9 +49,9 @@ const samsungHealth = {
     WearableStateSyncType.BodyMass,
     WearableStateSyncType.MindfulSession,
     WearableStateSyncType.SleepAnalysis,
-    WearableStateSyncType.Workout
+    WearableStateSyncType.Workout,
   ],
-  syncTypes: [WearableStateSyncType.MindfulSession]
+  syncTypes: [WearableStateSyncType.MindfulSession],
 };
 const readoutHealth = {
   ehrId: EHRType.ReadoutHealth,
@@ -59,7 +59,7 @@ const readoutHealth = {
   name: 'Biosense',
   enabled: false,
   supportedSyncTypes: [WearableStateSyncType.BreathKetones],
-  syncTypes: [WearableStateSyncType.BreathKetones]
+  syncTypes: [WearableStateSyncType.BreathKetones],
 };
 const ketoMojo = {
   ehrId: EHRType.KetoMojo,
@@ -68,12 +68,12 @@ const ketoMojo = {
   enabled: false,
   supportedSyncTypes: [
     WearableStateSyncType.BloodGlucose,
-    WearableStateSyncType.BloodKetones
+    WearableStateSyncType.BloodKetones,
   ],
   syncTypes: [
     WearableStateSyncType.BloodGlucose,
-    WearableStateSyncType.BloodKetones
-  ]
+    WearableStateSyncType.BloodKetones,
+  ],
 };
 const garmin = {
   ehrId: EHRType.Garmin,
@@ -83,23 +83,23 @@ const garmin = {
   supportedSyncTypes: [
     WearableStateSyncType.BodyMass,
     WearableStateSyncType.SleepAnalysis,
-    WearableStateSyncType.Workout
+    WearableStateSyncType.Workout,
   ],
-  syncTypes: [WearableStateSyncType.SleepAnalysis]
+  syncTypes: [WearableStateSyncType.SleepAnalysis],
 };
 
 const nativeWearablesSync = {
   isHealthKitAllowed: jest.fn(),
   isSamsungHealthAllowed: jest.fn(),
   authorizeHealthKit: jest.fn(),
-  requestPermissions: jest.fn()
+  requestPermissions: jest.fn(),
 };
 
 const getEnabledWearable = (baseProps: any) => {
   return {
     ...baseProps,
     enabled: true,
-    status: WearableIntegrationStatus.Syncing
+    status: WearableIntegrationStatus.Syncing,
   };
 };
 
@@ -109,13 +109,13 @@ const viewActions = {
   onShowWearableAuth: jest.fn(),
   onShowLearnMore: jest.fn(),
   onSyncTypeSelectionsUpdate: jest.fn(),
-  onToggleWearable: jest.fn()
+  onToggleWearable: jest.fn(),
 };
 
 const baseProps = {
   ...viewActions,
   loading: false,
-  wearables: [fitbit, healthKit, samsungHealth, readoutHealth, ketoMojo]
+  wearables: [fitbit, healthKit, samsungHealth, readoutHealth, ketoMojo],
 } as WearablesViewProps;
 
 beforeEach(() => {
@@ -128,7 +128,7 @@ beforeEach(() => {
 describe('WearablesView', () => {
   it('should render wearable rows', async () => {
     const { getByA11yLabel, getByText } = await render(
-      <WearablesView {...baseProps} />
+      <WearablesView {...baseProps} />,
     );
     expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
     expect(getByA11yLabel('Toggle Biosense')).toBeDefined();
@@ -141,32 +141,32 @@ describe('WearablesView', () => {
     const fitbitNeedsAuth = {
       ...fitbit,
       enabled: true,
-      status: WearableIntegrationStatus.NeedsAuthorization
+      status: WearableIntegrationStatus.NeedsAuthorization,
     };
     const readoutWithNoSyncTypes = {
       ...readoutHealth,
       enabled: true,
-      syncTypes: []
+      syncTypes: [],
     };
     const props = {
       ...baseProps,
-      wearables: [fitbitNeedsAuth, readoutWithNoSyncTypes]
+      wearables: [fitbitNeedsAuth, readoutWithNoSyncTypes],
     };
     const { getByA11yLabel, getByText } = await render(
-      <WearablesView {...props} />
+      <WearablesView {...props} />,
     );
     expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
     expect(getByA11yLabel('Toggle Biosense')).toBeDefined();
 
     expect(
       getByText(
-        'Your data is not syncing. Please toggle back on to reauthorize.'
-      )
+        'Your data is not syncing. Please toggle back on to reauthorize.',
+      ),
     ).toBeDefined();
     expect(
       getByText(
-        'Your data is not syncing because it is not configured as a Data Source above.'
-      )
+        'Your data is not syncing because it is not configured as a Data Source above.',
+      ),
     ).toBeDefined();
   });
 
@@ -175,7 +175,7 @@ describe('WearablesView', () => {
     nativeWearablesSync.isHealthKitAllowed.mockRejectedValue(error);
     const props = {
       ...baseProps,
-      nativeWearablesSync
+      nativeWearablesSync,
     };
 
     const { getByTestId } = await render(<WearablesView {...props} />);
@@ -194,21 +194,21 @@ describe('WearablesView', () => {
         nativeWearablesSync,
 
         // We're about to mutate.. cloneDeep to not affect other tests
-        ...cloneDeep(baseProps)
+        ...cloneDeep(baseProps),
       };
 
       // Make both fitbit and HealthKit enabled:
       multiBaseProps.wearables
         .filter(
           (w: WearableIntegration) =>
-            w.ehrType === EHRType.HealthKit || w.ehrType === EHRType.Fitbit
+            w.ehrType === EHRType.HealthKit || w.ehrType === EHRType.Fitbit,
         )
         .forEach((w: WearableIntegration) => (w.enabled = true));
     });
 
     it('should render wearable rows and source selection options', async () => {
       const { getByText, getByA11yLabel } = await render(
-        <WearablesView {...multiBaseProps} />
+        <WearablesView {...multiBaseProps} />,
       );
 
       await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
@@ -226,7 +226,7 @@ describe('WearablesView', () => {
 
     it('should call onSyncTypeSelectionsUpdate when settings are updated', async () => {
       const { getByText, getByA11yLabel } = await render(
-        <WearablesView {...multiBaseProps} />
+        <WearablesView {...multiBaseProps} />,
       );
 
       await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
@@ -245,8 +245,8 @@ describe('WearablesView', () => {
           bodyMass: 'healthKit',
           mindfulSession: 'none',
           sleepAnalysis: 'healthKit',
-          workout: 'fitbit'
-        }
+          workout: 'fitbit',
+        },
       ]);
     });
 
@@ -254,7 +254,7 @@ describe('WearablesView', () => {
       const error = new Error('api is down');
       viewActions.onSyncTypeSelectionsUpdate.mockRejectedValue(error);
       const { getByText, getByA11yLabel } = await render(
-        <WearablesView {...multiBaseProps} />
+        <WearablesView {...multiBaseProps} />,
       );
 
       await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
@@ -287,7 +287,7 @@ describe('sanitizeWearables', () => {
     nativeWearablesSync.isSamsungHealthAllowed.mockResolvedValue(true);
     const result = await sanitizeWearables(
       [fitbit, healthKit, samsungHealth],
-      nativeWearablesSync
+      nativeWearablesSync,
     );
 
     expect(result).toEqual([fitbit, samsungHealth]);
@@ -297,7 +297,7 @@ describe('sanitizeWearables', () => {
     nativeWearablesSync.isHealthKitAllowed.mockResolvedValue(true);
     const result = await sanitizeWearables(
       [healthKit, fitbit, samsungHealth],
-      nativeWearablesSync
+      nativeWearablesSync,
     );
 
     expect(result).toEqual([healthKit, fitbit]);
@@ -306,7 +306,7 @@ describe('sanitizeWearables', () => {
   it('always shows readoutHealth', async () => {
     const result = await sanitizeWearables(
       [getEnabledWearable(fitbit), readoutHealth],
-      nativeWearablesSync
+      nativeWearablesSync,
     );
 
     expect(result).toEqual([readoutHealth, getEnabledWearable(fitbit)]);
@@ -315,7 +315,7 @@ describe('sanitizeWearables', () => {
   it('always shows ketoMojo', async () => {
     const result = await sanitizeWearables(
       [getEnabledWearable(fitbit), ketoMojo],
-      nativeWearablesSync
+      nativeWearablesSync,
     );
 
     expect(result).toEqual([getEnabledWearable(fitbit), ketoMojo]);
@@ -324,7 +324,7 @@ describe('sanitizeWearables', () => {
   it('shows other wearables when only readoutHealth is enabled', async () => {
     const result = await sanitizeWearables(
       [getEnabledWearable(readoutHealth), fitbit],
-      nativeWearablesSync
+      nativeWearablesSync,
     );
 
     expect(result).toEqual([getEnabledWearable(readoutHealth), fitbit]);
@@ -333,7 +333,7 @@ describe('sanitizeWearables', () => {
   it('shows other wearables when only ketoMojo is enabled', async () => {
     const result = await sanitizeWearables(
       [getEnabledWearable(ketoMojo), fitbit],
-      nativeWearablesSync
+      nativeWearablesSync,
     );
 
     expect(result).toEqual([fitbit, getEnabledWearable(ketoMojo)]);
@@ -344,11 +344,11 @@ describe('sanitizeWearables', () => {
     const enabledKetoMojo = getEnabledWearable(ketoMojo);
     const fitbitNeedsAuth = {
       ...fitbit,
-      status: WearableIntegrationStatus.NeedsAuthorization
+      status: WearableIntegrationStatus.NeedsAuthorization,
     };
     const readoutWithNoSyncTypes = {
       ...readoutHealth,
-      syncTypes: []
+      syncTypes: [],
     };
     const result = await sanitizeWearables(
       [
@@ -356,11 +356,11 @@ describe('sanitizeWearables', () => {
         healthKit,
         enabledKetoMojo,
         fitbitNeedsAuth,
-        readoutWithNoSyncTypes
+        readoutWithNoSyncTypes,
       ],
       nativeWearablesSync,
       true, // enableMultiWearable
-      true // legacySort param
+      true, // legacySort param
     );
 
     expect(result).toEqual([
@@ -373,7 +373,7 @@ describe('sanitizeWearables', () => {
 
       // Then sort alphabetical:
       healthKit,
-      garmin
+      garmin,
     ]);
   });
 
@@ -382,11 +382,11 @@ describe('sanitizeWearables', () => {
     const enabledKetoMojo = getEnabledWearable(ketoMojo);
     const fitbitNeedsAuth = {
       ...fitbit,
-      status: WearableIntegrationStatus.NeedsAuthorization
+      status: WearableIntegrationStatus.NeedsAuthorization,
     };
     const readoutWithNoSyncTypes = {
       ...readoutHealth,
-      syncTypes: []
+      syncTypes: [],
     };
     const result = await sanitizeWearables(
       [
@@ -394,10 +394,10 @@ describe('sanitizeWearables', () => {
         healthKit,
         enabledKetoMojo,
         fitbitNeedsAuth,
-        readoutWithNoSyncTypes
+        readoutWithNoSyncTypes,
       ],
       nativeWearablesSync,
-      true // enableMultiWearable
+      true, // enableMultiWearable
       // missing legacySort param
     );
 
@@ -407,7 +407,7 @@ describe('sanitizeWearables', () => {
       readoutWithNoSyncTypes, // "Biosense"
       fitbitNeedsAuth,
       garmin,
-      enabledKetoMojo
+      enabledKetoMojo,
     ]);
   });
 });

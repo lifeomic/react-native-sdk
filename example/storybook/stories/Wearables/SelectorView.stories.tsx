@@ -4,27 +4,27 @@ import { action } from '@storybook/addon-actions';
 import { boolean, object, withKnobs } from '@storybook/addon-knobs';
 import {
   SelectorView,
-  SelectorViewDefaultStyles
-} from '../../src/SelectorView';
-import { SelectorRowDefaultStyles } from '../../src/SelectorRow';
+  SelectorViewDefaultStyles,
+} from '../../../../src/components/Wearables/SelectorView';
+import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables/SelectorRow';
 
 export const exampleProps = {
   data: [
     {
       id: 'fitbit',
-      title: 'Fitbit'
+      title: 'Fitbit',
     },
     {
       id: 'garmin',
       title: 'Garmin',
-      selected: true
+      selected: true,
     },
     {
       id: 'none',
-      title: 'Do not sync'
-    }
+      title: 'Do not sync',
+    },
   ],
-  onSelected: action('onSelected')
+  onSelected: action('onSelected'),
 };
 
 storiesOf('Selector View', module)
@@ -35,7 +35,7 @@ storiesOf('Selector View', module)
       disabled={boolean('disabled', false)}
       styles={object('styles', {
         ...SelectorViewDefaultStyles,
-        selectorRow: SelectorRowDefaultStyles
+        selectorRow: SelectorRowDefaultStyles,
       })}
       onSelected={exampleProps.onSelected}
     />

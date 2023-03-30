@@ -4,13 +4,13 @@ import { action } from '@storybook/addon-actions';
 import { boolean, object, withKnobs } from '@storybook/addon-knobs';
 import {
   SyncTypeSelectionView,
-  SyncTypeSelectionViewProps
-} from '../../src/SyncTypeSelectionView';
+  SyncTypeSelectionViewProps,
+} from '../../../../src/components/Wearables//SyncTypeSelectionView';
 import { WearableIntegration } from '@lifeomic/wearables-sync';
 import { WearableStateSyncType } from '@lifeomic/ehr-core';
-import { SyncTypeSelectionRowDefaultStyles } from '../../src/SyncTypeSelectionRow';
-import { SelectorViewDefaultStyles } from '../../src/SelectorView';
-import { SelectorRowDefaultStyles } from '../../src/SelectorRow';
+import { SyncTypeSelectionRowDefaultStyles } from '../../../../src/components/Wearables//SyncTypeSelectionRow';
+import { SelectorViewDefaultStyles } from '../../../../src/components/Wearables//SelectorView';
+import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables//SelectorRow';
 
 export const exampleProps: SyncTypeSelectionViewProps = {
   wearables: [
@@ -23,8 +23,8 @@ export const exampleProps: SyncTypeSelectionViewProps = {
       supportedSyncTypes: [
         WearableStateSyncType.BodyMass,
         WearableStateSyncType.SleepAnalysis,
-        WearableStateSyncType.Workout
-      ]
+        WearableStateSyncType.Workout,
+      ],
     },
     {
       ehrId: 'fitbit',
@@ -35,11 +35,11 @@ export const exampleProps: SyncTypeSelectionViewProps = {
       supportedSyncTypes: [
         WearableStateSyncType.BodyMass,
         WearableStateSyncType.SleepAnalysis,
-        WearableStateSyncType.Workout
-      ]
-    }
+        WearableStateSyncType.Workout,
+      ],
+    },
   ] as WearableIntegration[],
-  onUpdate: action('onUpdate')
+  onUpdate: action('onUpdate'),
 };
 
 storiesOf('SyncType Selection View', module)
@@ -52,8 +52,8 @@ storiesOf('SyncType Selection View', module)
         ...SyncTypeSelectionRowDefaultStyles,
         selectorView: {
           ...SelectorViewDefaultStyles,
-          selectorRow: SelectorRowDefaultStyles
-        }
+          selectorRow: SelectorRowDefaultStyles,
+        },
       })}
       wearables={object('wearables', exampleProps.wearables)}
     />

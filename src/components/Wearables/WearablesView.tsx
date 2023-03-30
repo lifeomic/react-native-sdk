@@ -5,7 +5,7 @@ import {
   StyleSheet,
   SwitchProps,
   Text,
-  View
+  View,
 } from 'react-native';
 import merge from 'lodash/merge';
 import sortBy from 'lodash/sortBy';
@@ -13,7 +13,7 @@ import i18n from 'format-message';
 import {
   SyncTypeSettings,
   WearableIntegration,
-  WearableIntegrationStatus
+  WearableIntegrationStatus,
 } from '@lifeomic/wearables-sync';
 import { EHRType, WearableStateSyncType } from '@lifeomic/ehr-core';
 import { Colors, Margin } from './defaultTheme';
@@ -30,7 +30,7 @@ export interface WearablesViewProps extends Omit<WearableRowProps, 'wearable'> {
   enableMultiWearable?: boolean;
   loading: boolean;
   onSyncTypeSelectionsUpdate: (
-    settings: Record<WearableStateSyncType, string>
+    settings: Record<WearableStateSyncType, string>,
   ) => any;
   styles?: any;
   wearables: WearableIntegration[];
@@ -69,7 +69,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
       wearables,
       nativeWearablesSync,
       enableMultiWearable,
-      legacySort
+      legacySort,
     )
       .then((result) => {
         setSanitizedWearables(result);
@@ -93,7 +93,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
         }
       }
     },
-    []
+    [],
   );
 
   const styles = merge({}, defaultStyles, propStyles);
@@ -158,7 +158,7 @@ export const sanitizeWearables = async (
   wearables: WearableIntegration[],
   nativeWearablesSync?: WearablesSyncModule,
   enableMultiWearable?: boolean,
-  legacySort?: boolean
+  legacySort?: boolean,
 ) => {
   let resultItems = [...wearables];
 
@@ -168,7 +168,7 @@ export const sanitizeWearables = async (
     nativeWearablesSync && (await nativeWearablesSync.isSamsungHealthAllowed());
 
   const readoutHealthEHR = wearables.find(
-    (i) => i.ehrType === EHRType.ReadoutHealth
+    (i) => i.ehrType === EHRType.ReadoutHealth,
   );
   const ketoMojoEHR = resultItems.find((i) => i.ehrType === 'ketoMojo');
 
@@ -178,7 +178,7 @@ export const sanitizeWearables = async (
 
   if (!samsungHealthAllowed) {
     resultItems = resultItems.filter(
-      (i) => i.ehrType !== EHRType.SamsungHealth
+      (i) => i.ehrType !== EHRType.SamsungHealth,
     );
   }
 
@@ -232,30 +232,30 @@ export const sanitizeWearables = async (
 export const WearablesViewDefaultStyles = {
   container: {
     backgroundColor: Colors.containerBackground,
-    flex: 1
+    flex: 1,
   },
   visible: {
     overflow: 'hidden',
     minHeight: 80,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   hidden: {
     overflow: 'hidden',
-    minHeight: Margin.standard
+    minHeight: Margin.standard,
   },
   sectionHeaderTop: {
     marginHorizontal: Margin.standard,
     marginBottom: Margin.small,
     fontSize: 28,
-    fontWeight: '500'
+    fontWeight: '500',
   },
   sectionHeader: {
     marginHorizontal: Margin.standard,
     marginBottom: Margin.small,
     fontSize: 28,
     fontWeight: '500',
-    marginTop: Margin.standard
-  }
+    marginTop: Margin.standard,
+  },
 };
 const defaultStyles = StyleSheet.create(WearablesViewDefaultStyles as any);

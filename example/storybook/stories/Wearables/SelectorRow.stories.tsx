@@ -2,12 +2,15 @@ import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
-import { SelectorRow, SelectorRowDefaultStyles } from '../../src/SelectorRow';
+import {
+  SelectorRow,
+  SelectorRowDefaultStyles,
+} from '../../../../src/components/Wearables/SelectorRow';
 
 export const exampleProps = {
   id: 'rowId',
   title: 'Row Title',
-  onSelected: action('onSelected')
+  onSelected: action('onSelected'),
 };
 
 storiesOf('Selector Row', module)

@@ -40,6 +40,6 @@ export const SelectorView: FC<SelectorViewProps> = (props) => {
 };
 
 export const SelectorViewDefaultStyles = {
-  list: {}
+  list: {},
 };
 const defaultStyles = StyleSheet.create(SelectorViewDefaultStyles as any);

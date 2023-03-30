@@ -5,26 +5,26 @@ import { storiesOf } from '@storybook/react-native';
 import {
   WearablesView,
   WearablesViewDefaultStyles,
-  WearablesViewProps
-} from '../../src/WearablesView';
+  WearablesViewProps,
+} from '../../../../src/components/Wearables//WearablesView';
 import {
   SyncTypeSettings,
   WearableIntegration,
-  WearableIntegrationStatus
+  WearableIntegrationStatus,
 } from '@lifeomic/wearables-sync';
 import { rowActions } from './WearableRow.stories';
 import { EHRType, WearableStateSyncType } from '@lifeomic/ehr-core';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, withKnobs } from '@storybook/addon-knobs';
-import { WearableRowDefaultStyles } from '../../src/WearableRow';
-import { SyncTypeSelectionRowDefaultStyles } from '../../src/SyncTypeSelectionRow';
-import { SwitchRowDefaultStyles } from '../../src/SwitchRow';
-import { SelectorViewDefaultStyles } from '../../src/SelectorView';
-import { SelectorRowDefaultStyles } from '../../src/SelectorRow';
+import { WearableRowDefaultStyles } from '../../../../src/components/Wearables//WearableRow';
+import { SyncTypeSelectionRowDefaultStyles } from '../../../../src/components/Wearables//SyncTypeSelectionRow';
+import { SwitchRowDefaultStyles } from '../../../../src/components/Wearables//SwitchRow';
+import { SelectorViewDefaultStyles } from '../../../../src/components/Wearables//SelectorView';
+import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables//SelectorRow';
 
 export const viewActions = {
   ...rowActions,
-  onSyncTypeSelectionsUpdate: action('onSyncTypeSelectionsUpdate')
+  onSyncTypeSelectionsUpdate: action('onSyncTypeSelectionsUpdate'),
 };
 
 storiesOf('Wearables View', module)
@@ -50,16 +50,16 @@ const mockWearables: WearableIntegration[] = [
       WearableStateSyncType.BodyMass,
       WearableStateSyncType.MindfulSession,
       WearableStateSyncType.SleepAnalysis,
-      WearableStateSyncType.Workout
+      WearableStateSyncType.Workout,
     ],
-    syncTypes: [WearableStateSyncType.MindfulSession]
+    syncTypes: [WearableStateSyncType.MindfulSession],
   },
   {
     // NOTE: Should only show on Samsung emulator
     ehrId: EHRType.SamsungHealth,
     ehrType: EHRType.SamsungHealth,
     name: 'Samsung Health',
-    enabled: false
+    enabled: false,
   },
   {
     ehrId: EHRType.Garmin,
@@ -70,9 +70,9 @@ const mockWearables: WearableIntegration[] = [
     supportedSyncTypes: [
       WearableStateSyncType.BodyMass,
       WearableStateSyncType.SleepAnalysis,
-      WearableStateSyncType.Workout
+      WearableStateSyncType.Workout,
     ],
-    syncTypes: [WearableStateSyncType.BodyMass]
+    syncTypes: [WearableStateSyncType.BodyMass],
   },
   {
     ehrId: EHRType.Fitbit,
@@ -83,12 +83,12 @@ const mockWearables: WearableIntegration[] = [
     supportedSyncTypes: [
       WearableStateSyncType.BodyMass,
       WearableStateSyncType.SleepAnalysis,
-      WearableStateSyncType.Workout
+      WearableStateSyncType.Workout,
     ],
     syncTypes: [
       WearableStateSyncType.Workout,
-      WearableStateSyncType.SleepAnalysis
-    ]
+      WearableStateSyncType.SleepAnalysis,
+    ],
   },
   {
     ehrId: EHRType.KetoMojo,
@@ -97,15 +97,15 @@ const mockWearables: WearableIntegration[] = [
     enabled: false,
     supportedSyncTypes: [
       WearableStateSyncType.BloodGlucose,
-      WearableStateSyncType.BloodKetones
-    ]
+      WearableStateSyncType.BloodKetones,
+    ],
   },
   {
     ehrId: EHRType.Dexcom,
     ehrType: EHRType.Dexcom,
     name: 'Dexcom',
     enabled: false,
-    supportedSyncTypes: [WearableStateSyncType.BloodGlucose]
+    supportedSyncTypes: [WearableStateSyncType.BloodGlucose],
   },
   {
     ehrId: EHRType.GoogleFit,
@@ -116,15 +116,15 @@ const mockWearables: WearableIntegration[] = [
       WearableStateSyncType.BloodGlucose,
       WearableStateSyncType.BodyMass,
       WearableStateSyncType.SleepAnalysis,
-      WearableStateSyncType.Workout
-    ]
+      WearableStateSyncType.Workout,
+    ],
   },
   {
     ehrId: EHRType.ReadoutHealth,
     ehrType: EHRType.ReadoutHealth,
     name: 'Biosense',
     enabled: false,
-    supportedSyncTypes: [WearableStateSyncType.BreathKetones]
+    supportedSyncTypes: [WearableStateSyncType.BreathKetones],
   },
   {
     ehrId: EHRType.Oura,
@@ -134,9 +134,9 @@ const mockWearables: WearableIntegration[] = [
     supportedSyncTypes: [
       WearableStateSyncType.MindfulSession,
       WearableStateSyncType.SleepAnalysis,
-      WearableStateSyncType.Workout
-    ]
-  }
+      WearableStateSyncType.Workout,
+    ],
+  },
 ];
 
 interface DefaultViewProps {
@@ -146,7 +146,7 @@ interface DefaultViewProps {
 
 const DefaultView: FC<DefaultViewProps> = ({
   enableMultiWearable,
-  loading: initialLoading
+  loading: initialLoading,
 }) => {
   const [loading, setLoading] = useState(initialLoading);
   const [wearables, setWearables] = useState(mockWearables);
@@ -191,14 +191,14 @@ const DefaultView: FC<DefaultViewProps> = ({
       isHealthKitAllowed: () => Promise.resolve(true),
       isSamsungHealthAllowed: () => Promise.resolve(false),
       authorizeHealthKit: () => Promise.resolve(),
-      requestPermissions: () => Promise.resolve()
+      requestPermissions: () => Promise.resolve(),
     },
     android: {
       isHealthKitAllowed: () => Promise.resolve(false),
       isSamsungHealthAllowed: () => Promise.resolve(true),
       authorizeHealthKit: () => Promise.resolve(),
-      requestPermissions: () => Promise.resolve()
-    }
+      requestPermissions: () => Promise.resolve(),
+    },
   });
 
   return (
@@ -206,7 +206,7 @@ const DefaultView: FC<DefaultViewProps> = ({
       {...viewActions}
       enableMultiWearable={boolean(
         'enableMultiWearable',
-        !!enableMultiWearable
+        !!enableMultiWearable,
       )}
       loading={boolean('loading', loading)}
       nativeWearablesSync={nativeWearablesSync}
@@ -221,18 +221,18 @@ const DefaultView: FC<DefaultViewProps> = ({
             ...WearablesViewDefaultStyles,
             wearableRow: {
               ...WearableRowDefaultStyles,
-              switchRow: SwitchRowDefaultStyles
+              switchRow: SwitchRowDefaultStyles,
             },
             selectionRowStyles: {
               ...SyncTypeSelectionRowDefaultStyles,
               selectorView: {
                 ...SelectorViewDefaultStyles,
-                selectorRow: SelectorRowDefaultStyles
-              }
-            }
+                selectorRow: SelectorRowDefaultStyles,
+              },
+            },
           },
-          storyStyles
-        )
+          storyStyles,
+        ),
       )}
       wearables={wearables}
     />
@@ -242,7 +242,7 @@ const DefaultView: FC<DefaultViewProps> = ({
 const loadingProps: WearablesViewProps = {
   loading: true,
   wearables: [],
-  ...viewActions
+  ...viewActions,
 };
 
 const storyStyles = {
@@ -250,8 +250,8 @@ const storyStyles = {
     flex: 1,
     width: Platform.select({
       web: '500px',
-      default: '100%'
+      default: '100%',
     }),
-    margin: 'auto'
-  }
+    margin: 'auto',
+  },
 };

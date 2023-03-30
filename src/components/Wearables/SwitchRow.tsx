@@ -28,13 +28,13 @@ export const SwitchRow: FC<SwitchRowProps> = (props) => {
 export const SwitchRowDefaultStyles = {
   container: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   headerText: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   textWrapper: {
-    flex: 1
-  }
+    flex: 1,
+  },
 };
 const defaultStyles = StyleSheet.create(SwitchRowDefaultStyles as any);

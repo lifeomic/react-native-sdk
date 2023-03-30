@@ -4,10 +4,10 @@ import { action } from '@storybook/addon-actions';
 import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
 import {
   SyncTypeSelectionRow,
-  SyncTypeSelectionRowDefaultStyles
-} from '../../src/SyncTypeSelectionRow';
+  SyncTypeSelectionRowDefaultStyles,
+} from '../../../../src/components/Wearables//SyncTypeSelectionRow';
 import { WearableIntegration } from '@lifeomic/wearables-sync';
-import { SelectorRowDefaultStyles } from '../../src/SelectorRow';
+import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables//SelectorRow';
 
 export const exampleProps = {
   selectedEHRId: 'garmin',
@@ -15,21 +15,21 @@ export const exampleProps = {
     {
       ehrId: 'garmin',
       ehrType: 'garmin',
-      name: 'Garmin'
+      name: 'Garmin',
     },
     {
       ehrId: 'fitbit',
       ehrType: 'fitbit',
-      name: 'Fitbit'
+      name: 'Fitbit',
     },
     {
       ehrId: 'none',
       ehrType: 'none',
-      name: 'Do Not Sync'
-    }
+      name: 'Do Not Sync',
+    },
   ] as WearableIntegration[],
   syncTypeTitle: 'Weight',
-  onUpdate: action('onUpdated')
+  onUpdate: action('onUpdated'),
 };
 
 storiesOf('SyncType Selection Row', module)
@@ -41,7 +41,7 @@ storiesOf('SyncType Selection Row', module)
       selectedEHRId={text('selectedEHRId', exampleProps.selectedEHRId)}
       styles={object('styles', {
         ...SyncTypeSelectionRowDefaultStyles,
-        selectorRow: SelectorRowDefaultStyles
+        selectorRow: SelectorRowDefaultStyles,
       })}
       syncTypeOptions={object('syncTypeOptions', exampleProps.syncTypeOptions)}
       syncTypeTitle={text('syncTypeTitle', exampleProps.syncTypeTitle)}

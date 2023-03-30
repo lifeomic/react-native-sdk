@@ -1,4 +1,4 @@
-import { SwitchRow, WearableRow, WearablesView } from '../src/main';
+import { SwitchRow, WearableRow, WearablesView } from './main';
 
 describe('the index file', () => {
   test('has the correct exports', () => {

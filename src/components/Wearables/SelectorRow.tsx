@@ -23,7 +23,7 @@ export const SelectorRow: FC<SelectorRowProps> = (props) => {
     (id: string) => () => {
       onSelected(id);
     },
-    []
+    [],
   );
 
   return (
@@ -38,14 +38,14 @@ export const SelectorRow: FC<SelectorRowProps> = (props) => {
           testID={`${testID}-label`}
           style={[
             styles.textWrapper,
-            selected ? styles.selected : styles.unselected
+            selected ? styles.selected : styles.unselected,
           ]}
         >
           <Text
             testID={`${testID}-title`}
             style={[
               styles.choiceText,
-              selected ? styles.selected : styles.unselected
+              selected ? styles.selected : styles.unselected,
             ]}
           >
             {title}
@@ -58,20 +58,20 @@ export const SelectorRow: FC<SelectorRowProps> = (props) => {
 
 export const SelectorRowDefaultStyles = {
   container: {
-    minHeight: 40
+    minHeight: 40,
   },
   choiceText: {
-    textAlign: 'right'
+    textAlign: 'right',
   },
   textWrapper: {
-    padding: Padding.medium
+    padding: Padding.medium,
   },
   unselected: {
-    backgroundColor: Colors.rowBackground
+    backgroundColor: Colors.rowBackground,
   },
   selected: {
     backgroundColor: Colors.activeRowBackground,
-    fontWeight: '700'
-  }
+    fontWeight: '700',
+  },
 };
 const defaultStyles = StyleSheet.create(SelectorRowDefaultStyles as any);

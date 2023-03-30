@@ -4,7 +4,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import merge from 'lodash/merge';
 
@@ -31,7 +31,7 @@ export const SyncTypeSelectionRow: FC<SyncTypeSelectionRowProps> = (props) => {
     syncTypeOptions,
     syncTypeTitle,
     selectedEHRId,
-    testID
+    testID,
   } = props;
 
   const toggleSelecting = useCallback(() => {
@@ -45,7 +45,7 @@ export const SyncTypeSelectionRow: FC<SyncTypeSelectionRowProps> = (props) => {
       setSelecting(false);
       onUpdate(ehrId);
     },
-    [onUpdate]
+    [onUpdate],
   );
 
   const styles = merge({}, defaultStyles, props.styles);
@@ -84,7 +84,7 @@ export const SyncTypeSelectionRow: FC<SyncTypeSelectionRowProps> = (props) => {
           data={syncTypeOptions.map((w) => ({
             id: w.ehrId,
             title: w.name,
-            selected: w.ehrId === selectedEHRId
+            selected: w.ehrId === selectedEHRId,
           }))}
           disabled={disabled}
           onSelected={_onUpdate}
@@ -101,22 +101,22 @@ export const SyncTypeSelectionRowDefaultStyles = {
     marginHorizontal: Margin.standard,
     marginVertical: Margin.small / 2,
     borderRadius: 10,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   textWrapper: {
     flexDirection: 'row',
     padding: Padding.medium,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   syncTypeLabel: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   syncTypeValue: {
     flex: 1,
     textAlign: 'right',
-    paddingEnd: Padding.large
-  }
+    paddingEnd: Padding.large,
+  },
 };
 const defaultStyles = StyleSheet.create(
-  SyncTypeSelectionRowDefaultStyles as any
+  SyncTypeSelectionRowDefaultStyles as any,
 );

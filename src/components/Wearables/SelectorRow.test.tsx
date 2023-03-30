@@ -1,13 +1,13 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { SelectorRow } from '../src/SelectorRow';
+import { SelectorRow } from './SelectorRow';
 
 const onSelected = jest.fn();
 const baseProps = {
   id: 'id',
   title: 'Row Title',
   onSelected,
-  testID: 'unit-test'
+  testID: 'unit-test',
 };
 
 describe('SelectorRow', () => {
@@ -23,7 +23,7 @@ describe('SelectorRow', () => {
 
   it('allows for selected prop', () => {
     expect(() =>
-      render(<SelectorRow {...baseProps} selected={true} />)
+      render(<SelectorRow {...baseProps} selected={true} />),
     ).not.toThrow();
   });
 
@@ -37,7 +37,7 @@ describe('SelectorRow', () => {
 
   it('does not call onSelected when tapped if disabled', () => {
     const { getByText } = render(
-      <SelectorRow {...baseProps} disabled={true} />
+      <SelectorRow {...baseProps} disabled={true} />,
     );
 
     fireEvent.press(getByText('Row Title'));

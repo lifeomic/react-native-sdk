@@ -1,13 +1,13 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { SwitchRow } from '../src/SwitchRow';
+import { SwitchRow } from './SwitchRow';
 
 const onValueChange = jest.fn();
 const baseProps = {
   title: 'Switch Title',
   value: true,
   onValueChange,
-  testID: 'unit-test'
+  testID: 'unit-test',
 };
 
 describe('SwitchRow', () => {
@@ -23,7 +23,7 @@ describe('SwitchRow', () => {
 
   it('renders custom ally label', () => {
     const { getAllByA11yLabel } = render(
-      <SwitchRow {...baseProps} accessibilityLabel="custom-label" />
+      <SwitchRow {...baseProps} accessibilityLabel="custom-label" />,
     );
     expect(getAllByA11yLabel('custom-label')).toBeDefined();
   });
@@ -46,7 +46,7 @@ describe('SwitchRow', () => {
 
   it('does not call onValueChange when tapped if disabled', () => {
     const { getByTestId } = render(
-      <SwitchRow {...baseProps} disabled={true} />
+      <SwitchRow {...baseProps} disabled={true} />,
     );
     fireEvent(getByTestId('unit-test-switch'), 'onValueChange', false);
     expect(onValueChange).toHaveBeenCalled();

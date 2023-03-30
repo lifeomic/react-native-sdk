@@ -26,17 +26,17 @@ export const WearableRowHeader: FC<WearableRowHeaderProps> = (props) => {
 export const WearableRowHeaderDefaultStyles = {
   container: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   headerText: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   iconWrapper: {
     width: 34,
-    marginStart: -5
+    marginStart: -5,
   },
   textWrapper: {
-    flex: 1
-  }
+    flex: 1,
+  },
 };
 const defaultStyles = StyleSheet.create(WearableRowHeaderDefaultStyles as any);

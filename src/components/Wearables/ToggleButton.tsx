@@ -22,7 +22,7 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
     onPress,
     testID,
     title,
-    enabled
+    enabled,
   } = props;
 
   const styles = merge({}, defaultStyles, props.styles);
@@ -36,14 +36,14 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
         disabled={disabled}
         style={[
           styles.toggleButton,
-          enabled ? styles.toggleOffButton : undefined
+          enabled ? styles.toggleOffButton : undefined,
         ]}
       >
         {icon && <View style={styles.iconWrapper}>{icon}</View>}
         <Text
           style={[
             styles.toggleText,
-            enabled ? styles.toggleOffText : undefined
+            enabled ? styles.toggleOffText : undefined,
           ]}
         >
           {title}
@@ -56,7 +56,7 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
 export const ToggleButtonDefaultStyles = {
   toggleButtonWrapper: {
     marginBottom: Margin.small,
-    marginTop: Margin.standard
+    marginTop: Margin.standard,
   },
   toggleButton: {
     height: 40,
@@ -65,20 +65,20 @@ export const ToggleButtonDefaultStyles = {
     alignItems: 'center',
     justifyContent: 'center',
     borderColor: Colors.connectButtonBorder,
-    borderWidth: 1
+    borderWidth: 1,
   },
   toggleOffButton: {
     backgroundColor: Colors.disconnectBackground,
-    borderWidth: 0
+    borderWidth: 0,
   },
   toggleText: {
-    fontWeight: '600'
+    fontWeight: '600',
   },
   toggleOffText: {
-    color: 'white'
+    color: 'white',
   },
   iconWrapper: {
-    marginRight: Margin.standard
-  }
+    marginRight: Margin.standard,
+  },
 };
 const defaultStyles = StyleSheet.create(ToggleButtonDefaultStyles as any);
