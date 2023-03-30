@@ -101,7 +101,7 @@
   },
   "dependencies": {
     "@lifeomic/chromicons-native": "^2.14.0",
-    "d3-scale": "^4.0.2",
+    "d3-scale": "3.2.1",
     "date-fns": "^2.29.3",
     "events": "^3.3.0",
     "lodash": "^4.17.21",

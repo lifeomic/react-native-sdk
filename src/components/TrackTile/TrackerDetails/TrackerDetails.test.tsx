@@ -11,6 +11,8 @@ import { notifier } from '../services/EmitterService';
 import { startOfYesterday, format } from 'date-fns';
 import * as fhirHelperModule from './to-fhir-resource';
 
+jest.unmock('i18next');
+
 jest.mock('../hooks/useTrackerValues');
 jest.mock('lodash/debounce', () => jest.fn((fn) => fn));
 
