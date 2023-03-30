@@ -212,7 +212,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         i18n={i18n}
         parent={TransTextParent}
         style={styles.advancedDetailsHorizontalRow}
-        i18nKey="advanced-tracker-value"
+        i18nKey="track-tile.advanced-tracker-value"
         ns="track-tile-ui"
         defaults="<value>{{value}}</value><divider>/</divider><target>{{target}}</target>"
         values={{
@@ -222,7 +222,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         components={{
           value: ((valueText?: string) => (
             <Text
-              accessibilityLabel={i18n.t('c606756e12cb4d462eb815d1641016b9', {
+              accessibilityLabel={i18n.t('track-tile.tracker-value-value', {
                 defaultValue: 'Tracker value, {{value}}',
                 value: currentValue,
                 ns: 'track-tile-ui',
@@ -245,7 +245,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
           ))(),
           target: ((targetText?: string) => (
             <Text
-              accessibilityLabel={i18n.t('c606756e12cb4d462eb815d1641016b9', {
+              accessibilityLabel={i18n.t('track-tile.tracker-value-value', {
                 defaultValue: 'Tracker target, {{value}}',
                 value: target,
                 ns: 'track-tile-ui',
@@ -371,7 +371,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       <View style={styles.advancedDetailsSection}>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
-          {i18n.t('science-of-prefix', {
+          {i18n.t('track-tile.science-of-prefix', {
             defaultValue: 'The science of',
             ns: 'track-tile-ui',
           })}
@@ -388,13 +388,13 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       <View style={styles.advancedDetailsSection}>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
-          {i18n.t('weekly-metrics-prefix', {
+          {i18n.t('track-tile.weekly-metrics-prefix', {
             defaultValue: 'Weekly Metrics',
             ns: 'track-tile-ui',
           })}
         </Text>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
-          {i18n.t('total-daily-units', {
+          {i18n.t('track-tile.total-daily-units', {
             defaultValue: 'Total Daily {{unit}}',
             unit: unitDisplay(targetAmount, true),
             ns: 'track-tile-ui',

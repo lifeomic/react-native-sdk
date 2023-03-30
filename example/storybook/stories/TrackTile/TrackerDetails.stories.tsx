@@ -40,11 +40,10 @@ storiesOf('TrackerDetails', module)
             name: 'Example',
             color: 'cadetblue',
             resourceType: 'Observation',
-            description: i18n.t('example-description', {
-              defaultValue:
-                'This is an example description for the track tile that is to be added',
-              ns: 'track-tile-ui',
-            }),
+            description: i18n.t(
+              'track-tile.example-description',
+              'This is an example description for the track tile that is to be added',
+            ),
             units: [
               {
                 unit: 'unit-1',

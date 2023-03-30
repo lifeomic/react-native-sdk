@@ -64,7 +64,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
     <View style={styles.manageTrackersContainer}>
       <View style={styles.manageTrackersHeader}>
         <Text variant="semibold" style={styles.manageTrackersHeaderTitle}>
-          {i18n.t('5cd43bf61db56cfc95edce3650ce607e', {
+          {i18n.t('track-tile.your-active-items', {
             defaultValue: 'Your active items',
             ns: 'track-tile-ui',
           })}
@@ -75,7 +75,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
             variant="semibold"
             style={styles.manageTrackersHeaderReorderText}
           >
-            {i18n.t('332c80b1838dc515f5031e09da3b7f3f', {
+            {i18n.t('track-tile.reorder', {
               defaultValue: 'Reorder',
               ns: 'track-tile-ui',
             })}
@@ -84,11 +84,11 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
             testID={tID('reorder-trackers-switch')}
             accessibilityLabel={
               isReordering
-                ? i18n.t('661088055b4239afd979921576bc7a1d', {
+                ? i18n.t('track-tile.save-tracker-order', {
                     defaultValue: 'Save tracker order',
                     ns: 'track-tile-ui',
                   })
-                : i18n.t('e46aea268279b8b71f527d3fedca48e6', {
+                : i18n.t('track-tile.reorder-trackers', {
                     defaultValue: 'Reorder trackers',
                     ns: 'track-tile-ui',
                   })
@@ -107,7 +107,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
       </View>
       {error && (
         <Text variant="semibold" style={styles.manageTrackersError}>
-          {i18n.t('b22f9f10b629d85aef19e294f78a0562', {
+          {i18n.t('track-tile.problem-loading-track-it-items', {
             defaultValue: 'There was a problem loading the Track-It Items',
             ns: 'track-tile-ui',
           })}
@@ -115,7 +115,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
       )}
       {hasReorderError && (
         <Text variant="semibold" style={styles.manageTrackersError}>
-          {i18n.t('561b721162a7e1e9985e92d5c33ceb34', {
+          {i18n.t('track-tile.problem-occurred-while-reordering-items', {
             defaultValue: 'A problem occurred while reordering the items',
             ns: 'track-tile-ui',
           })}
@@ -171,14 +171,14 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                       ? [
                           {
                             name: 'decrement',
-                            label: i18n.t('3717ca1e1702edabf06c7cf830e70627', {
+                            label: i18n.t('track-tile.move-up', {
                               defaultValue: 'Move Up',
                               ns: 'track-tile-ui',
                             }),
                           },
                           {
                             name: 'increment',
-                            label: i18n.t('aa8ea843721d50172c76e0c87b43698e', {
+                            label: i18n.t('track-tile.move-down', {
                               defaultValue: 'Move Down',
                               ns: 'track-tile-ui',
                             }),
@@ -187,7 +187,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                       : [
                           {
                             name: 'activate',
-                            label: i18n.t('06799e531485986e06f0cad05252907d', {
+                            label: i18n.t('track-tile.go-to-tracker', {
                               defaultValue: 'Go to tracker',
                               ns: 'track-tile-ui',
                             }),

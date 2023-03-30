@@ -30,7 +30,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
     value,
     units,
     onChange,
-    placeholder = i18n.t('9031f0b71c20458a79410b99b2e3d521', {
+    placeholder = i18n.t('track-tile.choose-a-unit', {
       defaultValue: 'Choose a Unit',
       ns: 'track-tile-ui',
     }),
@@ -60,7 +60,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
       <View>
         <TouchableOpacity
           onPress={openInput}
-          accessibilityLabel={i18n.t('ae96a9f2fdf142f2c5da6a70ab8bbce2', {
+          accessibilityLabel={i18n.t('track-tile.unit-type', {
             defaultValue: 'Unit type',
             ns: 'track-tile-ui',
           })}

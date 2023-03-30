@@ -77,11 +77,11 @@ export const ManageTrackerRow: FC<Props> = (props) => {
               ]}
             >
               {inactive
-                ? i18n.t('3cab03c00dbd11bc3569afa0748013f0', {
+                ? i18n.t('track-tile.inactive', {
                     defaultValue: 'Inactive',
                     ns: 'track-tile-ui',
                   })
-                : i18n.t('4d3d769b812b6faa6b76e1a8abaece2d', {
+                : i18n.t('track-tile.active', {
                     defaultValue: 'Active',
                     ns: 'track-tile-ui',
                   })}
@@ -95,7 +95,7 @@ export const ManageTrackerRow: FC<Props> = (props) => {
             accessible={false}
             accessibilityLabel={
               isDraggable
-                ? i18n.t('fe9f448fdb31100d0a4884c8403ca2e7', {
+                ? i18n.t('track-tile.hold-drag-to-change-order-of', {
                     defaultValue:
                       'Hold and Drag to Change the Order of {{name}}',
                     name: tracker.name,

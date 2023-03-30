@@ -44,7 +44,7 @@ const Paginator: FC<PaginatorProps> = (props) => {
       <TouchableOpacity
         testID={tID('history-chart-view-previous-week')}
         style={styles.trackerHistoryChartPaginatorStepperButton}
-        accessibilityLabel={i18n.t('53ce64deea48bc8554d76f9d22dbbca5', {
+        accessibilityLabel={i18n.t('track-tile.previous-weeks-data', {
           defaultValue: "Previous week's data",
           ns: 'track-tile-ui',
         })}
@@ -77,7 +77,7 @@ const Paginator: FC<PaginatorProps> = (props) => {
       </Text>
       <TouchableOpacity
         testID={tID('history-chart-view-next-week')}
-        accessibilityLabel={i18n.t('8c1ecfad31db029ed474399706684492', {
+        accessibilityLabel={i18n.t('track-tile.next-weeks-data', {
           defaultValue: "Next week's data",
           ns: 'track-tile-ui',
         })}

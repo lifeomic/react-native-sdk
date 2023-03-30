@@ -121,7 +121,7 @@ export const Chart: FC<ChartProps> = (props) => {
             <Text
               testID={tID(`history-chart-x-axis-label-${index}`)}
               style={variantStyles?.chartXTitle}
-              accessibilityLabel={i18n.t('edc1e8aa2f80dc6b3be50d4e168e30e8', {
+              accessibilityLabel={i18n.t('track-tile.day-value-unit-display', {
                 defaultValue: '{{day}}: {{value}} {{unit}}',
                 day: format(day, 'iiii, MMMM do'),
                 value: values[index],
@@ -150,7 +150,7 @@ export const Chart: FC<ChartProps> = (props) => {
       {hasError && (
         <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
           <Text variant="semibold" style={styles.chartError}>
-            {i18n.t('aa16bb8028cd4767568a48d382e64d0a', {
+            {i18n.t('track-tile.could-not-load-your-data', {
               defaultValue: 'Could not load your data\nPlease try again later',
               ns: 'track-tile-ui',
             })}

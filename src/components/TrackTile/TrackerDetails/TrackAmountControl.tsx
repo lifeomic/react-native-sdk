@@ -47,7 +47,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
     <View style={styles.trackAmountControlContainer}>
       <TouchableOpacity
         testID={tID('decrement-tracker-value-button')}
-        accessibilityLabel={i18n.t('a420e9269fa8475365b5aba2596b2dc6', {
+        accessibilityLabel={i18n.t('track-tile.decrement-tracker-value', {
           defaultValue: 'Decrement tracker value',
           ns: 'track-tile-ui',
         })}
@@ -56,7 +56,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
       >
         <Text variant="light" style={styles.trackAmountControlUnaryButton}>
-          {i18n.t('336d5ebc5436534e61d16e63ddfca327', {
+          {i18n.t('track-tile.dash-symbol', {
             defaultValue: '-',
             ns: 'track-tile-ui',
           })}
@@ -64,7 +64,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
       </TouchableOpacity>
       <TextInput
         testID={tID('current-tracker-value')}
-        accessibilityLabel={i18n.t('c606756e12cb4d462eb815d1641016b9', {
+        accessibilityLabel={i18n.t('track-tile.tracker-value-value', {
           defaultValue: 'Tracker value, {{value}}',
           value,
           ns: 'track-tile-ui',
@@ -85,7 +85,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
       />
       <TouchableOpacity
         testID={tID('increment-tracker-value-button')}
-        accessibilityLabel={i18n.t('f6d128902f6eaacb070c610c0556fbcd', {
+        accessibilityLabel={i18n.t('track-tile.increment-tracker-value', {
           defaultValue: 'Increment tracker value',
           ns: 'track-tile-ui',
         })}
@@ -94,7 +94,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
       >
         <Text variant="light" style={styles.trackAmountControlUnaryButton}>
-          {i18n.t('26b17225b626fb9238849fd60eabdf60', {
+          {i18n.t('track-tile.plus-symbol', {
             defaultValue: '+',
             ns: 'track-tile-ui',
           })}

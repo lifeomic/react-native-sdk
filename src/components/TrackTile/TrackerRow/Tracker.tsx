@@ -78,12 +78,12 @@ export const Tracker: FC<TrackerProps> = (tracker) => {
       </Text>
       <Text testID={tID(`tracker-unit-${id}`)} style={[styles.trackerUnit]}>
         {isInstalled
-          ? i18n.t('8ec46d9188f504c09a64027a742d7fa5', {
+          ? i18n.t('track-tile.unit-display', {
               defaultValue: '({{unit}})',
               unit: unitDisplay,
               ns: 'track-tile-ui',
             })
-          : i18n.t('7ca7a0f6709e2b1ed0e45255c837e0cd', {
+          : i18n.t('track-tile.track-it', {
               defaultValue: 'Track It!',
               ns: 'track-tile-ui',
             })}

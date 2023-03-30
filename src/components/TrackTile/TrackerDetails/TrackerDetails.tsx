@@ -207,14 +207,14 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
             style={styles.trackerDetailsMyTarget}
             numberOfLines={1}
           >
-            {i18n.t('1dd732d282905b785370859fe167cdc6', {
+            {i18n.t('track-tile.my-target', {
               defaultValue: 'My Target',
               ns: 'track-tile-ui',
             })}
           </Text>
           <TextInput
             testID={tID('tracker-target-input')}
-            accessibilityLabel={i18n.t('9a8405185ebe954aaefa599d99390a2f', {
+            accessibilityLabel={i18n.t('track-tile.target-input', {
               defaultValue: 'Target Input',
               ns: 'track-tile-ui',
             })}

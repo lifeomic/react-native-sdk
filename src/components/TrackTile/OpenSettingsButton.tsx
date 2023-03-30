@@ -16,7 +16,7 @@ const OpenSettingsButton: FC<TouchableOpacityProps> = (props) => {
     <TouchableOpacity
       testID={tID('open-tracker-settings-button')}
       accessibilityRole="button"
-      accessibilityLabel={i18n.t('7689c1616ae8ea9ffab9568de1ac3d62', {
+      accessibilityLabel={i18n.t('track-tile.open-tracker-settings', {
         defaultValue: 'Open Tracker Settings',
         ns: 'track-tile-ui',
       })}
