@@ -96,7 +96,6 @@ const supportedNotificationTypes = [
 const selectNotifications = (
   data: NotificationQueryResponse,
 ): NotificationQueryResponse => {
-  console.log(data);
   return {
     notificationsForUser: {
       edges: data.notificationsForUser.edges.filter((edge) =>
