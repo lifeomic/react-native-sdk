@@ -102,12 +102,12 @@ beforeEach(() => {
 
 describe('WearablesView', () => {
   it('should render wearable rows', async () => {
-    const { getByA11yLabel, getByText } = await render(
+    const { getByTestId, getByText } = await render(
       <WearablesView {...baseProps} />,
     );
-    expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
-    expect(getByA11yLabel('Toggle Biosense')).toBeDefined();
-    expect(getByA11yLabel('Toggle Keto-Mojo')).toBeDefined();
+    expect(getByTestId('Toggle Fitbit')).toBeDefined();
+    expect(getByTestId('Toggle Biosense')).toBeDefined();
+    expect(getByTestId('Toggle Keto-Mojo')).toBeDefined();
 
     expect(getByText('Authorize')).toBeDefined();
   });
@@ -127,11 +127,11 @@ describe('WearablesView', () => {
       ...baseProps,
       wearables: [fitbitNeedsAuth, readoutWithNoSyncTypes],
     };
-    const { getByA11yLabel, getByText } = await render(
+    const { getByTestId, getByText } = await render(
       <WearablesView {...props} />,
     );
-    expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
-    expect(getByA11yLabel('Toggle Biosense')).toBeDefined();
+    expect(getByTestId('Toggle Fitbit')).toBeDefined();
+    expect(getByTestId('Toggle Biosense')).toBeDefined();
 
     expect(
       getByText(
@@ -179,35 +179,35 @@ describe('WearablesView', () => {
     });
 
     it('should render wearable rows and source selection options', async () => {
-      const { getByText, getByA11yLabel } = await render(
+      const { getByText, getByTestId } = await render(
         <WearablesView {...multiBaseProps} />,
       );
 
       await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
 
-      expect(getByA11yLabel('Fitbit - Activity')).toBeDefined();
-      expect(getByA11yLabel('Fitbit - Sleep')).toBeDefined();
-      expect(getByA11yLabel('Apple Health - Weight')).toBeDefined();
+      expect(getByTestId('Fitbit - Activity')).toBeDefined();
+      expect(getByTestId('Fitbit - Sleep')).toBeDefined();
+      expect(getByTestId('Apple Health - Weight')).toBeDefined();
 
       expect(getByText('Authorize')).toBeDefined();
 
-      expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
-      expect(getByA11yLabel('Toggle Biosense')).toBeDefined();
-      expect(getByA11yLabel('Toggle Keto-Mojo')).toBeDefined();
+      expect(getByTestId('Toggle Fitbit')).toBeDefined();
+      expect(getByTestId('Toggle Biosense')).toBeDefined();
+      expect(getByTestId('Toggle Keto-Mojo')).toBeDefined();
     });
 
     it('should call onSyncTypeSelectionsUpdate when settings are updated', async () => {
-      const { getByText, getByA11yLabel } = await render(
+      const { getByText, getByTestId } = await render(
         <WearablesView {...multiBaseProps} />,
       );
 
       await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
 
-      const sleepSelection = getByA11yLabel('Fitbit - Sleep');
+      const sleepSelection = getByTestId('Fitbit - Sleep');
       expect(sleepSelection).toBeDefined();
       fireEvent.press(sleepSelection);
 
-      const appleHealthOption = getByA11yLabel('Apple Health');
+      const appleHealthOption = getByTestId('Apple Health');
       expect(appleHealthOption).toBeDefined();
       fireEvent.press(appleHealthOption);
 
@@ -225,17 +225,17 @@ describe('WearablesView', () => {
     it('should call onError if onSyncTypeSelectionsUpdate throws', async () => {
       const error = new Error('api is down');
       viewActions.onSyncTypeSelectionsUpdate.mockRejectedValue(error);
-      const { getByText, getByA11yLabel } = await render(
+      const { getByText, getByTestId } = await render(
         <WearablesView {...multiBaseProps} />,
       );
 
       await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
 
-      const sleepSelection = getByA11yLabel('Fitbit - Sleep');
+      const sleepSelection = getByTestId('Fitbit - Sleep');
       expect(sleepSelection).toBeDefined();
       fireEvent.press(sleepSelection);
 
-      const appleHealthOption = getByA11yLabel('Apple Health');
+      const appleHealthOption = getByTestId('Apple Health');
       expect(appleHealthOption).toBeDefined();
       fireEvent.press(appleHealthOption);
 

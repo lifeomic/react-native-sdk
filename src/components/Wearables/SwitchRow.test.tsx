@@ -17,15 +17,15 @@ describe('SwitchRow', () => {
   });
 
   it('renders default ally label', () => {
-    const { getAllByA11yLabel } = render(<SwitchRow {...baseProps} />);
-    expect(getAllByA11yLabel('Switch Title app switch')).toBeDefined();
+    const { getByLabelText } = render(<SwitchRow {...baseProps} />);
+    expect(getByLabelText('Switch Title app switch')).toBeDefined();
   });
 
   it('renders custom ally label', () => {
-    const { getAllByA11yLabel } = render(
+    const { getByLabelText } = render(
       <SwitchRow {...baseProps} accessibilityLabel="custom-label" />,
     );
-    expect(getAllByA11yLabel('custom-label')).toBeDefined();
+    expect(getByLabelText('custom-label')).toBeDefined();
   });
 
   it('allows value=true', () => {

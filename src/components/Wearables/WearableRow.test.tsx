@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { WearableRow, WearableRowProps } from './WearableRow';
 import { EHRType, WearableIntegrationStatus } from './WearableTypes';
 
@@ -40,11 +40,11 @@ beforeEach(() => {
 
 describe('WearableRow', () => {
   it('should render a wearable row', () => {
-    const { getByA11yLabel, getByText } = render(
+    const { getByLabelText, getByText } = render(
       <WearableRow {...baseProps} />,
     );
 
-    expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
+    expect(getByLabelText('Toggle Fitbit')).toBeDefined();
     expect(
       getByText(
         "Fitbit records will be ingested once they are available from Fitbit's cloud. You may need to sync with the Fitbit app if records appear to be missing.",
@@ -54,7 +54,7 @@ describe('WearableRow', () => {
   });
 
   it('should display error message in wearable row if it needs auth', () => {
-    const { getByA11yLabel, getByText } = render(
+    const { getByLabelText, getByText } = render(
       <WearableRow
         {...baseProps}
         wearable={{
@@ -64,7 +64,7 @@ describe('WearableRow', () => {
       />,
     );
 
-    expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
+    expect(getByLabelText('Toggle Fitbit')).toBeDefined();
     expect(
       getByText(
         'Your data is not syncing. Please toggle back on to reauthorize.',
@@ -73,7 +73,7 @@ describe('WearableRow', () => {
   });
 
   it('should display error message in wearable row if not configured for any syncTypes', () => {
-    const { getByA11yLabel, getByText } = render(
+    const { getByLabelText, getByText } = render(
       <WearableRow
         {...baseProps}
         wearable={{
@@ -83,7 +83,7 @@ describe('WearableRow', () => {
       />,
     );
 
-    expect(getByA11yLabel('Toggle Fitbit')).toBeDefined();
+    expect(getByLabelText('Toggle Fitbit')).toBeDefined();
     expect(
       getByText(
         'Your data is not syncing because it is not configured as a Data Source above.',
@@ -137,11 +137,12 @@ describe('WearableRow', () => {
     const toggle = getByTestId('toggle-fitbit');
     expect(toggle).toBeDefined();
 
-    await act(async () => {
-      fireEvent(toggle, 'onPress');
+    fireEvent.press(toggle);
+
+    await waitFor(() => {
+      expect(rowActions.onShowWearableAuth).toHaveBeenCalledTimes(1);
     });
 
-    expect(rowActions.onShowWearableAuth).toHaveBeenCalledTimes(1);
     expect(rowActions.onShowWearableAuth.mock.calls[0]).toEqual([
       'link-to-authorize-phc',
     ]);
@@ -179,11 +180,11 @@ describe('WearableRow', () => {
     const toggle = getByTestId('toggle-fitbit');
     expect(toggle).toBeDefined();
 
-    await act(async () => {
-      fireEvent(toggle, 'onPress');
+    fireEvent.press(toggle);
+    await waitFor(() => {
+      expect(rowActions.onError).toHaveBeenCalledTimes(1);
     });
 
-    expect(rowActions.onError).toHaveBeenCalledTimes(1);
     expect(rowActions.onError.mock.calls[0]).toEqual([error, 'fitbit', true]);
     expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
   });

@@ -17,8 +17,8 @@ describe('SelectorRow', () => {
   });
 
   it('has accessibility label with title', () => {
-    const { getByA11yLabel } = render(<SelectorRow {...baseProps} />);
-    expect(getByA11yLabel('Row Title')).toBeDefined();
+    const { getByLabelText } = render(<SelectorRow {...baseProps} />);
+    expect(getByLabelText('Row Title')).toBeDefined();
   });
 
   it('allows for selected prop', () => {

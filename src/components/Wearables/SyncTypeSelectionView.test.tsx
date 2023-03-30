@@ -71,15 +71,15 @@ describe('SyncTypeSelectionRow', () => {
   });
 
   it('renders ally labels and currently selected wearables', () => {
-    const { getByA11yLabel } = render(<SyncTypeSelectionView {...baseProps} />);
-    expect(getByA11yLabel('Sleep')).toBeDefined();
-    expect(getByA11yLabel('Wearable 1 - Sleep')).toBeDefined();
+    const { getByLabelText } = render(<SyncTypeSelectionView {...baseProps} />);
+    expect(getByLabelText('Sleep')).toBeDefined();
+    expect(getByLabelText('Wearable 1 - Sleep')).toBeDefined();
 
-    expect(getByA11yLabel('Weight')).toBeDefined();
-    expect(getByA11yLabel('Wearable 2 - Weight')).toBeDefined();
+    expect(getByLabelText('Weight')).toBeDefined();
+    expect(getByLabelText('Wearable 2 - Weight')).toBeDefined();
 
-    expect(getByA11yLabel('Activity')).toBeDefined();
-    expect(getByA11yLabel('Do not sync - Activity')).toBeDefined();
+    expect(getByLabelText('Activity')).toBeDefined();
+    expect(getByLabelText('Do not sync - Activity')).toBeDefined();
   });
 
   it('does not explode if wearables have no syncTypes or supportedSyncTypes', () => {

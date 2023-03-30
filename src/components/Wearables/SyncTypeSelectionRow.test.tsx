@@ -35,9 +35,9 @@ describe('SyncTypeSelectionRow', () => {
   });
 
   it('renders ally labels and currently selected wearable', () => {
-    const { getByA11yLabel } = render(<SyncTypeSelectionRow {...baseProps} />);
-    expect(getByA11yLabel('Sync Type')).toBeDefined();
-    expect(getByA11yLabel('Wearable 1 - Sync Type')).toBeDefined();
+    const { getByLabelText } = render(<SyncTypeSelectionRow {...baseProps} />);
+    expect(getByLabelText('Sync Type')).toBeDefined();
+    expect(getByLabelText('Wearable 1 - Sync Type')).toBeDefined();
   });
 
   it('allows selecting new wearable for sync type', () => {
