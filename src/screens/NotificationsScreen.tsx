@@ -57,22 +57,27 @@ export const NotificationsScreen = () => {
     );
   });
 
+  const noNotifications = (
+    <List.Item
+      title={t(
+        'no-notifications-message',
+        'You have no notifications to display!',
+      )}
+      style={styles.listItem}
+      left={() => noNotificationsIcon}
+    />
+  );
+
+  const notificationsAreaContent =
+    notificationEntries && notificationEntries.length
+      ? notificationEntries
+      : noNotifications;
+
   return (
     <View testID="notifications-screen">
       <SafeAreaView>
         <Divider />
-        {notificationEntries && notificationEntries.length ? (
-          notificationEntries
-        ) : (
-          <List.Item
-            title={t(
-              'no-notifications-message',
-              'You have no notifications to display!',
-            )}
-            style={styles.listItem}
-            left={() => noNotificationsIcon}
-          />
-        )}
+        {notificationsAreaContent}
       </SafeAreaView>
     </View>
   );
