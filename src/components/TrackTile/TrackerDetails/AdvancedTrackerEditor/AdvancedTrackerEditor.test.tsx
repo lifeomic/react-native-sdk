@@ -13,6 +13,8 @@ import {
   notifySaveEditTrackerValue,
 } from '../../services/EmitterService';
 
+jest.unmock('i18next');
+
 const tracker: Tracker = {
   account: '',
   code: TRACKER_PILLAR_CODE,

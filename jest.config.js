@@ -9,11 +9,7 @@ module.exports = {
   moduleFileExtensions: ['js', 'json', 'ts', 'tsx', 'jsx', 'node', 'mjs'],
   modulePathIgnorePatterns: [
     '<rootDir>[/\\\\](|coverage|node_modules)[/\\\\]',
-    'src/components/TrackTile/ManageTrackers/ManageTrackers.test.tsx',
-    'src/components/TrackTile/TrackerDetails/UnitPicker.test.tsx',
     'src/components/TrackTile/TrackerDetails/AdvancedTrackerEditor/AdvancedTrackerEditor.test.tsx',
-    'src/components/TrackTile/TrackerDetails/AdvancedTrackerDetails/AdvancedTrackerDetails.test.tsx',
-    'src/components/TrackTile/TrackerDetails/TrackerDetails.test.tsx'
   ],
   preset: 'react-native',
   setupFilesAfterEnv: [

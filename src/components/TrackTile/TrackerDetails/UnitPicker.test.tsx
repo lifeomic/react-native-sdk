@@ -3,20 +3,14 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { UnitPicker, UnitPickerProps } from './UnitPicker';
 import { Platform } from 'react-native';
 
-jest.mock('react-native', () => {
-  const RN = jest.requireActual('react-native');
-  const mockComponent = jest.requireActual('react-native/jest/mockComponent');
-  delete RN.Picker;
-  RN.Picker = mockComponent('@react-native-picker/picker/js/Picker');
-  RN.Picker.Item = mockComponent('@react-native-picker/picker/js/PickerItem');
-  return RN;
-});
 jest.mock('@react-native-picker/picker', () => {
   const mockComponent = jest.requireActual('react-native/jest/mockComponent');
   const PickerIOS = mockComponent('@react-native-picker/picker/js/Picker');
   PickerIOS.Item = mockComponent('@react-native-picker/picker/js/PickerItem');
+  const Picker = mockComponent('@react-native-picker/picker/js/Picker');
+  Picker.Item = mockComponent('@react-native-picker/picker/js/PickerItem');
 
-  return { PickerIOS };
+  return { PickerIOS, Picker };
 });
 
 const units: UnitPickerProps['units'] = [
