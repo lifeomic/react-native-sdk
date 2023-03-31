@@ -31,4 +31,3 @@ import './TrackerRow/RadialProgress';
 import './TrackerRow/Tracker';
 import './TrackerRow/TrackerRow';
 import './PillarsTile/Pillar';
-import './___i18n';
