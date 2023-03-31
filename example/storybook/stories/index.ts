@@ -1,7 +1,8 @@
 import './BrandConfigProvider/BrandConfigProvider.stories';
-import './Welcome/Welcome.stories';
-import './OAuth.stories';
+import './CustomAppTileScreen.stories';
 import './ExampleApp.stories';
+import './NoInternetToastProvider.stories';
+import './OAuth.stories';
 import './TilesList.stories';
 import './TrackTile/AdvancedTrackerDetails.stories';
 import './TrackTile/AdvancedTrackerEditor.stories';
@@ -12,4 +13,4 @@ import './TrackTile/Tracker.stories';
 import './TrackTile/TrackerDetails.stories';
 import './TrackTile/TrackerHistoryChart.stories';
 import './TrackTile/TrackTiles.stories';
-import './NoInternetToastProvider.stories';
+import './Welcome/Welcome.stories';

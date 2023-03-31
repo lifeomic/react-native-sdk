@@ -11,7 +11,7 @@ export const AppTileScreen = ({ navigation, route }: Props) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: route.params.appTile.title,
+      title: route.params.appTile.title,
     });
   }, [navigation, route.params.appTile.title]);
 

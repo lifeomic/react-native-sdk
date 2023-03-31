@@ -5,7 +5,8 @@ import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
 import { useNavigation } from '@react-navigation/native';
 import { HomeScreenNavigation } from '../../screens/HomeScreen';
-import { useStyles } from '../../hooks';
+import { useStyles, useDeveloperConfig } from '../../hooks';
+import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { spacing } from '../BrandConfigProvider/theme/base';
 import { createStyles } from '../BrandConfigProvider';
 
@@ -26,12 +27,17 @@ export const TileList = ({
 }: TilesListProps) => {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { navigate } = useNavigation<HomeScreenNavigation>();
+  const { appTileScreens } = useDeveloperConfig();
 
   const onAppTilePressDefault = useCallback(
     (appTile: AppTile) => () => {
-      navigate('tiles/AppTile', { appTile });
+      if (getCustomAppTileComponent(appTileScreens, appTile)) {
+        navigate('tiles/CustomAppTile', { appTile });
+      } else {
+        navigate('tiles/AppTile', { appTile });
+      }
     },
-    [navigate],
+    [navigate, appTileScreens],
   );
 
   return (
