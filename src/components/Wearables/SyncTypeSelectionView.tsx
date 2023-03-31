@@ -4,10 +4,10 @@ import {
   WearableIntegration,
   WearableIntegrationStatus,
 } from './WearableTypes';
-import i18n from 'format-message';
 import React, { FC, useCallback } from 'react';
 
 import { SyncTypeSelectionRow } from './SyncTypeSelectionRow';
+import { t } from 'i18next';
 
 export interface SyncTypeSelectionViewProps {
   disabled?: boolean;
@@ -126,7 +126,7 @@ export const getSyncTypeOptions = (wearables: WearableIntegration[]) => {
     options[syncType].push({
       ehrId: 'none',
       ehrType: 'none',
-      name: i18n('Do not sync'),
+      name: t('do-not-sync-wearable-metrics', 'Do not sync'),
       enabled: false,
     });
   }
@@ -139,31 +139,31 @@ export const getDisplayValueForSyncType = (
 ) => {
   switch (syncType) {
     case WearableStateSyncType.BloodGlucose:
-      return i18n('Glucose');
+      return t('glucose', 'Glucose');
     case WearableStateSyncType.BloodKetones:
-      return i18n('Ketones');
+      return t('ketones', 'Ketones');
     case WearableStateSyncType.BloodPressure:
-      return i18n('Blood Pressure');
+      return t('blood-pressure', 'Blood Pressure');
     case WearableStateSyncType.BodyMass:
-      return i18n('Weight');
+      return t('weight', 'Weight');
     case WearableStateSyncType.BreathKetones:
-      return i18n('Breath Ketones');
+      return t('breath-ketones', 'Breath Ketones');
     case WearableStateSyncType.Immunization:
-      return i18n('Immunizations');
+      return t('immunizations', 'Immunizations');
     case WearableStateSyncType.MindfulSession:
-      return i18n('Mindfulness');
+      return t('mindfulness', 'Mindfulness');
     case WearableStateSyncType.RespiratoryRate:
-      return i18n('Respiratory Rate');
+      return t('respiratory-rate', 'Respiratory Rate');
     case WearableStateSyncType.RestingHeartRate:
-      return i18n('Resting Heart Rate');
+      return t('resting-heart-rate', 'Resting Heart Rate');
     case WearableStateSyncType.SleepAnalysis:
-      return i18n('Sleep');
+      return t('sleep', 'Sleep');
     case WearableStateSyncType.StepCount:
-      return i18n('Step Count');
+      return t('step-count', 'Step Count');
     case WearableStateSyncType.Vo2Max:
-      return i18n('VO₂ Max');
+      return t('vo2-max', 'VO₂ Max');
     case WearableStateSyncType.Workout:
-      return i18n('Activity');
+      return t('activity', 'Activity');
     default:
       return syncType;
   }

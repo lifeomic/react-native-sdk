@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import merge from 'lodash/merge';
 import sortBy from 'lodash/sortBy';
-import i18n from 'format-message';
 import {
   SyncTypeSettings,
   WearableIntegration,
@@ -19,6 +18,7 @@ import { EHRType, WearableStateSyncType } from './WearableTypes';
 import { Colors, Margin } from './defaultTheme';
 import { WearableRow, WearableRowProps } from './WearableRow';
 import { SyncTypeSelectionView } from './SyncTypeSelectionView';
+import { t } from 'i18next';
 
 export interface WearablesViewProps extends Omit<WearableRowProps, 'wearable'> {
   /**
@@ -107,7 +107,9 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
       </View>
       {showSyncTypeSelections && (
         <>
-          <Text style={styles.sectionHeaderTop}>{i18n('Data Sources')}</Text>
+          <Text style={styles.sectionHeaderTop}>
+            {t('data-sources', 'Data Sources')}
+          </Text>
           <SyncTypeSelectionView
             disabled={loading}
             onUpdate={updateSyncTypeSelections}
@@ -124,7 +126,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
               : styles.sectionHeaderTop
           }
         >
-          {i18n('Authorize')}
+          {t('authorize', 'Authorize')}
         </Text>
       )}
       {sanitizedWearables.map((wearable: WearableIntegration) => (

@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import i18n from 'format-message';
 import merge from 'lodash/merge';
 import { WearableRowHeader } from './WearableRowHeader';
 import { SwitchRow } from './SwitchRow';
@@ -30,6 +29,7 @@ import Biosense from './icons/vendorIcons/Biosense';
 import KetoMojo from './icons/vendorIcons/KetoMojo';
 import Dexcom from './icons/vendorIcons/Dexcom';
 import { ToggleButton } from './ToggleButton';
+import { t } from 'i18next';
 
 export interface WearableRowProps {
   switchProps?: SwitchProps;
@@ -132,49 +132,59 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
       let intro: string | undefined;
 
       const standard =
-        'Connecting {wearableName} allows you to sync data like {supportedSyncTypes}. You can disconnect from {wearableName} at any time from this screen.';
+        'Connecting {{wearableName}} allows you to sync data like {{supportedSyncTypes}}. You can disconnect from {{wearableName}} at any time from this screen.';
 
       switch (wearable.ehrType) {
         case EHRType.ReadoutHealth: {
-          intro = i18n(standard, {
+          intro = t(standard, {
             wearableName: wearable.name,
-            supportedSyncTypes: i18n('breath ketones'),
+            supportedSyncTypes: t('breath-ketones', 'breath ketones'),
           });
           break;
         }
         case EHRType.Fitbit:
         case EHRType.Garmin: {
-          intro = i18n(standard, {
+          intro = t(standard, {
             wearableName: wearable.name,
-            supportedSyncTypes: i18n('weight, sleep, and activity'),
+            supportedSyncTypes: t(
+              'weight-sleep-activity',
+              'weight, sleep, and activity',
+            ),
           });
           break;
         }
         case EHRType.GoogleFit: {
           // See https://developers.google.com/fit/branding
-          intro = i18n(
+          intro = t(
+            'about-connecting-googlefit-message',
             'Google Fit is an open platform that lets you control your fitness data from multiple apps and devices.  Connecting to Google Fit allows you to sync data like weight, sleep, activity, mindful minutes, and blood glucose.  You can disconnect from Google Fit at any time from this screen.',
           );
           break;
         }
         case EHRType.Dexcom: {
-          intro = i18n(standard, {
+          intro = t(standard, {
             wearableName: wearable.name,
-            supportedSyncTypes: i18n('blood glucose'),
+            supportedSyncTypes: t('blood-glucose', 'blood glucose'),
           });
           break;
         }
         case EHRType.KetoMojo: {
-          intro = i18n(standard, {
+          intro = t(standard, {
             wearableName: wearable.name,
-            supportedSyncTypes: i18n('blood ketones and blood glucose'),
+            supportedSyncTypes: t(
+              'blood-ketones-blood-glucose',
+              'blood ketones and blood glucose',
+            ),
           });
           break;
         }
         case EHRType.Oura: {
-          intro = i18n(standard, {
+          intro = t(standard, {
             wearableName: wearable.name,
-            supportedSyncTypes: i18n('sleep, mindful minutes, and activity'),
+            supportedSyncTypes: t(
+              'sleep-mindful-activity',
+              'sleep, mindful minutes, and activity',
+            ),
           });
           break;
         }
@@ -203,49 +213,56 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
 
       switch (enabledWearable.ehrType) {
         case EHRType.Fitbit: {
-          description = i18n(
+          description = t(
+            'fitbit-learnmore',
             "Fitbit records will be ingested once they are available from Fitbit's cloud. You may need to sync with the Fitbit app if records appear to be missing.",
           );
           link = 'https://lifeapps.io/ia/wearables-sync-fitbit/';
           break;
         }
         case EHRType.Oura: {
-          description = i18n(
+          description = t(
+            'oura-learnmore',
             'Oura records will be ingested periodically in the cloud. You will need to sync with the Oura app for your records to be available.',
           );
           link = 'https://lifeapps.io/ia/wearables-sync-oura/';
           break;
         }
         case EHRType.Garmin: {
-          description = i18n(
+          description = t(
+            'garmin-learnmore',
             'Garmin records will sync once they are available in the Garmin Connect app.',
           );
           link = 'https://lifeapps.io/ia/wearables-sync-garmin/';
           break;
         }
         case EHRType.ReadoutHealth: {
-          description = i18n(
+          description = t(
+            'readout-learnmore',
             'Readout Health records will be ingested periodically in the cloud. You will need to sync with the Biosense app for your records to be available.',
           );
           link = 'https://lifeapps.io/ia/wearables-sync-readout-health/';
           break;
         }
         case EHRType.KetoMojo: {
-          description = i18n(
+          description = t(
+            'keto-mojo-learnmore',
             'Keto-Mojo records will sync once they are available in the MyMojoHealth app or Keto-Mojo Classic app.',
           );
           link = 'https://lifeapps.io/ia/wearables-sync-keto-mojo/';
           break;
         }
         case EHRType.GoogleFit: {
-          description = i18n(
+          description = t(
+            'google-fit-learnmore',
             'Google Fit records will be ingested periodically in the cloud. You may need to sync with the Google Fit app if records appear to be missing.',
           );
           link = 'https://lifeapps.io/ia/wearables-sync-google-fit/';
           break;
         }
         case EHRType.Dexcom: {
-          description = i18n(
+          description = t(
+            'dexcom-learnmore',
             'Dexcom records will be ingested periodically in the cloud. You will need to sync with the Dexcom app, which will then impose a 3 hour delay when syncing your records.',
           );
           link = 'https://lifeapps.io/ia/wearables-sync-dexcom/';
@@ -269,7 +286,9 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
               testID={`info-link-${wearable.ehrId}`}
               onPress={_onShowLearnMore(link)}
             >
-              <Text style={styles.learnMoreButton}>{i18n('Learn More')}</Text>
+              <Text style={styles.learnMoreButton}>
+                {t('learn-more', 'Learn More')}
+              </Text>
             </TouchableOpacity>
           </WearableRowDetailSection>
         )
@@ -298,8 +317,8 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
         >
           <SwitchRow
             onValueChange={toggleBackgroundSync(wearable)}
-            accessibilityLabel={i18n('Toggle {wearableName} background sync', {
-              wearableName: i18n('Background Sync'),
+            accessibilityLabel={t('Toggle {{wearableName}} background sync', {
+              wearableName: t('background-sync', 'Background Sync'),
             })}
             disabled={disabled}
             testID={`toggle-${wearable.ehrId}-background-sync`}
@@ -309,7 +328,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
                 fontWeight: 'normal',
               },
             }}
-            title={i18n('Background Sync')}
+            title={t('background-sync-heading', 'Background Sync')}
             {...switchProps}
           />
           {backgroundSyncEnabled && (
@@ -317,7 +336,8 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
               style={styles.backgroundSyncDescription}
               testID={`background-desc-${wearable.ehrId}`}
             >
-              {i18n(
+              {t(
+                'background-sync-message',
                 'Records will sync in the background if allowed in device settings.',
               )}
             </Text>
@@ -338,14 +358,14 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
   const renderToggle = useCallback(
     (wearable: WearableIntegration) => {
       let buttonTitle = wearable.enabled
-        ? i18n('Disconnect {wearableName}', { wearableName: wearable.name })
-        : i18n('Sign in with {wearableName}', { wearableName: wearable.name });
+        ? t('Disconnect {{wearableName}}', { wearableName: wearable.name })
+        : t('Sign in with {{wearableName}}', { wearableName: wearable.name });
       let icon: React.ReactNode | undefined;
 
       if (!wearable.enabled && wearable.ehrType === EHRType.GoogleFit) {
         buttonTitle = wearable.enabled
-          ? i18n('Disconnect {wearableName}', { wearableName: wearable.name })
-          : i18n('Sign in with Google'); // NOTE: "Google" instead of "GoogleFit"
+          ? t('Disconnect {{wearableName}}', { wearableName: wearable.name })
+          : t('sign-in-with-google', 'Sign in with Google'); // NOTE: "Google" instead of "GoogleFit"
         icon = <Google />;
       }
 
@@ -366,10 +386,12 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
 
   const renderSyncError = useCallback(
     (auth = true) => {
-      const authErrorText = i18n(
+      const authErrorText = t(
+        'your-data-is-not-syncing-message',
         'Your data is not syncing. Please toggle back on to reauthorize.',
       );
-      const noSyncTypesErrorText = i18n(
+      const noSyncTypesErrorText = t(
+        'configure-data-to-sync-message',
         'Your data is not syncing because it is not configured as a Data Source above.',
       );
 
