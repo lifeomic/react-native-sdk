@@ -7,7 +7,7 @@ import { HomeStackParamList } from '../navigators/HomeStack';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
-import { TileList } from '../components/tiles/TilesList';
+import { TilesList } from '../components/tiles/TilesList';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 export type HomeScreenNavigation = Props['navigation'];
@@ -42,7 +42,7 @@ export const HomeScreen = () => {
           overScrollMode="always"
           showsVerticalScrollIndicator={false}
         >
-          <TileList tiles={appConfig?.homeTab?.appTiles} />
+          <TilesList tiles={appConfig?.homeTab?.appTiles} />
         </ScrollView>
       </SafeAreaView>
     </View>
