@@ -17,7 +17,7 @@ export interface TilesListProps {
   onAppTilePress?: () => void;
 }
 
-export const TileList = ({
+export const TilesList = ({
   tiles,
   children,
   styles: instanceStyles,

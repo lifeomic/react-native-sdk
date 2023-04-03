@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { AppTile, Tile } from '../../../src';
-import { TileList } from 'src/components/tiles/TilesList';
+import { TilesList } from 'src/components/tiles/TilesList';
 import { NavigationContainer } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import { select } from '@storybook/addon-knobs';
@@ -70,7 +70,7 @@ storiesOf('TilesList', module).add('demo', () => {
 
   return (
     <NavigationContainer>
-      <TileList>
+      <TilesList>
         <Tile
           id={appTiles[0].id}
           title={appTiles[0].title}
@@ -95,7 +95,7 @@ storiesOf('TilesList', module).add('demo', () => {
           mode={tile4Length}
           onPress={onTilePress}
         />
-      </TileList>
+      </TilesList>
     </NavigationContainer>
   );
 });
