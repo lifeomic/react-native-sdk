@@ -14,7 +14,7 @@ import {
   HomeStackParamList,
   Tile,
 } from 'src';
-import { TileList } from 'src/components/tiles/TilesList';
+import { TilesList } from 'src/components/tiles/TilesList';
 
 storiesOf('Custom App Tile Screen', module).add('demo', () => (
   <DeveloperConfigProvider
@@ -65,7 +65,7 @@ function HomeScreen() {
           overScrollMode="always"
           showsVerticalScrollIndicator={false}
         >
-          <TileList tiles={appTiles} />
+          <TilesList tiles={appTiles} />
           <View style={{ padding: 8 }}>
             <Tile
               id="app-tile-invalid"
