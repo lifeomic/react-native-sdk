@@ -2,6 +2,8 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { TilesList } from './TilesList';
 
+jest.unmock('i18next');
+
 const tiles = [
   {
     id: 'tile-id-1',

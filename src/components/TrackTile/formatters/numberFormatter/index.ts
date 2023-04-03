@@ -1,8 +1,7 @@
-import i18n from '@i18n';
+import { t } from '@i18n';
 
 const numberFormatters = {
-  numberFormat: (value: number) =>
-    i18n.t('intlNumber', { val: value, ns: 'track-tile-ui' }),
+  numberFormat: (value: number) => t('track-tile.intl-number', { val: value }),
 };
 
 export default numberFormatters;

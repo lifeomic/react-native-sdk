@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import {
   TouchableOpacity,
   TouchableOpacityProps,
@@ -16,10 +16,10 @@ const OpenSettingsButton: FC<TouchableOpacityProps> = (props) => {
     <TouchableOpacity
       testID={tID('open-tracker-settings-button')}
       accessibilityRole="button"
-      accessibilityLabel={i18n.t('7689c1616ae8ea9ffab9568de1ac3d62', {
-        defaultValue: 'Open Tracker Settings',
-        ns: 'track-tile-ui',
-      })}
+      accessibilityLabel={t(
+        'track-tile.open-tracker-settings',
+        'Open Tracker Settings',
+      )}
       style={styles.trackTileSettingsButton}
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       {...props}

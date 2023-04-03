@@ -6,7 +6,7 @@ import {
   StyleSheet,
   I18nManager,
 } from 'react-native';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { Tracker } from '../services/TrackTileService';
 import Indicator from '../icons/indicator';
 import Chevron from '../icons/Chevron';
@@ -77,14 +77,8 @@ export const ManageTrackerRow: FC<Props> = (props) => {
               ]}
             >
               {inactive
-                ? i18n.t('3cab03c00dbd11bc3569afa0748013f0', {
-                    defaultValue: 'Inactive',
-                    ns: 'track-tile-ui',
-                  })
-                : i18n.t('4d3d769b812b6faa6b76e1a8abaece2d', {
-                    defaultValue: 'Active',
-                    ns: 'track-tile-ui',
-                  })}
+                ? t('track-tile.inactive', 'Inactive')
+                : t('track-tile.active', 'Active')}
             </Text>
           </View>
           <View
@@ -95,11 +89,10 @@ export const ManageTrackerRow: FC<Props> = (props) => {
             accessible={false}
             accessibilityLabel={
               isDraggable
-                ? i18n.t('fe9f448fdb31100d0a4884c8403ca2e7', {
+                ? t('track-tile.hold-drag-to-change-order-of', {
                     defaultValue:
                       'Hold and Drag to Change the Order of {{name}}',
                     name: tracker.name,
-                    ns: 'track-tile-ui',
                   })
                 : undefined
             }

@@ -4,6 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 import { AppConfig, useActiveAccount, useAppConfig } from '../hooks';
 import { HomeScreen } from './HomeScreen';
 
+jest.unmock('i18next');
+
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));

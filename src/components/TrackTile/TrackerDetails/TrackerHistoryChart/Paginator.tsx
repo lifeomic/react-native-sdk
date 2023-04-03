@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { StyleSheet, View, TouchableOpacity, I18nManager } from 'react-native';
 import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
 import { StylesProp, useStyleOverrides, Text } from '../../styles';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { tID } from '../../common/testID';
 import { dateFormatters } from '../../formatters';
 import { ChevronLeft, ChevronRight } from '@lifeomic/chromicons-native';
@@ -44,10 +44,10 @@ const Paginator: FC<PaginatorProps> = (props) => {
       <TouchableOpacity
         testID={tID('history-chart-view-previous-week')}
         style={styles.trackerHistoryChartPaginatorStepperButton}
-        accessibilityLabel={i18n.t('53ce64deea48bc8554d76f9d22dbbca5', {
-          defaultValue: "Previous week's data",
-          ns: 'track-tile-ui',
-        })}
+        accessibilityLabel={t(
+          'track-tile.previous-weeks-data',
+          "Previous week's data",
+        )}
         accessibilityRole="button"
         onPress={() => onChangeRange(-7)}
         hitSlop={hitSlop}
@@ -60,15 +60,14 @@ const Paginator: FC<PaginatorProps> = (props) => {
         />
       </TouchableOpacity>
       <Text
-        testID={tID('history-chart-active-date-range')}
+        testID={tID('history-chart-active-track-tile.date-range')}
         accessible={false}
         style={styles.trackerHistoryChartPaginatorTitle}
       >
-        {i18n.t('date-range', {
+        {t('track-tile.date-range', {
           defaultValue: '{{start}} - {{end}}',
           start: shortMonthNumericDayWithYear(range.start),
           end: shortMonthNumericDayWithYear(range.end),
-          ns: 'track-tile-ui',
           formatParams: {
             start: shortMonthNumericDayWithYear,
             end: shortMonthNumericDayWithYear,
@@ -77,10 +76,7 @@ const Paginator: FC<PaginatorProps> = (props) => {
       </Text>
       <TouchableOpacity
         testID={tID('history-chart-view-next-week')}
-        accessibilityLabel={i18n.t('8c1ecfad31db029ed474399706684492', {
-          defaultValue: "Next week's data",
-          ns: 'track-tile-ui',
-        })}
+        accessibilityLabel={t('track-tile.next-weeks-data', "Next week's data")}
         accessibilityRole="button"
         style={styles.trackerHistoryChartPaginatorStepperButton}
         disabled={isToday(range.end)}

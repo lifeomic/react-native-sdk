@@ -8,7 +8,7 @@ import {
 import { StylesProp, useStyleOverrides, Text } from '../styles';
 import React, { FC, useCallback, useState } from 'react';
 import { Picker, PickerIOS } from '@react-native-picker/picker';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { MetricType } from '../services/TrackTileService';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { IosPickerIcon } from './IosPickerIcon';
@@ -30,10 +30,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
     value,
     units,
     onChange,
-    placeholder = i18n.t('9031f0b71c20458a79410b99b2e3d521', {
-      defaultValue: 'Choose a Unit',
-      ns: 'track-tile-ui',
-    }),
+    placeholder = t('track-tile.choose-a-unit', 'Choose a Unit'),
   } = props;
   const styles = useStyleOverrides(defaultStyles);
   const [width, setWidth] = useState(0);
@@ -60,10 +57,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
       <View>
         <TouchableOpacity
           onPress={openInput}
-          accessibilityLabel={i18n.t('ae96a9f2fdf142f2c5da6a70ab8bbce2', {
-            defaultValue: 'Unit type',
-            ns: 'track-tile-ui',
-          })}
+          accessibilityLabel={t('track-tile.unit-type', 'Unit type')}
           accessibilityRole="menu"
           testID={tID('open-unit-picker-button')}
         >
@@ -87,7 +81,7 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
                   variant="semibold"
                   style={styles.unitPickerPopupAccessoryDoneTextIOS}
                 >
-                  {i18n.t('track-tile-done', 'Done')}
+                  {t('track-tile-done', 'Done')}
                 </Text>
               </TouchableOpacity>
             </View>

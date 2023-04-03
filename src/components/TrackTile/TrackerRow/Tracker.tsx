@@ -4,7 +4,7 @@ import Indicator, { INDICATOR_HEIGHT } from '../icons/indicator';
 import { Tracker as TrackerType } from '../services/TrackTileService';
 import { StylesProp, useStyleOverrides, Text } from '../styles';
 import { RadialProgress } from './RadialProgress';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { tID } from '../common/testID';
 import {
@@ -78,15 +78,11 @@ export const Tracker: FC<TrackerProps> = (tracker) => {
       </Text>
       <Text testID={tID(`tracker-unit-${id}`)} style={[styles.trackerUnit]}>
         {isInstalled
-          ? i18n.t('8ec46d9188f504c09a64027a742d7fa5', {
+          ? t('track-tile.unit-display', {
               defaultValue: '({{unit}})',
               unit: unitDisplay,
-              ns: 'track-tile-ui',
             })
-          : i18n.t('7ca7a0f6709e2b1ed0e45255c837e0cd', {
-              defaultValue: 'Track It!',
-              ns: 'track-tile-ui',
-            })}
+          : t('track-tile.track-it', 'Track It!')}
       </Text>
     </View>
   );

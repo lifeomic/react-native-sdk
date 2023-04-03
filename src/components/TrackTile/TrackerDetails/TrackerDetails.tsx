@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import {
   NamedStyles,
   StylesProp,
@@ -207,17 +207,11 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
             style={styles.trackerDetailsMyTarget}
             numberOfLines={1}
           >
-            {i18n.t('1dd732d282905b785370859fe167cdc6', {
-              defaultValue: 'My Target',
-              ns: 'track-tile-ui',
-            })}
+            {t('track-tile.my-target', 'My Target')}
           </Text>
           <TextInput
             testID={tID('tracker-target-input')}
-            accessibilityLabel={i18n.t('9a8405185ebe954aaefa599d99390a2f', {
-              defaultValue: 'Target Input',
-              ns: 'track-tile-ui',
-            })}
+            accessibilityLabel={t('track-tile.target-input', 'Target Input')}
             value={target}
             style={[fontWeights.semibold, styles.trackerDetailsTargetInput]}
             onChangeText={setTarget}

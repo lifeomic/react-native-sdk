@@ -1,6 +1,6 @@
 import { Tracker, UnitType } from '../services/TrackTileService';
 import { convertToPreferredUnit } from '../util/convert-value';
-import i18n from '@i18n';
+import { t } from '@i18n';
 
 type UnitDisplayConfig = {
   value: number;
@@ -20,18 +20,16 @@ export const unitDisplay = ({
     match.toUpperCase(),
   )}`;
 
-  return i18n
-    .t(tracker.id, {
-      count: convertToPreferredUnit(value, tracker),
-      defaultValue_zero: unit.displayZero ?? defaultDisplay,
-      defaultValue_one: unit.displayOne ?? defaultDisplay,
-      defaultValue_two: unit.displayTwo ?? defaultDisplay,
-      defaultValue_few: unit.displayFew ?? defaultDisplay,
-      defaultValue_many: unit.displayMany ?? defaultDisplay,
-      defaultValue_other: unit.displayOther ?? defaultDisplay,
-      skipInterpolation,
-      ns: 'track-tile-ui',
-    })
+  return t(tracker.id, {
+    count: convertToPreferredUnit(value, tracker),
+    defaultValue_zero: unit.displayZero ?? defaultDisplay,
+    defaultValue_one: unit.displayOne ?? defaultDisplay,
+    defaultValue_two: unit.displayTwo ?? defaultDisplay,
+    defaultValue_few: unit.displayFew ?? defaultDisplay,
+    defaultValue_many: unit.displayMany ?? defaultDisplay,
+    defaultValue_other: unit.displayOther ?? defaultDisplay,
+    skipInterpolation,
+  })
     .replace('{{count}}', '')
     .replace(/\s+/g, ' ')
     .trim();

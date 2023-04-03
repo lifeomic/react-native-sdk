@@ -2,6 +2,8 @@ import { toFhirProcedureResource, TIME_FORMAT } from './to-procedure-resource';
 import { format, startOfDay, addSeconds } from 'date-fns';
 import { ResourceSettings } from './to-fhir-resource';
 
+jest.unmock('i18next');
+
 const createDate = startOfDay(new Date('2021-09-21T12:00:00.000'));
 
 const defaultResource = (
