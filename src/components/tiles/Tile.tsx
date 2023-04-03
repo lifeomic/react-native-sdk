@@ -18,7 +18,7 @@ export function Tile({
   onPress,
   id,
   title,
-  mode = 'halfLength',
+  mode = 'fullLength',
   children,
   styles: instanceStyles,
 }: TileProps) {
