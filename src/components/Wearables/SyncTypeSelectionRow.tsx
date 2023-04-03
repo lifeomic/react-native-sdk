@@ -1,23 +1,17 @@
 import React, { FC, useCallback, useState } from 'react';
-import {
-  LayoutAnimation,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import merge from 'lodash/merge';
+import { LayoutAnimation, Text, TouchableOpacity, View } from 'react-native';
 
-import { Colors, Margin, Padding } from './defaultTheme';
 import { WearableIntegration } from './WearableTypes';
-import { SelectorView } from './SelectorView';
+import { SelectorView, SelectorViewStyles } from './SelectorView';
 import Chevron from './icons/Chevron';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
 export interface SyncTypeSelectionRowProps {
   disabled?: boolean;
   onUpdate: (ehrId: string) => any;
   selectedEHRId: string;
-  styles?: any;
+  styles?: SyncTypeSelectionRowStyles;
   syncTypeTitle: string;
   syncTypeOptions: WearableIntegration[];
   testID?: string;
@@ -32,6 +26,7 @@ export const SyncTypeSelectionRow: FC<SyncTypeSelectionRowProps> = (props) => {
     syncTypeTitle,
     selectedEHRId,
     testID,
+    styles: instanceStyles,
   } = props;
 
   const toggleSelecting = useCallback(() => {
@@ -48,7 +43,7 @@ export const SyncTypeSelectionRow: FC<SyncTypeSelectionRowProps> = (props) => {
     [onUpdate],
   );
 
-  const styles = merge({}, defaultStyles, props.styles);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   const selection = syncTypeOptions.find((w) => w.ehrId === selectedEHRId);
 
@@ -88,24 +83,24 @@ export const SyncTypeSelectionRow: FC<SyncTypeSelectionRowProps> = (props) => {
           }))}
           disabled={disabled}
           onSelected={_onUpdate}
-          styles={styles.selectorView}
+          styles={styles.selectorView as SelectorViewStyles}
         />
       )}
     </View>
   );
 };
 
-export const SyncTypeSelectionRowDefaultStyles = {
+const defaultStyles = createStyles('SyncTypeSelectionRow', (theme) => ({
   container: {
-    backgroundColor: Colors.rowBackground,
-    marginHorizontal: Margin.standard,
-    marginVertical: Margin.small / 2,
+    backgroundColor: theme.colors.background,
+    marginHorizontal: 16,
+    marginVertical: 4,
     borderRadius: 10,
     overflow: 'hidden',
   },
   textWrapper: {
     flexDirection: 'row',
-    padding: Padding.medium,
+    padding: 12,
     justifyContent: 'space-between',
   },
   syncTypeLabel: {
@@ -114,9 +109,14 @@ export const SyncTypeSelectionRowDefaultStyles = {
   syncTypeValue: {
     flex: 1,
     textAlign: 'right',
-    paddingEnd: Padding.large,
+    paddingEnd: 18,
   },
-};
-const defaultStyles = StyleSheet.create(
-  SyncTypeSelectionRowDefaultStyles as any,
-);
+  selectorView: {},
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type SyncTypeSelectionRowStyles = NamedStylesProp<typeof defaultStyles>;

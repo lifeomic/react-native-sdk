@@ -2,12 +2,10 @@ import React, { FC, useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
   SwitchProps,
   Text,
   View,
 } from 'react-native';
-import merge from 'lodash/merge';
 import sortBy from 'lodash/sortBy';
 import {
   SyncTypeSettings,
@@ -15,10 +13,11 @@ import {
   WearableIntegrationStatus,
 } from './WearableTypes';
 import { EHRType, WearableStateSyncType } from './WearableTypes';
-import { Colors, Margin } from './defaultTheme';
 import { WearableRow, WearableRowProps } from './WearableRow';
 import { SyncTypeSelectionView } from './SyncTypeSelectionView';
 import { t } from 'i18next';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
 export interface WearablesViewProps extends Omit<WearableRowProps, 'wearable'> {
   /**
@@ -31,7 +30,7 @@ export interface WearablesViewProps extends Omit<WearableRowProps, 'wearable'> {
   onSyncTypeSelectionsUpdate: (
     settings: Record<WearableStateSyncType, string>,
   ) => any;
-  styles?: any;
+  styles?: WearablesViewStyles;
   wearables: WearableIntegration[];
   legacySort?: boolean;
   switchProps?: SwitchProps;
@@ -55,7 +54,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
     onError,
     onRefreshNeeded,
     onSyncTypeSelectionsUpdate,
-    styles: propStyles,
+    styles: instanceStyles,
     wearables,
     legacySort,
     ...otherRowProps
@@ -89,7 +88,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
     [onError, onSyncTypeSelectionsUpdate],
   );
 
-  const styles = merge({}, defaultStyles, propStyles);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
   const loading = wearablesLoading || sanitizing;
   const showSyncTypeSelections =
     enableMultiWearable &&
@@ -113,7 +112,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
           <SyncTypeSelectionView
             disabled={loading}
             onUpdate={updateSyncTypeSelections}
-            selectionRowStyles={styles.selectionRowStyles}
+            styles={styles.syncTypeSelectionView}
             wearables={sanitizedWearables}
           />
         </>
@@ -206,9 +205,9 @@ export const sanitizeWearables = async (
   return sortBy(resultItems, (item) => item.name?.toLocaleLowerCase());
 };
 
-export const WearablesViewDefaultStyles = {
+const defaultStyles = createStyles('WearablesView', (theme) => ({
   container: {
-    backgroundColor: Colors.containerBackground,
+    backgroundColor: theme.colors.surfaceVariant,
     flex: 1,
   },
   visible: {
@@ -219,20 +218,28 @@ export const WearablesViewDefaultStyles = {
   },
   hidden: {
     overflow: 'hidden',
-    minHeight: Margin.standard,
+    minHeight: 16,
   },
   sectionHeaderTop: {
-    marginHorizontal: Margin.standard,
-    marginBottom: Margin.small,
+    marginHorizontal: 16,
+    marginBottom: 8,
     fontSize: 28,
     fontWeight: '500',
   },
   sectionHeader: {
-    marginHorizontal: Margin.standard,
-    marginBottom: Margin.small,
+    marginHorizontal: 16,
+    marginBottom: 8,
     fontSize: 28,
     fontWeight: '500',
-    marginTop: Margin.standard,
+    marginTop: 16,
   },
-};
-const defaultStyles = StyleSheet.create(WearablesViewDefaultStyles as any);
+  wearableRow: {},
+  syncTypeSelectionView: {},
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type WearablesViewStyles = NamedStylesProp<typeof defaultStyles>;

@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
-import { StyleSheet, View } from 'react-native';
-import merge from 'lodash/merge';
-import { SelectorRow } from './SelectorRow';
+import { View } from 'react-native';
+import { SelectorRow, SelectorRowStyles } from './SelectorRow';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
 export interface SelectorRowData {
   id: string;
@@ -12,15 +13,15 @@ export interface SelectorRowData {
 export interface SelectorViewProps {
   data: SelectorRowData[];
   disabled?: boolean;
-  styles?: any;
+  styles?: SelectorViewStyles;
   testID?: string;
   onSelected: (id: string) => any;
 }
 
 export const SelectorView: FC<SelectorViewProps> = (props) => {
-  const { data, disabled, onSelected } = props;
+  const { data, disabled, onSelected, styles: instanceStyles } = props;
 
-  const styles = merge({}, defaultStyles, props.styles);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
     <View style={styles.list}>
@@ -31,7 +32,7 @@ export const SelectorView: FC<SelectorViewProps> = (props) => {
           key={item.id}
           onSelected={onSelected}
           selected={item.selected}
-          styles={styles.selectorRow}
+          styles={styles.selectorRow as SelectorRowStyles}
           title={item.title}
         />
       ))}
@@ -39,7 +40,14 @@ export const SelectorView: FC<SelectorViewProps> = (props) => {
   );
 };
 
-export const SelectorViewDefaultStyles = {
+const defaultStyles = createStyles('SelectorView', () => ({
   list: {},
-};
-const defaultStyles = StyleSheet.create(SelectorViewDefaultStyles as any);
+  selectorRow: {},
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type SelectorViewStyles = NamedStylesProp<typeof defaultStyles>;

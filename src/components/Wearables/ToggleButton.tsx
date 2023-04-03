@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import merge from 'lodash/merge';
-import { Colors, Margin } from './defaultTheme';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
 export interface ToggleButtonProps {
   testID: string;
@@ -11,7 +11,7 @@ export interface ToggleButtonProps {
   enabled: boolean;
   icon?: React.ReactNode;
   disabled?: boolean;
-  styles?: any;
+  styles?: ToggleButtonStyles;
 }
 
 export const ToggleButton: FC<ToggleButtonProps> = (props) => {
@@ -23,9 +23,10 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
     testID,
     title,
     enabled,
+    styles: instanceStyles,
   } = props;
 
-  const styles = merge({}, defaultStyles, props.styles);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
     <View style={styles.toggleButtonWrapper}>
@@ -53,10 +54,10 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
   );
 };
 
-export const ToggleButtonDefaultStyles = {
+const defaultStyles = createStyles('ToggleButton', (theme) => ({
   toggleButtonWrapper: {
-    marginBottom: Margin.small,
-    marginTop: Margin.standard,
+    marginBottom: 8,
+    marginTop: 16,
   },
   toggleButton: {
     height: 40,
@@ -64,11 +65,11 @@ export const ToggleButtonDefaultStyles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderColor: Colors.connectButtonBorder,
+    borderColor: theme.colors.outline,
     borderWidth: 1,
   },
   toggleOffButton: {
-    backgroundColor: Colors.disconnectBackground,
+    backgroundColor: theme.colors.error,
     borderWidth: 0,
   },
   toggleText: {
@@ -78,7 +79,13 @@ export const ToggleButtonDefaultStyles = {
     color: 'white',
   },
   iconWrapper: {
-    marginRight: Margin.standard,
+    marginRight: 16,
   },
-};
-const defaultStyles = StyleSheet.create(ToggleButtonDefaultStyles as any);
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type ToggleButtonStyles = NamedStylesProp<typeof defaultStyles>;

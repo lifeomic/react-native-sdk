@@ -1,13 +1,12 @@
 import React, { FC, useCallback } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import merge from 'lodash/merge';
-
-import { Colors, Padding } from './defaultTheme';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../../hooks/useStyles';
 
 export interface SelectorRowProps {
   disabled?: boolean;
   id: string;
-  styles?: any;
+  styles?: SelectorRowStyles;
   selected?: boolean;
   title: string;
   testID?: string;
@@ -16,8 +15,7 @@ export interface SelectorRowProps {
 
 export const SelectorRow: FC<SelectorRowProps> = (props) => {
   const { disabled, id, onSelected, selected, title, testID } = props;
-
-  const styles = merge({}, defaultStyles, props.styles);
+  const { styles } = useStyles(defaultStyles);
 
   const _onSelected = useCallback(
     (id: string) => () => {
@@ -56,7 +54,7 @@ export const SelectorRow: FC<SelectorRowProps> = (props) => {
   );
 };
 
-export const SelectorRowDefaultStyles = {
+const defaultStyles = createStyles('SelectorRow', (theme) => ({
   container: {
     minHeight: 40,
   },
@@ -64,14 +62,20 @@ export const SelectorRowDefaultStyles = {
     textAlign: 'right',
   },
   textWrapper: {
-    padding: Padding.medium,
+    padding: 12,
   },
   unselected: {
-    backgroundColor: Colors.rowBackground,
+    backgroundColor: theme.colors.surface,
   },
   selected: {
-    backgroundColor: Colors.activeRowBackground,
+    backgroundColor: theme.colors.surface,
     fontWeight: '700',
   },
-};
-const defaultStyles = StyleSheet.create(SelectorRowDefaultStyles as any);
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type SelectorRowStyles = NamedStylesProp<typeof defaultStyles>;

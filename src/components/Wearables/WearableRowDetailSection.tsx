@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { StyleSheet, View } from 'react-native';
-import merge from 'lodash/merge';
+import { View } from 'react-native';
 
-import { Margin } from './defaultTheme';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
 export interface WearableRowDetailSection {
-  styles?: any;
+  styles?: WearableRowDetailSectionStyles;
   icon: React.ReactNode;
   children: React.ReactNode;
 }
@@ -13,9 +13,9 @@ export interface WearableRowDetailSection {
 export const WearableRowDetailSection: FC<WearableRowDetailSection> = (
   props,
 ) => {
-  const { icon, children } = props;
+  const { icon, children, styles: instanceStyles } = props;
 
-  const styles = merge({}, defaultStyles, props.styles);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
     <View style={styles.iconAndDetails}>
@@ -25,11 +25,11 @@ export const WearableRowDetailSection: FC<WearableRowDetailSection> = (
   );
 };
 
-export const WearableRowDetailSectionDefaultStyles = {
+const defaultStyles = createStyles('WearableRowDetailSection', () => ({
   iconAndDetails: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginTop: Margin.standard,
+    marginTop: 16,
   },
   iconWrapper: {
     width: 30,
@@ -38,7 +38,13 @@ export const WearableRowDetailSectionDefaultStyles = {
     flex: 1,
     flexShrink: 1,
   },
-};
-const defaultStyles = StyleSheet.create(
-  WearableRowDetailSectionDefaultStyles as any,
-);
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type WearableRowDetailSectionStyles = NamedStylesProp<
+  typeof defaultStyles
+>;
