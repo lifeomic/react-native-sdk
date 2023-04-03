@@ -8,7 +8,11 @@ jest.mock('./src/common/testID', () => ({
 }));
 
 jest.mock('i18next', () => ({
-  use: () => ({ init: jest.fn() }),
+  use: () => ({
+    use: () => ({
+      init: jest.fn(),
+    }),
+  }),
   hasLoadedNamespace: jest.fn(),
   loadNamespaces: jest.fn(),
   changeLanguage: jest.fn(),
