@@ -1,17 +1,18 @@
 import React, { FC } from 'react';
-import { Text, StyleSheet, View } from 'react-native';
-import merge from 'lodash/merge';
+import { Text, View } from 'react-native';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
 export interface WearableRowHeaderProps {
   testID: string;
   title: string;
   icon?: React.ReactNode;
-  styles?: any;
+  styles?: WearableRowDetailHeaderStyles;
 }
 
 export const WearableRowHeader: FC<WearableRowHeaderProps> = (props) => {
-  const { testID, title, icon } = props;
-  const styles = merge({}, defaultStyles, props.styles);
+  const { testID, title, icon, styles: instanceStyles } = props;
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
     <View testID={testID} style={styles.container}>
@@ -23,7 +24,7 @@ export const WearableRowHeader: FC<WearableRowHeaderProps> = (props) => {
   );
 };
 
-export const WearableRowHeaderDefaultStyles = {
+const defaultStyles = createStyles('WearableRowDetailHeader', () => ({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -38,5 +39,13 @@ export const WearableRowHeaderDefaultStyles = {
   textWrapper: {
     flex: 1,
   },
-};
-const defaultStyles = StyleSheet.create(WearableRowHeaderDefaultStyles as any);
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type WearableRowDetailHeaderStyles = NamedStylesProp<
+  typeof defaultStyles
+>;

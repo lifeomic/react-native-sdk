@@ -7,16 +7,13 @@ import {
 import React, { FC, useCallback } from 'react';
 import {
   LayoutAnimation,
-  StyleSheet,
   SwitchProps,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import merge from 'lodash/merge';
 import { WearableRowHeader } from './WearableRowHeader';
 import { SwitchRow } from './SwitchRow';
-import { Colors, Margin, Padding } from './defaultTheme';
 import Issue from './icons/Issue';
 import Info from './icons/Info';
 import GoogleFit from './icons/vendorIcons/GoogleFit';
@@ -30,6 +27,8 @@ import KetoMojo from './icons/vendorIcons/KetoMojo';
 import Dexcom from './icons/vendorIcons/Dexcom';
 import { ToggleButton } from './ToggleButton';
 import { t } from 'i18next';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
 export interface WearableRowProps {
   switchProps?: SwitchProps;
@@ -68,9 +67,10 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
     onToggleBackgroundSync,
     switchProps,
     wearable,
+    styles: instanceStyles,
   } = props;
 
-  const styles = merge({}, defaultStyles, props.styles);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   const _onShowLearnMore = useCallback(
     (link: string) => () => {
@@ -451,25 +451,26 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
   );
 };
 
-export const WearableRowDefaultStyles = {
+const defaultStyles = createStyles('WearableRow', (theme) => ({
   moreInfoDescription: {},
   introDescription: {
-    marginTop: Margin.standard,
+    marginTop: 16,
   },
   backgroundSyncDescription: {
-    paddingTop: Padding.medium,
+    paddingTop: 12,
   },
   learnMoreButton: {
-    paddingTop: Padding.medium,
+    paddingTop: 12,
     fontWeight: '700',
-    color: Colors.link,
+    color: theme.colors.secondary,
   },
   errorSection: {},
+  errorText: {},
   container: {
-    backgroundColor: Colors.rowBackground,
-    marginHorizontal: Margin.standard,
-    marginVertical: Margin.small,
-    padding: Padding.medium,
+    backgroundColor: theme.colors.background,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    padding: 12,
     minHeight: 52,
     borderRadius: 10,
     flexDirection: 'column',
@@ -477,5 +478,11 @@ export const WearableRowDefaultStyles = {
   details: {
     flexDirection: 'column',
   },
-};
-const defaultStyles = StyleSheet.create(WearableRowDefaultStyles as any);
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type WearableRowStyles = NamedStylesProp<typeof defaultStyles>;

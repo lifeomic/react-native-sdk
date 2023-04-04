@@ -1,15 +1,16 @@
 import React, { FC } from 'react';
-import { Text, StyleSheet, Switch, View, SwitchProps } from 'react-native';
-import merge from 'lodash/merge';
+import { Text, Switch, View, SwitchProps } from 'react-native';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
 export interface SwitchRowProps extends SwitchProps {
   title: string;
-  styles?: any;
+  styles?: SwitchRowStyles;
 }
 
 export const SwitchRow: FC<SwitchRowProps> = (props) => {
-  const { testID, title, accessibilityLabel } = props;
-  const styles = merge({}, defaultStyles, props.styles);
+  const { testID, title, accessibilityLabel, styles: instanceStyles } = props;
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
     <View testID={testID} style={styles.container}>
@@ -25,7 +26,7 @@ export const SwitchRow: FC<SwitchRowProps> = (props) => {
   );
 };
 
-export const SwitchRowDefaultStyles = {
+const defaultStyles = createStyles('SwitchRow', () => ({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -36,5 +37,11 @@ export const SwitchRowDefaultStyles = {
   textWrapper: {
     flex: 1,
   },
-};
-const defaultStyles = StyleSheet.create(SwitchRowDefaultStyles as any);
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type SwitchRowStyles = NamedStylesProp<typeof defaultStyles>;

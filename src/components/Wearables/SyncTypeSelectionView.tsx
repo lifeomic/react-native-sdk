@@ -6,13 +6,18 @@ import {
 } from './WearableTypes';
 import React, { FC, useCallback } from 'react';
 
-import { SyncTypeSelectionRow } from './SyncTypeSelectionRow';
+import {
+  SyncTypeSelectionRow,
+  SyncTypeSelectionRowStyles,
+} from './SyncTypeSelectionRow';
 import { t } from 'i18next';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
 export interface SyncTypeSelectionViewProps {
   disabled?: boolean;
   onUpdate: (settings: Record<WearableStateSyncType, string>) => any;
-  selectionRowStyles?: any;
+  styles?: any;
   testID?: string;
   wearables: WearableIntegration[];
 }
@@ -20,7 +25,8 @@ export interface SyncTypeSelectionViewProps {
 export const SyncTypeSelectionView: FC<SyncTypeSelectionViewProps> = (
   props,
 ) => {
-  const { disabled, onUpdate, selectionRowStyles, wearables } = props;
+  const { disabled, onUpdate, wearables, styles: instanceStyles } = props;
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   const settings = getSyncTypesFromWearables(wearables);
   const syncTypeOptions = getSyncTypeOptions(wearables);
@@ -64,7 +70,7 @@ export const SyncTypeSelectionView: FC<SyncTypeSelectionViewProps> = (
             key={sortedSyncType}
             onUpdate={_onUpdate(typedSyncType)}
             selectedEHRId={selectedEHRId}
-            styles={selectionRowStyles}
+            styles={styles.syncTypeSelectionRow as SyncTypeSelectionRowStyles}
             syncTypeTitle={getDisplayValueForSyncType(typedSyncType)}
             syncTypeOptions={syncTypeOptions[typedSyncType]}
           />
@@ -73,6 +79,17 @@ export const SyncTypeSelectionView: FC<SyncTypeSelectionViewProps> = (
     </>
   );
 };
+
+const defaultStyles = createStyles('SyncTypeSelectionView', () => ({
+  syncTypeSelectionRow: {},
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type SyncTypeSelectionViewStyles = NamedStylesProp<typeof defaultStyles>;
 
 export const getSyncTypesFromWearables = (wearables: WearableIntegration[]) => {
   const settings = {} as SyncTypeSettings;
