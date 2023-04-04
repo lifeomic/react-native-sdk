@@ -81,3 +81,7 @@ export interface WearableIntegrationConfig {
   appId?: string;
   appVersionNumber?: string;
 }
+
+export interface WearablesSyncState {
+  items: WearableIntegration[];
+}
