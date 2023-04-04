@@ -12,3 +12,4 @@ export * from './useSubjectProjects';
 export * from './useStyles';
 export * from './useTheme';
 export * from './useUser';
+export * from './useNotifications';

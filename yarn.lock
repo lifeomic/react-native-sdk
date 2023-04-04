@@ -8576,6 +8576,11 @@ react-native-keychain@^8.1.1:
   resolved "https://registry.yarnpkg.com/react-native-keychain/-/react-native-keychain-8.1.1.tgz#3bb5e37946b964a7bcf7df2fe470dd244e01a340"
   integrity sha512-8fxgeHKwGcL657eAYpdBTkDIxNhbIHI+kyyO0Yac2dgVAN184JoIwQcW2z6snahwDaCObQOu0biLFHnsH+4KSg==
 
+react-native-notifications@^4.3.3:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/react-native-notifications/-/react-native-notifications-4.3.3.tgz#5be05cb144127f4db518079dd202415af497dfcb"
+  integrity sha512-t7uPgpC93A4L41Jea2zet3BUqgh45gpN/ATS9gxejNH3r6kWgMdGeeZJhuMpl1gSXw1gcvgzdjzIjN7YZSOP0A==
+
 react-native-paper@^5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-5.3.1.tgz#09a1164bcd8afa62063384646b9fb4bf563f407b"
