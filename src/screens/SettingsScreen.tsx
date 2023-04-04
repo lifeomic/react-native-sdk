@@ -41,6 +41,11 @@ export const SettingsScreen = () => {
             action={() => navigate('AccountSelection')}
           />
           <Divider />
+          <MainMenuItem
+            title={t('settings-sync-data', 'Sync Data')}
+            action={() => navigate('Wearables')}
+          />
+          <Divider />
         </ScrollView>
         <View style={styles.subMenuContainer}>
           <OAuthLogoutButton
