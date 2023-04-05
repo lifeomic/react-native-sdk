@@ -12,6 +12,8 @@ import { addDays, format } from 'date-fns';
 import { useRecentCodedValues } from '../../hooks/useRecentCodedValues';
 import { notifier } from '../../services/EmitterService';
 
+jest.unmock('i18next');
+
 jest.mock('../../hooks/useTrackerValues');
 jest.mock('../../hooks/useRecentCodedValues');
 jest.mock('lodash/debounce', () => jest.fn((fn) => fn));

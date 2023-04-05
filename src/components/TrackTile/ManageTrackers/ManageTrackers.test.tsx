@@ -6,6 +6,8 @@ import {
 } from './ManageTrackersProvider';
 import { merge } from 'lodash';
 
+jest.unmock('i18next');
+
 jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
   const mockComponent = jest.requireActual('react-native/jest/mockComponent');
   return mockComponent('react-native/Libraries/Components/Switch/Switch');

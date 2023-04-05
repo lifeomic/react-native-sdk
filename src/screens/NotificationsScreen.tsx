@@ -9,6 +9,7 @@ import formatRelative from 'date-fns/formatRelative';
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { NotificationsStackParamList } from '../navigators/NotificationsStack';
+import { tID } from '../common';
 
 type Props = NativeStackScreenProps<
   NotificationsStackParamList,
@@ -41,21 +42,24 @@ export const NotificationsScreen = () => {
     );
   }
 
-  const notificationEntries = data?.notificationsForUser.edges.map((edge) => {
-    return (
-      <View key={edge.node.id}>
-        <List.Item
-          title={edge.node.fullText}
-          titleNumberOfLines={4}
-          style={styles.listItem}
-          // TODO: switch to i18next formatter when available
-          description={formatRelative(new Date(edge.node.time), new Date())}
-          left={() => surveyIcon}
-        />
-        <Divider />
-      </View>
-    );
-  });
+  const notificationEntries = data?.notificationsForUser.edges.map(
+    (edge, index) => {
+      return (
+        <View key={edge.node.id}>
+          <List.Item
+            title={edge.node.fullText}
+            titleNumberOfLines={4}
+            style={styles.listItem}
+            // TODO: switch to i18next formatter when available
+            description={formatRelative(new Date(edge.node.time), new Date())}
+            left={() => surveyIcon}
+            testID={tID(`notification-${index}`)}
+          />
+          <Divider />
+        </View>
+      );
+    },
+  );
 
   const noNotifications = (
     <List.Item
@@ -63,6 +67,7 @@ export const NotificationsScreen = () => {
         'no-notifications-message',
         'You have no notifications to display!',
       )}
+      testID={tID('no-notifications-message')}
       style={styles.listItem}
       left={() => noNotificationsIcon}
     />

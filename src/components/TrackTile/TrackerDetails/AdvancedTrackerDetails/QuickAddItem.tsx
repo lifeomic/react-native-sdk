@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
 import { Code } from '../../services/TrackTileService';
-import i18n from '@i18n';
+import { t } from '@i18n';
 
 export type QuickAddItemProps = {
   code: Code;
@@ -26,7 +26,7 @@ export const QuickAddItem = (props: QuickAddItemProps) => {
     <TouchableOpacity
       accessibilityRole="button"
       testID={`tile-graphic-${code.display}`}
-      accessibilityLabel={i18n.t('quick-add-tracker-value', {
+      accessibilityLabel={t('track-tile.quick-add-tracker-value', {
         defaultValue: 'Add {{type}}',
         type: code.display,
       })}
@@ -42,7 +42,7 @@ export const QuickAddItem = (props: QuickAddItemProps) => {
         accessibilityElementsHidden
         style={[fontWeights.semibold, styles.quickAddItemText]}
       >
-        {i18n.t('quick-add-label', {
+        {t('track-tile.quick-add-label', {
           defaultValue: '+ {{title}}',
           title: code.display,
         })}

@@ -1,7 +1,7 @@
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { StylesProp, useStyleOverrides, Text } from '../styles';
 import React, { Dispatch, FC, SetStateAction, useCallback } from 'react';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import { Tracker, UnitType } from '../services/TrackTileService';
 import { ChevronLeft, ChevronRight } from '@lifeomic/chromicons-native';
 import { addDays, format, isToday } from 'date-fns';
@@ -54,17 +54,17 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
       ]}
     >
       <TouchableOpacity
-        accessibilityLabel={i18n.t('go-to-previous-day', {
-          defaultValue: 'Go to previous day',
-          ns: 'track-tile-ui',
-        })}
+        accessibilityLabel={t(
+          'track-tile.go-to-previous-day',
+          'Go to previous day',
+        )}
         onPress={shiftRangeByDays(-1)}
       >
         <ChevronLeft color={color} />
       </TouchableOpacity>
       <Text>
         {isToday(dateRange.start)
-          ? i18n.t('todays-units', {
+          ? t('track-tile.todays-units', {
               defaultValue: "Today's {{unit}}",
               unit: unitDisplay({
                 tracker,
@@ -72,15 +72,11 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
                 value: target,
                 skipInterpolation: true,
               }),
-              ns: 'track-tile-ui',
             })
           : format(dateRange.start, 'iiii, MMMM d')}
       </Text>
       <TouchableOpacity
-        accessibilityLabel={i18n.t('go-to-next-day', {
-          defaultValue: 'Go to next day',
-          ns: 'track-tile-ui',
-        })}
+        accessibilityLabel={t('track-tile.go-to-next-day', 'Go to next day')}
         disabled={isToday(dateRange.start)}
         onPress={shiftRangeByDays(1)}
       >

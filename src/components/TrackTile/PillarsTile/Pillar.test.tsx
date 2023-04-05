@@ -7,6 +7,8 @@ import {
 } from '../services/TrackTileService';
 import debounce from 'lodash/debounce';
 
+jest.unmock('i18next');
+
 jest.mock('lodash/debounce', () => jest.fn((fn) => fn));
 
 const mockDebounce = debounce as any as jest.Mock<typeof debounce>;

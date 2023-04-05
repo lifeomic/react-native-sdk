@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AppNavHeader } from '../components/AppNavHeader';
-import { NotificationsScreen } from 'src/screens/NotificationsScreen';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
 
 export type NotificationsStackParamList = {
   Notifications: undefined;

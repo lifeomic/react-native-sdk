@@ -1,6 +1,8 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { TileList } from './TilesList';
+import { TilesList } from './TilesList';
+
+jest.unmock('i18next');
 
 const tiles = [
   {
@@ -17,7 +19,7 @@ const tiles = [
 
 test('renders multiple tiles', () => {
   const onPress = jest.fn();
-  const tile = render(<TileList tiles={tiles} onAppTilePress={onPress} />);
+  const tile = render(<TilesList tiles={tiles} onAppTilePress={onPress} />);
 
   expect(tile.getByText('My First Tile')).toBeDefined();
   expect(tile.getByTestId('tile-button-tile-id-1')).toBeDefined();

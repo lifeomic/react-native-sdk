@@ -2,6 +2,7 @@ export * from './NoInternetToastProvider';
 export * from './useAccounts';
 export * from './useActiveAccount';
 export * from './useActiveProject';
+export * from './useDeveloperConfig';
 export * from './useAppConfig';
 export * from './useAuth';
 export * from './useCurrentAppState';

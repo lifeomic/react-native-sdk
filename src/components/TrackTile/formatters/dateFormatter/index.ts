@@ -1,4 +1,4 @@
-import i18n from '@i18n';
+import { t } from '@i18n';
 import {
   shortMonthNumericDay,
   shortWeekday,
@@ -7,9 +7,8 @@ import {
 } from './dateFormatters';
 
 const format = (date: Date, dateOptions?: Intl.DateTimeFormatOptions) => {
-  return i18n.t('intlDateTime', {
+  return t('track-tile.intl-date-time', '{{val, datetime}}', {
     val: date,
-    ns: 'track-tile-ui',
     formatParams: {
       val: dateOptions,
     },

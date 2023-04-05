@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import i18n, { Trans } from '@i18n';
+import i18n, { Trans, t } from '@i18n';
 import {
   NamedStyles,
   StylesProp,
@@ -212,7 +212,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         i18n={i18n}
         parent={TransTextParent}
         style={styles.advancedDetailsHorizontalRow}
-        i18nKey="advanced-tracker-value"
+        i18nKey="track-tile.advanced-tracker-value"
         ns="track-tile-ui"
         defaults="<value>{{value}}</value><divider>/</divider><target>{{target}}</target>"
         values={{
@@ -222,10 +222,9 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         components={{
           value: ((valueText?: string) => (
             <Text
-              accessibilityLabel={i18n.t('c606756e12cb4d462eb815d1641016b9', {
+              accessibilityLabel={t('track-tile.tracker-value-value', {
                 defaultValue: 'Tracker value, {{value}}',
                 value: currentValue,
-                ns: 'track-tile-ui',
               })}
               style={[fontWeights.regular, styles.advancedDetailsTrackerValue]}
             >
@@ -245,10 +244,9 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
           ))(),
           target: ((targetText?: string) => (
             <Text
-              accessibilityLabel={i18n.t('c606756e12cb4d462eb815d1641016b9', {
+              accessibilityLabel={t('track-tile.tracker-value-value', {
                 defaultValue: 'Tracker target, {{value}}',
                 value: target,
-                ns: 'track-tile-ui',
               })}
               style={[
                 fontWeights.semibold,
@@ -263,10 +261,10 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       {editsDisabled && (
         <Text style={{ textAlign: 'center' }}>
-          {i18n.t('edits-not-allowed', {
-            defaultValue: 'Unable to adjust data this far in the past.',
-            ns: 'track-tile-ui',
-          })}
+          {t(
+            'track-tile.edits-not-allowed',
+            'Unable to adjust data this far in the past.',
+          )}
         </Text>
       )}
       {relationships ? (
@@ -291,10 +289,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                   styles.advancedDetailsRecentHistoryTitle,
                 ]}
               >
-                {i18n.t('add-recent', {
-                  defaultValue: 'Add Recent',
-                  ns: 'track-tile-ui',
-                })}
+                {t('track-tile.add-recent', 'Add Recent')}
               </Text>
               <ScrollView
                 horizontal
@@ -332,13 +327,11 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                             styles.advancedDetailsRecentHistoryPillText,
                           ]}
                         >
-                          {i18n
-                            .t('recent-item-text', {
-                              defaultValue: '{{codeDisplay}} {{unit}}',
-                              codeDisplay: display,
-                              unit: isProcedure ? unitDisplay(value) : '',
-                            })
-                            .trim()}
+                          {t('track-tile.recent-item-text', {
+                            defaultValue: '{{codeDisplay}} {{unit}}',
+                            codeDisplay: display,
+                            unit: isProcedure ? unitDisplay(value) : '',
+                          }).trim()}
                         </Text>
                       </TouchableOpacity>
                     )
@@ -371,10 +364,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       <View style={styles.advancedDetailsSection}>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
-          {i18n.t('science-of-prefix', {
-            defaultValue: 'The science of',
-            ns: 'track-tile-ui',
-          })}
+          {t('track-tile.science-of-prefix', 'The science of')}
         </Text>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
           {tracker.name}
@@ -388,16 +378,12 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
       <View style={styles.advancedDetailsSection}>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
-          {i18n.t('weekly-metrics-prefix', {
-            defaultValue: 'Weekly Metrics',
-            ns: 'track-tile-ui',
-          })}
+          {t('track-tile.weekly-metrics-prefix', 'Weekly Metrics')}
         </Text>
         <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
-          {i18n.t('total-daily-units', {
+          {t('track-tile.total-daily-units', {
             defaultValue: 'Total Daily {{unit}}',
             unit: unitDisplay(targetAmount, true),
-            ns: 'track-tile-ui',
           })}
         </Text>
 

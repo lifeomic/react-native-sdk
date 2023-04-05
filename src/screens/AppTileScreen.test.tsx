@@ -3,9 +3,6 @@ import { render } from '@testing-library/react-native';
 import { WebView } from 'react-native-webview';
 import { AppTileScreen } from './AppTileScreen';
 
-jest.mock('../hooks/useUser', () => ({
-  useUser: jest.fn(),
-}));
 jest.mock('react-native-webview', () => ({
   WebView: jest.fn().mockReturnValue(<></>),
 }));

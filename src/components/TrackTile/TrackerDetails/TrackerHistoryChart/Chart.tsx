@@ -3,7 +3,7 @@ import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { StylesProp, useStyleOverrides, Text } from '../../styles';
 import { scaleLinear } from 'd3-scale';
 import { eachDayOfInterval, format, isToday } from 'date-fns';
-import i18n from '@i18n';
+import { t } from '@i18n';
 import Bar from './Bar';
 import { tID } from '../../common/testID';
 import { numberFormatters, dateFormatters } from '../../formatters';
@@ -121,12 +121,11 @@ export const Chart: FC<ChartProps> = (props) => {
             <Text
               testID={tID(`history-chart-x-axis-label-${index}`)}
               style={variantStyles?.chartXTitle}
-              accessibilityLabel={i18n.t('edc1e8aa2f80dc6b3be50d4e168e30e8', {
+              accessibilityLabel={t('track-tile.day-value-unit-display', {
                 defaultValue: '{{day}}: {{value}} {{unit}}',
                 day: format(day, 'iiii, MMMM do'),
                 value: values[index],
                 unit,
-                ns: 'track-tile-ui',
               })}
             >
               {shortWeekday(day)
@@ -150,10 +149,10 @@ export const Chart: FC<ChartProps> = (props) => {
       {hasError && (
         <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
           <Text variant="semibold" style={styles.chartError}>
-            {i18n.t('aa16bb8028cd4767568a48d382e64d0a', {
-              defaultValue: 'Could not load your data\nPlease try again later',
-              ns: 'track-tile-ui',
-            })}
+            {t(
+              'track-tile.could-not-load-your-data',
+              'Could not load your data\nPlease try again later',
+            )}
           </Text>
         </ChartContent>
       )}

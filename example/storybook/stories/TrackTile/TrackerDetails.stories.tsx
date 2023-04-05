@@ -1,4 +1,6 @@
 import React from 'react';
+
+import { View } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { TrackerDetails } from 'src/components/TrackTile/TrackerDetails/TrackerDetails';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
@@ -7,9 +9,13 @@ import {
   TRACKER_CODE,
   TRACKER_CODE_SYSTEM,
 } from 'src/components/TrackTile/services/TrackTileService';
-import i18n from '@i18n';
-import { boolean, withKnobs } from '@storybook/addon-knobs';
+import { t } from '@i18n';
+import { boolean, withKnobs, object } from '@storybook/addon-knobs';
 import { Anchor } from '@lifeomic/chromicons-native';
+import {
+  UnitPicker,
+  UnitPickerProps,
+} from 'src/components/TrackTile/TrackerDetails/UnitPicker';
 
 storiesOf('TrackerDetails', module)
   .addDecorator(withKnobs)
@@ -34,11 +40,10 @@ storiesOf('TrackerDetails', module)
             name: 'Example',
             color: 'cadetblue',
             resourceType: 'Observation',
-            description: i18n.t('example-description', {
-              defaultValue:
-                'This is an example description for the track tile that is to be added',
-              ns: 'track-tile-ui',
-            }),
+            description: t(
+              'track-tile.example-description',
+              'This is an example description for the track tile that is to be added',
+            ),
             units: [
               {
                 unit: 'unit-1',
@@ -72,5 +77,40 @@ storiesOf('TrackerDetails', module)
             : {}
         }
       />
+    );
+  })
+  .add('UnitPicker', () => {
+    const units: UnitPickerProps['units'] = object('units', [
+      {
+        code: 'c1',
+        display: 'Unit 1',
+        system: 's1',
+        target: 1,
+        unit: 'u1',
+        default: true,
+      },
+      {
+        code: 'c2',
+        display: 'Unit 2',
+        system: 's2',
+        target: 2,
+        unit: 'u2',
+        default: false,
+      },
+    ]);
+
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <UnitPicker
+          value="u1"
+          units={units}
+          onChange={() => console.log('changed')}
+        />
+        <UnitPicker
+          value="u2"
+          units={units}
+          onChange={() => console.log('changed')}
+        />
+      </View>
     );
   });

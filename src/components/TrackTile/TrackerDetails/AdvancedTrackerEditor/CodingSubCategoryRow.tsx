@@ -12,7 +12,7 @@ import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
 import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
 import { Code } from '../../services/TrackTileService';
 import { ChevronRight, ChevronLeft } from '@lifeomic/chromicons-native';
-import i18n from '@i18n';
+import { t } from '@i18n';
 
 export type CodingSubCategoryRowProps = TouchableOpacityProps & {
   code: Code;
@@ -82,7 +82,7 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
                   styles.codingSubCategoryRowContentLink,
                 ]}
               >
-                {i18n.t('learn-more', {
+                {t('track-tile.learn-more', {
                   defaultValue: 'Learn More',
                 })}
               </Text>
