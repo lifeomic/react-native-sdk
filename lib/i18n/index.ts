@@ -1,3 +1,4 @@
+import 'intl-pluralrules';
 import i18next, { t } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { NamespaceLoader } from './backend';
