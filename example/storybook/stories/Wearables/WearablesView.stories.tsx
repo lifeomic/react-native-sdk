@@ -1,10 +1,8 @@
 import React, { FC, useState } from 'react';
 import { Platform } from 'react-native';
-import merge from 'lodash/merge';
 import { storiesOf } from '@storybook/react-native';
 import {
   WearablesView,
-  WearablesViewDefaultStyles,
   WearablesViewProps,
 } from '../../../../src/components/Wearables//WearablesView';
 import {
@@ -17,11 +15,6 @@ import {
 import { rowActions } from './WearableRow.stories';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, withKnobs } from '@storybook/addon-knobs';
-import { WearableRowDefaultStyles } from '../../../../src/components/Wearables//WearableRow';
-import { SyncTypeSelectionRowDefaultStyles } from '../../../../src/components/Wearables//SyncTypeSelectionRow';
-import { SwitchRowDefaultStyles } from '../../../../src/components/Wearables//SwitchRow';
-import { SelectorViewDefaultStyles } from '../../../../src/components/Wearables//SelectorView';
-import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables//SelectorRow';
 
 export const viewActions = {
   ...rowActions,
@@ -177,27 +170,7 @@ const DefaultView: FC<DefaultViewProps> = ({
       onRefreshNeeded={onRefreshNeeded}
       onSyncTypeSelectionsUpdate={onSyncTypeSelectionsUpdate}
       onToggleWearable={onToggleWearable}
-      styles={object(
-        'styles',
-        merge(
-          {},
-          {
-            ...WearablesViewDefaultStyles,
-            wearableRow: {
-              ...WearableRowDefaultStyles,
-              switchRow: SwitchRowDefaultStyles,
-            },
-            selectionRowStyles: {
-              ...SyncTypeSelectionRowDefaultStyles,
-              selectorView: {
-                ...SelectorViewDefaultStyles,
-                selectorRow: SelectorRowDefaultStyles,
-              },
-            },
-          },
-          storyStyles,
-        ),
-      )}
+      styles={object('styles', storyStyles)}
       wearables={wearables}
     />
   );

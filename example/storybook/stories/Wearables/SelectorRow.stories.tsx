@@ -2,10 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
-import {
-  SelectorRow,
-  SelectorRowDefaultStyles,
-} from '../../../../src/components/Wearables/SelectorRow';
+import { SelectorRow } from '../../../../src/components/Wearables/SelectorRow';
 
 export const exampleProps = {
   id: 'rowId',
@@ -19,7 +16,7 @@ storiesOf('Selector Row', module)
     <SelectorRow
       disabled={boolean('disabled', false)}
       id={text('id', exampleProps.id)}
-      styles={object('styles', SelectorRowDefaultStyles)}
+      styles={object('styles', {})}
       selected={boolean('selected', false)}
       title={text('title', exampleProps.title)}
       onSelected={exampleProps.onSelected}
