@@ -2,11 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, withKnobs } from '@storybook/addon-knobs';
-import {
-  SelectorView,
-  SelectorViewDefaultStyles,
-} from '../../../../src/components/Wearables/SelectorView';
-import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables/SelectorRow';
+import { SelectorView } from '../../../../src/components/Wearables/SelectorView';
 
 export const exampleProps = {
   data: [
@@ -33,10 +29,7 @@ storiesOf('Selector View', module)
     <SelectorView
       data={object('data', exampleProps.data)}
       disabled={boolean('disabled', false)}
-      styles={object('styles', {
-        ...SelectorViewDefaultStyles,
-        selectorRow: SelectorRowDefaultStyles,
-      })}
+      styles={object('styles', {})}
       onSelected={exampleProps.onSelected}
     />
   ))

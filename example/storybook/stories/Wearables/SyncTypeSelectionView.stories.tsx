@@ -10,9 +10,6 @@ import {
   WearableIntegration,
   WearableStateSyncType,
 } from '../../../../src/components/Wearables/WearableTypes';
-import { SyncTypeSelectionRowDefaultStyles } from '../../../../src/components/Wearables//SyncTypeSelectionRow';
-import { SelectorViewDefaultStyles } from '../../../../src/components/Wearables//SelectorView';
-import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables//SelectorRow';
 
 export const exampleProps: SyncTypeSelectionViewProps = {
   wearables: [
@@ -50,13 +47,7 @@ storiesOf('SyncType Selection View', module)
     <SyncTypeSelectionView
       disabled={boolean('disabled', false)}
       onUpdate={exampleProps.onUpdate}
-      selectionRowStyles={object('selectionRowStyles', {
-        ...SyncTypeSelectionRowDefaultStyles,
-        selectorView: {
-          ...SelectorViewDefaultStyles,
-          selectorRow: SelectorRowDefaultStyles,
-        },
-      })}
+      styles={object('selectionRowStyles', {})}
       wearables={object('wearables', exampleProps.wearables)}
     />
   ))
