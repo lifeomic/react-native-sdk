@@ -9,12 +9,8 @@ jest.mock('./src/common/testID', () => ({
 
 jest.mock('i18next', () => ({
   use: () => ({
-    use: () => ({
-      init: jest.fn(),
-    }),
+    init: jest.fn(),
   }),
-  hasLoadedNamespace: jest.fn(),
-  loadNamespaces: jest.fn(),
   changeLanguage: jest.fn(),
   t: (_key: string, defaultValue: string, params?: any) =>
     `${defaultValue}${params ? JSON.stringify(params) : ''}`,
