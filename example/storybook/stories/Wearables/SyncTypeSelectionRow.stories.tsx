@@ -2,12 +2,8 @@ import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
-import {
-  SyncTypeSelectionRow,
-  SyncTypeSelectionRowDefaultStyles,
-} from '../../../../src/components/Wearables/SyncTypeSelectionRow';
+import { SyncTypeSelectionRow } from '../../../../src/components/Wearables/SyncTypeSelectionRow';
 import { WearableIntegration } from '../../../../src/components/Wearables/WearableTypes';
-import { SelectorRowDefaultStyles } from '../../../../src/components/Wearables/SelectorRow';
 
 export const exampleProps = {
   selectedEHRId: 'garmin',
@@ -39,10 +35,6 @@ storiesOf('SyncType Selection Row', module)
       disabled={boolean('disabled', false)}
       onUpdate={exampleProps.onUpdate}
       selectedEHRId={text('selectedEHRId', exampleProps.selectedEHRId)}
-      styles={object('styles', {
-        ...SyncTypeSelectionRowDefaultStyles,
-        selectorRow: SelectorRowDefaultStyles,
-      })}
       syncTypeOptions={object('syncTypeOptions', exampleProps.syncTypeOptions)}
       syncTypeTitle={text('syncTypeTitle', exampleProps.syncTypeTitle)}
     />

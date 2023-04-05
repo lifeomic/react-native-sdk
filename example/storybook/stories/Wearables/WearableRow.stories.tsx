@@ -3,13 +3,9 @@ import { Text, View } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, withKnobs } from '@storybook/addon-knobs';
-import {
-  SwitchRowDefaultStyles,
-  SwitchRowProps,
-} from '../../../../src/components/Wearables/SwitchRow';
+import { SwitchRowProps } from '../../../../src/components/Wearables/SwitchRow';
 import {
   WearableRow,
-  WearableRowDefaultStyles,
   WearableRowProps,
 } from '../../../../src/components/Wearables/WearableRow';
 import {
@@ -151,10 +147,6 @@ const DefaultView: FC<Props> = (props) => {
     <WearableRow
       {...defaultProps}
       disabled={boolean('disabled', !!defaultProps.disabled)}
-      styles={object('styles', {
-        ...WearableRowDefaultStyles,
-        switchRow: SwitchRowDefaultStyles,
-      })}
       wearable={object('wearable', defaultProps.wearable)}
     />
   );
