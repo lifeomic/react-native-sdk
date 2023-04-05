@@ -47,6 +47,7 @@ storiesOf('SyncType Selection View', module)
     <SyncTypeSelectionView
       disabled={boolean('disabled', false)}
       onUpdate={exampleProps.onUpdate}
+      styles={object('selectionRowStyles', {})}
       wearables={object('wearables', exampleProps.wearables)}
     />
   ))

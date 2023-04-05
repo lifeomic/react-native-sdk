@@ -147,6 +147,7 @@ const DefaultView: FC<Props> = (props) => {
     <WearableRow
       {...defaultProps}
       disabled={boolean('disabled', !!defaultProps.disabled)}
+      styles={object('styles', {})}
       wearable={object('wearable', defaultProps.wearable)}
     />
   );

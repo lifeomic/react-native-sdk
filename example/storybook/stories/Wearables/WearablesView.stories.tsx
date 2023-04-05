@@ -1,6 +1,5 @@
 import React, { FC, useState } from 'react';
 import { Platform } from 'react-native';
-import merge from 'lodash/merge';
 import { storiesOf } from '@storybook/react-native';
 import {
   WearablesView,
@@ -171,7 +170,7 @@ const DefaultView: FC<DefaultViewProps> = ({
       onRefreshNeeded={onRefreshNeeded}
       onSyncTypeSelectionsUpdate={onSyncTypeSelectionsUpdate}
       onToggleWearable={onToggleWearable}
-      styles={object('styles', merge({}, {}, storyStyles))}
+      styles={object('styles', storyStyles)}
       wearables={wearables}
     />
   );

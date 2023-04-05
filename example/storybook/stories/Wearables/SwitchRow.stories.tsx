@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
-import { boolean, text, withKnobs } from '@storybook/addon-knobs';
+import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
 import { SwitchRow } from '../../../../src/components/Wearables//SwitchRow';
 
 storiesOf('Switch Row', module)
@@ -32,6 +32,7 @@ const DefaultView: FC<{ disabled?: boolean }> = ({ disabled }) => {
       title={text('title', props.title)}
       value={boolean('value', props.value)}
       onValueChange={props.onValueChange}
+      styles={object('styles', {})}
       accessibilityLabel={props.accessibilityLabel}
       disabled={boolean('disabled', !!props.disabled)}
     />

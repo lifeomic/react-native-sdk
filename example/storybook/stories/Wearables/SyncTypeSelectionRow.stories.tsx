@@ -35,6 +35,7 @@ storiesOf('SyncType Selection Row', module)
       disabled={boolean('disabled', false)}
       onUpdate={exampleProps.onUpdate}
       selectedEHRId={text('selectedEHRId', exampleProps.selectedEHRId)}
+      styles={object('styles', {})}
       syncTypeOptions={object('syncTypeOptions', exampleProps.syncTypeOptions)}
       syncTypeTitle={text('syncTypeTitle', exampleProps.syncTypeTitle)}
     />
