@@ -27,69 +27,27 @@ const getUTCOffset = () => {
   return offset;
 };
 
-export const useWearableIntegrations = (appId: string) => {
+interface SetLastSync {
+  ehrId: string;
+  lastSync: string;
+  failureCode?: WearableIntegrationFailureCode;
+}
+
+interface SetWearableState {
+  ehrId: string;
+  enabled: boolean;
+  meta?: any;
+}
+
+export const useWearables = () => {
   const { httpClient } = useHttpClient();
   const { accountHeaders } = useActiveAccount();
-  return useQuery('/v1/wearables', () =>
-    httpClient
-      .get<WearablesSyncState>('/v1/wearables', {
-        params: { appId },
-        headers: accountHeaders,
-      })
-      .then((res) => res.data),
-  );
-};
 
-export const useWearableIntegration = (ehrId: string) => {
-  const { httpClient } = useHttpClient();
-  const { accountHeaders } = useActiveAccount();
-  return useQuery('/v1/wearables/{ehrId}', () => {
-    httpClient.get(`/v1/wearables/${ehrId}`, { headers: accountHeaders });
-  });
-};
-
-export const useSetSyncTypes = () => {
-  const { httpClient } = useHttpClient();
-  const { accountHeaders } = useActiveAccount();
-  const setSyncTypes = (settings: SyncTypeSettings) =>
-    httpClient.put('/v1/wearables/sync-types', settings, {
-      headers: accountHeaders,
-    });
-  return setSyncTypes;
-};
-
-export const useSetLastSync = () => {
-  const { httpClient } = useHttpClient();
-  const { accountHeaders } = useActiveAccount();
-  const setLastSync = async (
-    ehrId: string,
-    lastSync: string,
-    failureCode?: WearableIntegrationFailureCode,
-  ) => {
-    return httpClient.patch(
-      `/v1/wearables/${ehrId}`,
-      {
-        lastSync,
-        status: failureCode
-          ? WearableIntegrationStatus.Failure
-          : WearableIntegrationStatus.Syncing,
-        failureCode,
-      },
-      { headers: accountHeaders },
-    );
-  };
-
-  return setLastSync;
-};
-
-export const useSetWearableState = () => {
-  const { httpClient } = useHttpClient();
-  const { accountHeaders } = useActiveAccount();
-  const setWearableState = async (
-    ehrId: string,
-    enabled: boolean,
-    meta?: any,
-  ) => {
+  const setWearableState = async ({
+    ehrId,
+    enabled,
+    meta,
+  }: SetWearableState) => {
     const metaToSend = enabled
       ? {
           syncBeginTimestamp: new Date().toISOString(),
@@ -110,5 +68,44 @@ export const useSetWearableState = () => {
       .then((res) => res.data);
   };
 
-  return setWearableState;
+  const setLastSync = async ({ ehrId, lastSync, failureCode }: SetLastSync) =>
+    httpClient.patch(
+      `/v1/wearables/${ehrId}`,
+      {
+        lastSync,
+        status: failureCode
+          ? WearableIntegrationStatus.Failure
+          : WearableIntegrationStatus.Syncing,
+        failureCode,
+      },
+      { headers: accountHeaders },
+    );
+
+  const setSyncTypes = async (settings: SyncTypeSettings) =>
+    httpClient.post('/v1/wearables/sync-types', settings, {
+      headers: accountHeaders,
+    });
+
+  const useQueryWearableIntegration = (ehrId: string) =>
+    useQuery('get-wearable', () =>
+      httpClient.get(`/v1/wearables/${ehrId}`, { headers: accountHeaders }),
+    );
+
+  const useQueryWearableIntegrations = (appId: string) =>
+    useQuery('get-wearables', () =>
+      httpClient
+        .get<WearablesSyncState>('/v1/wearables', {
+          params: { appId },
+          headers: accountHeaders,
+        })
+        .then((res) => res.data),
+    );
+
+  return {
+    setWearableState,
+    setSyncTypes,
+    setLastSync,
+    useQueryWearableIntegration,
+    useQueryWearableIntegrations,
+  };
 };
