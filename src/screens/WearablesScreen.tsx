@@ -36,18 +36,16 @@ const WearablesScreen = () => {
   };
   return (
     <View style={[styles.container]}>
-      <SafeAreaView style={[styles.container]}>
-        <WearablesView
-          enableMultiWearable={true}
-          loading={isLoading}
-          onRefreshNeeded={refetch}
-          onShowLearnMore={openURL}
-          onShowWearableAuth={openURL}
-          onSyncTypeSelectionsUpdate={updateSyncTypeSettings}
-          onToggleWearable={toggleWearable}
-          wearables={wearables}
-        />
-      </SafeAreaView>
+      <WearablesView
+        enableMultiWearable={true}
+        loading={isLoading}
+        onRefreshNeeded={refetch}
+        onShowLearnMore={openURL}
+        onShowWearableAuth={openURL}
+        onSyncTypeSelectionsUpdate={updateSyncTypeSettings}
+        onToggleWearable={toggleWearable}
+        wearables={wearables}
+      />
     </View>
   );
 };
