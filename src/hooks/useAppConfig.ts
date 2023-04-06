@@ -6,6 +6,7 @@ import { useHttpClient } from './useHttpClient';
 export interface AppTile {
   id: string;
   title: string;
+  icon: string;
   source: {
     url: string;
   };
