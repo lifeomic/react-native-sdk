@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, Linking, SafeAreaView, View } from 'react-native';
+import { StyleSheet, Linking, View } from 'react-native';
 import { WearablesView } from '../components/Wearables';
 import { useWearables } from '../hooks/useWearables';
 import { getBundleId } from 'react-native-device-info';
