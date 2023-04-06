@@ -5,11 +5,13 @@ import { SettingsScreen } from '../screens/SettingsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { AccountSelectionScreen } from '../screens/AccountSelectionScreen';
 import { AppNavHeader } from '../components/AppNavHeader';
+import WearablesScreen from '../screens/WearablesScreen';
 
 export type SettingsStackParamList = {
   Settings: undefined;
   Profile: undefined;
   AccountSelection: undefined;
+  Wearables: undefined;
 };
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
@@ -32,7 +34,12 @@ export function SettingsStack() {
       <Stack.Screen
         name="AccountSelection"
         component={AccountSelectionScreen}
-        options={{ title: t('Account') }}
+        options={{ title: t('account', 'Account') }}
+      />
+      <Stack.Screen
+        name="Wearables"
+        component={WearablesScreen}
+        options={{ title: t('sync-data', 'Sync Data') }}
       />
     </Stack.Navigator>
   );
