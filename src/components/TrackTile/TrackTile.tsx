@@ -18,7 +18,8 @@ export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 export type TrackTileProps = {
   title?: string;
   background?: ReactNode;
-  onOpenSettings: (valuesContext: TrackerValuesContext) => void;
+  // TODO: Change this back to non-optional when we have a settings screen
+  onOpenSettings?: (valuesContext: TrackerValuesContext) => void;
   onOpenTracker: (metric: Tracker, valuesContext: TrackerValuesContext) => void;
   hideSettingsButton?: boolean;
   icons?: Record<string, React.ComponentType<SvgProps>>;
@@ -51,7 +52,7 @@ export const TrackTile: FC<TrackTileProps> = ({
             <Text style={styles.trackTileHeaderTitle}>{title}</Text>
             {!hideSettingsButton && (
               <OpenSettingsButton
-                onPress={() => onOpenSettings(valuesContext)}
+                onPress={() => onOpenSettings?.(valuesContext)}
               />
             )}
           </View>

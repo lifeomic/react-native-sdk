@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import { useRef } from 'react';
 import {
   InstalledMetric,
@@ -25,13 +25,9 @@ import {
   differenceInSeconds,
 } from 'date-fns';
 import { pick, merge, pickBy, omit, fromPairs } from 'lodash';
-
-type Props = Pick<
-  TrackTileService,
-  'datastoreSettings' | 'accountSettings' | 'patientId'
-> & {
-  axiosInstance: AxiosInstance;
-};
+import { useHttpClient } from '../../../hooks/useHttpClient';
+import { useActiveAccount } from './../../../hooks/useActiveAccount';
+import { useActiveProject } from './../../../hooks/useActiveProject';
 
 const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
   headers: {
@@ -40,11 +36,17 @@ const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
   },
 });
 
-export const useAxiosTrackTileService = (props: Props): TrackTileService => {
-  const { axiosInstance, patientId } = props;
-  const { datastoreSettings, accountSettings } = props;
+export const useAxiosTrackTileService = (): TrackTileService => {
+  const { httpClient } = useHttpClient();
+  const { activeSubjectId: patientId, activeProject } = useActiveProject();
+  const { account } = useActiveAccount();
+
+  const accountSettings = {
+    account: account?.id ?? '',
+    project: activeProject?.id ?? '',
+  };
+
   const { current: cache } = useRef<{
-    includePublic?: boolean;
     trackers?: Tracker[];
     trackerValues: ContextTrackerValues;
     ontologies: Record<string, CodedRelationship[]>;
@@ -77,21 +79,17 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
     return cache.trackerValues[valuesContextKey];
   };
 
-  const includePublicTrackers = accountSettings?.includePublicTrackers ?? true;
-
   return {
     accountSettings,
-    datastoreSettings,
     patientId,
 
     fetchTrackers: async () => {
-      if (cache.trackers && includePublicTrackers === cache.includePublic) {
+      if (cache.trackers) {
         return cache.trackers;
       }
 
       const queryParams = {
         project: accountSettings?.project,
-        'include-public': includePublicTrackers,
       };
       const params = Object.entries(pickBy(queryParams))
         .map(([k, v]) => `${k}=${v}`)
@@ -99,36 +97,32 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
 
       const url = `/track-tiles/trackers${params && `?${params}`}`;
 
-      const res = await axiosInstance.get(
-        url,
-        axiosConfig(accountSettings ?? datastoreSettings),
-      );
+      const res = await httpClient.get(url, axiosConfig(accountSettings));
       const fetchedTrackers: Tracker[] = res.data;
 
       cache.trackers = fetchedTrackers;
-      cache.includePublic = includePublicTrackers;
 
       return fetchedTrackers;
     },
 
     upsertTracker: async (metricId, settings) => {
-      const res = await axiosInstance.put<InstalledMetric>(
+      const res = await httpClient.put<InstalledMetric>(
         `/track-tiles/metrics/installs/${metricId}`,
         settings,
-        axiosConfig(accountSettings ?? datastoreSettings),
+        axiosConfig(accountSettings),
       );
 
       return updateSettingsInCache(res.data) || res.data;
     },
 
     upsertTrackers: async (settings) => {
-      await axiosInstance.patch('/track-tiles/metrics/installs', settings);
+      await httpClient.patch('/track-tiles/metrics/installs', settings);
 
       settings.forEach(updateSettingsInCache);
     },
 
     uninstallTracker: async (metricId) => {
-      await axiosInstance.delete(`/track-tiles/metrics/installs/${metricId}`);
+      await httpClient.delete(`/track-tiles/metrics/installs/${metricId}`);
 
       cache.trackers = cache.trackers?.map((t) => {
         if (t.metricId === metricId) {
@@ -155,7 +149,7 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
       const start = maxDate([missingStart, interval.start]).toISOString();
       const end = minDate([missingEnd, interval.end]).toISOString();
 
-      const res = await axiosInstance.post<FetchTrackerResponse>(
+      const res = await httpClient.post<FetchTrackerResponse>(
         '/graphql',
         {
           variables: {
@@ -165,7 +159,7 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
           },
           query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
         },
-        axiosConfig(datastoreSettings),
+        axiosConfig(accountSettings),
       );
 
       const trackerValues = extractTrackerValues(res.data);
@@ -178,13 +172,13 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
     },
 
     deleteTrackerResource: async (valuesContext, resourceType, id) => {
-      const res = await axiosInstance.post<DeleteResourceResponse>(
+      const res = await httpClient.post<DeleteResourceResponse>(
         '/graphql',
         {
           query: DELETE_RESOURCE(resourceType),
           variables: { id },
         },
-        axiosConfig(datastoreSettings),
+        axiosConfig(accountSettings),
       );
 
       if (!res.data.data) {
@@ -206,7 +200,7 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
     },
 
     upsertTrackerResource: async (valuesContext, resource) => {
-      const res = await axiosInstance.post<
+      const res = await httpClient.post<
         UpsertObservationResponse | UpsertProcedureResponse
       >(
         '/graphql',
@@ -217,7 +211,7 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
               : MUTATE_PROCEDURE_RESOURCE(resource.id ? 'Update' : 'Create'),
           variables: { resource },
         },
-        axiosConfig(datastoreSettings),
+        axiosConfig(accountSettings),
       );
 
       if (!res.data.data) {
@@ -277,16 +271,16 @@ export const useAxiosTrackTileService = (props: Props): TrackTileService => {
         return cachedData;
       }
 
-      const res = await axiosInstance.post<QueryOntologyResponse>(
+      const res = await httpClient.post<QueryOntologyResponse>(
         '/graphql',
         {
           query: QUERY_ONTOLOGY,
           variables: {
-            project: datastoreSettings.project,
+            project: accountSettings.project,
             code: codeBelow,
           },
         },
-        axiosConfig(datastoreSettings),
+        axiosConfig(accountSettings),
       );
 
       if (!res.data.data) {

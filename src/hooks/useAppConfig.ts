@@ -11,9 +11,14 @@ export interface AppTile {
   };
 }
 
+export type Tile = 'todayTile' | 'trackTile' | 'pillarsTile';
+
 export interface AppConfig {
   homeTab?: {
     appTiles?: AppTile[];
+    tiles?: Tile[];
+    trackTileSettings?: { title: string };
+    pillarSettings: { advancedScreenTrackers: string[] };
   };
 }
 

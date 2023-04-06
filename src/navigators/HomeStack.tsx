@@ -4,12 +4,14 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { AppTile } from '../hooks/useAppConfig';
 import { AppTileScreen } from '../screens/AppTileScreen';
 import { CustomAppTileScreen } from '../screens/CustomAppTileScreen';
+import { TrackTileTrackerScreen } from '../screens/TrackTileTrackerScreen';
 import { AppNavHeader } from '../components/AppNavHeader';
 
 export type HomeStackParamList = {
   Home: undefined;
   'tiles/AppTile': { appTile: AppTile };
   'tiles/CustomAppTile': { appTile: AppTile };
+  'tiles/TrackTile': { tracker: any; valuesContext: any };
 };
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
@@ -27,6 +29,7 @@ export function HomeStack() {
         name="tiles/CustomAppTile"
         component={CustomAppTileScreen}
       />
+      <Stack.Screen name="tiles/TrackTile" component={TrackTileTrackerScreen} />
     </Stack.Navigator>
   );
 }

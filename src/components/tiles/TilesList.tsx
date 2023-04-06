@@ -9,6 +9,7 @@ import { useStyles, useDeveloperConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { spacing } from '../BrandConfigProvider/theme/base';
 import { createStyles } from '../BrandConfigProvider';
+import TrackTile from './TrackTile';
 
 export interface TilesListProps {
   tiles?: AppTile[];
@@ -43,6 +44,7 @@ export const TilesList = ({
   return (
     <ScrollView testID={tID('tiles-list')} style={styles.scrollView}>
       <View style={styles.view}>
+        <TrackTile />
         {tiles?.map((appTile) => (
           <Tile
             key={appTile.id}

@@ -139,23 +139,11 @@ export type TrackTileService = {
   readonly patientId?: string;
 
   /**
-   * @description account and project that the patient data will be saved to
-   */
-  readonly datastoreSettings: {
-    readonly account: string;
-    readonly project: string;
-  };
-
-  /**
    * @description account and project that is used for fetching tracker settings. Defaults to **datastoreSettings**
    */
   readonly accountSettings?: {
     readonly account: string;
     readonly project: string;
-    /**
-     * @description used to decide if public trackers should be fetched alongside account trackers
-     */
-    readonly includePublicTrackers: boolean;
   };
 
   fetchTrackers: (includePublic?: boolean) => Promise<Tracker[]>;
