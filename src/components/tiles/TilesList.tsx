@@ -18,10 +18,13 @@ export interface TilesListProps {
   tileStyles?: TileStyles;
   onAppTilePress?: () => void;
 }
-const appTileIcon = (uri: string) =>
+const appTileIcon = (uri?: string) =>
   function AppTileIcon() {
     const { styles } = useStyles(defaultStyles);
-    return <SvgUri uri={uri} style={styles.iconImage} />;
+    if (uri) {
+      return <SvgUri uri={uri} style={styles.iconImage} />;
+    }
+    return null;
   };
 
 export const TilesList = ({
