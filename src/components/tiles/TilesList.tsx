@@ -52,6 +52,7 @@ export const TilesList = ({
     <ScrollView testID={tID('tiles-list')} style={styles.scrollView}>
       {tiles?.map((appTile) => (
         <Tile
+          id={appTile.id}
           key={appTile.id}
           title={appTile.title}
           onPress={

@@ -6,20 +6,22 @@ import { createStyles } from '../BrandConfigProvider';
 import TileSelectIcon from './icons/tile-select-chevron.svg';
 import { SvgProps } from 'react-native-svg';
 import LinearGradient from 'react-native-linear-gradient';
+import { tID } from '../../common/testID';
 
 interface TileProps {
   title: string;
   Icon?: React.FC<SvgProps>;
   onPress?: () => void;
   id?: string;
+  testID?: string;
   children?: React.ReactNode;
 }
 
-const ViewTile: FC<TileProps> = ({ Icon, title, id }) => {
+const ViewTile: FC<TileProps> = ({ Icon, title, id, testID }) => {
   const { styles } = useStyles(defaultStyles);
 
   return (
-    <View style={styles.container} id={id}>
+    <View style={styles.container} id={id} testID={testID}>
       <LinearGradient
         colors={['transparent', 'transparent']}
         start={{ x: 0.499, y: -0.2 }}
@@ -54,17 +56,17 @@ const ViewTile: FC<TileProps> = ({ Icon, title, id }) => {
 };
 
 export const Tile = (props: TileProps) => {
-  const { onPress, children } = props;
+  const { onPress, children, id } = props;
   if (onPress) {
     return (
-      <TouchableOpacity onPress={onPress}>
-        <ViewTile {...props} />
+      <TouchableOpacity onPress={onPress} testID={tID(`tile-button-${id}`)}>
+        <ViewTile {...props} testID={tID(`tile-view-${id}`)} />
         {children}
       </TouchableOpacity>
     );
   }
 
-  return <ViewTile {...props} />;
+  return <ViewTile {...props} testID={tID(`tile-view-${id}`)} />;
 };
 
 export const spaceBetweenTiles = 16;
