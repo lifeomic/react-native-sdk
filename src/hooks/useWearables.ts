@@ -36,7 +36,11 @@ interface SetLastSync {
 interface SetWearableState {
   ehrId: string;
   enabled: boolean;
-  meta?: any;
+  meta?: {
+    syncBeginTimestamp?: string;
+    appId?: string;
+    region?: string;
+  };
 }
 
 export const useWearables = () => {
