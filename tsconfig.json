@@ -15,7 +15,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "lib": ["es2017", "es6", "dom"],
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": ["./node_modules/@types", "src/typings"],
     "paths": {
       "@styles": ["./src/components/BrandConfigProvider/styles/types"],
       "@i18n": ["lib/i18n"],
