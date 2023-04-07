@@ -93,14 +93,14 @@ export const SyncTypeSelectionRow: FC<SyncTypeSelectionRowProps> = (props) => {
 const defaultStyles = createStyles('SyncTypeSelectionRow', (theme) => ({
   container: {
     backgroundColor: theme.colors.background,
-    marginHorizontal: 16,
-    marginVertical: 4,
+    marginHorizontal: theme.spacing.medium,
+    marginVertical: theme.spacing.tiny,
     borderRadius: 10,
     overflow: 'hidden',
   },
   textWrapper: {
     flexDirection: 'row',
-    padding: 12,
+    padding: theme.spacing.small,
     justifyContent: 'space-between',
   },
   syncTypeLabel: {
@@ -109,7 +109,7 @@ const defaultStyles = createStyles('SyncTypeSelectionRow', (theme) => ({
   syncTypeValue: {
     flex: 1,
     textAlign: 'right',
-    paddingEnd: 18,
+    paddingEnd: theme.spacing.medium,
   },
   selectorView: {},
 }));
