@@ -90,7 +90,7 @@ export const useWearables = () => {
       headers: accountHeaders,
     });
 
-  const useQueryWearableIntegration = (ehrId: string) =>
+  const useWearableIntegrationQuery = (ehrId: string) =>
     useQuery(
       'get-wearable',
       () =>
@@ -100,7 +100,7 @@ export const useWearables = () => {
       },
     );
 
-  const useQueryWearableIntegrations = (appId: string) =>
+  const useWearableIntegrationsQuery = (appId: string) =>
     useQuery(
       'get-wearables',
       () =>
@@ -119,7 +119,7 @@ export const useWearables = () => {
     setWearableState,
     setSyncTypes,
     setLastSync,
-    useQueryWearableIntegration,
-    useQueryWearableIntegrations,
+    useWearableIntegrationQuery,
+    useWearableIntegrationsQuery,
   };
 };

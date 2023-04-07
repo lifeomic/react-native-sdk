@@ -11,9 +11,9 @@ export const openURL = (url: string) => {
 
 const WearablesScreen = () => {
   const appId = getBundleId().toLowerCase();
-  const { setWearableState, setSyncTypes, useQueryWearableIntegrations } =
+  const { setWearableState, setSyncTypes, useWearableIntegrationsQuery } =
     useWearables();
-  const { data, refetch, isLoading } = useQueryWearableIntegrations(appId);
+  const { data, refetch, isLoading } = useWearableIntegrationsQuery(appId);
 
   const wearables = data?.items || [];
 
