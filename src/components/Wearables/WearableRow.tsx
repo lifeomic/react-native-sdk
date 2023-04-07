@@ -317,7 +317,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
         >
           <SwitchRow
             onValueChange={toggleBackgroundSync(wearable)}
-            accessibilityLabel={t('Toggle {{wearableName}} background sync', {
+            accessibilityLabel={t('toggle-wearable', {
               wearableName: t('background-sync', 'Background Sync'),
             })}
             disabled={disabled}
@@ -328,7 +328,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
                 fontWeight: 'normal',
               },
             }}
-            title={t('background-sync-heading', 'Background Sync')}
+            title={t('background-sync', 'Background Sync')}
             {...switchProps}
           />
           {backgroundSyncEnabled && (

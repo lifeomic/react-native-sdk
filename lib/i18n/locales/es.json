@@ -47,5 +47,13 @@
   "track-tile.time-value-separator": ":",
   "track-tile.todays-units": "Today's {{unit}}",
   "track-tile.total-daily-units": "Total Daily {{unit}}",
-  "track-tile.weekly-metrics-prefix": "Weekly Metrics"
+  "track-tile.weekly-metrics-prefix": "Weekly Metrics",
+  "fitbit-learnmore":"El historial de Fitbit se descargará periódicamente en la nube. Es posible que tengas que sincronizar la aplicación Fitbit si no encuentras el historial.",
+  "garmin-learnmore":"Los registros de Garmin se sincronizan una vez que están disponibles en la aplicación Garmin Connect.",
+  "google-fit-learnmore":"El historial de Fitbit se descargará periódicamente en la nube. Es posible que tengas que sincronizar la aplicación Fitbit si no encuentras el historial.",
+  "keto-mojo-learnmore":"El historial de Keto-Mojo se descargará periódicamente en la nube. Deberás sincronizar la aplicación Keto-Mojo y MyMojoHealth para que el historial esté disponible.",
+  "learn-more":"Aprende más",
+  "oura-learnmore":"El historial de Oura se descargará periódicamente en la nube. Deberás sincronizar la aplicación Oura para que el historial esté disponible.",
+  "readout-learnmore":"El historial de Readout Health se descargará periódicamente en la nube. Deberás sincronizar la aplicación Biosense para que el historial esté disponible.",
+  "toggle-wearable":"Alternar {{wearableName}}"
 }
