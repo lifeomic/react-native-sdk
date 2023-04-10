@@ -9,6 +9,8 @@ import {
   Notifications,
   NotificationBackgroundFetchResult,
 } from 'react-native-notifications';
+import { Platform, PermissionsAndroid } from 'react-native';
+import { waitFor } from '@testing-library/react-native';
 
 let registerRemoteNotificationsRegistered = jest.fn();
 let registerRemoteNotificationsRegistrationDenied = jest.fn();
@@ -28,6 +30,21 @@ jest.mock('react-native-notifications', () => ({
     events: jest.fn(() => events),
   },
   NotificationBackgroundFetchResult: { NEW_DATA: 'NEW_DATA' },
+}));
+
+jest.mock('react-native', () => ({
+  Platform: {
+    OS: 'ios',
+    constants: {
+      Version: 1,
+    },
+  },
+  PermissionsAndroid: {
+    request: jest.fn(),
+    PERMISSIONS: {
+      POST_NOTIFICATIONS: 'POST_NOTIFICATIONS',
+    },
+  },
 }));
 
 const mockNotification = {
@@ -92,6 +109,54 @@ describe('requestNotificationsPermissions', () => {
       .mockImplementationOnce((cb) => cb(error));
     requestNotificationsPermissions(callback);
     expect(callback).toHaveBeenCalledWith({ denied: false, error });
+  });
+
+  it('should request the POST_NOTIFICATIONS for Android 13+', async () => {
+    Platform.OS = 'android';
+    //@ts-ignore
+    Platform.constants.Version = 33;
+    PermissionsAndroid.request = jest.fn().mockResolvedValue('granted');
+    const callback = jest.fn();
+    const deviceToken = 'a-device-token';
+    const event = { deviceToken };
+
+    Notifications.registerRemoteNotifications = jest.fn();
+    Notifications.events().registerRemoteNotificationsRegistered = jest
+      .fn()
+      .mockImplementationOnce((cb) => cb(event));
+    requestNotificationsPermissions(callback);
+
+    await waitFor(() => {
+      expect(PermissionsAndroid.request).toHaveBeenCalledWith(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
+      expect(Notifications.registerRemoteNotifications).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith({ deviceToken, denied: false });
+    });
+  });
+
+  it('should return denied if the POST_NOTIFICATIONS permission is denied', async () => {
+    Platform.OS = 'android';
+    //@ts-ignore
+    Platform.constants.Version = 33;
+    PermissionsAndroid.request = jest.fn().mockResolvedValue('denied');
+    const callback = jest.fn();
+    const deviceToken = 'a-device-token';
+    const event = { deviceToken };
+
+    Notifications.registerRemoteNotifications = jest.fn();
+    Notifications.events().registerRemoteNotificationsRegistered = jest
+      .fn()
+      .mockImplementationOnce((cb) => cb(event));
+    requestNotificationsPermissions(callback);
+
+    await waitFor(() => {
+      expect(PermissionsAndroid.request).toHaveBeenCalledWith(
+        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+      );
+      expect(Notifications.registerRemoteNotifications).not.toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith({ denied: true });
+    });
   });
 });
 

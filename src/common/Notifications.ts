@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { Platform } from 'react-native';
+import { Platform, PermissionsAndroid } from 'react-native';
 import {
   Notifications,
   Registered,
@@ -46,7 +46,21 @@ export const requestNotificationsPermissions = (
     error?: RegistrationError;
   }) => void,
 ) => {
-  Notifications.registerRemoteNotifications();
+  // Starting Android 13 (ie SDK 33), the POST_NOTIFICATIONS permission is required
+  if (Platform.OS === 'android' && Platform.constants.Version >= 33) {
+    PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    ).then((permissionStatus) => {
+      if (permissionStatus === 'granted') {
+        Notifications.registerRemoteNotifications();
+      } else {
+        callback({ denied: true });
+        return;
+      }
+    });
+  } else {
+    Notifications.registerRemoteNotifications();
+  }
 
   Notifications.events().registerRemoteNotificationsRegistered(
     (event: Registered) => {
