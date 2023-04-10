@@ -2,18 +2,17 @@ import React, { useCallback } from 'react';
 import { StyleSheet, Linking, View } from 'react-native';
 import { WearablesView } from '../components/Wearables';
 import { useWearables } from '../hooks/useWearables';
-import { getBundleId } from 'react-native-device-info';
 import { SyncTypeSettings } from '../components/Wearables/WearableTypes';
+import { getBundleId } from 'react-native-device-info';
 
 export const openURL = (url: string) => {
   Linking.openURL(url);
 };
 
 const WearablesScreen = () => {
-  const appId = getBundleId().toLowerCase();
   const { setWearableState, setSyncTypes, useWearableIntegrationsQuery } =
     useWearables();
-  const { data, refetch, isLoading } = useWearableIntegrationsQuery(appId);
+  const { data, refetch, isLoading } = useWearableIntegrationsQuery();
 
   const wearables = data?.items || [];
 
@@ -23,11 +22,11 @@ const WearablesScreen = () => {
         ehrId,
         enabled,
         meta: {
-          appId,
+          appId: getBundleId().toLocaleLowerCase(),
         },
       });
     },
-    [appId, setWearableState],
+    [setWearableState],
   );
 
   const updateSyncTypeSettings = async (settings: SyncTypeSettings) => {

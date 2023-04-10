@@ -1,3 +1,4 @@
+import { getBundleId } from 'react-native-device-info';
 import { useQuery } from 'react-query';
 import {
   SyncTypeSettings,
@@ -100,13 +101,13 @@ export const useWearables = () => {
       },
     );
 
-  const useWearableIntegrationsQuery = (appId: string) =>
+  const useWearableIntegrationsQuery = () =>
     useQuery(
       'get-wearables',
       () =>
         httpClient
           .get<WearablesSyncState>('/v1/wearables', {
-            params: { appId },
+            params: { appId: getBundleId().toLowerCase() },
             headers: accountHeaders,
           })
           .then((res) => res.data),
