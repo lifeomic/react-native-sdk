@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, Image } from 'react-native';
 import { AppTile } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
@@ -22,7 +22,11 @@ const appTileIcon = (uri?: string) =>
   function AppTileIcon() {
     const { styles } = useStyles(defaultStyles);
     if (uri) {
-      return <SvgUri uri={uri} style={styles.iconImage} />;
+      if (uri.endsWith('svg')) {
+        return <SvgUri uri={uri} style={styles.iconImage} />;
+      } else {
+        return <Image source={{ uri }} style={styles.iconImage} />;
+      }
     }
     return null;
   };
