@@ -26,7 +26,7 @@ export type Theme = typeof combinedDefaultTheme & MD3Theme;
 
 export type ThemeProp = RecursivePartial<Theme>;
 
-export const useTheme = () => usePaperTheme<Theme>();
+export const useTheme = () => usePaperTheme<Theme>(combinedDefaultTheme);
 
 interface Props {
   theme: ThemeProp;
