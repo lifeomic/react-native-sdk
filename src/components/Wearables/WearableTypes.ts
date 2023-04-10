@@ -69,3 +69,19 @@ export enum WearableIntegrationStatus {
   Syncing = 'SYNCING',
   Failure = 'FAILURE',
 }
+
+export enum WearableIntegrationFailureCode {
+  InvalidFHIR = 'INVALID_FHIR',
+  APIRateLimit = 'API_RATE_LIMIT',
+  Unknown = 'UNKNOWN',
+}
+
+export interface WearableIntegrationConfig {
+  include?: string[];
+  appId?: string;
+  appVersionNumber?: string;
+}
+
+export interface WearablesSyncState {
+  items: WearableIntegration[];
+}
