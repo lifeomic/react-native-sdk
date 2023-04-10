@@ -1,72 +1,80 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { Dimensions, TouchableOpacity, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { createStyles } from '../BrandConfigProvider';
 import TileSelectIcon from './icons/tile-select-chevron.svg';
 import { SvgProps } from 'react-native-svg';
-import LinearGradient from 'react-native-linear-gradient';
+import LinearGradient, {
+  LinearGradientProps,
+} from 'react-native-linear-gradient';
 import { tID } from '../../common/testID';
 
 interface TileProps {
   title: string;
-  Icon?: React.FC<SvgProps>;
-  onPress?: () => void;
-  id?: string;
-  testID?: string;
+  chevronGradient?: LinearGradientProps;
   children?: React.ReactNode;
+  Icon?: React.FC<SvgProps>;
+  id?: string;
+  onPress?: () => void;
+  testID?: string;
+  tileGradient?: LinearGradientProps;
 }
 
-const ViewTile: FC<TileProps> = ({ Icon, title, id, testID }) => {
-  const { styles } = useStyles(defaultStyles);
-
-  return (
-    <View style={styles.container} id={id} testID={testID}>
-      <LinearGradient
-        colors={['transparent', 'transparent']}
-        start={{ x: 0.499, y: -0.2 }}
-        end={{ x: 0.511, y: 1 }}
-        locations={[0, 1]}
-        style={styles.gradient}
-      >
-        <View style={styles.contentsWrapper}>
-          <View style={styles.contents}>
-            {Icon && <Icon style={styles.icon} />}
-            <Text numberOfLines={2} style={styles.titleText}>
-              {title}
-            </Text>
-            <LinearGradient
-              colors={['#509BC5', '#4DC4AF']}
-              start={{ x: -0.76, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              locations={[0, 1]}
-            >
-              <View style={styles.arrowIconView}>
-                <TileSelectIcon
-                  height={styles.arrowImage?.height}
-                  color={styles.arrowImage?.overlayColor}
-                />
-              </View>
-            </LinearGradient>
-          </View>
-        </View>
-      </LinearGradient>
-    </View>
-  );
+const defaultTileGradient: LinearGradientProps = {
+  colors: ['transparent', 'transparent'],
+  start: { x: 0.499, y: -0.2 },
+  end: { x: 0.511, y: 1 },
+  locations: [0, 1],
 };
 
-export const Tile = (props: TileProps) => {
-  const { onPress, children, id } = props;
-  if (onPress) {
-    return (
-      <TouchableOpacity onPress={onPress} testID={tID(`tile-button-${id}`)}>
-        <ViewTile {...props} testID={tID(`tile-view-${id}`)} />
-        {children}
-      </TouchableOpacity>
-    );
-  }
+const defaultChevronGradient: LinearGradientProps = {
+  colors: ['#509BC5', '#4DC4AF'],
+  start: { x: -0.76, y: 0 },
+  end: { x: 1, y: 0 },
+  locations: [0, 1],
+};
 
-  return <ViewTile {...props} testID={tID(`tile-view-${id}`)} />;
+export const Tile = ({
+  Icon,
+  title,
+  id,
+  testID,
+  tileGradient = defaultTileGradient,
+  chevronGradient = defaultChevronGradient,
+  children,
+  onPress,
+}: TileProps) => {
+  const { styles } = useStyles(defaultStyles);
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={onPress === undefined}
+      testID={tID(`tile-button-${id}`)}
+    >
+      <View style={styles.container} id={id} testID={testID}>
+        <LinearGradient {...tileGradient} style={styles.gradient}>
+          <View style={styles.contentsWrapper}>
+            <View style={styles.contents}>
+              {Icon && <Icon style={styles.icon} />}
+              <Text numberOfLines={2} style={styles.titleText}>
+                {title}
+              </Text>
+              <LinearGradient {...chevronGradient}>
+                <View style={styles.arrowIconView}>
+                  <TileSelectIcon
+                    height={styles.arrowImage?.height}
+                    color={styles.arrowImage?.overlayColor}
+                  />
+                </View>
+              </LinearGradient>
+            </View>
+          </View>
+        </LinearGradient>
+      </View>
+      {children}
+    </TouchableOpacity>
+  );
 };
 
 export const spaceBetweenTiles = 16;
