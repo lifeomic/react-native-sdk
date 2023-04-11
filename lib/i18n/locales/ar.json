@@ -47,5 +47,13 @@
   "track-tile.time-value-separator": ":",
   "track-tile.todays-units": "Today's {{unit}}",
   "track-tile.total-daily-units": "Total Daily {{unit}}",
-  "track-tile.weekly-metrics-prefix": "Weekly Metrics"
+  "track-tile.weekly-metrics-prefix": "Weekly Metrics",
+  "fitbit-learnmore":"سيتم تخزين سجلات Fitbit بشكل دوري في السحابة. قد تحتاج إلى المزامنة مع تطبيق Fitbit إذا بدت السجلات مفقودة.",
+  "garmin-learnmore":"ستتم مزامنة سجلات \"Garmin\" بمجرد توفرها في تطبيق \"Garmin Connect\".",
+  "google-fit-learnmore":"سيتم تخزين سجلات Fitbit بشكل دوري في السحابة. قد تحتاج إلى المزامنة مع تطبيق Fitbit إذا بدت السجلات مفقودة.",
+  "keto-mojo-learnmore":"سيتم تخزين سجلات \"Keto-Mojo\" بشكل دوري في السحابة. ستحتاج إلى المزامنة مع تطبيق \"Keto-Mojo\" و \"MyMojoHealth\" لتكون سجلاتك متاحة.",
+  "learn-more":"معرفة المزيد",
+  "oura-learnmore":"سيتم تخزين سجلات \"Oura\" بشكل دوري في السحابة. ستحتاج إلى المزامنة مع تطبيق \"Oura\" لتكون سجلاتك متاحة.",
+  "readout-learnmore":"سيتم تخزين سجلات \"Readout Health\" بشكل دوري في السحابة. ستحتاج إلى المزامنة مع تطبيق \"Biosense\" لتكون سجلاتك متاحة.",
+  "toggle-wearable":"تبديل {{wearableName}}"
 }

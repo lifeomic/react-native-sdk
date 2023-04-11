@@ -47,5 +47,13 @@
   "track-tile.time-value-separator": ":",
   "track-tile.todays-units": "Today's {{unit}}",
   "track-tile.total-daily-units": "Total Daily {{unit}}",
-  "track-tile.weekly-metrics-prefix": "Weekly Metrics"
+  "track-tile.weekly-metrics-prefix": "Weekly Metrics",
+  "fitbit-learnmore":"Os registros do Fitbit serão inseridos periodicamente na nuvem. Pode ser necessário sincronizar com o aplicativo Fitbit se os registros parecerem estar ausentes.",
+  "garmin-learnmore":"Os registros Garmin serão sincronizados assim que estiverem disponíveis no aplicativo Garmin Connect.",
+  "google-fit-learnmore":"Os registros do Fitbit serão inseridos periodicamente na nuvem. Pode ser necessário sincronizar com o aplicativo Fitbit se os registros parecerem estar ausentes.",
+  "keto-mojo-learnmore":"Os registros de integridade de leitura serão ingeridos periodicamente na nuvem. Você precisará sincronizar com o aplicativo Biosense para que seus registros estejam disponíveis.",
+  "learn-more":"Saber mais",
+  "oura-learnmore":"Os registros da Oura serão ingeridos periodicamente na nuvem. Você precisará sincronizar com o aplicativo Oura para que seus registros estejam disponíveis.",
+  "readout-learnmore":"Os registros de saúde de leitura serão ingeridos periodicamente na nuvem. Você precisará sincronizar com o aplicativo Biosense para que seus registros estejam disponíveis.",
+  "toggle-wearable":"Alternar {{wearableName}}"
 }

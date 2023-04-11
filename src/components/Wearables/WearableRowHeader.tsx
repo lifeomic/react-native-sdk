@@ -24,7 +24,7 @@ export const WearableRowHeader: FC<WearableRowHeaderProps> = (props) => {
   );
 };
 
-const defaultStyles = createStyles('WearableRowDetailHeader', () => ({
+const defaultStyles = createStyles('WearableRowDetailHeader', (theme) => ({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -34,7 +34,7 @@ const defaultStyles = createStyles('WearableRowDetailHeader', () => ({
   },
   iconWrapper: {
     width: 34,
-    marginStart: -5,
+    marginStart: -theme.spacing.tiny,
   },
   textWrapper: {
     flex: 1,

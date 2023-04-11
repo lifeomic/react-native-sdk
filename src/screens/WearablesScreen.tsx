@@ -1,33 +1,32 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, Linking, SafeAreaView, View } from 'react-native';
+import { StyleSheet, Linking, View } from 'react-native';
 import { WearablesView } from '../components/Wearables';
-import {
-  useSetSyncTypes,
-  useSetWearableState,
-  useWearableIntegrations,
-} from '../hooks/useWearables';
-import { getBundleId } from 'react-native-device-info';
+import { useWearables } from '../hooks/useWearables';
 import { SyncTypeSettings } from '../components/Wearables/WearableTypes';
+import { getBundleId } from 'react-native-device-info';
 
 export const openURL = (url: string) => {
   Linking.openURL(url);
 };
 
 const WearablesScreen = () => {
-  const appId = getBundleId().toLowerCase();
-  const { data, refetch, isLoading } = useWearableIntegrations(appId);
-  const setWearableState = useSetWearableState();
-  const setSyncTypes = useSetSyncTypes();
+  const { setWearableState, setSyncTypes, useWearableIntegrationsQuery } =
+    useWearables();
+  const { data, refetch, isLoading } = useWearableIntegrationsQuery();
 
   const wearables = data?.items || [];
 
   const toggleWearable = useCallback(
-    async (ehrId: string, value: boolean) => {
-      return setWearableState(ehrId, value, {
-        appId,
+    async (ehrId: string, enabled: boolean) => {
+      return setWearableState({
+        ehrId,
+        enabled,
+        meta: {
+          appId: getBundleId().toLocaleLowerCase(),
+        },
       });
     },
-    [appId, setWearableState],
+    [setWearableState],
   );
 
   const updateSyncTypeSettings = async (settings: SyncTypeSettings) => {
@@ -36,18 +35,16 @@ const WearablesScreen = () => {
   };
   return (
     <View style={[styles.container]}>
-      <SafeAreaView style={[styles.container]}>
-        <WearablesView
-          enableMultiWearable={true}
-          loading={isLoading}
-          onRefreshNeeded={refetch}
-          onShowLearnMore={openURL}
-          onShowWearableAuth={openURL}
-          onSyncTypeSelectionsUpdate={updateSyncTypeSettings}
-          onToggleWearable={toggleWearable}
-          wearables={wearables}
-        />
-      </SafeAreaView>
+      <WearablesView
+        enableMultiWearable={true}
+        loading={isLoading}
+        onRefreshNeeded={refetch}
+        onShowLearnMore={openURL}
+        onShowWearableAuth={openURL}
+        onSyncTypeSelectionsUpdate={updateSyncTypeSettings}
+        onToggleWearable={toggleWearable}
+        wearables={wearables}
+      />
     </View>
   );
 };
