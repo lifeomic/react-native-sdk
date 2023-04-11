@@ -49,25 +49,34 @@ export const Tile = ({
   return (
     <TouchableOpacity
       onPress={onPress}
-      disabled={onPress === undefined}
+      disabled={!onPress}
       testID={tID(`tile-button-${id}`)}
     >
       <View style={styles.container} id={id} testID={testID}>
         <LinearGradient {...tileGradient} style={styles.gradient}>
           <View style={styles.contentsWrapper}>
             <View style={styles.contents}>
-              {Icon && <Icon style={styles.icon} />}
+              <View style={styles.iconContainer}>
+                {Icon && <Icon style={styles.icon} />}
+              </View>
               <Text numberOfLines={2} style={styles.titleText}>
                 {title}
               </Text>
-              <LinearGradient {...chevronGradient}>
-                <View style={styles.arrowIconView}>
-                  <TileSelectIcon
-                    height={styles.arrowImage?.height}
-                    color={styles.arrowImage?.overlayColor}
-                  />
-                </View>
-              </LinearGradient>
+              {onPress ? (
+                <LinearGradient {...chevronGradient}>
+                  <View
+                    style={styles.arrowIconView}
+                    testID={tID('tile-chevron-icon-container')}
+                  >
+                    <TileSelectIcon
+                      height={styles.arrowImage?.height}
+                      color={styles.arrowImage?.overlayColor}
+                    />
+                  </View>
+                </LinearGradient>
+              ) : (
+                <View style={styles.arrowIconView} />
+              )}
             </View>
           </View>
         </LinearGradient>
@@ -85,7 +94,7 @@ const defaultStyles = createStyles('Tile', (theme) => ({
   contents: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingLeft: 20,
+    paddingLeft: theme.spacing.large,
   },
   contentsWrapper: {
     flex: 1,
@@ -103,20 +112,23 @@ const defaultStyles = createStyles('Tile', (theme) => ({
       width: 0,
     },
     shadowRadius: 8,
-    marginHorizontal: 20,
-    marginBottom: 8,
+    marginHorizontal: theme.spacing.large,
+    marginBottom: theme.spacing.extraSmall,
   },
   titleText: {
+    ...theme.fonts.titleMedium,
     color: theme.colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-    paddingLeft: 10,
+    paddingLeft: theme.spacing.small,
     flex: 1,
+  },
+  iconContainer: {
+    width: 38,
+    paddingRight: theme.spacing.small,
   },
   icon: {
     resizeMode: 'cover',
     marginLeft: 0,
-    marginRight: 11,
+    marginRight: theme.spacing.small,
   },
   arrowIconView: {
     height: '100%',

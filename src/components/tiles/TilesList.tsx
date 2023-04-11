@@ -16,16 +16,15 @@ export interface TilesListProps {
   children?: React.ReactNode;
   styles?: TilesListStyles;
   tileStyles?: TileStyles;
-  onAppTilePress?: () => void;
+  onAppTilePress?: (tile: any) => () => void;
 }
 const appTileIcon = (uri?: string) =>
   function AppTileIcon() {
-    const { styles } = useStyles(defaultStyles);
     if (uri) {
       if (uri.endsWith('svg')) {
-        return <SvgUri uri={uri} style={styles.iconImage} />;
+        return <SvgUri uri={uri} />;
       } else {
-        return <Image source={{ uri }} style={styles.iconImage} />;
+        return <Image source={{ uri }} />;
       }
     }
     return null;
@@ -60,7 +59,9 @@ export const TilesList = ({
           key={appTile.id}
           title={appTile.title}
           onPress={
-            onAppTilePress ? onAppTilePress : onAppTilePressDefault(appTile)
+            onAppTilePress
+              ? onAppTilePress(appTile)
+              : onAppTilePressDefault(appTile)
           }
           Icon={appTileIcon(appTile.icon)}
         />
@@ -74,10 +75,6 @@ const defaultStyles = createStyles('TilesList', () => ({
   scrollView: {
     flexDirection: 'column',
     marginBottom: spacing.extraLarge,
-  },
-  iconImage: {
-    width: 30,
-    height: 30,
   },
 }));
 
