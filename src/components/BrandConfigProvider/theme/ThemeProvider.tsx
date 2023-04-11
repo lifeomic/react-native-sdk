@@ -1,29 +1,25 @@
 import React from 'react';
+import merge from 'lodash/merge';
+import { RecursivePartial } from '@styles';
 
 import { DefaultTheme as reactNavigationDefault } from '@react-navigation/native';
-
 import {
-  MD3LightTheme as MD3DefaultTheme,
+  DefaultTheme as MD3DefaultTheme,
   useTheme as usePaperTheme,
   adaptNavigationTheme,
   Provider as PaperProvider,
 } from 'react-native-paper';
-import { MD3Theme, DefaultTheme } from 'react-native-paper';
-
 import * as baseDefaultTheme from './base/default';
 
-import merge from 'lodash/merge';
-import { RecursivePartial } from '@styles';
-
+// Merges baseDefaultTheme and reactNavigationDefault into MD3DefaultTheme
+// which is the default theme returned by usePaperTheme
 const combinedDefaultTheme = merge(
-  {},
-  reactNavigationDefault,
   MD3DefaultTheme,
+  reactNavigationDefault,
   baseDefaultTheme,
 );
-Object.assign(DefaultTheme, combinedDefaultTheme); // Set a new "default" theme
 
-export type Theme = typeof combinedDefaultTheme & MD3Theme;
+export type Theme = typeof combinedDefaultTheme;
 
 export type ThemeProp = RecursivePartial<Theme>;
 
