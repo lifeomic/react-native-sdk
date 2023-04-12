@@ -1,5 +1,4 @@
 import { renderHook, act } from '@testing-library/react-hooks';
-import axios from 'axios';
 import { addSeconds, endOfDay, startOfDay, subSeconds } from 'date-fns';
 import {
   BulkInstalledMetricSettings,
@@ -30,76 +29,83 @@ const valuesContext: TrackerValuesContext = {
 const DATASTORE_HEADERS = {
   headers: expect.objectContaining({
     'LifeOmic-TrackTile-Capabilities-Version': 2,
-    'LifeOmic-Account': 'datastore-account',
+    'LifeOmic-Account': 'account-id',
   }),
 };
 
 const ACCOUNT_HEADERS = {
   headers: expect.objectContaining({
     'LifeOmic-TrackTile-Capabilities-Version': 2,
-    'LifeOmic-Account': 'account',
+    'LifeOmic-Account': 'account-id',
   }),
 };
 
+const getMock = jest.fn();
+const putMock = jest.fn();
+const patchMock = jest.fn();
+const postMock = jest.fn();
+const deleteMock = jest.fn();
+
+jest.mock('../../../../hooks/useHttpClient', () => ({
+  useHttpClient: () => ({
+    httpClient: {
+      get: getMock,
+      put: putMock,
+      patch: patchMock,
+      post: postMock,
+      delete: deleteMock,
+    },
+  }),
+}));
+
+jest.mock('../../../../hooks/useActiveAccount', () => ({
+  useActiveAccount: () => ({
+    account: { id: 'account-id' },
+  }),
+}));
+
+jest.mock('../../../../hooks/useActiveProject', () => ({
+  useActiveProject: () => ({
+    activeProject: { id: 'project-id' },
+    activeSubjectId: 'patient-id',
+  }),
+}));
+
 describe('useAxiosTrackTileService', () => {
   it('should return the same values for datastoreSettings', () => {
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: axios.create(),
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     expect(result.current).toEqual(
       expect.objectContaining({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
+        accountSettings: {
+          account: 'account-id',
+          project: 'project-id',
         },
       }),
     );
   });
 
   it('should fetch the track tile trackers when calling fetchTrackers', async () => {
-    const get = jest.fn().mockResolvedValue({ data: [{ id: 'metric-id' }] });
+    getMock.mockResolvedValue({ data: [{ id: 'metric-id' }] });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { get } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     let returnedMetrics: any;
     await act(async () => {
       returnedMetrics = await result.current.fetchTrackers();
     });
 
-    expect(get).toHaveBeenCalledWith(
-      '/track-tiles/trackers?include-public=true',
+    expect(getMock).toHaveBeenCalledWith(
+      '/track-tiles/trackers?project=project-id',
       DATASTORE_HEADERS,
     );
     expect(returnedMetrics).toEqual([{ id: 'metric-id' }]);
   });
 
   it('should cache trackers and only call the api once', async () => {
-    const get = jest.fn().mockResolvedValue({ data: [{ id: 'metric-id' }] });
+    getMock.mockResolvedValue({ data: [{ id: 'metric-id' }] });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { get } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     let first: any, second: any;
     await act(async () => {
@@ -107,87 +113,53 @@ describe('useAxiosTrackTileService', () => {
       second = await result.current.fetchTrackers();
     });
 
-    expect(get).toHaveBeenCalledTimes(1);
+    expect(getMock).toHaveBeenCalledTimes(1);
     expect(first).toEqual(second);
   });
 
   it('should fetch the trackers on a project when calling fetchTrackers when a project is provided', async () => {
-    const get = jest.fn().mockResolvedValue({ data: [{ id: 'metric-id' }] });
+    getMock.mockResolvedValue({ data: [{ id: 'metric-id' }] });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        accountSettings: {
-          account: 'account',
-          project: 'account-project',
-          includePublicTrackers: false,
-        },
-        axiosInstance: { get } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     let returnedTrackers: any;
     await act(async () => {
       returnedTrackers = await result.current.fetchTrackers();
     });
 
-    expect(get).toHaveBeenCalledWith(
-      '/track-tiles/trackers?project=account-project',
+    expect(getMock).toHaveBeenCalledWith(
+      '/track-tiles/trackers?project=project-id',
       ACCOUNT_HEADERS,
     );
     expect(returnedTrackers).toEqual([{ id: 'metric-id' }]);
   });
 
   it('should request the public trackers when fetching trackers with includePublic set to true', async () => {
-    const get = jest.fn().mockResolvedValue({ data: [] });
+    getMock.mockResolvedValue({ data: [] });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { get } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.fetchTrackers();
     });
 
-    expect(get).toHaveBeenCalledWith(
-      '/track-tiles/trackers?include-public=true',
+    expect(getMock).toHaveBeenCalledWith(
+      '/track-tiles/trackers?project=project-id',
       DATASTORE_HEADERS,
     );
   });
 
   it('should include public and project only trackers when requested', async () => {
-    const get = jest.fn().mockResolvedValue({ data: [] });
+    getMock.mockResolvedValue({ data: [] });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { get } as any,
-        accountSettings: {
-          account: 'account',
-          project: 'account-project',
-          includePublicTrackers: true,
-        },
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.fetchTrackers();
     });
 
-    expect(get).toHaveBeenCalledWith(
-      '/track-tiles/trackers?project=account-project&include-public=true',
+    expect(getMock).toHaveBeenCalledWith(
+      '/track-tiles/trackers?project=project-id',
       ACCOUNT_HEADERS,
     );
   });
@@ -199,17 +171,9 @@ describe('useAxiosTrackTileService', () => {
       target: 2,
       unit: '3',
     };
-    const put = jest.fn().mockResolvedValue({ data: settings });
+    putMock.mockResolvedValue({ data: settings });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'project',
-        },
-        axiosInstance: { put } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     let upsertResult: any;
     await act(async () => {
@@ -219,7 +183,7 @@ describe('useAxiosTrackTileService', () => {
       );
     });
 
-    expect(put).toHaveBeenCalledWith(
+    expect(putMock).toHaveBeenCalledWith(
       '/track-tiles/metrics/installs/metric-id',
       settings,
       DATASTORE_HEADERS,
@@ -235,20 +199,10 @@ describe('useAxiosTrackTileService', () => {
       target: 2,
       unit: '3',
     };
-    const put = jest
-      .fn()
-      .mockResolvedValue({ data: { ...settings, order: 2 } }); // update res
-    const get = jest.fn().mockResolvedValue({ data: [settings] }); // initial value
+    putMock.mockResolvedValue({ data: { ...settings, order: 2 } }); // update res
+    getMock.mockResolvedValue({ data: [settings] }); // initial value
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'project',
-        },
-        axiosInstance: { put, get } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     let cachedResult: any;
     await act(async () => {
@@ -280,20 +234,10 @@ describe('useAxiosTrackTileService', () => {
       target: 2,
       unit: '3',
     };
-    const put = jest
-      .fn()
-      .mockResolvedValue({ data: { ...settings, order: 2 } }); // update res
-    const get = jest.fn().mockResolvedValue({ data: [settings] }); // initial value
+    putMock.mockResolvedValue({ data: { ...settings, order: 2 } }); // update res
+    getMock.mockResolvedValue({ data: [settings] }); // initial value
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'project',
-        },
-        axiosInstance: { put, get } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     let cachedResult: any;
     await act(async () => {
@@ -324,18 +268,10 @@ describe('useAxiosTrackTileService', () => {
       { ...tracker1, order: 2 },
     ];
 
-    const patch = jest.fn().mockResolvedValue({ data: updatedSettings });
-    const get = jest.fn().mockResolvedValue({ data: [tracker1, tracker2] });
+    patchMock.mockResolvedValue({ data: updatedSettings });
+    getMock.mockResolvedValue({ data: [tracker1, tracker2] });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'project',
-        },
-        axiosInstance: { patch, get } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     let cachedResult: any;
     await act(async () => {
@@ -347,7 +283,7 @@ describe('useAxiosTrackTileService', () => {
       cachedResult = await result.current.fetchTrackers();
     });
 
-    expect(patch).toHaveBeenCalledWith(
+    expect(patchMock).toHaveBeenCalledWith(
       '/track-tiles/metrics/installs',
       updatedSettings,
     );
@@ -357,18 +293,9 @@ describe('useAxiosTrackTileService', () => {
   it("should delete a tracker when calling uninstallTracker and update the cache so it's not installed anymore", async () => {
     const tracker = { id: 'a', metricId: '1', target: 1, unit: 'u', order: 1 };
 
-    const deleteFn = jest.fn();
-    const get = jest.fn().mockResolvedValue({ data: [tracker] });
+    getMock.mockResolvedValue({ data: [tracker] });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'project',
-        },
-        axiosInstance: { delete: deleteFn, get } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     let cachedResult: any, initialCacheValue: any;
     await act(async () => {
@@ -380,7 +307,7 @@ describe('useAxiosTrackTileService', () => {
       cachedResult = await result.current.fetchTrackers();
     });
 
-    expect(deleteFn).toHaveBeenCalledWith(
+    expect(deleteMock).toHaveBeenCalledWith(
       `/track-tiles/metrics/installs/${tracker.metricId}`,
     );
     expect(initialCacheValue.every(isInstalledMetric)).toEqual(true);
@@ -388,7 +315,7 @@ describe('useAxiosTrackTileService', () => {
   });
 
   it('should query for tracker values based on an interval of days', async () => {
-    const post = jest.fn().mockResolvedValue(
+    postMock.mockResolvedValue(
       toGraphQLResult(
         [
           {
@@ -407,15 +334,7 @@ describe('useAxiosTrackTileService', () => {
       ),
     );
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     let fetchResult: any;
     await act(async () => {
@@ -425,11 +344,12 @@ describe('useAxiosTrackTileService', () => {
       });
     });
 
-    expect(post).toHaveBeenCalledWith(
+    expect(postMock).toHaveBeenCalledWith(
       '/graphql',
       {
         variables: {
           dates: ['ge2021-07-23T00:00:00.000Z', 'le2021-07-30T00:00:00.000Z'],
+          patientId: 'patient-id',
           codeBelow: valuesContext.codeBelow,
         },
         query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
@@ -480,7 +400,7 @@ describe('useAxiosTrackTileService', () => {
   });
 
   it('should query for tracker values based on an interval of days and custom codeBelow', async () => {
-    const post = jest.fn().mockResolvedValue(
+    postMock.mockResolvedValue(
       toGraphQLResult(
         [
           {
@@ -499,21 +419,7 @@ describe('useAxiosTrackTileService', () => {
       ),
     );
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'project',
-        },
-        accountSettings: {
-          account: 'account',
-          project: 'account-project',
-          includePublicTrackers: false,
-        },
-        axiosInstance: { post } as any,
-        patientId: 'patient-id',
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     const customValuesContext = {
       ...valuesContext,
@@ -531,7 +437,7 @@ describe('useAxiosTrackTileService', () => {
       );
     });
 
-    expect(post).toHaveBeenCalledWith(
+    expect(postMock).toHaveBeenCalledWith(
       '/graphql',
       {
         variables: {
@@ -587,8 +493,7 @@ describe('useAxiosTrackTileService', () => {
   });
 
   it('should only query for a range of days that include the uncached days', async () => {
-    const post = jest
-      .fn()
+    postMock
       .mockResolvedValueOnce(
         toGraphQLResult([
           {
@@ -608,15 +513,7 @@ describe('useAxiosTrackTileService', () => {
         ]),
       );
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.fetchTrackerValues(valuesContext, {
@@ -629,7 +526,7 @@ describe('useAxiosTrackTileService', () => {
       });
     });
 
-    expect(post).toHaveBeenNthCalledWith(
+    expect(postMock).toHaveBeenNthCalledWith(
       1,
       '/graphql',
       {
@@ -638,13 +535,14 @@ describe('useAxiosTrackTileService', () => {
             `ge${startOfDay(new Date('2021-07-23')).toISOString()}`,
             `le${endOfDay(new Date('2021-07-23')).toISOString()}`,
           ],
+          patientId: 'patient-id',
           codeBelow: valuesContext.codeBelow,
         },
         query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
       },
       DATASTORE_HEADERS,
     );
-    expect(post).toHaveBeenNthCalledWith(
+    expect(postMock).toHaveBeenNthCalledWith(
       2,
       '/graphql',
       {
@@ -653,6 +551,7 @@ describe('useAxiosTrackTileService', () => {
             `ge${startOfDay(new Date('2021-07-24')).toISOString()}`,
             `le${endOfDay(new Date('2021-07-24')).toISOString()}`,
           ],
+          patientId: 'patient-id',
           codeBelow: valuesContext.codeBelow,
         },
         query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
@@ -662,7 +561,7 @@ describe('useAxiosTrackTileService', () => {
   });
 
   it('should return cached data if all days are present in the cache', async () => {
-    const post = jest.fn().mockResolvedValueOnce(
+    postMock.mockResolvedValueOnce(
       toGraphQLResult([
         {
           metricId: 'metric-id-1',
@@ -677,15 +576,7 @@ describe('useAxiosTrackTileService', () => {
       ]),
     );
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.fetchTrackerValues(valuesContext, {
@@ -698,11 +589,11 @@ describe('useAxiosTrackTileService', () => {
       });
     });
 
-    expect(post).toHaveBeenCalledTimes(1);
+    expect(postMock).toHaveBeenCalledTimes(1);
   });
 
   it('should return cached pillars data if all days are present in the cache', async () => {
-    const post = jest.fn().mockResolvedValueOnce(
+    postMock.mockResolvedValueOnce(
       toGraphQLResult([
         {
           metricId: 'metric-id-1',
@@ -717,15 +608,7 @@ describe('useAxiosTrackTileService', () => {
       ]),
     );
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     const pillarValuesContext = {
       system: TRACKER_PILLAR_CODE_SYSTEM,
@@ -743,8 +626,8 @@ describe('useAxiosTrackTileService', () => {
       });
     });
 
-    expect(post).toHaveBeenCalledTimes(1);
-    expect(post).toHaveBeenNthCalledWith(
+    expect(postMock).toHaveBeenCalledTimes(1);
+    expect(postMock).toHaveBeenNthCalledWith(
       1,
       '/graphql',
       {
@@ -753,6 +636,7 @@ describe('useAxiosTrackTileService', () => {
             `ge${startOfDay(new Date('2021-07-23')).toISOString()}`,
             `le${endOfDay(new Date('2021-07-24')).toISOString()}`,
           ],
+          patientId: 'patient-id',
           codeBelow: pillarValuesContext.codeBelow,
         },
         query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
@@ -785,7 +669,7 @@ describe('useAxiosTrackTileService', () => {
       },
       status: 'final',
     };
-    const post = jest.fn().mockResolvedValueOnce({
+    postMock.mockResolvedValueOnce({
       data: {
         data: {
           resource: toObservation({
@@ -797,21 +681,13 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.upsertTrackerResource(valuesContext, newResource);
     });
 
-    expect(post).toHaveBeenCalledWith(
+    expect(postMock).toHaveBeenCalledWith(
       '/graphql',
       {
         query: MUTATE_OBSERVATION_RESOURCE('Create'),
@@ -840,7 +716,7 @@ describe('useAxiosTrackTileService', () => {
       },
       status: 'completed',
     };
-    const post = jest.fn().mockResolvedValueOnce({
+    postMock.mockResolvedValueOnce({
       data: {
         data: {
           resource: toObservation({
@@ -852,21 +728,13 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.upsertTrackerResource(valuesContext, newResource);
     });
 
-    expect(post).toHaveBeenCalledWith(
+    expect(postMock).toHaveBeenCalledWith(
       '/graphql',
       {
         query: MUTATE_OBSERVATION_RESOURCE('Update'),
@@ -897,7 +765,7 @@ describe('useAxiosTrackTileService', () => {
       },
       status: 'completed',
     };
-    const post = jest.fn().mockResolvedValueOnce({
+    postMock.mockResolvedValueOnce({
       data: {
         data: {
           resource: toProcedure({
@@ -909,21 +777,13 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.upsertTrackerResource(valuesContext, newResource);
     });
 
-    expect(post).toHaveBeenCalledWith(
+    expect(postMock).toHaveBeenCalledWith(
       '/graphql',
       {
         query: MUTATE_PROCEDURE_RESOURCE('Create'),
@@ -955,7 +815,7 @@ describe('useAxiosTrackTileService', () => {
       },
       status: 'completed',
     };
-    const post = jest.fn().mockResolvedValueOnce({
+    postMock.mockResolvedValueOnce({
       data: {
         data: {
           resource: toProcedure({
@@ -967,21 +827,13 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.upsertTrackerResource(valuesContext, newResource);
     });
 
-    expect(post).toHaveBeenCalledWith(
+    expect(postMock).toHaveBeenCalledWith(
       '/graphql',
       {
         query: MUTATE_PROCEDURE_RESOURCE('Update'),
@@ -992,17 +844,9 @@ describe('useAxiosTrackTileService', () => {
   });
 
   it('should throw an error if the query result does not contain any data', async () => {
-    const post = jest.fn().mockResolvedValueOnce({ data: {} });
+    postMock.mockResolvedValueOnce({ data: {} });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await expect(
       result.current.upsertTrackerResource(valuesContext, {
@@ -1012,7 +856,7 @@ describe('useAxiosTrackTileService', () => {
   });
 
   it('should delete a procedure when calling deleteTrackerResource', async () => {
-    const post = jest.fn().mockResolvedValueOnce({
+    postMock.mockResolvedValueOnce({
       data: {
         data: {
           success: true,
@@ -1020,15 +864,7 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.deleteTrackerResource(
@@ -1038,7 +874,7 @@ describe('useAxiosTrackTileService', () => {
       );
     });
 
-    expect(post).toHaveBeenCalledWith(
+    expect(postMock).toHaveBeenCalledWith(
       '/graphql',
       {
         query: DELETE_RESOURCE('Procedure'),
@@ -1049,7 +885,7 @@ describe('useAxiosTrackTileService', () => {
   });
 
   it('should delete an observation when calling deleteTrackerResource', async () => {
-    const post = jest.fn().mockResolvedValueOnce({
+    postMock.mockResolvedValueOnce({
       data: {
         data: {
           success: true,
@@ -1057,15 +893,7 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() =>
-      useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'datastore-account',
-          project: 'datastore-project',
-        },
-        axiosInstance: { post } as any,
-      }),
-    );
+    const { result } = renderHook(() => useAxiosTrackTileService());
 
     await act(async () => {
       await result.current.deleteTrackerResource(
@@ -1075,7 +903,7 @@ describe('useAxiosTrackTileService', () => {
       );
     });
 
-    expect(post).toHaveBeenCalledWith(
+    expect(postMock).toHaveBeenCalledWith(
       '/graphql',
       {
         query: DELETE_RESOURCE('Observation'),

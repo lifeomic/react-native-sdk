@@ -9,9 +9,9 @@ import { useStyles, useDeveloperConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { spacing } from '../BrandConfigProvider/theme/base';
 import { createStyles } from '../BrandConfigProvider';
-import TrackTile from './TrackTile';
 
 export interface TilesListProps {
+  TrackTile?: JSX.Element;
   tiles?: AppTile[];
   children?: React.ReactNode;
   styles?: TilesListStyles;
@@ -20,6 +20,7 @@ export interface TilesListProps {
 }
 
 export const TilesList = ({
+  TrackTile,
   tiles,
   children,
   styles: instanceStyles,
@@ -43,8 +44,8 @@ export const TilesList = ({
 
   return (
     <ScrollView testID={tID('tiles-list')} style={styles.scrollView}>
+      {TrackTile && TrackTile}
       <View style={styles.view}>
-        <TrackTile />
         {tiles?.map((appTile) => (
           <Tile
             key={appTile.id}
