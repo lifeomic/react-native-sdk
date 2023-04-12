@@ -13,6 +13,7 @@ test('can render tile with onPress', () => {
 
   expect(tile.getByText('My Tile')).toBeDefined();
   expect(tile.getByTestId('tile-button-tile-id')).toBeDefined();
+  expect(tile.queryAllByTestId('tile-chevron-icon-container').length).toBe(1);
 
   fireEvent.press(tile.getByTestId('tile-button-tile-id'));
   expect(onPress).toHaveBeenCalled();
@@ -21,6 +22,7 @@ test('can render tile with onPress', () => {
 test('can render tile without onPress', () => {
   const tile = render(<Tile {...exampleTileConfig} />);
 
-  expect(tile.getByTestId('tile-view-tile-id')).toBeDefined();
+  expect(tile.getByTestId('tile-button-tile-id')).toBeDefined();
   expect(tile.getByText('My Tile')).toBeDefined();
+  expect(tile.queryAllByTestId('tile-chevron-icon-container').length).toBe(0);
 });

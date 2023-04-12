@@ -61,3 +61,17 @@ jest.mock('react-native-gesture-handler', () => {
     Directions: {},
   };
 });
+
+jest.mock('react-native-notifications', () => ({
+  Notifications: {
+    getInitialNotification: jest.fn(),
+    isRegisteredForRemoteNotifications: jest.fn(),
+    registerRemoteNotifications: jest.fn(),
+    events: jest.fn(() => ({
+      registerRemoteNotificationsRegistered: jest.fn(),
+      registerRemoteNotificationsRegistrationDenied: jest.fn(),
+      registerRemoteNotificationsRegistrationFailed: jest.fn(),
+    })),
+  },
+  NotificationBackgroundFetchResult: { NEW_DATA: 'NEW_DATA' },
+}));

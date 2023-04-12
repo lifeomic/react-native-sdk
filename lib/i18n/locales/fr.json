@@ -47,5 +47,13 @@
   "track-tile.time-value-separator": ":",
   "track-tile.todays-units": "Today's {{unit}}",
   "track-tile.total-daily-units": "Total Daily {{unit}}",
-  "track-tile.weekly-metrics-prefix": "Weekly Metrics"
+  "track-tile.weekly-metrics-prefix": "Weekly Metrics",
+  "fitbit-learnmore":"Les enregistrements Fitbit seront ajoutés périodiquement dans le cloud. Vous devrez peut-être vous synchroniser avec l’application Fitbit si des enregistrements sont manquants.",
+  "garmin-learnmore":"Les données Garmin se synchroniseront dès qu’elles seront disponibles dans l’application Garmin Connect. ",
+  "google-fit-learnmore":"Les enregistrements Fitbit seront ajoutés périodiquement dans le cloud. Vous devrez peut-être vous synchroniser avec l’application Fitbit si des enregistrements sont manquants.",
+  "keto-mojo-learnmore":"Les données de Keto-Mojo seront ajoutés périodiquement dans le cloud. Vous devrez vous synchroniser avec l’application Keto-Mojo pour que vos enregistrements soient disponibles.",
+  "learn-more":"Pour en savoir plus",
+  "oura-learnmore":"Les données d’Oura seront ajoutés périodiquement dans le cloud.  Vous devrez vous synchroniser avec l’application Oura pour que vos enregistrements soient disponibles.",
+  "readout-learnmore":"Les données de Readout Health seront ajoutés périodiquement dans le cloud. Vous devrez vous synchroniser avec l’application Biosense pour que vos enregistrements soient disponibles.",
+  "toggle-wearable":"Basculer {{wearableName}}"
 }

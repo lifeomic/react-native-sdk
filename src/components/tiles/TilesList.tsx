@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, Image } from 'react-native';
 import { AppTile } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
@@ -9,6 +9,7 @@ import { useStyles, useDeveloperConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { spacing } from '../BrandConfigProvider/theme/base';
 import { createStyles } from '../BrandConfigProvider';
+import { SvgUri } from 'react-native-svg';
 
 export interface TilesListProps {
   TrackTile?: JSX.Element;
@@ -16,15 +17,25 @@ export interface TilesListProps {
   children?: React.ReactNode;
   styles?: TilesListStyles;
   tileStyles?: TileStyles;
-  onAppTilePress?: () => void;
+  onAppTilePress?: (tile: any) => () => void;
 }
+const appTileIcon = (uri?: string) =>
+  function AppTileIcon() {
+    if (uri) {
+      if (uri.endsWith('svg')) {
+        return <SvgUri uri={uri} />;
+      } else {
+        return <Image source={{ uri }} />;
+      }
+    }
+    return null;
+  };
 
 export const TilesList = ({
   TrackTile,
   tiles,
   children,
   styles: instanceStyles,
-  tileStyles,
   onAppTilePress,
 }: TilesListProps) => {
   const { styles } = useStyles(defaultStyles, instanceStyles);
@@ -45,30 +56,28 @@ export const TilesList = ({
   return (
     <ScrollView testID={tID('tiles-list')} style={styles.scrollView}>
       {TrackTile && TrackTile}
-      <View style={styles.view}>
-        {tiles?.map((appTile) => (
-          <Tile
-            key={appTile.id}
-            id={appTile.id}
-            title={appTile.title}
-            onPress={
-              onAppTilePress ? onAppTilePress : onAppTilePressDefault(appTile)
-            }
-            styles={tileStyles}
-          />
-        ))}
-        {children}
-      </View>
+      {tiles?.map((appTile) => (
+        <Tile
+          id={appTile.id}
+          key={appTile.id}
+          title={appTile.title}
+          onPress={
+            onAppTilePress
+              ? onAppTilePress(appTile)
+              : onAppTilePressDefault(appTile)
+          }
+          Icon={appTileIcon(appTile.icon)}
+        />
+      ))}
+      {children}
     </ScrollView>
   );
 };
 
 const defaultStyles = createStyles('TilesList', () => ({
-  scrollView: {},
-  view: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: spacing.extraSmall,
+  scrollView: {
+    flexDirection: 'column',
+    marginBottom: spacing.extraLarge,
   },
 }));
 

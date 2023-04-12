@@ -47,5 +47,13 @@
   "track-tile.time-value-separator": ":",
   "track-tile.todays-units": "Today's {{unit}}",
   "track-tile.total-daily-units": "Total Daily {{unit}}",
-  "track-tile.weekly-metrics-prefix": "Weekly Metrics"
+  "track-tile.weekly-metrics-prefix": "Weekly Metrics",
+  "fitbit-learnmore":"Fitbit-Daten werden von Zeit zu Zeit in die Cloud übertragen. Sollten bestimmte Daten fehlen, müssen Sie möglicherweise eine Synchronisierung mit der Fitbit-App durchführen.",
+  "garmin-learnmore":"Die Garmin-Daten werden synchronisiert, sobald diese in der Garmin Connect-App vorliegen.",
+  "google-fit-learnmore":"Fitbit-Daten werden von Zeit zu Zeit in die Cloud übertragen. Sollten bestimmte Daten fehlen, müssen Sie möglicherweise eine Synchronisierung mit der Fitbit-App durchführen.",
+  "keto-mojo-learnmore":"Keto-Mojo-Daten werden von Zeit zu Zeit in die Cloud übertragen. Bitte synchronisieren Sie mit der Keto-Mojo-App und mit MyMojoHealth, damit Ihre Daten verfügbar sind.",
+  "learn-more":"Mehr erfahren",
+  "oura-learnmore":"Oura-Daten werden von Zeit zu Zeit in die Cloud übertragen. Bitte synchronisieren Sie mit der Oura-App, damit Ihre Daten verfügbar sind.",
+  "readout-learnmore":"Readout Health-Daten werden von Zeit zu Zeit in die Cloud übertragen. Bitte synchronisieren Sie mit der Biosense-App, damit Ihre Daten verfügbar sind.",
+  "toggle-wearable":"{{wearableName}} wechseln"
 }

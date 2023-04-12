@@ -56,8 +56,8 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
 
 const defaultStyles = createStyles('ToggleButton', (theme) => ({
   toggleButtonWrapper: {
-    marginBottom: 8,
-    marginTop: 16,
+    marginBottom: theme.spacing.extraSmall,
+    marginTop: theme.spacing.medium,
   },
   toggleButton: {
     height: 40,
@@ -79,7 +79,7 @@ const defaultStyles = createStyles('ToggleButton', (theme) => ({
     color: 'white',
   },
   iconWrapper: {
-    marginRight: 16,
+    marginRight: theme.spacing.medium,
   },
 }));
 

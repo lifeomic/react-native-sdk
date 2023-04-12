@@ -47,5 +47,16 @@
   "track-tile.time-value-separator": ":",
   "track-tile.todays-units": "Today's {{unit}}",
   "track-tile.total-daily-units": "Total Daily {{unit}}",
-  "track-tile.weekly-metrics-prefix": "Weekly Metrics"
+  "track-tile.weekly-metrics-prefix": "Weekly Metrics",
+  "fitbit-learnmore":"Fitbit records will be ingested once they are available from Fitbit''s cloud. You may need to sync with the Fitbit app if records appear to be missing.",
+  "dexcom-learnmore":"Dexcom records will be ingested periodically in the cloud. You will need to sync with the Dexcom app, which will then impose a 3 hour delay when syncing your records.",
+  "garmin-learnmore":"Garmin records will sync once they are available in the Garmin Connect app.",
+  "google-fit-learnmore":"Google Fit records will be ingested periodically in the cloud. You may need to sync with the Google Fit app if records appear to be missing.",
+  "keto-mojo-learnmore":"Keto-Mojo records will be ingested periodically in the cloud. You will need to sync with the Keto-Mojo app and MyMojoHealth for your records to be available.",
+  "learn-more":"Learn More",
+  "oura-learnmore":"Oura records will be ingested periodically in the cloud. You will need to sync with the Oura app for your records to be available.",
+  "readout-learnmore":"Readout Health records will be ingested periodically in the cloud. You will need to sync with the Biosense app for your records to be available.",
+  "toggle-wearable":"Toggle {{wearableName}} background sync",
+  "your-data-is-not-syncing-message":"Your data is not syncing. Please toggle back on to reauthorize.",
+  "configure-data-to-sync-message": "Your data is not syncing because it is not configured as a Data Source above."
 }

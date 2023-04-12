@@ -25,11 +25,11 @@ export const WearableRowDetailSection: FC<WearableRowDetailSection> = (
   );
 };
 
-const defaultStyles = createStyles('WearableRowDetailSection', () => ({
+const defaultStyles = createStyles('WearableRowDetailSection', (theme) => ({
   iconAndDetails: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginTop: 16,
+    marginTop: theme.spacing.medium,
   },
   iconWrapper: {
     width: 30,

@@ -9,6 +9,7 @@ export interface AppTile {
   source: {
     url: string;
   };
+  icon?: string;
 }
 
 export type Tile = 'todayTile' | 'trackTile' | 'pillarsTile';

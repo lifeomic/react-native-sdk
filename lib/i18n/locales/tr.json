@@ -47,5 +47,13 @@
   "track-tile.time-value-separator": ":",
   "track-tile.todays-units": "Today's {{unit}}",
   "track-tile.total-daily-units": "Total Daily {{unit}}",
-  "track-tile.weekly-metrics-prefix": "Weekly Metrics"
+  "track-tile.weekly-metrics-prefix": "Weekly Metrics",
+  "fitbit-learnmore":"Fitbit kayıtları periyodik olarak bulutta işlenir. Kayıtlar eksik görünüyorsa Fitbit uygulamasıyla eşleştirme yapmanız gerekebilir.",
+  "garmin-learnmore":"Garmin kayıtları, Garmin Connect uygulamasında kullanılabilir olduklarında eşleştirilir.",
+  "google-fit-learnmore":"Fitbit kayıtları periyodik olarak bulutta işlenir. Kayıtlar eksik görünüyorsa Fitbit uygulamasıyla eşleştirme yapmanız gerekebilir.",
+  "keto-mojo-learnmore":"Keto-Mojo kayıtları periyodik olarak bulutta işlenir. Kayıtlar eksik görünüyorsa Keto-Mojo uygulamasıyla ve MyMojoHealth ile eşleştirme yapmanız gerekir.",
+  "learn-more":"Daha fazla bilgi edinin",
+  "oura-learnmore":"Oura kayıtları periyodik olarak bulutta işlenir. Kayıtlar eksik görünüyorsa Oura uygulamasıyla eşleştirme yapmanız gerekir.",
+  "readout-learnmore":"Readout Health kayıtları periyodik olarak bulutta işlenir. Kayıtlar eksik görünüyorsa Biosense uygulamasıyla eşleştirme yapmanız gerekir.",
+  "toggle-wearable}":"{{wearableName}} Öğesini Aç/Kapa"
 }

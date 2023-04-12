@@ -3,97 +3,36 @@ import { storiesOf } from '@storybook/react-native';
 import { AppTile, Tile } from '../../../src';
 import { TilesList } from 'src/components/tiles/TilesList';
 import { NavigationContainer } from '@react-navigation/native';
-import { Alert } from 'react-native';
-import { select } from '@storybook/addon-knobs';
+import { Alert, Linking } from 'react-native';
+
+import LearnIcon from '../../../src/components/tiles/icons/MortarBoard.svg';
 
 storiesOf('TilesList', module).add('demo', () => {
   const appTiles: AppTile[] = [
     {
       id: 'tile1',
-      title: 'App Tile 1',
-      source: { url: 'https://lifeomic.com/apps/tile1' },
-    },
-    {
-      id: 'tile2',
-      title: 'App Tile 2',
-      source: { url: 'https://lifeomic.com/apps/tile2' },
-    },
-    {
-      id: 'tile3',
-      title: 'App Tile 3',
-      source: { url: 'https://lifeomic.com/apps/tile3' },
-    },
-    {
-      id: 'tile4',
-      title: 'App Tile 4',
-      source: { url: 'https://lifeomic.com/apps/tile4' },
+      title: 'Resources',
+      source: { url: 'https://lifeomic.com/resource-library/' },
+      icon: 'https://lifeomic.apps.us.lifeomic.com/static/phc/2023-04-05--10-50--18751e5aeba/TodayIcon.766fcbf07db01fb3608ecc1eed3ca265.svg',
     },
   ];
 
-  const tile1Length = select(
-    'Tile #1 mode',
-    {
-      halfLength: 'halfLength',
-      fullLength: 'fullLength',
-    },
-    'halfLength',
-  );
-
-  const tile2Length = select(
-    'Tile #2 mode',
-    {
-      halfLength: 'halfLength',
-      fullLength: 'fullLength',
-    },
-    'halfLength',
-  );
-
-  const tile3Length = select(
-    'Tile #3 mode',
-    {
-      halfLength: 'halfLength',
-      fullLength: 'fullLength',
-    },
-    'fullLength',
-  );
-
-  const tile4Length = select(
-    'Tile #4 mode',
-    {
-      halfLength: 'halfLength',
-      fullLength: 'fullLength',
-    },
-    'fullLength',
-  );
-
-  const onTilePress = () => Alert.alert('Clicked app tile');
+  const onTilePress = (tile: AppTile) => {
+    Linking.openURL(tile.source.url);
+    return;
+  };
 
   return (
     <NavigationContainer>
-      <TilesList>
+      <TilesList
+        tiles={appTiles}
+        onAppTilePress={(tile: AppTile) => () => onTilePress(tile)}
+      >
+        <Tile title={'Learn'} Icon={LearnIcon} />
+        <Tile title={'No Icon'} />
         <Tile
-          id={appTiles[0].id}
-          title={appTiles[0].title}
-          mode={tile1Length}
-          onPress={onTilePress}
-        />
-        <Tile
-          id={appTiles[1].id}
-          title={appTiles[1].title}
-          mode={tile2Length}
-          onPress={onTilePress}
-        />
-        <Tile
-          id={appTiles[2].id}
-          title={appTiles[2].title}
-          mode={tile3Length}
-          onPress={onTilePress}
-        />
-        <Tile
-          id={appTiles[3].id}
-          title={appTiles[3].title}
-          mode={tile4Length}
-          onPress={onTilePress}
+          title={'No Icon Press'}
+          onPress={() => Alert.alert('Clicked app tile')}
         />
       </TilesList>
     </NavigationContainer>

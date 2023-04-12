@@ -62,7 +62,7 @@ const defaultStyles = createStyles('SelectorRow', (theme) => ({
     textAlign: 'right',
   },
   textWrapper: {
-    padding: 12,
+    padding: theme.spacing.small,
   },
   unselected: {
     backgroundColor: theme.colors.surface,

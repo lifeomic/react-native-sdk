@@ -317,7 +317,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
         >
           <SwitchRow
             onValueChange={toggleBackgroundSync(wearable)}
-            accessibilityLabel={t('Toggle {{wearableName}} background sync', {
+            accessibilityLabel={t('toggle-wearable', {
               wearableName: t('background-sync', 'Background Sync'),
             })}
             disabled={disabled}
@@ -328,7 +328,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
                 fontWeight: 'normal',
               },
             }}
-            title={t('background-sync-heading', 'Background Sync')}
+            title={t('background-sync', 'Background Sync')}
             {...switchProps}
           />
           {backgroundSyncEnabled && (
@@ -454,13 +454,13 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
 const defaultStyles = createStyles('WearableRow', (theme) => ({
   moreInfoDescription: {},
   introDescription: {
-    marginTop: 16,
+    marginTop: theme.spacing.medium,
   },
   backgroundSyncDescription: {
-    paddingTop: 12,
+    paddingTop: theme.spacing.small,
   },
   learnMoreButton: {
-    paddingTop: 12,
+    paddingTop: theme.spacing.small,
     fontWeight: '700',
     color: theme.colors.secondary,
   },
@@ -468,9 +468,9 @@ const defaultStyles = createStyles('WearableRow', (theme) => ({
   errorText: {},
   container: {
     backgroundColor: theme.colors.background,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 12,
+    marginHorizontal: theme.spacing.medium,
+    marginVertical: theme.spacing.extraSmall,
+    padding: theme.spacing.small,
     minHeight: 52,
     borderRadius: 10,
     flexDirection: 'column',

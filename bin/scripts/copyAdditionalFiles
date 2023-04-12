@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cp package.json README.md ./dist
+mkdir -p ./dist/src/components/tiles/icons && cp ./src/components/tiles/icons/* ./dist/src/components/tiles/icons
