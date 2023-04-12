@@ -23,7 +23,7 @@ import {
   convertToPreferredUnit,
   getPreferredUnitType,
 } from '../util/convert-value';
-import { StylesProp, useStyleOverrides } from '../styles';
+import { useStyleOverrides } from '../styles';
 import { isCodeEqual } from '../util/is-code-equal';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 
@@ -323,10 +323,6 @@ export const Pillar: FC<PillarProps> = (props) => {
     </View>
   );
 };
-
-declare module './PillarsTile' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
 
 const defaultPillarWidth = 35;
 

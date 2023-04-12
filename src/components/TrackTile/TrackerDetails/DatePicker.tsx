@@ -11,10 +11,6 @@ declare module './TrackerDetails' {
   interface Styles extends StylesProp<typeof defaultStyles> {}
 }
 
-declare module './AdvancedTrackerDetails' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
 export type DatePickerProps = {
   dateRange: {
     start: Date;

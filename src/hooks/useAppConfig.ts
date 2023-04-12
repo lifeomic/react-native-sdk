@@ -12,7 +12,7 @@ export interface AppTile {
   icon?: string;
 }
 
-export type Tile = 'todayTile' | 'trackTile' | 'pillarsTile';
+type Tile = 'todayTile' | 'trackTile' | 'pillarsTile';
 
 export interface AppConfig {
   homeTab?: {
