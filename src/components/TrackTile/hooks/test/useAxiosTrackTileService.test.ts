@@ -72,7 +72,7 @@ jest.mock('../../../../hooks/useActiveProject', () => ({
 }));
 
 describe('useAxiosTrackTileService', () => {
-  it('should return the same values for datastoreSettings', () => {
+  it('should return the same values for accountSettings', () => {
     const { result } = renderHook(() => useAxiosTrackTileService());
 
     expect(result.current).toEqual(

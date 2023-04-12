@@ -9,10 +9,10 @@ const createDate = new Date('2021-09-21T12:00:00.000');
 const defaultResource = (resource: Partial<ResourceSettings> = {}) => ({
   ...resource,
   createDate,
-  datastoreSettings: {
+  accountSettings: {
     account: 'datastore-account',
     project: 'id',
-    ...resource.datastoreSettings,
+    ...resource.accountSettings,
   },
   id: '1',
   value: 6,
@@ -96,7 +96,7 @@ describe('toObservationResource', () => {
 
   it('should write to specific project for account', () => {
     const resourceIn = defaultResource({
-      datastoreSettings: {
+      accountSettings: {
         account: 'account-id',
         project: 'project-id',
       },

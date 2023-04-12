@@ -19,7 +19,7 @@ export interface AppConfig {
     appTiles?: AppTile[];
     tiles?: Tile[];
     trackTileSettings?: { title: string };
-    pillarSettings: { advancedScreenTrackers: string[] };
+    pillarSettings?: { advancedScreenTrackers: string[] };
   };
 }
 

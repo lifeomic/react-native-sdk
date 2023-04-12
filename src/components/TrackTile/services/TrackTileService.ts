@@ -139,7 +139,7 @@ export type TrackTileService = {
   readonly patientId?: string;
 
   /**
-   * @description account and project that is used for fetching tracker settings. Defaults to **datastoreSettings**
+   * @description account and project that is used for fetching tracker settings.
    */
   readonly accountSettings?: {
     readonly account: string;
