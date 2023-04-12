@@ -36,6 +36,56 @@ export default function App() {
 > beyond demonstration purposes. You will need to [contact us] to request an
 > OAuth client for your account.
 
+### Custom app tile screens
+
+```typescript
+import React, { FC } from 'react';
+import { authConfig } from './authConfig';
+import { MyCustomScreen } from './src/MyCustomScreen';
+import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+
+export default function App() {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={{
+        appTileScreens: {
+          'https://mydomain.com/mobile-app-tiles/my-app-tile': MyCustomScreen,
+        },
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <RootStack />
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+}
+```
+
+### Simple custom theme via two colors
+
+```typescript
+import React, { FC } from 'react';
+import { authConfig } from './authConfig';
+import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+
+export default function App() {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={{
+        simpleTheme: {
+          primaryColor: '#fb5607',
+          accentColor: '#ffbe0b',
+        },
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <RootStack />
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+}
+```
+
 ### Peer dependencies
 
 We may have more peer dependencies than is typical. We have run into a number of

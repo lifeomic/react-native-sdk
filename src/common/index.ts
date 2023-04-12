@@ -1,3 +1,4 @@
+export * from './DeveloperConfig';
 export * from './init';
 export * from './LoggedInProviders';
 export * from './Notifications';
