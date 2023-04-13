@@ -9,11 +9,8 @@ const createDate = new Date('2021-09-21T12:00:00.000');
 const defaultResource = (resource: Partial<ResourceSettings> = {}) => ({
   ...resource,
   createDate,
-  accountSettings: {
-    account: 'datastore-account',
-    project: 'id',
-    ...resource.accountSettings,
-  },
+  accountId: 'account-id',
+  projectId: 'project-id',
   id: '1',
   value: 6,
   tracker: {
@@ -54,7 +51,7 @@ describe('toObservationResource', () => {
         meta: {
           tag: [
             {
-              code: 'id',
+              code: 'project-id',
               system: 'http://lifeomic.com/fhir/dataset',
             },
           ],
@@ -96,10 +93,8 @@ describe('toObservationResource', () => {
 
   it('should write to specific project for account', () => {
     const resourceIn = defaultResource({
-      accountSettings: {
-        account: 'account-id',
-        project: 'project-id',
-      },
+      accountId: 'account-id',
+      projectId: 'project-id',
       patientId: 'patient-id',
     });
     const res = toFhirObservationResource(resourceIn);

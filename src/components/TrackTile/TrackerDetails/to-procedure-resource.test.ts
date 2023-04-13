@@ -13,11 +13,8 @@ const defaultResource = (
   ...resource,
   createDate,
   id: '1',
-  accountSettings: {
-    account: 'datastore-account',
-    project: 'id',
-    ...resource.accountSettings,
-  },
+  accountId: 'account-id',
+  projectId: 'project-id',
   value: 5,
   tracker: {
     id: '1',
@@ -81,10 +78,8 @@ describe('toProcedureResource', () => {
 
   it('should write to specific project for account', () => {
     const resourceIn = defaultResource('h', {
-      accountSettings: {
-        account: 'account-id',
-        project: 'project-id',
-      },
+      accountId: 'account-id',
+      projectId: 'project-id',
       patientId: 'patient-id',
     });
     const res = toFhirProcedureResource(resourceIn);

@@ -41,10 +41,8 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   const { activeSubjectId: patientId, activeProject } = useActiveProject();
   const { account } = useActiveAccount();
 
-  const accountSettings = {
-    account: account?.id ?? '',
-    project: activeProject?.id ?? '',
-  };
+  const accountId = account?.id || '';
+  const projectId = activeProject?.id || '';
 
   const { current: cache } = useRef<{
     trackers?: Tracker[];
@@ -80,7 +78,8 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   };
 
   return {
-    accountSettings,
+    accountId,
+    projectId,
     patientId,
 
     fetchTrackers: async () => {
@@ -89,7 +88,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
       }
 
       const queryParams = {
-        project: accountSettings?.project,
+        project: projectId,
       };
       const params = Object.entries(pickBy(queryParams))
         .map(([k, v]) => `${k}=${v}`)
@@ -97,7 +96,10 @@ export const useAxiosTrackTileService = (): TrackTileService => {
 
       const url = `/track-tiles/trackers${params && `?${params}`}`;
 
-      const res = await httpClient.get(url, axiosConfig(accountSettings));
+      const res = await httpClient.get(
+        url,
+        axiosConfig({ account: accountId }),
+      );
       const fetchedTrackers: Tracker[] = res.data;
 
       cache.trackers = fetchedTrackers;
@@ -109,7 +111,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
       const res = await httpClient.put<InstalledMetric>(
         `/track-tiles/metrics/installs/${metricId}`,
         settings,
-        axiosConfig(accountSettings),
+        axiosConfig({ account: accountId }),
       );
 
       return updateSettingsInCache(res.data) || res.data;
@@ -159,7 +161,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
           },
           query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
         },
-        axiosConfig(accountSettings),
+        axiosConfig({ account: accountId }),
       );
 
       const trackerValues = extractTrackerValues(res.data);
@@ -178,7 +180,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
           query: DELETE_RESOURCE(resourceType),
           variables: { id },
         },
-        axiosConfig(accountSettings),
+        axiosConfig({ account: accountId }),
       );
 
       if (!res.data.data) {
@@ -211,7 +213,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
               : MUTATE_PROCEDURE_RESOURCE(resource.id ? 'Update' : 'Create'),
           variables: { resource },
         },
-        axiosConfig(accountSettings),
+        axiosConfig({ account: accountId }),
       );
 
       if (!res.data.data) {
@@ -276,11 +278,11 @@ export const useAxiosTrackTileService = (): TrackTileService => {
         {
           query: QUERY_ONTOLOGY,
           variables: {
-            project: accountSettings.project,
+            project: projectId,
             code: codeBelow,
           },
         },
-        axiosConfig(accountSettings),
+        axiosConfig({ account: accountId }),
       );
 
       if (!res.data.data) {

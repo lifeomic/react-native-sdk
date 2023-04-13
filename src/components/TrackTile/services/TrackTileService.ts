@@ -141,10 +141,8 @@ export type TrackTileService = {
   /**
    * @description account and project that is used for fetching tracker settings.
    */
-  readonly accountSettings?: {
-    readonly account: string;
-    readonly project: string;
-  };
+  readonly accountId: string;
+  readonly projectId: string;
 
   fetchTrackers: (includePublic?: boolean) => Promise<Tracker[]>;
   upsertTracker: (

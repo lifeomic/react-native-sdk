@@ -1,8 +1,4 @@
-import {
-  Tracker,
-  TrackerResource,
-  TrackTileService,
-} from '../services/TrackTileService';
+import { Tracker, TrackerResource } from '../services/TrackTileService';
 import { toFhirProcedureResource } from './to-procedure-resource';
 import { toFhirObservationResource } from './to-observation-resource';
 import { pick } from 'lodash';
@@ -10,13 +6,15 @@ import { pick } from 'lodash';
 export type ResourceSettings = {
   id?: string;
   patientId?: string;
+  accountId: string;
+  projectId: string;
   createDate: Date;
   value: number;
   tracker: Pick<
     Tracker,
     'resourceType' | 'metricId' | 'units' | 'system' | 'unit' | 'name' | 'id'
   >;
-} & Pick<TrackTileService, 'patientId' | 'accountSettings'>;
+};
 
 export type Code = TrackerResource['code']['coding'][number];
 
