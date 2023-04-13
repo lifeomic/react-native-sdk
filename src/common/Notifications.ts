@@ -24,7 +24,7 @@ export const registerDeviceToken = ({
     deviceToken,
     application,
   };
-  httpClient.post('/device-endpoints', params);
+  httpClient.post('/v1/device-endpoints', params);
 };
 
 export const getInitialNotification = () => {
