@@ -1,8 +1,9 @@
 import React, { useCallback } from 'react';
 import { ScrollView, Image } from 'react-native';
-import { AppTile } from '../../hooks/useAppConfig';
+import { AppTile, useAppConfig } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
+import { TrackTile } from '../TrackTile';
 import { useNavigation } from '@react-navigation/native';
 import { HomeScreenNavigation } from '../../screens/HomeScreen';
 import { useStyles, useDeveloperConfig } from '../../hooks';
@@ -11,38 +12,20 @@ import { spacing } from '../BrandConfigProvider/theme/base';
 import { createStyles } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
 
-export interface TilesListProps {
-  TrackTile?: JSX.Element;
-  tiles?: AppTile[];
-  children?: React.ReactNode;
+interface Props {
   styles?: TilesListStyles;
-  tileStyles?: TileStyles;
-  onAppTilePress?: (tile: any) => () => void;
 }
-const appTileIcon = (uri?: string) =>
-  function AppTileIcon() {
-    if (uri) {
-      if (uri.endsWith('svg')) {
-        return <SvgUri uri={uri} />;
-      } else {
-        return <Image source={{ uri }} />;
-      }
-    }
-    return null;
-  };
 
-export const TilesList = ({
-  TrackTile,
-  tiles,
-  children,
-  styles: instanceStyles,
-  onAppTilePress,
-}: TilesListProps) => {
+export function TilesList({ styles: instanceStyles }: Props) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { navigate } = useNavigation<HomeScreenNavigation>();
   const { appTileScreens } = useDeveloperConfig();
+  const { data } = useAppConfig();
 
-  const onAppTilePressDefault = useCallback(
+  const trackTileEnabled = data?.homeTab?.tiles?.includes?.('trackTile');
+  const trackTileTitle = data?.homeTab?.trackTileSettings?.title;
+
+  const onAppTilePress = useCallback(
     (appTile: AppTile) => () => {
       if (getCustomAppTileComponent(appTileScreens, appTile)) {
         navigate('tiles/CustomAppTile', { appTile });
@@ -55,24 +38,41 @@ export const TilesList = ({
 
   return (
     <ScrollView testID={tID('tiles-list')} style={styles.scrollView}>
-      {TrackTile && TrackTile}
-      {tiles?.map((appTile) => (
+      {trackTileEnabled && (
+        <TrackTile
+          onOpenTracker={(tracker, valuesContext) =>
+            navigate('tiles/TrackTile', {
+              tracker,
+              valuesContext,
+            })
+          }
+          title={trackTileTitle}
+        />
+      )}
+      {data?.homeTab?.appTiles?.map((appTile: AppTile) => (
         <Tile
           id={appTile.id}
           key={appTile.id}
           title={appTile.title}
-          onPress={
-            onAppTilePress
-              ? onAppTilePress(appTile)
-              : onAppTilePressDefault(appTile)
-          }
+          onPress={onAppTilePress(appTile)}
           Icon={appTileIcon(appTile.icon)}
         />
       ))}
-      {children}
     </ScrollView>
   );
-};
+}
+
+const appTileIcon = (uri?: string) =>
+  function AppTileIcon() {
+    if (uri) {
+      if (uri.endsWith('svg')) {
+        return <SvgUri uri={uri} />;
+      } else {
+        return <Image source={{ uri }} />;
+      }
+    }
+    return null;
+  };
 
 const defaultStyles = createStyles('TilesList', () => ({
   scrollView: {

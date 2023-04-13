@@ -8,15 +8,13 @@ import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { TilesList } from '../components/tiles/TilesList';
-import { TrackTile } from '../components/TrackTile';
-import { useNavigation } from '@react-navigation/native';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 export type HomeScreenNavigation = Props['navigation'];
 
 export const HomeScreen = () => {
   const { isLoading: loadingAccount } = useActiveAccount();
-  const { isLoading: loadingAppConfig, data: appConfig } = useAppConfig();
+  const { isLoading: loadingAppConfig } = useAppConfig();
 
   if (loadingAccount) {
     return (
@@ -44,10 +42,7 @@ export const HomeScreen = () => {
           overScrollMode="always"
           showsVerticalScrollIndicator={false}
         >
-          <TilesList
-            TrackTile={<TrackTileWrapper />}
-            tiles={appConfig?.homeTab?.appTiles}
-          />
+          <TilesList />
         </ScrollView>
       </SafeAreaView>
     </View>
@@ -59,28 +54,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-function TrackTileWrapper() {
-  const navigation = useNavigation<HomeScreenNavigation>();
-  const { data: appConfig } = useAppConfig();
-
-  // TODO: Push this logic to the useAppConfig hook
-  const trackTileEnabled = appConfig?.homeTab?.tiles?.includes?.('trackTile');
-  const title = appConfig?.homeTab?.trackTileSettings?.title;
-
-  if (!trackTileEnabled) {
-    return null;
-  }
-
-  return (
-    <TrackTile
-      onOpenTracker={(tracker, valuesContext) =>
-        navigation.navigate('tiles/TrackTile', {
-          tracker,
-          valuesContext,
-        })
-      }
-      title={title}
-    />
-  );
-}
