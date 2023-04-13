@@ -13,10 +13,12 @@ export const registerDeviceToken = ({
   deviceToken,
   application,
   httpClient,
+  accountId,
 }: {
   deviceToken: string;
   application: string;
   httpClient: AxiosInstance;
+  accountId: string;
 }) => {
   const provider = Platform.OS === 'ios' ? 'APNS' : 'GCM';
   const params = {
@@ -24,7 +26,12 @@ export const registerDeviceToken = ({
     deviceToken,
     application,
   };
-  httpClient.post('/v1/device-endpoints', params);
+  const options = {
+    headers: {
+      'LifeOmic-Account': accountId,
+    },
+  };
+  httpClient.post('/v1/device-endpoints', params, options);
 };
 
 export const getInitialNotification = () => {
