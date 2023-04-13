@@ -37,23 +37,6 @@ function MyCustomAppTileScreen1() {
   );
 }
 
-const appTiles = [
-  {
-    id: 'app-tile-1',
-    title: 'URL overridden',
-    source: {
-      url: 'https://lifeomic.com/custom-app-tile-1',
-    },
-  },
-  {
-    id: 'app-tile-unknown',
-    title: 'Error 1',
-    source: {
-      url: 'https://lifeomic.com/custom-app-tile-2',
-    },
-  },
-];
-
 function HomeScreen() {
   type NavigationParams = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
   const { navigate } = useNavigation<NavigationParams>();
@@ -65,7 +48,7 @@ function HomeScreen() {
           overScrollMode="always"
           showsVerticalScrollIndicator={false}
         >
-          <TilesList tiles={appTiles} />
+          <TilesList />
           <View style={{ padding: 8 }}>
             <Tile
               id="app-tile-invalid"

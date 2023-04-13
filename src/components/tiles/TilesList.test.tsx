@@ -1,32 +1,47 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { Text } from 'react-native';
+import { render } from '@testing-library/react-native';
 import { TilesList } from './TilesList';
 
 jest.unmock('i18next');
 
-const tiles = [
-  {
-    id: 'tile-id-1',
-    title: 'My First Tile',
-    source: { url: 'https://tile.com' },
-  },
-  {
-    id: 'tile-id-2',
-    title: 'My Second Tile',
-    source: { url: 'https://tile.com' },
-  },
-];
+jest.mock('../TrackTile', () => ({
+  TrackTile: ({ title }: { title: string }) => <Text>{title}</Text>,
+}));
+
+jest.mock('../../hooks/useAppConfig', () => ({
+  useAppConfig: () => ({
+    data: {
+      homeTab: {
+        tiles: ['trackTile'],
+        trackTileSettings: {
+          title: 'TrackTile Title',
+        },
+        appTiles: [
+          {
+            id: 'tile-id-1',
+            title: 'My First Tile',
+            source: { url: 'https://tile.com' },
+          },
+          {
+            id: 'tile-id-2',
+            title: 'My Second Tile',
+            source: { url: 'https://tile.com' },
+          },
+        ],
+      },
+    },
+  }),
+}));
 
 test('renders multiple tiles', () => {
-  const onPress = jest.fn();
-  const tile = render(<TilesList tiles={tiles} onAppTilePress={onPress} />);
+  const tileList = render(<TilesList />);
 
-  expect(tile.getByText('My First Tile')).toBeDefined();
-  expect(tile.getByTestId('tile-button-tile-id-1')).toBeDefined();
+  expect(tileList.getByText('TrackTile Title')).toBeDefined();
 
-  expect(tile.getByText('My Second Tile')).toBeDefined();
-  expect(tile.getByTestId('tile-button-tile-id-2')).toBeDefined();
+  expect(tileList.getByText('My First Tile')).toBeDefined();
+  expect(tileList.getByTestId('tile-button-tile-id-1')).toBeDefined();
 
-  fireEvent.press(tile.getByTestId('tile-button-tile-id-1'));
-  expect(onPress).toHaveBeenCalled();
+  expect(tileList.getByText('My Second Tile')).toBeDefined();
+  expect(tileList.getByTestId('tile-button-tile-id-2')).toBeDefined();
 });
