@@ -13,6 +13,7 @@ import Toast from 'react-native-toast-message';
 import { NoInternetToastProvider } from '../hooks/NoInternetToastProvider';
 import { BrandConfigProvider } from '../components/BrandConfigProvider';
 import { TrackTileProvider } from '../components/TrackTile/TrackTileProvider';
+import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,8 @@ export function RootProviders({
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
 }) {
+  const { theme } = useDeveloperConfig();
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
@@ -32,7 +35,7 @@ export function RootProviders({
               <ActiveAccountContextProvider>
                 <ActiveProjectContextProvider>
                   <TrackTileProvider>
-                    <BrandConfigProvider>
+                    <BrandConfigProvider theme={theme}>
                       <NoInternetToastProvider>
                         <SafeAreaProvider>
                           <ThemedNavigationContainer>

@@ -15,6 +15,10 @@ function App() {
           'https://lifeomic.com/mobile-app-tiles/fhir-example':
             FhirExampleScreen,
         },
+        simpleTheme: {
+          primaryColor: '#fb5607',
+          accentColor: '#ffbe0b',
+        },
       }}
     >
       <RootProviders authConfig={authConfig}>
