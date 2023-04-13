@@ -24,8 +24,7 @@ export function RootProviders({
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
 }) {
-  const { theme: customTheme } = useDeveloperConfig();
-  const theme = customTheme ?? {};
+  const { theme } = useDeveloperConfig();
 
   return (
     <QueryClientProvider client={queryClient}>
