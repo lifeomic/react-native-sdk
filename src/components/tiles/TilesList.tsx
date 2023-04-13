@@ -12,6 +12,7 @@ import { createStyles } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
 
 export interface TilesListProps {
+  TrackTile?: JSX.Element;
   tiles?: AppTile[];
   children?: React.ReactNode;
   styles?: TilesListStyles;
@@ -31,6 +32,7 @@ const appTileIcon = (uri?: string) =>
   };
 
 export const TilesList = ({
+  TrackTile,
   tiles,
   children,
   styles: instanceStyles,
@@ -53,6 +55,7 @@ export const TilesList = ({
 
   return (
     <ScrollView testID={tID('tiles-list')} style={styles.scrollView}>
+      {TrackTile && TrackTile}
       {tiles?.map((appTile) => (
         <Tile
           id={appTile.id}

@@ -16,7 +16,7 @@ export type ResourceSettings = {
     Tracker,
     'resourceType' | 'metricId' | 'units' | 'system' | 'unit' | 'name' | 'id'
   >;
-} & Pick<TrackTileService, 'patientId' | 'datastoreSettings'>;
+} & Pick<TrackTileService, 'patientId' | 'accountSettings'>;
 
 export type Code = TrackerResource['code']['coding'][number];
 

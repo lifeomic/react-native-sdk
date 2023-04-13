@@ -58,15 +58,7 @@ export const MockEnvironmentDecorator = ({
 
 function Provider({ children }: { children: React.ReactNode }) {
   return (
-    <TrackTileServiceProvider
-      value={useAxiosTrackTileService({
-        datastoreSettings: {
-          account: 'stub',
-          project: 'stub',
-        },
-        axiosInstance: axiosInstance as any,
-      })}
-    >
+    <TrackTileServiceProvider value={useAxiosTrackTileService()}>
       {children}
     </TrackTileServiceProvider>
   );

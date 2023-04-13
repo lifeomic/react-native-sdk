@@ -1,31 +1,16 @@
-import React, { FC } from 'react';
-import {
-  FontOverridesProvider,
-  FontWeights,
-  StyleOverridesProvider,
-} from './styles';
-import { Styles, TrackTile, TrackTileProps } from './TrackTile';
-import {
-  TrackTileService,
-  TrackTileServiceProvider,
-} from './services/TrackTileService';
+import React from 'react';
+import { TrackTileServiceProvider } from './services/TrackTileService';
+import { useAxiosTrackTileService } from './main';
 
-export type TrackTileProviderProps = TrackTileProps & {
-  styles?: Styles;
-  trackTileService: TrackTileService;
-  fonts?: FontWeights;
+export type Props = {
+  children: React.ReactNode;
 };
 
-export const TrackTileProvider: FC<TrackTileProviderProps> = (props) => {
-  const { trackTileService, styles = {}, fonts = {}, ...tileProps } = props;
-
+export function TrackTileProvider({ children }: Props) {
+  const trackTileService = useAxiosTrackTileService();
   return (
     <TrackTileServiceProvider value={trackTileService}>
-      <StyleOverridesProvider value={styles}>
-        <FontOverridesProvider value={fonts}>
-          <TrackTile {...tileProps} />
-        </FontOverridesProvider>
-      </StyleOverridesProvider>
+      {children}
     </TrackTileServiceProvider>
   );
-};
+}

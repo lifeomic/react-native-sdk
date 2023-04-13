@@ -11,7 +11,7 @@ const toFhirObservationResource = (
   code?: Code,
 ): TrackerResource => {
   const { tracker, value, createDate } = from;
-  const { id, datastoreSettings, patientId } = from;
+  const { id, accountSettings, patientId } = from;
   const { system, name: metricName } = tracker;
   const metricId = tracker.metricId ?? tracker.id;
 
@@ -44,7 +44,7 @@ const toFhirObservationResource = (
     meta: {
       tag: [
         {
-          code: datastoreSettings.project,
+          code: accountSettings?.project || '',
           system: 'http://lifeomic.com/fhir/dataset',
         },
       ],

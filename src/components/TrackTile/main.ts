@@ -1,5 +1,3 @@
-export { TrackTileProvider as TrackTile } from './TrackTileProvider';
-export { PillarsTileProvider as PillarsTile } from './PillarsTile/PillarsTileProvider';
 export * from './services/TrackTileService';
 export * from './hooks/useAxiosTrackTileService';
 export { TrackerDetailsProvider as TrackerDetails } from './TrackerDetails/TrackerDetailsProvider';
