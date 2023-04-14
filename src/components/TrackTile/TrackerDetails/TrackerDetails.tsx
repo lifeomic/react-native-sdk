@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
-import { t } from '@i18n';
+import { t } from '../../../../lib/i18n';
 import {
   NamedStyles,
   StylesProp,

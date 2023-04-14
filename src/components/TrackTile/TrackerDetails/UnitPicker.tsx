@@ -8,7 +8,7 @@ import {
 import { StylesProp, useStyleOverrides, Text } from '../styles';
 import React, { FC, useCallback, useState } from 'react';
 import { Picker, PickerIOS } from '@react-native-picker/picker';
-import { t } from '@i18n';
+import { t } from '../../../../lib/i18n';
 import { MetricType } from '../services/TrackTileService';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { IosPickerIcon } from './IosPickerIcon';

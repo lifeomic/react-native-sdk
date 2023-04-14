@@ -1,6 +1,6 @@
 import { Tracker, UnitType } from '../services/TrackTileService';
 import { convertToPreferredUnit } from '../util/convert-value';
-import { t } from '@i18n';
+import { t } from '../../../../lib/i18n';
 
 type UnitDisplayConfig = {
   value: number;

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import i18n, { Trans, t } from '@i18n';
+import i18n, { Trans, t } from '../../../../../lib/i18n';
 import {
   NamedStyles,
   StylesProp,

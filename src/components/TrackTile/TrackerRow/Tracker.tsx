@@ -4,7 +4,7 @@ import Indicator, { INDICATOR_HEIGHT } from '../icons/indicator';
 import { Tracker as TrackerType } from '../services/TrackTileService';
 import { StylesProp, useStyleOverrides, Text } from '../styles';
 import { RadialProgress } from './RadialProgress';
-import { t } from '@i18n';
+import { t } from '../../../../lib/i18n';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { tID } from '../common/testID';
 import {
