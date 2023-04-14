@@ -13,3 +13,17 @@ Reactotron.useReactNative({
 });
 
 Reactotron.connect();
+
+declare global {
+  interface Console {
+    tron: typeof Reactotron;
+  }
+}
+
+console.tron = Reactotron;
+const consoleLog = console.log;
+
+console.log = (message: string, ...optionalParams: any[]) => {
+  consoleLog(message, ...optionalParams);
+  console.tron.log?.(message, ...optionalParams);
+};
