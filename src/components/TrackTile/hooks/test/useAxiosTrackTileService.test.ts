@@ -94,7 +94,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(getMock).toHaveBeenCalledWith(
-      '/track-tiles/trackers?project=project-id',
+      '/v1/track-tiles/trackers?project=project-id',
       DATASTORE_HEADERS,
     );
     expect(returnedMetrics).toEqual([{ id: 'metric-id' }]);
@@ -126,7 +126,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(getMock).toHaveBeenCalledWith(
-      '/track-tiles/trackers?project=project-id',
+      '/v1/track-tiles/trackers?project=project-id',
       ACCOUNT_HEADERS,
     );
     expect(returnedTrackers).toEqual([{ id: 'metric-id' }]);
@@ -142,7 +142,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(getMock).toHaveBeenCalledWith(
-      '/track-tiles/trackers?project=project-id',
+      '/v1/track-tiles/trackers?project=project-id',
       DATASTORE_HEADERS,
     );
   });
@@ -157,7 +157,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(getMock).toHaveBeenCalledWith(
-      '/track-tiles/trackers?project=project-id',
+      '/v1/track-tiles/trackers?project=project-id',
       ACCOUNT_HEADERS,
     );
   });
@@ -343,7 +343,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(postMock).toHaveBeenCalledWith(
-      '/graphql',
+      '/v1/graphql',
       {
         variables: {
           dates: ['ge2021-07-23T00:00:00.000Z', 'le2021-07-30T00:00:00.000Z'],
@@ -436,7 +436,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(postMock).toHaveBeenCalledWith(
-      '/graphql',
+      '/v1/graphql',
       {
         variables: {
           dates: ['ge2021-07-23T00:00:00.000Z', 'le2021-07-30T00:00:00.000Z'],
@@ -526,7 +526,7 @@ describe('useAxiosTrackTileService', () => {
 
     expect(postMock).toHaveBeenNthCalledWith(
       1,
-      '/graphql',
+      '/v1/graphql',
       {
         variables: {
           dates: [
@@ -542,7 +542,7 @@ describe('useAxiosTrackTileService', () => {
     );
     expect(postMock).toHaveBeenNthCalledWith(
       2,
-      '/graphql',
+      '/v1/graphql',
       {
         variables: {
           dates: [
@@ -627,7 +627,7 @@ describe('useAxiosTrackTileService', () => {
     expect(postMock).toHaveBeenCalledTimes(1);
     expect(postMock).toHaveBeenNthCalledWith(
       1,
-      '/graphql',
+      '/v1/graphql',
       {
         variables: {
           dates: [
@@ -686,7 +686,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(postMock).toHaveBeenCalledWith(
-      '/graphql',
+      '/v1/graphql',
       {
         query: MUTATE_OBSERVATION_RESOURCE('Create'),
         variables: { resource: newResource },
@@ -733,7 +733,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(postMock).toHaveBeenCalledWith(
-      '/graphql',
+      '/v1/graphql',
       {
         query: MUTATE_OBSERVATION_RESOURCE('Update'),
         variables: { resource: newResource },
@@ -782,7 +782,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(postMock).toHaveBeenCalledWith(
-      '/graphql',
+      '/v1/graphql',
       {
         query: MUTATE_PROCEDURE_RESOURCE('Create'),
         variables: { resource: newResource },
@@ -832,7 +832,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(postMock).toHaveBeenCalledWith(
-      '/graphql',
+      '/v1/graphql',
       {
         query: MUTATE_PROCEDURE_RESOURCE('Update'),
         variables: { resource: newResource },
@@ -873,7 +873,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(postMock).toHaveBeenCalledWith(
-      '/graphql',
+      '/v1/graphql',
       {
         query: DELETE_RESOURCE('Procedure'),
         variables: { id: 'procedureId' },
@@ -902,7 +902,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(postMock).toHaveBeenCalledWith(
-      '/graphql',
+      '/v1/graphql',
       {
         query: DELETE_RESOURCE('Observation'),
         variables: { id: 'observationId' },

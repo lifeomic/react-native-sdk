@@ -94,7 +94,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
         .map(([k, v]) => `${k}=${v}`)
         .join('&');
 
-      const url = `/track-tiles/trackers${params && `?${params}`}`;
+      const url = `/v1/track-tiles/trackers${params && `?${params}`}`;
 
       const res = await httpClient.get(
         url,
@@ -152,7 +152,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
       const end = minDate([missingEnd, interval.end]).toISOString();
 
       const res = await httpClient.post<FetchTrackerResponse>(
-        '/graphql',
+        '/v1/graphql',
         {
           variables: {
             dates: [`ge${start}`, `le${end}`],
@@ -175,7 +175,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
 
     deleteTrackerResource: async (valuesContext, resourceType, id) => {
       const res = await httpClient.post<DeleteResourceResponse>(
-        '/graphql',
+        '/v1/graphql',
         {
           query: DELETE_RESOURCE(resourceType),
           variables: { id },
@@ -205,7 +205,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
       const res = await httpClient.post<
         UpsertObservationResponse | UpsertProcedureResponse
       >(
-        '/graphql',
+        '/v1/graphql',
         {
           query:
             resource.resourceType === 'Observation'
@@ -274,7 +274,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
       }
 
       const res = await httpClient.post<QueryOntologyResponse>(
-        '/graphql',
+        '/v1/graphql',
         {
           query: QUERY_ONTOLOGY,
           variables: {
