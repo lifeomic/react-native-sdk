@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { t } from '@i18n';
+import { t } from 'i18next';
 import {
   TouchableOpacity,
   TouchableOpacityProps,

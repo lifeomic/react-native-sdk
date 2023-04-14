@@ -9,7 +9,7 @@ import {
   TRACKER_CODE,
   TRACKER_CODE_SYSTEM,
 } from 'src/components/TrackTile/services/TrackTileService';
-import { t } from '@i18n';
+import { t } from 'i18next';
 import { boolean, withKnobs, object } from '@storybook/addon-knobs';
 import { Anchor } from '@lifeomic/chromicons-native';
 import {

@@ -1,4 +1,4 @@
-import i18n from '@i18n';
+import i18n from 'i18next';
 import { Tracker, UnitType } from '../services/TrackTileService';
 
 type Unit = 's' | 'min' | 'h' | string;

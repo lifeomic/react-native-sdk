@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
-import i18n, { t } from '@i18n';
+import i18n, { t } from 'i18next';
 import { Trans } from 'react-i18next';
 import {
   StylesProp,

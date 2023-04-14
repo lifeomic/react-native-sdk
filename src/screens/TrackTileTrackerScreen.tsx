@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { TrackerDetails } from '../components/TrackTile/TrackerDetails/TrackerDetails';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../navigators/HomeStack';
-import { t } from '@i18n';
+import { t } from 'i18next';
 
 const styles = StyleSheet.create({
   container: {

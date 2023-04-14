@@ -3,7 +3,7 @@ import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { StylesProp, useStyleOverrides, Text } from '../../styles';
 import { scaleLinear } from 'd3-scale';
 import { eachDayOfInterval, format, isToday } from 'date-fns';
-import { t } from '@i18n';
+import { t } from 'i18next';
 import Bar from './Bar';
 import { tID } from '../../common/testID';
 import { numberFormatters, dateFormatters } from '../../formatters';

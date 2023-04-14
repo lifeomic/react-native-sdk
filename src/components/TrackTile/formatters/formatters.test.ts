@@ -1,4 +1,4 @@
-import i18n from '@i18n';
+import i18n from 'i18next';
 import { dateFormatters, numberFormatters } from '.';
 
 jest.unmock('i18next');

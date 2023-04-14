@@ -21,20 +21,6 @@ interface TileProps {
   tileGradient?: LinearGradientProps;
 }
 
-const defaultTileGradient: LinearGradientProps = {
-  colors: ['transparent', 'transparent'],
-  start: { x: 0.499, y: -0.2 },
-  end: { x: 0.511, y: 1 },
-  locations: [0, 1],
-};
-
-const defaultChevronGradient: LinearGradientProps = {
-  colors: ['#509BC5', '#4DC4AF'],
-  start: { x: -0.76, y: 0 },
-  end: { x: 1, y: 0 },
-  locations: [0, 1],
-};
-
 export const Tile = ({
   Icon,
   title,
@@ -143,6 +129,20 @@ const defaultStyles = createStyles('Tile', (theme) => ({
     flex: 1,
   },
 }));
+
+const defaultTileGradient: LinearGradientProps = {
+  colors: ['transparent', 'transparent'],
+  start: { x: 0.499, y: -0.2 },
+  end: { x: 0.511, y: 1 },
+  locations: [0, 1],
+};
+
+const defaultChevronGradient: LinearGradientProps = {
+  colors: ['#509BC5', '#4DC4AF'],
+  start: { x: -0.76, y: 0 },
+  end: { x: 1, y: 0 },
+  locations: [0, 1],
+};
 
 declare module '@styles' {
   interface ComponentStyles

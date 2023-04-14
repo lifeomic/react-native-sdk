@@ -6,7 +6,7 @@ import {
   StyleSheet,
   I18nManager,
 } from 'react-native';
-import { t } from '@i18n';
+import { t } from 'i18next';
 import { Tracker } from '../services/TrackTileService';
 import Indicator from '../icons/indicator';
 import Chevron from '../icons/Chevron';

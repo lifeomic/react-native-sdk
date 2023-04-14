@@ -5,7 +5,7 @@ import {
   useFontOverrides,
   useStyleOverrides,
 } from '../../../styles';
-import { t } from '@i18n';
+import { t } from 'i18next';
 import { Tracker } from '../../../services/TrackTileService';
 
 type ValueDisplayProps = {

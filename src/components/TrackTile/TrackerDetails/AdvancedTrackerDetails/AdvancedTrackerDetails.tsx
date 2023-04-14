@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import i18n, { Trans, t } from '@i18n';
+import i18n, { t } from 'i18next';
+import { Trans } from 'react-i18next';
 import {
   NamedStyles,
   StylesProp,
@@ -208,7 +209,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         onChange={setDateRange}
       />
 
-      <Trans
+    <Trans
         i18n={i18n}
         parent={TransTextParent}
         style={styles.advancedDetailsHorizontalRow}

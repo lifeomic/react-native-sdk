@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { StyleSheet, View, TouchableOpacity, I18nManager } from 'react-native';
 import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
 import { StylesProp, useStyleOverrides, Text } from '../../styles';
-import { t } from '@i18n';
+import { t } from 'i18next';
 import { tID } from '../../common/testID';
 import { dateFormatters } from '../../formatters';
 import { ChevronLeft, ChevronRight } from '@lifeomic/chromicons-native';
