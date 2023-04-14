@@ -4,6 +4,7 @@ import {
   requestNotificationsPermissions,
   onNotificationReceived,
   onNotificationOpened,
+  registerDeviceToken,
 } from './Notifications';
 import {
   Notifications,
@@ -11,6 +12,8 @@ import {
 } from 'react-native-notifications';
 import { Platform, PermissionsAndroid } from 'react-native';
 import { waitFor } from '@testing-library/react-native';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 
 let registerRemoteNotificationsRegistered = jest.fn();
 let registerRemoteNotificationsRegistrationDenied = jest.fn();
@@ -73,6 +76,23 @@ test('isRegisteredForRemoteNotifications: returns if the device is registered fo
     .mockResolvedValue(true);
   const result = await isRegisteredForNotifications();
   expect(result).toStrictEqual(true);
+});
+
+test('registerDeviceToken: registers the device token', () => {
+  const deviceToken = 'a-device-token';
+  const application = 'test-application';
+  const accountId = 'account-id';
+  const axiosInstance = axios.create();
+  const axiosMock = new MockAdapter(axiosInstance);
+
+  axiosMock.onPost('/v1/device-endpoints').reply(200, {});
+  registerDeviceToken({
+    deviceToken,
+    application,
+    httpClient: axiosInstance,
+    accountId,
+  });
+  expect(axiosMock.history.post[0].url).toBe('/v1/device-endpoints');
 });
 
 describe('requestNotificationsPermissions', () => {
