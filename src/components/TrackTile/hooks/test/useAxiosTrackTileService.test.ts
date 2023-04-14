@@ -77,10 +77,8 @@ describe('useAxiosTrackTileService', () => {
 
     expect(result.current).toEqual(
       expect.objectContaining({
-        accountSettings: {
-          account: 'account-id',
-          project: 'project-id',
-        },
+        accountId: 'account-id',
+        projectId: 'project-id',
       }),
     );
   });
