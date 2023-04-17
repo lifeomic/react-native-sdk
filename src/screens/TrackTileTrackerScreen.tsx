@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'tiles/TrackTile'>;
+type Props = NativeStackScreenProps<HomeStackParamList, 'Home/TrackTile'>;
 
 export const TrackTileTrackerScreen = ({
   navigation,

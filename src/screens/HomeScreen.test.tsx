@@ -79,7 +79,7 @@ test('handles app tile taps via navigation', async () => {
   const { getByTestId } = render(<HomeScreen />);
   const firstTile = exampleAppConfig.homeTab?.appTiles?.[0];
   fireEvent.press(getByTestId(`tile-button-${firstTile?.id}`));
-  expect(navigateMock).toHaveBeenCalledWith('tiles/AppTile', {
+  expect(navigateMock).toHaveBeenCalledWith('Home/AppTile', {
     appTile: firstTile,
   });
 });

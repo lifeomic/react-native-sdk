@@ -3,7 +3,7 @@ import { WebView } from 'react-native-webview';
 import { HomeStackParamList } from '../navigators/HomeStack';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'tiles/AppTile'>;
+type Props = NativeStackScreenProps<HomeStackParamList, 'Home/AppTile'>;
 
 export const AppTileScreen = ({ navigation, route }: Props) => {
   const appTile = route.params.appTile;

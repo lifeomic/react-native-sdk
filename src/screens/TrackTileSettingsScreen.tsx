@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
 
 type Props = NativeStackScreenProps<
   HomeStackParamList,
-  'tiles/trackTileSettings'
+  'Home/TrackTileSettings'
 >;
 
 export const SettingsScreen = ({ navigation, route: { params } }: Props) => {
@@ -23,7 +23,7 @@ export const SettingsScreen = ({ navigation, route: { params } }: Props) => {
     <View style={styles.container}>
       <ManageTrackers
         onOpenTracker={(tracker) =>
-          navigation.navigate('tiles/TrackTile', {
+          navigation.navigate('Home/TrackTile', {
             valuesContext,
             tracker,
           })

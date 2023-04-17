@@ -33,17 +33,17 @@ export const SettingsScreen = () => {
         <ScrollView style={styles.scroll}>
           <MainMenuItem
             title={t('settings-profile-row-title', 'Profile')}
-            action={() => navigate('Profile')}
+            action={() => navigate('Settings/Profile')}
           />
           <Divider />
           <MainMenuItem
             title={account?.name || t('settings-account-selection', 'Accounts')}
-            action={() => navigate('AccountSelection')}
+            action={() => navigate('Settings/AccountSelection')}
           />
           <Divider />
           <MainMenuItem
             title={t('settings-sync-data', 'Sync Data')}
-            action={() => navigate('Wearables')}
+            action={() => navigate('Settings/Wearables')}
           />
           <Divider />
         </ScrollView>

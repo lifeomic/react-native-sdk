@@ -28,9 +28,9 @@ export function TilesList({ styles: instanceStyles }: Props) {
   const onAppTilePress = useCallback(
     (appTile: AppTile) => () => {
       if (getCustomAppTileComponent(appTileScreens, appTile)) {
-        navigate('tiles/CustomAppTile', { appTile });
+        navigate('Home/CustomAppTile', { appTile });
       } else {
-        navigate('tiles/AppTile', { appTile });
+        navigate('Home/AppTile', { appTile });
       }
     },
     [navigate, appTileScreens],
@@ -41,12 +41,12 @@ export function TilesList({ styles: instanceStyles }: Props) {
       {trackTileEnabled && (
         <TrackTile
           onOpenSettings={(valuesContext) =>
-            navigate('tiles/trackTileSettings', {
+            navigate('Home/TrackTileSettings', {
               valuesContext,
             })
           }
           onOpenTracker={(tracker, valuesContext) =>
-            navigate('tiles/TrackTile', {
+            navigate('Home/TrackTile', {
               tracker,
               valuesContext,
             })
