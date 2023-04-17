@@ -24,13 +24,13 @@ export function RootProviders({
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
 }) {
-  const { theme } = useDeveloperConfig();
+  const { theme, baseURL } = useDeveloperConfig();
 
   return (
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
-        <HttpClientContextProvider>
-          <GraphQLClientContextProvider>
+        <HttpClientContextProvider baseURL={baseURL}>
+          <GraphQLClientContextProvider baseURL={baseURL}>
             <OAuthContextProvider authConfig={authConfig}>
               <ActiveAccountContextProvider>
                 <ActiveProjectContextProvider>

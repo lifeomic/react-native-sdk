@@ -48,4 +48,12 @@ describe('with developerConfig injected into provider', () => {
       },
     });
   });
+
+  test('allows for baseURL to be configured', async () => {
+    const baseURL = 'https://foo-bar.com';
+    const { result } = await renderHookInContext({
+      baseURL,
+    });
+    expect(result.current.baseURL).toEqual(baseURL);
+  });
 });

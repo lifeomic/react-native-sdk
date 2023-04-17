@@ -14,10 +14,13 @@ import { AppTile } from '../hooks/useAppConfig';
  * when an app tile with a matching URL is tapped.
  *
  * @param simpleTheme Allows for configuring a theme via a primary and accent color.
+ *
+ * @param baseURL Allows for configuring a custom base API URL
  */
 export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
+  baseURL?: string;
 };
 
 export type SimpleTheme = {
