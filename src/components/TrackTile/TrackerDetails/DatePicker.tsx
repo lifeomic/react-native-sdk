@@ -1,7 +1,7 @@
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { StylesProp, useStyleOverrides, Text } from '../styles';
 import React, { Dispatch, FC, SetStateAction, useCallback } from 'react';
-import { t } from '@i18n';
+import { t } from '../../../../lib/i18n';
 import { Tracker, UnitType } from '../services/TrackTileService';
 import { ChevronLeft, ChevronRight } from '@lifeomic/chromicons-native';
 import { addDays, format, isToday } from 'date-fns';

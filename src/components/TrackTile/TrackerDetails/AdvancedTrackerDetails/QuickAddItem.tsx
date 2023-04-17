@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
 import { Code } from '../../services/TrackTileService';
-import { t } from '@i18n';
+import { t } from '../../../../../lib/i18n';
 
 export type QuickAddItemProps = {
   code: Code;

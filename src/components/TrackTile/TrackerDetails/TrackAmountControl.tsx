@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { StylesProp, useStyleOverrides, Text, fontWeights } from '../styles';
-import { t } from '@i18n';
+import { t } from '../../../../lib/i18n';
 import { tID } from '../common/testID';
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';

@@ -18,8 +18,6 @@
     "typeRoots": ["./node_modules/@types", "src/typings"],
     "paths": {
       "@styles": ["./src/components/BrandConfigProvider/styles/types"],
-      "@i18n": ["lib/i18n"],
-      "@i18n/*": ["lib/i18n/*"]
     }
   },
   "include": [

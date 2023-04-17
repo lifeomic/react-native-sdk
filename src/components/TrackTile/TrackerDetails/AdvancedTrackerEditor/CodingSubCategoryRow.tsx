@@ -12,7 +12,7 @@ import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
 import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
 import { Code } from '../../services/TrackTileService';
 import { ChevronRight, ChevronLeft } from '@lifeomic/chromicons-native';
-import { t } from '@i18n';
+import { t } from '../../../../../lib/i18n';
 
 export type CodingSubCategoryRowProps = TouchableOpacityProps & {
   code: Code;

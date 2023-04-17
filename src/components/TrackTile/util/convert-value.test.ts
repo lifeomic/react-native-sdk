@@ -1,4 +1,4 @@
-import i18n from '@i18n';
+import i18n from '../../../../lib/i18n';
 import {
   getPreferredUnitType,
   getStoredUnitType,

@@ -1,4 +1,4 @@
-import { t } from '@i18n';
+import { t } from '../../../../../lib/i18n';
 
 const numberFormatters = {
   numberFormat: (value: number) =>

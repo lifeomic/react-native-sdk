@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, Switch } from 'react-native';
-import { t } from '@i18n';
+import { t } from '../../../../lib/i18n';
 import { useStyleOverrides, StylesProp, NamedStyles, Text } from '../styles';
 import { Tracker, isInstalledMetric } from '../services/TrackTileService';
 import { useTrackers } from '../hooks/useTrackers';
