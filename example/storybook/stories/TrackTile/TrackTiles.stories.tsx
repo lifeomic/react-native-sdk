@@ -2,7 +2,6 @@ import React from 'react';
 
 import { storiesOf } from '@storybook/react-native';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
-import { View } from 'react-native';
 import { action } from '@storybook/addon-actions';
 import { TrackTile } from 'src/components/TrackTile';
 
@@ -29,24 +28,32 @@ storiesOf('TrackTile', module)
     <TrackTile
       onOpenSettings={action('onOpenSettings')}
       onOpenTracker={action('onOpenTracker')}
-      title="Testing"
+      title="Custom Title"
     />
   ))
-  .add('Custom Background', () => (
+  .add('Without settings', () => (
     <TrackTile
       onOpenSettings={action('onOpenSettings')}
       onOpenTracker={action('onOpenTracker')}
-      background={
-        <View
-          style={{
-            backgroundColor: '#E44572',
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-          }}
-        />
-      }
+      title="TrackTile Sans Settings"
+      hideSettingsButton
     />
-  ));
+  ))
+  .add('Custom style', () => {
+    const styles = {
+      card: {
+        backgroundColor: 'green',
+      },
+      titleText: {
+        color: 'white',
+      },
+    };
+    return (
+      <TrackTile
+        onOpenSettings={action('onOpenSettings')}
+        onOpenTracker={action('onOpenTracker')}
+        title="Custom Style"
+        styles={styles}
+      />
+    );
+  });
