@@ -9,7 +9,7 @@ import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { tID } from '../common/testID';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'tiles/CustomAppTile'>;
+type Props = NativeStackScreenProps<HomeStackParamList, 'Home/CustomAppTile'>;
 
 export const CustomAppTileScreen = ({ navigation, route }: Props) => {
   const { appTileScreens } = useDeveloperConfig();

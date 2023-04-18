@@ -59,7 +59,7 @@ test('navigates to user profile', async () => {
   });
   fireEvent.press(getByText('Profile'));
 
-  expect(navigateMock).toHaveBeenCalledWith('Profile');
+  expect(navigateMock).toHaveBeenCalledWith('Settings/Profile');
 });
 
 test('navigates to account selection', async () => {
@@ -70,5 +70,5 @@ test('navigates to account selection', async () => {
   });
   fireEvent.press(getByText('Account Name'));
 
-  expect(navigateMock).toHaveBeenCalledWith('AccountSelection');
+  expect(navigateMock).toHaveBeenCalledWith('Settings/AccountSelection');
 });

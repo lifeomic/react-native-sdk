@@ -54,7 +54,7 @@ function HomeScreen() {
               id="app-tile-invalid"
               title="Error 2"
               onPress={() => {
-                navigate('tiles/CustomAppTile', {
+                navigate('Home/CustomAppTile', {
                   appTile: {
                     id: 'app-tile-invalid',
                     title: 'Title 3',
@@ -76,7 +76,7 @@ function HomeScreen() {
             case.
           </Text>
           <Text>
-            Error 2 is an edge case where tiles/CustomAppTile is manually
+            Error 2 is an edge case where Home/CustomAppTile is manually
             navigated to with a bogus appTile configuration
           </Text>
         </View>
@@ -92,9 +92,9 @@ function HomeStack() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="tiles/AppTile" component={AppTileScreen} />
+        <Stack.Screen name="Home/AppTile" component={AppTileScreen} />
         <Stack.Screen
-          name="tiles/CustomAppTile"
+          name="Home/CustomAppTile"
           component={CustomAppTileScreen}
         />
       </Stack.Navigator>
