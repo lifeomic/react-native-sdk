@@ -8,7 +8,7 @@ import { TrackTileTrackerScreen } from '../screens/TrackTileTrackerScreen';
 import { AppNavHeader } from '../components/AppNavHeader';
 import { TrackerValuesContext } from '../components/TrackTile/main';
 import TrackTileSettingsScreen from '../screens/TrackTileSettingsScreen';
-import { t } from '@i18n';
+import { t } from '../../lib/i18n';
 
 export type HomeStackParamList = {
   Home: undefined;
