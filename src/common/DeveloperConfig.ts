@@ -15,12 +15,13 @@ import { AppTile } from '../hooks/useAppConfig';
  *
  * @param simpleTheme Allows for configuring a theme via a primary and accent color.
  *
- * @param baseURL Allows for configuring a custom base API URL
+ * @param apiBaseURL Allows for configuring a custom base API URL. This is only
+ * needed when performing advanced debugging involving a dev mock server.
  */
 export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
-  baseURL?: string;
+  apiBaseURL?: string;
 };
 
 export type SimpleTheme = {
