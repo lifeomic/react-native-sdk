@@ -40,6 +40,11 @@ export function TilesList({ styles: instanceStyles }: Props) {
     <ScrollView testID={tID('tiles-list')} style={styles.scrollView}>
       {trackTileEnabled && (
         <TrackTile
+          onOpenSettings={(valuesContext) =>
+            navigate('tiles/trackTileSettings', {
+              valuesContext,
+            })
+          }
           onOpenTracker={(tracker, valuesContext) =>
             navigate('tiles/TrackTile', {
               tracker,
