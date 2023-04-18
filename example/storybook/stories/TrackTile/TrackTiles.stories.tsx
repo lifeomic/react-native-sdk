@@ -12,9 +12,20 @@ storiesOf('TrackTile', module)
       trackers: [
         {
           id: '1',
+          metricId: '1',
           name: 'Test',
           color: 'chartreuse',
-          units: [],
+          resourceType: 'Procedure',
+          units: [
+            {
+              code: 'h',
+              default: true,
+              display: 'hour',
+              system: 'http://unitsofmeasure.org',
+              target: 5,
+              unit: 'h',
+            },
+          ],
         },
       ],
     }),

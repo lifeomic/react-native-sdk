@@ -55,7 +55,7 @@ export const convertToPreferredUnit = (
   const preferredUnit = getPreferredUnitType(tracker)?.code;
   const converter =
     converters?.[storedUnit]?.[preferredUnit || ''] ?? ((v: number) => v);
-  return converter(value);
+  return converter(value ?? 0);
 };
 
 export const convertToStoreUnit = (
@@ -66,7 +66,7 @@ export const convertToStoreUnit = (
   const preferredUnit = getPreferredUnitType(tracker)?.code;
   const converter =
     converters?.[preferredUnit]?.[storeUnit || ''] ?? ((v: number) => v);
-  return converter(value);
+  return converter(value ?? 0);
 };
 
 export const convertToISONumber = (number: string) => {

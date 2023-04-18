@@ -61,7 +61,7 @@ export const TrackerRow: FC<TrackerRowProps> = (props) => {
                 values[tracker.metricId ?? '']?.reduce(
                   (total, { value }) => total + value,
                   0,
-                ),
+                ) ?? 0,
                 tracker,
               )}
             />

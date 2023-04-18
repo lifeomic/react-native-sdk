@@ -3,7 +3,7 @@ import { DecoratorFunction } from '@storybook/addons';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {
-  MetricType,
+  Tracker,
   TrackTileServiceProvider,
   useAxiosTrackTileService,
 } from 'src/components/TrackTile/main';
@@ -12,12 +12,13 @@ import {
   QueryOntologyResponse,
 } from 'src/components/TrackTile/hooks/useAxiosTrackTileService';
 import { nutrition } from './ontologies';
+import { HttpClientContextProvider } from 'src/hooks/useHttpClient';
 
 const axiosInstance = axios.create();
 const mock = new MockAdapter(axiosInstance);
 
 export const MockEnvironmentDecorator = ({
-  trackers = [] as Partial<MetricType>[],
+  trackers = [] as Partial<Tracker>[],
   ontology = nutrition as any as QueryOntologyResponse,
   values = {
     data: {
@@ -50,7 +51,11 @@ export const MockEnvironmentDecorator = ({
   mock.onDelete().reply(200);
 
   const EnvironmentDecorator: DecoratorFunction<any> = (StoryFn, storyCtx) => {
-    return <Provider>{StoryFn(storyCtx)}</Provider>;
+    return (
+      <HttpClientContextProvider injectedAxiosInstance={axiosInstance}>
+        <Provider>{StoryFn(storyCtx)}</Provider>
+      </HttpClientContextProvider>
+    );
   };
 
   return EnvironmentDecorator;
