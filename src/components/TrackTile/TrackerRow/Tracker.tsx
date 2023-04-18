@@ -1,11 +1,10 @@
-import React, { FC } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import Indicator, { INDICATOR_HEIGHT } from '../icons/indicator';
 import { Tracker as TrackerType } from '../services/TrackTileService';
-import { StylesProp, useStyleOverrides, Text } from '../styles';
+import { Text } from '../styles';
 import { RadialProgress } from './RadialProgress';
 import { t } from '../../../../lib/i18n';
-import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { tID } from '../common/testID';
 import {
   convertToPreferredUnit,
@@ -13,27 +12,30 @@ import {
 } from '../util/convert-value';
 import { numberFormatters } from '../formatters';
 import { SvgProps } from 'react-native-svg';
+import { createStyles } from '../../BrandConfigProvider';
+import { useStyles } from '../../../hooks/useStyles';
 
 type TrackerProps = TrackerType & {
   value?: number;
   icons?: Record<string, React.ComponentType<SvgProps>>;
+  styles?: TrackerStyles;
 };
 const { numberFormat } = numberFormatters;
-export const Tracker: FC<TrackerProps> = (tracker) => {
+export function Tracker(tracker: TrackerProps) {
   const isInstalled = 'metricId' in tracker;
   const disabled = !isInstalled;
-  const styles = useStyleOverrides(defaultStyles);
-  const flatStyles = useFlattenedStyles(styles, [
-    'trackerIconColor',
-    'trackerIconInstalledHeight',
-    'trackerIconInstalledUninstalledHeight',
-  ]);
+  const { styles: instanceStyles } = tracker;
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   const unit = getPreferredUnitType(tracker);
   const unitDisplay = unit?.display?.toLocaleLowerCase();
 
   const currentValue = convertToPreferredUnit(tracker.value ?? 0, tracker);
   const id = tracker.metricId || tracker.id;
+
+  const scale = isInstalled
+    ? styles.trackerIconInstalledHeight?.height ?? 20
+    : styles.trackerIconInstalledUninstalledHeight?.height ?? 25;
 
   return (
     <View style={styles.tracker}>
@@ -49,21 +51,16 @@ export const Tracker: FC<TrackerProps> = (tracker) => {
         <View style={[disabled && styles.trackerIconDisabled]}>
           <Indicator
             name={tracker.icon}
-            color={flatStyles.trackerIconColor.color ?? tracker.color}
+            color={(styles.trackerIconColorText?.color ?? tracker.color) as any}
             CustomIcon={tracker.icons?.[id]}
-            scale={
-              (isInstalled
-                ? flatStyles.trackerIconInstalledHeight.height
-                : flatStyles.trackerIconInstalledUninstalledHeight.height) /
-              INDICATOR_HEIGHT
-            }
+            scale={(scale as number) / INDICATOR_HEIGHT}
           />
         </View>
         {isInstalled && (
           <Text
             testID={tID(`tracker-value-${id}`)}
             variant="bold"
-            style={styles.trackerCurrentValue}
+            style={styles.trackerCurrentValueText}
           >
             {numberFormat(currentValue)}
           </Text>
@@ -72,11 +69,14 @@ export const Tracker: FC<TrackerProps> = (tracker) => {
       <Text
         testID={tID(`tracker-name-${id}`)}
         variant="bold"
-        style={[styles.trackerName, disabled && styles.trackerNameDisabled]}
+        style={[
+          styles.trackerNameText,
+          disabled && styles.trackerNameDisabledText,
+        ]}
       >
         {tracker.name}
       </Text>
-      <Text testID={tID(`tracker-unit-${id}`)} style={[styles.trackerUnit]}>
+      <Text testID={tID(`tracker-unit-${id}`)} style={[styles.trackerUnitText]}>
         {isInstalled
           ? t('track-tile.unit-display', {
               defaultValue: '({{unit}})',
@@ -86,24 +86,18 @@ export const Tracker: FC<TrackerProps> = (tracker) => {
       </Text>
     </View>
   );
-};
-
-declare module '../TrackTile' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
 }
+
 const size = 70;
-const defaultStyles = StyleSheet.create({
-  trackerName: {
-    fontSize: 12,
-    color: 'white',
-  },
-  trackerNameDisabled: {
+const defaultStyles = createStyles('Tracker', (theme) => ({
+  trackerNameText: {},
+  trackerNameDisabledText: {
     color: '#7B8996',
   },
-  trackerUnit: { fontSize: 10, color: '#7B8996' },
-  trackerCurrentValue: {
+  trackerUnitText: { fontSize: 10, color: '#7B8996' },
+  trackerCurrentValueText: {
     fontSize: 14,
-    color: 'white',
+    color: theme.colors.onSurfaceVariant,
     textAlign: 'center',
   },
   tracker: {
@@ -123,15 +117,11 @@ const defaultStyles = StyleSheet.create({
   trackerIconDisabled: {
     opacity: 0.5,
   },
-  trackerIconColor: {
+  trackerIconColorText: {
     color: undefined,
   },
-  trackerIconInstalledHeight: {
-    height: 20,
-  },
-  trackerIconInstalledUninstalledHeight: {
-    height: 25,
-  },
+  trackerIconInstalledHeight: {},
+  trackerIconInstalledUninstalledHeight: {},
   trackerProgressBarContainer: {
     position: 'absolute',
     top: 0,
@@ -139,4 +129,11 @@ const defaultStyles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type TrackerStyles = NamedStylesProp<typeof defaultStyles>;

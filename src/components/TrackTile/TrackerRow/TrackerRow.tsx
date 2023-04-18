@@ -1,8 +1,7 @@
-import React, { FC } from 'react';
+import React from 'react';
 import {
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -13,8 +12,9 @@ import {
   Tracker as TrackerType,
   TrackerValues,
 } from '../services/TrackTileService';
-import { StylesProp, useStyleOverrides } from '../styles';
+import { createStyles } from '../../BrandConfigProvider';
 import { Tracker } from './Tracker';
+import { useStyles } from '../../../hooks/useStyles';
 
 type TrackerRowProps = {
   loading: boolean;
@@ -22,12 +22,19 @@ type TrackerRowProps = {
   values: TrackerValues[string];
   onOpenTracker: (metric: TrackerType) => void;
   icons?: Record<string, React.ComponentType<SvgProps>>;
+  styles?: TrackRowStyles;
 };
 
-export const TrackerRow: FC<TrackerRowProps> = (props) => {
-  const { loading, trackers, values, onOpenTracker, icons } = props;
-
-  const styles = useStyleOverrides(defaultStyles);
+export function TrackerRow(props: TrackerRowProps) {
+  const {
+    loading,
+    trackers,
+    values,
+    onOpenTracker,
+    icons,
+    styles: instanceStyles,
+  } = props;
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
     <ScrollView
@@ -69,16 +76,12 @@ export const TrackerRow: FC<TrackerRowProps> = (props) => {
         ))}
     </ScrollView>
   );
-};
-
-declare module '../TrackTile' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
 }
 
-const defaultStyles = StyleSheet.create({
+const defaultStyles = createStyles('TrackerRowx', (theme) => ({
   trackerRowLoadingIndicator: {
     height: 131,
-    paddingHorizontal: 16,
+    paddingHorizontal: theme.spacing.medium,
     justifyContent: 'center',
     paddingBottom: 40,
   },
@@ -86,6 +89,13 @@ const defaultStyles = StyleSheet.create({
     minWidth: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: theme.spacing.extraSmall,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type TrackRowStyles = NamedStylesProp<typeof defaultStyles>;

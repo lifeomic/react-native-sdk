@@ -11,6 +11,7 @@ import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { StylesProp, useStyleOverrides } from '../styles';
 import { usePrevious } from '../hooks/usePrevious';
 import { darkenHexColor } from '../util/darken-hex-color';
+import { useTheme } from '../../../hooks/useTheme';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -41,6 +42,7 @@ export const RadialProgress: FC<Props> = (props) => {
     'trackerCircleBorder',
     'trackerCircleBorderDisabled',
   ]);
+  const theme = useTheme();
 
   const moveProgressTo = useCallback(
     (position: 'start' | 'end') => {
@@ -164,6 +166,7 @@ export const RadialProgress: FC<Props> = (props) => {
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={ref.current}
+            fill={theme.colors.surfaceVariant}
           />
         </Svg>
       )}
