@@ -163,6 +163,11 @@ describe('Tracker Value Unit Conversions', () => {
       });
       expect(value).toEqual(1); // min
     });
+
+    it('for edge case where value is undefined at runtime should default to zero', async () => {
+      const value = convertToPreferredUnit(undefined as any, exampleTracker);
+      expect(value).toEqual(0);
+    });
   });
 
   describe('convertToStoreUnit', () => {
@@ -203,6 +208,11 @@ describe('Tracker Value Unit Conversions', () => {
         unit: 'second',
       });
       expect(value).toEqual(1);
+    });
+
+    it('for edge case where value is undefined at runtime should default to zero', async () => {
+      const value = convertToStoreUnit(undefined as any, exampleTracker);
+      expect(value).toEqual(0);
     });
   });
 
