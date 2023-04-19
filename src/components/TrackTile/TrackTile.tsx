@@ -1,8 +1,5 @@
-import React, { FC, ReactNode } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import TileBackground from './TileBackground';
+import React from 'react';
 import OpenSettingsButton from './OpenSettingsButton';
-import { NamedStyles, StylesProp, useStyleOverrides } from './styles';
 import { TrackerRow } from './TrackerRow/TrackerRow';
 import {
   Tracker,
@@ -13,27 +10,28 @@ import {
 import { useTrackers } from './hooks/useTrackers';
 import { useTrackerValues } from './hooks/useTrackerValues';
 import { SvgProps } from 'react-native-svg';
+import { createStyles } from '../BrandConfigProvider';
+import { useStyles } from '../../hooks/useStyles';
+import { Card } from 'react-native-paper';
 
-export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 export type TrackTileProps = {
   title?: string;
-  background?: ReactNode;
-  // TODO: Change this back to non-optional when we have a settings screen
-  onOpenSettings?: (valuesContext: TrackerValuesContext) => void;
+  onOpenSettings: (valuesContext: TrackerValuesContext) => void;
   onOpenTracker: (metric: Tracker, valuesContext: TrackerValuesContext) => void;
   hideSettingsButton?: boolean;
   icons?: Record<string, React.ComponentType<SvgProps>>;
+  styles?: TrackTileStyles;
 };
 
-export const TrackTile: FC<TrackTileProps> = ({
+export function TrackTile({
   onOpenSettings,
   onOpenTracker,
   hideSettingsButton = false,
   title = '',
-  background = <TileBackground />,
   icons,
-}) => {
-  const styles = useStyleOverrides(defaultStyles);
+  styles: instanceStyles,
+}: TrackTileProps) {
+  const { styles } = useStyles(defaultStyles, instanceStyles);
   const valuesContext: TrackerValuesContext = {
     system: TRACKER_CODE_SYSTEM,
     codeBelow: TRACKER_CODE,
@@ -43,65 +41,53 @@ export const TrackTile: FC<TrackTileProps> = ({
   const { trackerValues, loading: valuesLoading } =
     useTrackerValues(valuesContext);
 
-  return (
-    <>
-      <View style={styles.trackTile}>
-        <View style={styles.trackTileBackgroundContainer}>
-          {background}
-          <View style={styles.trackTileHeader}>
-            <Text style={styles.trackTileHeaderTitle}>{title}</Text>
-            {!hideSettingsButton && (
-              <OpenSettingsButton
-                onPress={() => onOpenSettings?.(valuesContext)}
-              />
-            )}
-          </View>
-          <TrackerRow
-            onOpenTracker={(tracker) => onOpenTracker(tracker, valuesContext)}
-            trackers={trackers}
-            values={trackerValues[0]}
-            loading={trackersLoading || valuesLoading}
-            icons={icons}
-          />
-        </View>
-      </View>
-    </>
-  );
-};
+  const settingsButton = (props: { size: number }) => {
+    if (hideSettingsButton) return null;
+    return (
+      <OpenSettingsButton
+        {...props}
+        onPress={() => onOpenSettings(valuesContext)}
+      />
+    );
+  };
 
-const defaultStyles = StyleSheet.create({
-  trackTile: {
-    position: 'relative',
-    borderRadius: 14,
-    elevation: 1,
-    backgroundColor: 'white',
-    shadowColor: '#000000',
-    shadowOpacity: 0.1,
-    shadowOffset: {
-      height: 0,
-      width: 2,
-    },
-    shadowRadius: 13,
+  return (
+    <Card style={styles.card}>
+      <Card.Title
+        title={title}
+        titleStyle={styles.titleText}
+        right={settingsButton}
+        rightStyle={styles.settingsButton}
+      />
+      <Card.Content style={styles.content}>
+        <TrackerRow
+          onOpenTracker={(tracker) => onOpenTracker(tracker, valuesContext)}
+          trackers={trackers}
+          values={trackerValues[0]}
+          loading={trackersLoading || valuesLoading}
+          icons={icons}
+        />
+      </Card.Content>
+    </Card>
+  );
+}
+
+const defaultStyles = createStyles('TrackTile', (theme) => ({
+  titleText: {
+    margin: theme.spacing.medium,
   },
-  trackTileBackgroundContainer: {
-    alignSelf: 'center',
-    width: '100%',
-    overflow: 'hidden',
+  card: {
+    margin: theme.spacing.large,
   },
-  trackTileHeader: {
-    height: 40,
-    display: 'flex',
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    padding: 8,
+  settingsButton: {
+    marginRight: theme.spacing.medium,
   },
-  trackTileHeaderTitle: {
-    position: 'absolute',
-    fontWeight: 'bold',
-    left: 0,
-    right: 0,
-    alignSelf: 'center',
-    textAlign: 'center',
-    color: '#fff',
-  },
-});
+  content: {},
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type TrackTileStyles = NamedStylesProp<typeof defaultStyles>;
