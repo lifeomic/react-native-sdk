@@ -15,9 +15,7 @@
     "test:ci": "yarn lint && yarn jest --coverage --runInBand --silent --ci --logHeapUsage",
     "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist && yarn copyAdditionalFiles",
     "precopyToStarter": "yarn build",
-    "precopyToBrandedExample": "yarn build",
     "copyToStarter": "cp -r ./dist/ ../react-native-starter/node_modules/@lifeomic/react-native-sdk",
-    "copyToBrandedExample": "cp -r ./dist/ ../branded-mobile-app-example/node_modules/@lifeomic/react-native-sdk",
     "copyAdditionalFiles": "./bin/scripts/copyAdditionalFiles"
   },
   "author": "LifeOmic <development@lifeomic.com>",
