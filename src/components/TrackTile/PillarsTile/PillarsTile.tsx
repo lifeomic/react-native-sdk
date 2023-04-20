@@ -13,7 +13,7 @@ import {
 } from '../services/TrackTileService';
 import { NamedStyles, StylesProp, useStyleOverrides } from '../styles';
 import { Pillar } from './Pillar';
-import PillarsBackground from './PillarsBackground';
+import { Card } from 'react-native-paper';
 
 export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 
@@ -34,7 +34,6 @@ export type PillarsTileProps = {
 export const PillarsTile = ({
   onOpenDetails,
   onSaveNewValueOverride,
-  background = <PillarsBackground />,
   icons,
 }: PillarsTileProps) => {
   const styles = useStyleOverrides(defaultStyles);
@@ -48,71 +47,56 @@ export const PillarsTile = ({
     useTrackerValues(valuesContext);
 
   return (
-    <>
-      <View style={styles.pillarsTile}>
-        <View style={styles.pillarsTileBackgroundContainer}>
-          {background}
-          {trackersLoading && (
-            <View style={styles.pillarsTileLoadingIndicator}>
-              <ActivityIndicator
-                testID={tID('pillars-loading')}
-                accessibilityRole="progressbar"
-                size="large"
+    <Card style={styles.pillarsTile}>
+      <Card.Content style={styles.pillarsTileBackgroundContainer}>
+        {trackersLoading && (
+          <View style={styles.pillarsTileLoadingIndicator}>
+            <ActivityIndicator
+              testID={tID('pillars-loading')}
+              accessibilityRole="progressbar"
+              size="large"
+            />
+          </View>
+        )}
+        {!trackersLoading &&
+          pillarTrackers.map((tracker) => {
+            // 0 == today's values since useTrackers is only query for today
+            const trackerDayValues = trackerValues[0][tracker.metricId ?? ''];
+            return (
+              <Pillar
+                key={tracker.id}
+                loading={valuesLoading}
+                trackerValues={trackerDayValues}
+                tracker={tracker}
+                valuesContext={valuesContext}
+                icons={icons}
+                onOpenDetails={() => onOpenDetails(tracker, valuesContext)}
+                onSaveNewValueOverride={
+                  onSaveNewValueOverride
+                    ? (newValue) =>
+                        onSaveNewValueOverride(
+                          tracker,
+                          newValue,
+                          trackerDayValues,
+                        )
+                    : undefined
+                }
               />
-            </View>
-          )}
-          {!trackersLoading &&
-            pillarTrackers.map((tracker) => {
-              // 0 == today's values since useTrackers is only query for today
-              const trackerDayValues = trackerValues[0][tracker.metricId ?? ''];
-              return (
-                <Pillar
-                  key={tracker.id}
-                  loading={valuesLoading}
-                  trackerValues={trackerDayValues}
-                  tracker={tracker}
-                  valuesContext={valuesContext}
-                  icons={icons}
-                  onOpenDetails={() => onOpenDetails(tracker, valuesContext)}
-                  onSaveNewValueOverride={
-                    onSaveNewValueOverride
-                      ? (newValue) =>
-                          onSaveNewValueOverride(
-                            tracker,
-                            newValue,
-                            trackerDayValues,
-                          )
-                      : undefined
-                  }
-                />
-              );
-            })}
-        </View>
-      </View>
-    </>
+            );
+          })}
+      </Card.Content>
+    </Card>
   );
 };
 
 const defaultStyles = StyleSheet.create({
   pillarsTile: {
-    position: 'relative',
-    borderRadius: 14,
-    elevation: 1,
-    backgroundColor: 'white',
-    shadowColor: '#000000',
-    shadowOpacity: 0.1,
-    shadowOffset: {
-      height: 0,
-      width: 2,
-    },
-    shadowRadius: 13,
     overflow: 'hidden',
+    marginHorizontal: 24,
   },
   pillarsTileBackgroundContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
     height: 326,
   },
   pillarsTileLoadingIndicator: {

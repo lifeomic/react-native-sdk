@@ -44,12 +44,11 @@ export function TilesList({ styles: instanceStyles }: Props) {
       {pillarsTileEnabled && (
         <PillarsTile
           onOpenDetails={(tracker, valuesContext) => {
-            const screenName =
-              pillarSettings?.advancedScreenTrackers?.includes(
-                tracker.metricId || tracker.id,
-              ) || true
-                ? 'Home/AdvancedTrackerDetails'
-                : 'Home/TrackTile';
+            const screenName = pillarSettings?.advancedScreenTrackers?.includes(
+              tracker.metricId || tracker.id,
+            )
+              ? 'Home/AdvancedTrackerDetails'
+              : 'Home/TrackTile';
             navigate(screenName, {
               tracker,
               valuesContext,
