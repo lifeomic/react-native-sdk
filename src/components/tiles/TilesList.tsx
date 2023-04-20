@@ -11,6 +11,7 @@ import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { spacing } from '../BrandConfigProvider/theme/base';
 import { createStyles } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
+import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
 
 interface Props {
   styles?: TilesListStyles;
@@ -22,6 +23,8 @@ export function TilesList({ styles: instanceStyles }: Props) {
   const { appTileScreens } = useDeveloperConfig();
   const { data } = useAppConfig();
 
+  const pillarsTileEnabled = data?.homeTab?.tiles?.includes?.('pillarsTile');
+  const pillarSettings = data?.homeTab?.pillarSettings;
   const trackTileEnabled = data?.homeTab?.tiles?.includes?.('trackTile');
   const trackTileTitle = data?.homeTab?.trackTileSettings?.title;
 
@@ -38,6 +41,22 @@ export function TilesList({ styles: instanceStyles }: Props) {
 
   return (
     <ScrollView testID={tID('tiles-list')} style={styles.scrollView}>
+      {pillarsTileEnabled && (
+        <PillarsTile
+          onOpenDetails={(tracker, valuesContext) => {
+            const screenName =
+              pillarSettings?.advancedScreenTrackers?.includes(
+                tracker.metricId || tracker.id,
+              ) || true
+                ? 'Home/AdvancedTrackerDetails'
+                : 'Home/TrackTile';
+            navigate(screenName, {
+              tracker,
+              valuesContext,
+            });
+          }}
+        />
+      )}
       {trackTileEnabled && (
         <TrackTile
           onOpenSettings={(valuesContext) =>
