@@ -324,12 +324,12 @@ export const Pillar: FC<PillarProps> = (props) => {
   );
 };
 
-const defaultPillarWidth = 35;
+const defaultPillarWidth = 32;
 
 const defaultStyles = StyleSheet.create({
   pillarViewWrapper: {
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 2,
     width: defaultPillarWidth * 2,
   },
   pillarView: {
@@ -381,6 +381,7 @@ const defaultStyles = StyleSheet.create({
    * @property {string} color - Set to 'currentValue' to use the tracker's color
    */
   pillarIconGoalNotMet: {
-    color: 'white',
+    // TODO: use theme.colors.onSurfaceDisabled
+    color: 'rgba(25, 28, 29, 0.38)',
   },
 });
