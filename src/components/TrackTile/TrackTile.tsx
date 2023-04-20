@@ -58,6 +58,7 @@ export function TrackTile({
         titleStyle={styles.titleText}
         right={settingsButton}
         rightStyle={styles.settingsButton}
+        style={styles.title}
       />
       <Card.Content style={styles.content}>
         <TrackerRow
@@ -73,14 +74,16 @@ export function TrackTile({
 }
 
 const defaultStyles = createStyles('TrackTile', (theme) => ({
-  titleText: {
-    margin: theme.spacing.medium,
+  title: {
+    marginVertical: -8,
   },
+  titleText: {},
   card: {
     margin: theme.spacing.large,
   },
   settingsButton: {
     marginRight: theme.spacing.medium,
+    marginTop: -8,
   },
   content: {},
 }));

@@ -101,7 +101,7 @@ const defaultStyles = createStyles('Tracker', (theme) => ({
     textAlign: 'center',
   },
   tracker: {
-    marginBottom: 24,
+    marginBottom: 8,
     marginHorizontal: 10,
     alignItems: 'center',
     position: 'relative',

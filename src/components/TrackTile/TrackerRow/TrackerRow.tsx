@@ -89,7 +89,6 @@ const defaultStyles = createStyles('TrackerRowx', (theme) => ({
     minWidth: '100%',
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingHorizontal: theme.spacing.extraSmall,
   },
 }));
 
