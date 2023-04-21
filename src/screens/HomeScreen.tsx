@@ -1,7 +1,6 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { t } from 'i18next';
 import { HomeStackParamList } from '../navigators/HomeStack';
 import { useActiveAccount } from '../hooks/useActiveAccount';
@@ -37,14 +36,9 @@ export const HomeScreen = () => {
 
   return (
     <View style={styles.container} testID="home-screen">
-      <SafeAreaView>
-        <ScrollView
-          overScrollMode="always"
-          showsVerticalScrollIndicator={false}
-        >
-          <TilesList />
-        </ScrollView>
-      </SafeAreaView>
+      <ScrollView overScrollMode="always" showsVerticalScrollIndicator={false}>
+        <TilesList />
+      </ScrollView>
     </View>
   );
 };
