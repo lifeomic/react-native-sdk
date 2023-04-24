@@ -7,10 +7,6 @@ import {
   EHRType,
 } from './WearableTypes';
 import { sortBy } from 'lodash';
-import {
-  PlatformLifecycleHandlersProvider,
-  platformLifecycleHandlers,
-} from './PlatformLifecycleHandlersProvider';
 
 type Props = {
   children: React.ReactNode;
@@ -34,8 +30,10 @@ export const WearableLifecycleContext = React.createContext<{
 });
 
 const handlers: NativeWearableLifecycleHandler[] = [];
+const hooks: Function[] = [];
 
 export const registerWearableLifecycleHandlers = handlers.push.bind(handlers);
+export const registerWearableLifecycleHook = hooks.push.bind(hooks);
 export const deregisterWearableLifecycleHandlers = (
   ...handlersToRemove: NativeWearableLifecycleHandler[]
 ) => {
@@ -46,10 +44,23 @@ export const deregisterWearableLifecycleHandlers = (
     }
   });
 };
-
-registerWearableLifecycleHandlers(...platformLifecycleHandlers);
-
 export const WearableLifecycleProvider = ({ children }: Props) => {
+  if (__DEV__) {
+    // eslint-disable-next-line
+    const [initialHookLength] = React.useState(hooks.length);
+
+    if (initialHookLength !== hooks.length) {
+      throw new Error(
+        "[WearableLifecycleProvider]: Lifecycle hooks changed between renders. Call 'registerWearableLifecycleHook' as early as possible to prevent this error.",
+      );
+    }
+  }
+
+  for (const useCustomWearableLifeCycleHook of hooks) {
+    // eslint-disable-next-line
+    useCustomWearableLifeCycleHook();
+  }
+
   const onPreToggle = useCallback(
     async (wearable: WearableIntegration, enabled: boolean) => {
       await Promise.all(
@@ -138,9 +149,7 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
     <WearableLifecycleContext.Provider
       value={{ onPostToggle, onPreToggle, sanitizeEHRs }}
     >
-      <PlatformLifecycleHandlersProvider>
-        {children}
-      </PlatformLifecycleHandlersProvider>
+      {children}
     </WearableLifecycleContext.Provider>
   );
 };

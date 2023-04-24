@@ -4,7 +4,7 @@ import { WearablesView } from '../components/Wearables';
 import { useWearables } from '../hooks/useWearables';
 import { SyncTypeSettings } from '../components/Wearables/WearableTypes';
 import { getBundleId } from 'react-native-device-info';
-import { useWearableLifecycleHooks } from 'src/components/Wearables/WearableLifecycleProvider';
+import { useWearableLifecycleHooks } from '../components/Wearables/WearableLifecycleProvider';
 
 export const openURL = (url: string) => {
   Linking.openURL(url);

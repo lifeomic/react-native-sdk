@@ -5,3 +5,5 @@ export * from './WearableRow';
 export * from './WearablesView';
 export * from './SelectorRow';
 export * from './SelectorView';
+export * from './WearableLifecycleProvider';
+export * from './WearableTypes';

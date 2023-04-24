@@ -9,5 +9,10 @@ export function initializeI18Next() {
 }
 
 export const init = () => {
+  try {
+    require('../../../../../plugins');
+  } catch {
+    // No plugins enabled for app
+  }
   initializeI18Next();
 };
