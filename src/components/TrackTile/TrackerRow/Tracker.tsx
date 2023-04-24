@@ -14,6 +14,7 @@ import { numberFormatters } from '../formatters';
 import { SvgProps } from 'react-native-svg';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks/useStyles';
+import { useTheme } from '../../../hooks';
 
 type TrackerProps = TrackerType & {
   value?: number;
@@ -26,6 +27,7 @@ export function Tracker(tracker: TrackerProps) {
   const disabled = !isInstalled;
   const { styles: instanceStyles } = tracker;
   const { styles } = useStyles(defaultStyles, instanceStyles);
+  const theme = useTheme();
 
   const unit = getPreferredUnitType(tracker);
   const unitDisplay = unit?.display?.toLocaleLowerCase();
@@ -43,7 +45,7 @@ export function Tracker(tracker: TrackerProps) {
         <View style={styles.trackerProgressBarContainer}>
           <RadialProgress
             disabled={disabled}
-            color={tracker.color}
+            color={theme.colors.primary}
             target={tracker.target ?? 0}
             value={currentValue}
           />

@@ -5,43 +5,22 @@ import { useStyles } from '../../hooks/useStyles';
 import { createStyles } from '../BrandConfigProvider';
 import TileSelectIcon from './icons/tile-select-chevron.svg';
 import { SvgProps } from 'react-native-svg';
-import LinearGradient, {
-  LinearGradientProps,
-} from 'react-native-linear-gradient';
 import { tID } from '../../common/testID';
 
 interface TileProps {
   title: string;
-  chevronGradient?: LinearGradientProps;
   children?: React.ReactNode;
   Icon?: React.FC<SvgProps>;
   id?: string;
   onPress?: () => void;
   testID?: string;
-  tileGradient?: LinearGradientProps;
 }
-
-const defaultTileGradient: LinearGradientProps = {
-  colors: ['transparent', 'transparent'],
-  start: { x: 0.499, y: -0.2 },
-  end: { x: 0.511, y: 1 },
-  locations: [0, 1],
-};
-
-const defaultChevronGradient: LinearGradientProps = {
-  colors: ['#509BC5', '#4DC4AF'],
-  start: { x: -0.76, y: 0 },
-  end: { x: 1, y: 0 },
-  locations: [0, 1],
-};
 
 export const Tile = ({
   Icon,
   title,
   id,
   testID,
-  tileGradient = defaultTileGradient,
-  chevronGradient = defaultChevronGradient,
   children,
   onPress,
 }: TileProps) => {
@@ -53,33 +32,29 @@ export const Tile = ({
       testID={tID(`tile-button-${id}`)}
     >
       <View style={styles.container} id={id} testID={testID}>
-        <LinearGradient {...tileGradient} style={styles.gradient}>
-          <View style={styles.contentsWrapper}>
-            <View style={styles.contents}>
-              <View style={styles.iconContainer}>
-                {Icon && <Icon style={styles.icon} />}
-              </View>
-              <Text numberOfLines={2} style={styles.titleText}>
-                {title}
-              </Text>
-              {onPress ? (
-                <LinearGradient {...chevronGradient}>
-                  <View
-                    style={styles.arrowIconView}
-                    testID={tID('tile-chevron-icon-container')}
-                  >
-                    <TileSelectIcon
-                      height={styles.arrowImage?.height}
-                      color={styles.arrowImage?.overlayColor}
-                    />
-                  </View>
-                </LinearGradient>
-              ) : (
-                <View style={styles.arrowIconView} />
-              )}
+        <View style={styles.contentsWrapper}>
+          <View style={styles.contents}>
+            <View style={styles.iconContainer}>
+              {Icon && <Icon style={styles.icon} />}
             </View>
+            <Text numberOfLines={2} style={styles.titleText}>
+              {title}
+            </Text>
+            {onPress ? (
+              <View
+                style={styles.arrowIconView}
+                testID={tID('tile-chevron-icon-container')}
+              >
+                <TileSelectIcon
+                  height={styles.arrowImage?.height}
+                  color={styles.arrowImage?.overlayColor}
+                />
+              </View>
+            ) : (
+              <View style={styles.arrowIconView} />
+            )}
           </View>
-        </LinearGradient>
+        </View>
       </View>
       {children}
     </TouchableOpacity>
@@ -134,10 +109,11 @@ const defaultStyles = createStyles('Tile', (theme) => ({
     height: '100%',
     aspectRatio: 1,
     justifyContent: 'center',
+    backgroundColor: theme.colors.primary,
   },
   arrowImage: {
     height: '60%',
-    overlayColor: theme.colors.surface,
+    overlayColor: theme.colors.onPrimary,
   },
   gradient: {
     flex: 1,
