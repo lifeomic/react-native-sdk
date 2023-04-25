@@ -17,7 +17,6 @@ function App() {
         },
         simpleTheme: {
           primaryColor: '#fb5607',
-          accentColor: '#ffbe0b',
         },
       }}
     >

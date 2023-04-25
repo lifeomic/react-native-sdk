@@ -22,11 +22,10 @@ export function DeveloperConfigProvider({ developerConfig, children }: Props) {
 
   // simpleTheme expansion to theme prop
   if (developerConfig.simpleTheme) {
-    const { primaryColor, accentColor } = developerConfig.simpleTheme;
+    const { primaryColor } = developerConfig.simpleTheme;
     expandedDevConfig.theme = {
       colors: {
         primary: primaryColor,
-        primaryContainer: accentColor,
       },
     };
   }

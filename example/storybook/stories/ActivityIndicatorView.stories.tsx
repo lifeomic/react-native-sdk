@@ -1,21 +1,25 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { authConfig } from './OAuth.stories';
-import { DeveloperConfigProvider, RootProviders, RootStack } from 'src';
+import {
+  ActivityIndicatorView,
+  DeveloperConfigProvider,
+  RootProviders,
+} from 'src';
 import { withKnobs, color } from '@storybook/addon-knobs';
 
-storiesOf('Example App', module)
+storiesOf('ActivityIndicatorView', module)
   .addDecorator(withKnobs)
-  .add('DemoApp', () => (
+  .add('default', () => (
     <DeveloperConfigProvider
       developerConfig={{
         simpleTheme: {
-          primaryColor: color('primaryColor', '#fb5607'),
+          primaryColor: color('primaryColor', '#0477BF'),
         },
       }}
     >
       <RootProviders authConfig={authConfig}>
-        <RootStack />
+        <ActivityIndicatorView message="Timed out, is something wrong?" />
       </RootProviders>
     </DeveloperConfigProvider>
   ));
