@@ -11,6 +11,7 @@ import {
 import Paginator from './Paginator';
 import { convertToPreferredUnit } from '../../util/convert-value';
 import { Tracker, TrackerValuesContext } from '../../services/TrackTileService';
+import { useTheme } from '../../../../hooks';
 
 type DateRangeType = 'past7Days' | 'calendarWeek';
 
@@ -40,8 +41,9 @@ const getInitialRange = (dateRangeType: DateRangeType) => {
 };
 
 export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
+  const theme = useTheme();
   const { metricId, stepperPosition = 'top', tracker, valuesContext } = props;
-  const { variant, target, unit, color, dateRangeType = 'past7Days' } = props;
+  const { variant, target, unit, dateRangeType = 'past7Days' } = props;
   const [dateRange, setDateRange] = useState(getInitialRange(dateRangeType));
   const { loading, error, trackerValues } = useTrackerValues(
     valuesContext,
@@ -62,7 +64,11 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
   );
 
   const Stepper = (
-    <Paginator color={color} range={dateRange} onChangeRange={advanceDays} />
+    <Paginator
+      color={theme.colors.primary}
+      range={dateRange}
+      onChangeRange={advanceDays}
+    />
   );
 
   return (
@@ -70,7 +76,7 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
       {stepperPosition === 'top' && Stepper}
       <Chart
         variant={variant}
-        color={color}
+        color={theme.colors.primary}
         loading={loading}
         range={dateRange}
         target={target}
