@@ -115,9 +115,6 @@ const defaultStyles = createStyles('Tile', (theme) => ({
     height: '60%',
     overlayColor: theme.colors.onPrimary,
   },
-  gradient: {
-    flex: 1,
-  },
 }));
 
 declare module '@styles' {
