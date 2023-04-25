@@ -36,7 +36,6 @@ describe('with developerConfig injected into provider', () => {
   test('expands simpleTheme into theme prop', async () => {
     const simpleTheme = {
       primaryColor: '#000',
-      accentColor: '#fff',
     };
     const { result } = await renderHookInContext({
       simpleTheme,
@@ -44,7 +43,6 @@ describe('with developerConfig injected into provider', () => {
     expect(result.current.theme).toEqual({
       colors: {
         primary: simpleTheme.primaryColor,
-        primaryContainer: simpleTheme.accentColor,
       },
     });
   });

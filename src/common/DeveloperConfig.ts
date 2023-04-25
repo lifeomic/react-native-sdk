@@ -26,7 +26,6 @@ export type DeveloperConfig = {
 
 export type SimpleTheme = {
   primaryColor: string;
-  accentColor: string;
 };
 
 export type AppTileScreens = {

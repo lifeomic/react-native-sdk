@@ -61,7 +61,7 @@ export default function App() {
 }
 ```
 
-### Simple custom theme via two colors
+### Simple custom theme via one color
 
 ```typescript
 import React, { FC } from 'react';
@@ -74,7 +74,6 @@ export default function App() {
       developerConfig={{
         simpleTheme: {
           primaryColor: '#fb5607',
-          accentColor: '#ffbe0b',
         },
       }}
     >
