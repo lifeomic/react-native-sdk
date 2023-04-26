@@ -42,7 +42,6 @@ const WearablesScreen = () => {
   return (
     <View style={[styles.container]}>
       <WearablesView
-        enableMultiWearable={true}
         loading={isLoading}
         onRefreshNeeded={refetch}
         onShowLearnMore={openURL}

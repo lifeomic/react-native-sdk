@@ -4,7 +4,6 @@ import {
   NativeWearableLifecycleHandler,
   WearableIntegration,
   WearableIntegrationStatus,
-  EHRType,
 } from './WearableTypes';
 import { sortBy } from 'lodash';
 
@@ -20,7 +19,6 @@ export const WearableLifecycleContext = React.createContext<{
   onPostToggle: (wearable: WearableIntegration) => Promise<void>;
   sanitizeEHRs: (
     ehrs: WearableIntegration[],
-    enableMultiWearable?: boolean,
     legacySort?: boolean,
   ) => Promise<WearableIntegration[]>;
 }>({
@@ -77,16 +75,7 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
   }, []);
 
   const sanitizeEHRs = useCallback(
-    async (
-      ehrs: WearableIntegration[],
-      enableMultiWearable = true,
-      legacySort = false,
-    ) => {
-      const readoutHealthEHR = ehrs.find(
-        (i) => i.ehrType === EHRType.ReadoutHealth,
-      );
-      const ketoMojoEHR = ehrs.find((i) => i.ehrType === 'ketoMojo');
-
+    async (ehrs: WearableIntegration[], legacySort = false) => {
       let sanitizedEhrs = await handlers.reduce(
         async (awaitableEhrs, strategy) => {
           const currentEhrs = await awaitableEhrs;
@@ -95,35 +84,6 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
         },
         Promise.resolve(ehrs),
       );
-
-      if (!enableMultiWearable) {
-        // If any integrations are enabled, hide the others.
-        const enabledItems = sanitizedEhrs.filter((wearable) => {
-          return (
-            wearable.ehrType !== EHRType.ReadoutHealth &&
-            wearable.ehrType !== EHRType.KetoMojo &&
-            wearable.enabled &&
-            wearable.status === WearableIntegrationStatus.Syncing
-          );
-        });
-        if (enabledItems.length) {
-          sanitizedEhrs = enabledItems;
-        }
-
-        // Always display readoutHealth & ketoMojo, which are allowed to be on in addition to other integrations
-        if (
-          readoutHealthEHR &&
-          !sanitizedEhrs.find((w) => w.ehrId === readoutHealthEHR.ehrId)
-        ) {
-          sanitizedEhrs.push(readoutHealthEHR);
-        }
-        if (
-          ketoMojoEHR &&
-          !sanitizedEhrs.find((w) => w.ehrId === ketoMojoEHR.ehrId)
-        ) {
-          sanitizedEhrs.push(ketoMojoEHR);
-        }
-      }
 
       if (legacySort) {
         return sortBy(sanitizedEhrs, (item) => {
