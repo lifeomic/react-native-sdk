@@ -24,6 +24,21 @@ export const authConfig: AuthConfiguration = {
   usePKCE: true,
 };
 
+export const secondaryConfig: AuthConfiguration = {
+  clientId: Config.OAUTH_CLIENT_ID_SECONDARY!,
+  redirectUrl: Config.OAUTH_REDIRECT_URL_SECONDARY!,
+  serviceConfiguration: {
+    authorizationEndpoint: Config.OAUTH_AUTHORIZATION_ENDPOINT_SECONDARY!,
+    tokenEndpoint: Config.OAUTH_TOKEN_ENDPOINT_SECONDARY!,
+    revocationEndpoint: Config.OAUTH_REVOKE_ENDPOINT_SECONDARY!,
+  },
+  scopes: ['openid'],
+  usePKCE: true,
+};
+
+export const baseURL = Config.API_BASE_URL;
+export const secondaryBaseURL = Config.API_BASE_URL_SECONDARY;
+
 storiesOf('OAuth', module)
   .addDecorator((story) => <CenterView>{story()}</CenterView>)
 
