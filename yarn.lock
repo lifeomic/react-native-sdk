@@ -1520,10 +1520,10 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@lifeomic/chromicons-native@^2.14.0":
-  version "2.14.0"
-  resolved "https://registry.yarnpkg.com/@lifeomic/chromicons-native/-/chromicons-native-2.14.0.tgz#1be878c98e333931bf57b6b69f3629c2f4cdfbb2"
-  integrity sha512-WYUrZpsqvOeDga+3mhZ1jvVK+uKc5f6j3ksfAoCXz6r4AEDDW8CnEweTrgEbEtTJ6utcOar2Uiu5UerTVqJlyA==
+"@lifeomic/chromicons-native@^2.16.1":
+  version "2.16.1"
+  resolved "https://registry.yarnpkg.com/@lifeomic/chromicons-native/-/chromicons-native-2.16.1.tgz#38ab63666fba651e594d7f870aba66248d65d4b6"
+  integrity sha512-4W8iwe12juK0r30CcgxSOL0aZm4pwnZ2NBcNKytFjKLPKOc9Xhmls3skVmP6UBXzLLgOBIZlAj65LBEivqwnJA==
 
 "@lifeomic/eslint-plugin-i18next@^2.0.1":
   version "2.0.1"
