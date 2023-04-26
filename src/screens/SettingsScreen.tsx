@@ -12,7 +12,7 @@ import { SettingsStackParamList } from '../navigators/SettingsStack';
 import { useStyles } from '../hooks/useStyles';
 import { Theme, createStyles } from '../components/BrandConfigProvider';
 import { Text, Divider } from 'react-native-paper';
-import { ToggleEnvironmentMenuItem } from 'src/components/ToggleEnvironmentMenuItem';
+import { ToggleEnvironmentMenuItem } from '../components/ToggleEnvironmentMenuItem';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();

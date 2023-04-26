@@ -5,7 +5,7 @@ import { useOAuthFlow } from '../hooks/useOAuthFlow';
 import { createStyles } from './BrandConfigProvider';
 import { NativeEventEmitter, View } from 'react-native';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
-import { useAuth, useStyles } from 'src/hooks';
+import { useAuth, useStyles } from '../hooks';
 
 /*
     Test toggle used to switch to a secondary environment during runtime.
