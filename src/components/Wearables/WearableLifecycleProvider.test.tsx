@@ -61,18 +61,6 @@ const garmin = {
   ],
   syncTypes: [WearableStateSyncType.SleepAnalysis],
 };
-const googleFit = {
-  ehrId: EHRType.GoogleFit,
-  ehrType: EHRType.GoogleFit,
-  name: 'GoogleFit',
-  enabled: false,
-  supportedSyncTypes: [
-    WearableStateSyncType.BodyMass,
-    WearableStateSyncType.SleepAnalysis,
-    WearableStateSyncType.Workout,
-  ],
-  syncTypes: [WearableStateSyncType.SleepAnalysis],
-};
 
 const getEnabledWearable = (baseProps: any) => {
   return {
@@ -201,7 +189,6 @@ describe('WearableLifecycleProvider', () => {
 
       const result = await hook.current.sanitizeEHRs(
         [garmin, enabledKetoMojo, fitbitNeedsAuth, readoutWithNoSyncTypes],
-        true, // enableMultiWearable
         true, // legacySort param
       );
 
@@ -232,7 +219,6 @@ describe('WearableLifecycleProvider', () => {
 
       const result = await hook.current.sanitizeEHRs(
         [garmin, enabledKetoMojo, fitbitNeedsAuth, readoutWithNoSyncTypes],
-        true, // enableMultiWearable
         // missing legacySort param
       );
 
@@ -242,24 +228,6 @@ describe('WearableLifecycleProvider', () => {
         fitbitNeedsAuth,
         garmin,
         enabledKetoMojo,
-      ]);
-    });
-
-    it('with enableMultiWearable=false shows only enabled wearables and ketoMojo and readOut', async () => {
-      const { result: hook } = renderHookInContext();
-      const enabledEHRs = [fitbit, garmin].map(getEnabledWearable);
-      const otherEHRs = [googleFit];
-
-      const result = await hook.current.sanitizeEHRs(
-        [...enabledEHRs, readoutHealth, ketoMojo, ...otherEHRs],
-        false, // enableMultiWearable
-        // missing legacySort param
-      );
-
-      expect(result).toEqual([
-        readoutHealth, // "Biosense"
-        ...enabledEHRs,
-        ketoMojo,
       ]);
     });
   });

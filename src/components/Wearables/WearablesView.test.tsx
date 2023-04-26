@@ -60,6 +60,22 @@ const baseProps = {
 } as WearablesViewProps;
 
 describe('WearablesView', () => {
+  let multiBaseProps: any;
+  beforeEach(() => {
+    multiBaseProps = {
+      // We're about to mutate.. cloneDeep to not affect other tests
+      ...cloneDeep(baseProps),
+    };
+
+    // Make both fitbit and readoutHealth enabled:
+    multiBaseProps.wearables
+      .filter(
+        (w: WearableIntegration) =>
+          w.ehrType === EHRType.Fitbit || w.ehrType === EHRType.ReadoutHealth,
+      )
+      .forEach((w: WearableIntegration) => (w.enabled = true));
+  });
+
   it('should render wearable rows', async () => {
     const { getByLabelText, getByText } = await render(
       <WearablesView {...baseProps} />,
@@ -102,108 +118,88 @@ describe('WearablesView', () => {
     ).toBeDefined();
   });
 
-  describe('enableMultiWearable=true', () => {
-    let multiBaseProps: any;
-    beforeEach(() => {
-      multiBaseProps = {
-        enableMultiWearable: true,
+  it('should render wearable rows and source selection options', async () => {
+    const { getByText, getByLabelText } = render(
+      <WearablesView {...multiBaseProps} />,
+    );
 
-        // We're about to mutate.. cloneDeep to not affect other tests
-        ...cloneDeep(baseProps),
-      };
+    await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
 
-      // Make both fitbit and readoutHealth enabled:
-      multiBaseProps.wearables
-        .filter(
-          (w: WearableIntegration) =>
-            w.ehrType === EHRType.Fitbit || w.ehrType === EHRType.ReadoutHealth,
-        )
-        .forEach((w: WearableIntegration) => (w.enabled = true));
-    });
+    expect(getByLabelText('Fitbit - Activity')).toBeDefined();
+    expect(getByLabelText('Fitbit - Sleep')).toBeDefined();
 
-    it('should render wearable rows and source selection options', async () => {
-      const { getByText, getByLabelText } = render(
-        <WearablesView {...multiBaseProps} />,
-      );
+    expect(getByLabelText('Biosense - Breath Ketones')).toBeDefined();
 
-      await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
+    expect(getByText('Authorize')).toBeDefined();
 
-      expect(getByLabelText('Fitbit - Activity')).toBeDefined();
-      expect(getByLabelText('Fitbit - Sleep')).toBeDefined();
+    expect(getByLabelText('Toggle Fitbit')).toBeDefined();
+    expect(getByLabelText('Toggle Biosense')).toBeDefined();
+    expect(getByLabelText('Toggle Keto-Mojo')).toBeDefined();
+  });
 
-      expect(getByLabelText('Biosense - Breath Ketones')).toBeDefined();
+  it('should call onSyncTypeSelectionsUpdate when settings are updated', async () => {
+    const { getByText, getByLabelText } = render(
+      <WearablesView {...multiBaseProps} />,
+    );
+    await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
 
-      expect(getByText('Authorize')).toBeDefined();
+    // Step 1. Click selection that is already enabled
+    // and expect that onSyncTypeUpdate was not called
+    fireEvent.press(getByText('Sleep')); // Expand sleep section
+    const sleepSelection = getByLabelText('Fitbit');
+    expect(sleepSelection).toBeDefined();
+    fireEvent.press(sleepSelection); // and re-select Fitbit
+    fireEvent.press(getByText('Sleep')); // Collapse sleep section
+    expect(viewActions.onSyncTypeSelectionsUpdate).toHaveBeenCalledTimes(0);
 
-      expect(getByLabelText('Toggle Fitbit')).toBeDefined();
-      expect(getByLabelText('Toggle Biosense')).toBeDefined();
-      expect(getByLabelText('Toggle Keto-Mojo')).toBeDefined();
-    });
+    // Step 2. Make a new selection
+    // and expect that onSyncTypeUpdate was called
+    fireEvent.press(getByText('Glucose')); // Expand weight section
+    const glucoseSelection = getByLabelText('Keto-Mojo');
+    expect(glucoseSelection).toBeDefined();
+    fireEvent.press(glucoseSelection);
+    await waitFor(() =>
+      expect(viewActions.onSyncTypeSelectionsUpdate).toHaveBeenCalledTimes(1),
+    );
 
-    it('should call onSyncTypeSelectionsUpdate when settings are updated', async () => {
-      const { getByText, getByLabelText } = render(
-        <WearablesView {...multiBaseProps} />,
-      );
-      await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
+    expect(viewActions.onSyncTypeSelectionsUpdate.mock.calls[0]).toEqual([
+      {
+        bloodGlucose: 'ketoMojo',
+        bloodKetones: 'ketoMojo',
+        bodyMass: 'none',
+        breathKetones: 'readoutHealth',
+        sleepAnalysis: 'fitbit',
+        workout: 'fitbit',
+      },
+    ]);
+  });
 
-      // Step 1. Click selection that is already enabled
-      // and expect that onSyncTypeUpdate was not called
-      fireEvent.press(getByText('Sleep')); // Expand sleep section
-      const sleepSelection = getByLabelText('Fitbit');
-      expect(sleepSelection).toBeDefined();
-      fireEvent.press(sleepSelection); // and re-select Fitbit
-      fireEvent.press(getByText('Sleep')); // Collapse sleep section
-      expect(viewActions.onSyncTypeSelectionsUpdate).toHaveBeenCalledTimes(0);
+  it('should call onError if onSyncTypeSelectionsUpdate throws', async () => {
+    const error = new Error('api is down');
+    viewActions.onSyncTypeSelectionsUpdate.mockRejectedValue(error);
+    const { getByText, getByLabelText } = await render(
+      <WearablesView {...multiBaseProps} />,
+    );
 
-      // Step 2. Make a new selection
-      // and expect that onSyncTypeUpdate was called
-      fireEvent.press(getByText('Glucose')); // Expand weight section
-      const glucoseSelection = getByLabelText('Keto-Mojo');
-      expect(glucoseSelection).toBeDefined();
-      fireEvent.press(glucoseSelection);
-      await waitFor(() =>
-        expect(viewActions.onSyncTypeSelectionsUpdate).toHaveBeenCalledTimes(1),
-      );
+    await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
 
-      expect(viewActions.onSyncTypeSelectionsUpdate.mock.calls[0]).toEqual([
-        {
-          bloodGlucose: 'ketoMojo',
-          bloodKetones: 'ketoMojo',
-          bodyMass: 'none',
-          breathKetones: 'readoutHealth',
-          sleepAnalysis: 'fitbit',
-          workout: 'fitbit',
-        },
-      ]);
-    });
+    fireEvent.press(getByText('Sleep')); // Expand sleep section
+    const sleepSelection = getByLabelText('Fitbit');
+    expect(sleepSelection).toBeDefined();
+    fireEvent.press(sleepSelection); // and re-select Fitbit
+    fireEvent.press(getByText('Sleep')); // Collapse sleep section
 
-    it('should call onError if onSyncTypeSelectionsUpdate throws', async () => {
-      const error = new Error('api is down');
-      viewActions.onSyncTypeSelectionsUpdate.mockRejectedValue(error);
-      const { getByText, getByLabelText } = await render(
-        <WearablesView {...multiBaseProps} />,
-      );
+    fireEvent.press(getByText('Glucose')); // Expand weight section
+    const weightSelection = getByLabelText('Keto-Mojo');
+    expect(weightSelection).toBeDefined();
+    fireEvent.press(weightSelection);
+    await waitFor(() =>
+      expect(viewActions.onSyncTypeSelectionsUpdate).toHaveBeenCalledTimes(1),
+    );
 
-      await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
-
-      fireEvent.press(getByText('Sleep')); // Expand sleep section
-      const sleepSelection = getByLabelText('Fitbit');
-      expect(sleepSelection).toBeDefined();
-      fireEvent.press(sleepSelection); // and re-select Fitbit
-      fireEvent.press(getByText('Sleep')); // Collapse sleep section
-
-      fireEvent.press(getByText('Glucose')); // Expand weight section
-      const weightSelection = getByLabelText('Keto-Mojo');
-      expect(weightSelection).toBeDefined();
-      fireEvent.press(weightSelection);
-      await waitFor(() =>
-        expect(viewActions.onSyncTypeSelectionsUpdate).toHaveBeenCalledTimes(1),
-      );
-
-      await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
-      expect(viewActions.onSyncTypeSelectionsUpdate).toHaveBeenCalledTimes(1);
-      expect(viewActions.onError).toHaveBeenCalledTimes(1);
-      expect(viewActions.onError.mock.calls[0]).toEqual([error]);
-    });
+    await waitFor(() => expect(getByText('Data Sources')).toBeDefined());
+    expect(viewActions.onSyncTypeSelectionsUpdate).toHaveBeenCalledTimes(1);
+    expect(viewActions.onError).toHaveBeenCalledTimes(1);
+    expect(viewActions.onError.mock.calls[0]).toEqual([error]);
   });
 });

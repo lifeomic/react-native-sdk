@@ -16,12 +16,6 @@ import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 import { useWearableLifecycleHooks } from './WearableLifecycleProvider';
 
 export interface WearablesViewProps extends Omit<WearableRowProps, 'wearable'> {
-  /**
-   * enableMultiWearable will enable support for users enabling multiple,
-   * overlapping wearable integrations.  The user will need to choose which wearable
-   * should sync/contributre to each overlapping syncType (e.g. activity, mindfulness, sleep)
-   */
-  enableMultiWearable?: boolean;
   loading: boolean;
   onSyncTypeSelectionsUpdate: (
     settings: Record<WearableStateSyncType, string>,
@@ -46,7 +40,6 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
   const { sanitizeEHRs } = useWearableLifecycleHooks();
 
   const {
-    enableMultiWearable,
     loading: wearablesLoading,
     onError,
     onRefreshNeeded,
@@ -59,7 +52,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
 
   useEffect(() => {
     setSanitizing(true);
-    sanitizeEHRs(wearables, enableMultiWearable, legacySort)
+    sanitizeEHRs(wearables, legacySort)
       .then((result) => {
         setSanitizedWearables(result);
         setSanitizing(false);
@@ -70,7 +63,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
         }
         setSanitizing(false);
       });
-  }, [enableMultiWearable, legacySort, onError, wearables, sanitizeEHRs]);
+  }, [legacySort, onError, wearables, sanitizeEHRs]);
 
   const updateSyncTypeSelections = useCallback(
     async (settings: SyncTypeSettings) => {
@@ -87,9 +80,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
 
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const loading = wearablesLoading || sanitizing;
-  const showSyncTypeSelections =
-    enableMultiWearable &&
-    sanitizedWearables.filter((w) => w.enabled).length > 0;
+  const showSyncTypeSelections = sanitizedWearables.some((w) => w.enabled);
 
   return (
     <ScrollView style={styles.container} testID="wearables-screen-container">
