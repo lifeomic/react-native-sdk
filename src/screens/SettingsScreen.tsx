@@ -47,7 +47,7 @@ export const SettingsScreen = () => {
             action={() => navigate('Settings/Wearables')}
           />
           <Divider />
-          {__DEV__ && (
+          {__DEV__ && process.env.NODE_ENV !== 'test' && (
             <>
               <ToggleEnvironmentMenuItem />
               <Divider />
