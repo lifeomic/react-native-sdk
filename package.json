@@ -104,7 +104,7 @@
     "react-query": ">=3.39.3"
   },
   "dependencies": {
-    "@lifeomic/chromicons-native": "^2.14.0",
+    "@lifeomic/chromicons-native": "^2.16.1",
     "@types/fhir": "^0.0.36",
     "d3-scale": "3.2.1",
     "date-fns": "^2.29.3",
