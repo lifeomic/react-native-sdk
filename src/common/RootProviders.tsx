@@ -14,6 +14,7 @@ import { NoInternetToastProvider } from '../hooks/NoInternetToastProvider';
 import { BrandConfigProvider } from '../components/BrandConfigProvider';
 import { TrackTileProvider } from '../components/TrackTile/TrackTileProvider';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
+import { WearableLifecycleProvider } from '../components/Wearables/WearableLifecycleProvider';
 
 const queryClient = new QueryClient();
 
@@ -35,16 +36,18 @@ export function RootProviders({
               <ActiveAccountContextProvider>
                 <ActiveProjectContextProvider>
                   <TrackTileProvider>
-                    <BrandConfigProvider theme={theme}>
-                      <NoInternetToastProvider>
-                        <SafeAreaProvider>
-                          <ThemedNavigationContainer>
-                            {children}
-                          </ThemedNavigationContainer>
-                          <Toast />
-                        </SafeAreaProvider>
-                      </NoInternetToastProvider>
-                    </BrandConfigProvider>
+                    <WearableLifecycleProvider>
+                      <BrandConfigProvider theme={theme}>
+                        <NoInternetToastProvider>
+                          <SafeAreaProvider>
+                            <ThemedNavigationContainer>
+                              {children}
+                            </ThemedNavigationContainer>
+                            <Toast />
+                          </SafeAreaProvider>
+                        </NoInternetToastProvider>
+                      </BrandConfigProvider>
+                    </WearableLifecycleProvider>
                   </TrackTileProvider>
                 </ActiveProjectContextProvider>
               </ActiveAccountContextProvider>

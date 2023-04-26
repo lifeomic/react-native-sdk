@@ -1,11 +1,7 @@
 import React from 'react';
 import { waitFor, render, fireEvent } from '@testing-library/react-native';
 import cloneDeep from 'lodash/cloneDeep';
-import {
-  sanitizeWearables,
-  WearablesView,
-  WearablesViewProps,
-} from './WearablesView';
+import { WearablesView, WearablesViewProps } from './WearablesView';
 import {
   WearableIntegration,
   WearableIntegrationStatus,
@@ -46,26 +42,6 @@ const ketoMojo = {
     WearableStateSyncType.BloodKetones,
   ],
   syncTypes: [WearableStateSyncType.BloodKetones],
-};
-const garmin = {
-  ehrId: EHRType.Garmin,
-  ehrType: EHRType.Garmin,
-  name: 'Garmin',
-  enabled: false,
-  supportedSyncTypes: [
-    WearableStateSyncType.BodyMass,
-    WearableStateSyncType.SleepAnalysis,
-    WearableStateSyncType.Workout,
-  ],
-  syncTypes: [WearableStateSyncType.SleepAnalysis],
-};
-
-const getEnabledWearable = (baseProps: any) => {
-  return {
-    ...baseProps,
-    enabled: true,
-    status: WearableIntegrationStatus.Syncing,
-  };
 };
 
 const viewActions = {
@@ -229,97 +205,5 @@ describe('WearablesView', () => {
       expect(viewActions.onError).toHaveBeenCalledTimes(1);
       expect(viewActions.onError.mock.calls[0]).toEqual([error]);
     });
-  });
-});
-
-describe('sanitizeWearables', () => {
-  it('always shows readoutHealth', async () => {
-    const result = await sanitizeWearables([
-      getEnabledWearable(fitbit),
-      readoutHealth,
-    ]);
-
-    expect(result).toEqual([readoutHealth, getEnabledWearable(fitbit)]);
-  });
-
-  it('always shows ketoMojo', async () => {
-    const result = await sanitizeWearables([
-      getEnabledWearable(fitbit),
-      ketoMojo,
-    ]);
-
-    expect(result).toEqual([getEnabledWearable(fitbit), ketoMojo]);
-  });
-
-  it('shows other wearables when only readoutHealth is enabled', async () => {
-    const result = await sanitizeWearables([
-      getEnabledWearable(readoutHealth),
-      fitbit,
-    ]);
-
-    expect(result).toEqual([getEnabledWearable(readoutHealth), fitbit]);
-  });
-
-  it('shows other wearables when only ketoMojo is enabled', async () => {
-    const result = await sanitizeWearables([
-      getEnabledWearable(ketoMojo),
-      fitbit,
-    ]);
-
-    expect(result).toEqual([fitbit, getEnabledWearable(ketoMojo)]);
-  });
-
-  it('if legacySort=true, sorts wearables by attention-needed, enabled, then alphabetical', async () => {
-    const enabledKetoMojo = getEnabledWearable(ketoMojo);
-    const fitbitNeedsAuth = {
-      ...fitbit,
-      status: WearableIntegrationStatus.NeedsAuthorization,
-    };
-    const readoutWithNoSyncTypes = {
-      ...readoutHealth,
-      syncTypes: [],
-    };
-    const result = await sanitizeWearables(
-      [garmin, enabledKetoMojo, fitbitNeedsAuth, readoutWithNoSyncTypes],
-      true, // enableMultiWearable
-      true, // legacySort param
-    );
-
-    expect(result).toEqual([
-      // Needs attention brought to the top:
-      readoutWithNoSyncTypes,
-      fitbitNeedsAuth,
-
-      // Next comes enabled wearables:
-      enabledKetoMojo,
-
-      // Then sort alphabetical:
-      garmin,
-    ]);
-  });
-
-  it('without legacySort, sorts wearables only by name', async () => {
-    const enabledKetoMojo = getEnabledWearable(ketoMojo);
-    const fitbitNeedsAuth = {
-      ...fitbit,
-      status: WearableIntegrationStatus.NeedsAuthorization,
-    };
-    const readoutWithNoSyncTypes = {
-      ...readoutHealth,
-      syncTypes: [],
-    };
-    const result = await sanitizeWearables(
-      [garmin, enabledKetoMojo, fitbitNeedsAuth, readoutWithNoSyncTypes],
-      true, // enableMultiWearable
-      // missing legacySort param
-    );
-
-    expect(result).toEqual([
-      // All alphabetical, regardless of enabled & issue:
-      readoutWithNoSyncTypes, // "Biosense"
-      fitbitNeedsAuth,
-      garmin,
-      enabledKetoMojo,
-    ]);
   });
 });

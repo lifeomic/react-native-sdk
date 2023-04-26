@@ -4,6 +4,7 @@ import { WearablesView } from '../components/Wearables';
 import { useWearables } from '../hooks/useWearables';
 import { SyncTypeSettings } from '../components/Wearables/WearableTypes';
 import { getBundleId } from 'react-native-device-info';
+import { useWearableLifecycleHooks } from '../components/Wearables/WearableLifecycleProvider';
 
 export const openURL = (url: string) => {
   Linking.openURL(url);
@@ -13,20 +14,25 @@ const WearablesScreen = () => {
   const { setWearableState, setSyncTypes, useWearableIntegrationsQuery } =
     useWearables();
   const { data, refetch, isLoading } = useWearableIntegrationsQuery();
+  const { onPostToggle } = useWearableLifecycleHooks();
 
   const wearables = data?.items || [];
 
   const toggleWearable = useCallback(
     async (ehrId: string, enabled: boolean) => {
-      return setWearableState({
+      const result = await setWearableState({
         ehrId,
         enabled,
         meta: {
           appId: getBundleId().toLocaleLowerCase(),
         },
       });
+
+      await onPostToggle(result);
+
+      return result;
     },
-    [setWearableState],
+    [setWearableState, onPostToggle],
   );
 
   const updateSyncTypeSettings = async (settings: SyncTypeSettings) => {

@@ -29,6 +29,8 @@ import { ToggleButton } from './ToggleButton';
 import { t } from 'i18next';
 import { createStyles } from '../BrandConfigProvider';
 import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
+import { useWearableLifecycleHooks } from './WearableLifecycleProvider';
+import AppleHealth from './icons/vendorIcons/AppleHealth';
 
 export interface WearableRowProps {
   switchProps?: SwitchProps;
@@ -71,6 +73,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
   } = props;
 
   const { styles } = useStyles(defaultStyles, instanceStyles);
+  const { onPreToggle } = useWearableLifecycleHooks();
 
   const _onShowLearnMore = useCallback(
     (link: string) => () => {
@@ -90,6 +93,9 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
     async (wearable: WearableIntegration, enabled: boolean) => {
       try {
         LayoutAnimation.easeInEaseOut();
+
+        await onPreToggle(wearable, enabled);
+
         const result = await onToggleWearable(wearable.ehrId, enabled);
         if (result.authorizationUrl) {
           onShowWearableAuth(result.authorizationUrl);
@@ -102,7 +108,13 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
         onRefreshNeeded();
       }
     },
-    [onToggleWearable, onShowWearableAuth, onRefreshNeeded, onError],
+    [
+      onToggleWearable,
+      onShowWearableAuth,
+      onRefreshNeeded,
+      onError,
+      onPreToggle,
+    ],
   );
 
   const toggleBackgroundSync = useCallback(
@@ -135,6 +147,17 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
         'Connecting {{wearableName}} allows you to sync data like {{supportedSyncTypes}}. You can disconnect from {{wearableName}} at any time from this screen.';
 
       switch (wearable.ehrType) {
+        case EHRType.HealthKit: {
+          // See https://developer.apple.com/design/human-interface-guidelines/healthkit/overview/
+          intro = t(standard, {
+            wearableName: wearable.name,
+            supportedSyncTypes: t(
+              'weight-sleep-activity-mindful-glucose',
+              'weight, sleep, activity, mindful minutes, and blood glucose',
+            ),
+          });
+          break;
+        }
         case EHRType.ReadoutHealth: {
           intro = t(standard, {
             wearableName: wearable.name,
@@ -212,6 +235,14 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
       let link: string | undefined;
 
       switch (enabledWearable.ehrType) {
+        case EHRType.HealthKit: {
+          description = t(
+            'apple-learnmore',
+            'Apple Health records will sync each time you open the app.',
+          );
+          link = 'https://lifeapps.io/ia/wearables-sync-apple-health/';
+          break;
+        }
         case EHRType.Fitbit: {
           description = t(
             'fitbit-learnmore',
@@ -408,6 +439,8 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
 
   const getIcon = useCallback((ehrType: string) => {
     switch (ehrType) {
+      case EHRType.HealthKit:
+        return <AppleHealth />;
       case EHRType.Dexcom:
         return <Dexcom />;
       case EHRType.Fitbit:

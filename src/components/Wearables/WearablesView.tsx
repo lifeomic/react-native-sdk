@@ -6,18 +6,14 @@ import {
   Text,
   View,
 } from 'react-native';
-import sortBy from 'lodash/sortBy';
-import {
-  SyncTypeSettings,
-  WearableIntegration,
-  WearableIntegrationStatus,
-} from './WearableTypes';
-import { EHRType, WearableStateSyncType } from './WearableTypes';
+import { SyncTypeSettings, WearableIntegration } from './WearableTypes';
+import { WearableStateSyncType } from './WearableTypes';
 import { WearableRow, WearableRowProps } from './WearableRow';
 import { SyncTypeSelectionView } from './SyncTypeSelectionView';
 import { t } from 'i18next';
 import { createStyles } from '../BrandConfigProvider';
 import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
+import { useWearableLifecycleHooks } from './WearableLifecycleProvider';
 
 export interface WearablesViewProps extends Omit<WearableRowProps, 'wearable'> {
   /**
@@ -47,6 +43,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
     WearableIntegration[]
   >([]);
   const [sanitizing, setSanitizing] = useState(false);
+  const { sanitizeEHRs } = useWearableLifecycleHooks();
 
   const {
     enableMultiWearable,
@@ -62,7 +59,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
 
   useEffect(() => {
     setSanitizing(true);
-    sanitizeWearables(wearables, enableMultiWearable, legacySort)
+    sanitizeEHRs(wearables, enableMultiWearable, legacySort)
       .then((result) => {
         setSanitizedWearables(result);
         setSanitizing(false);
@@ -73,7 +70,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
         }
         setSanitizing(false);
       });
-  }, [enableMultiWearable, legacySort, onError, wearables]);
+  }, [enableMultiWearable, legacySort, onError, wearables, sanitizeEHRs]);
 
   const updateSyncTypeSelections = useCallback(
     async (settings: SyncTypeSettings) => {
@@ -140,69 +137,6 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
       ))}
     </ScrollView>
   );
-};
-
-/**
- * If writing your own version of WearablesView, make sure to
- * utilize this sanitization function which includes business
- * logic around only one wearable being enabled at a time.
- */
-export const sanitizeWearables = async (
-  wearables: WearableIntegration[],
-  enableMultiWearable?: boolean,
-  legacySort?: boolean,
-) => {
-  let resultItems = [...wearables];
-  const readoutHealthEHR = wearables.find(
-    (i) => i.ehrType === EHRType.ReadoutHealth,
-  );
-  const ketoMojoEHR = resultItems.find((i) => i.ehrType === 'ketoMojo');
-
-  if (!enableMultiWearable) {
-    // If any integrations are enabled, hide the others.
-    const enabledItems = resultItems.filter((wearable) => {
-      return (
-        wearable.ehrType !== EHRType.ReadoutHealth &&
-        wearable.ehrType !== EHRType.KetoMojo &&
-        wearable.enabled &&
-        wearable.status === WearableIntegrationStatus.Syncing
-      );
-    });
-    if (enabledItems.length) {
-      resultItems = enabledItems;
-    }
-
-    // Always display readoutHealth & ketoMojo, which are allowed to be on in addition to other integrations
-    if (
-      readoutHealthEHR &&
-      !resultItems.find((w) => w.ehrId === readoutHealthEHR.ehrId)
-    ) {
-      resultItems.push(readoutHealthEHR);
-    }
-    if (
-      ketoMojoEHR &&
-      !resultItems.find((w) => w.ehrId === ketoMojoEHR.ehrId)
-    ) {
-      resultItems.push(ketoMojoEHR);
-    }
-  }
-
-  if (legacySort) {
-    return sortBy(resultItems, (item) => {
-      const needsAttentionFlag =
-        item.status === WearableIntegrationStatus.NeedsAuthorization ||
-        item.syncTypes?.length === 0
-          ? '0'
-          : '1';
-      const enabledFlag = item.enabled ? '0' : '1';
-      const name = item.name;
-
-      // NOTE: Sort by attention needed, enabled, then name (alphabetically):
-      return `${needsAttentionFlag}${enabledFlag}${name}`;
-    });
-  }
-
-  return sortBy(resultItems, (item) => item.name?.toLocaleLowerCase());
 };
 
 const defaultStyles = createStyles('WearablesView', (theme) => ({

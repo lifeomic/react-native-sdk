@@ -6,6 +6,7 @@ export enum EHRType {
   Oura = 'oura',
   ReadoutHealth = 'readoutHealth',
   GoogleFit = 'googleFit',
+  HealthKit = 'healthKit',
 }
 
 export enum WearableStateSyncType {
@@ -14,10 +15,12 @@ export enum WearableStateSyncType {
   LeanBodyMass = 'leanBodyMass',
   BodyFatPercentage = 'bodyFatPercentage',
   WaistCircumference = 'waistCircumference',
+  BodyMassIndex = 'bodyMassIndex',
 
   // Fitness
   ActiveEnergyBurned = 'activeEnergyBurned',
   BasalEnergyBurned = 'basalEnergyBurned',
+  CaloriesBurned = 'caloriesBurned',
   StepCount = 'stepCount',
   DistanceWalkingRunning = 'distanceWalkingRunning',
   DistanceCycling = 'distanceCycling',
@@ -28,6 +31,7 @@ export enum WearableStateSyncType {
   // Vital signs
   BloodPressure = 'bloodPressure',
   HeartRate = 'heartRate',
+  HeartRateVariability = 'heartRateVariability',
   RestingHeartRate = 'restingHeartRate',
   RespiratoryRate = 'respiratoryRate',
 
@@ -84,4 +88,10 @@ export interface WearableIntegrationConfig {
 
 export interface WearablesSyncState {
   items: WearableIntegration[];
+}
+
+export interface NativeWearableLifecycleHandler {
+  preToggle?(wearable: WearableIntegration, enabled: boolean): Promise<void>;
+  postToggle?(wearable: WearableIntegration): Promise<void>;
+  sanitizeEHRs?(ehrs: WearableIntegration[]): Promise<WearableIntegration[]>;
 }
