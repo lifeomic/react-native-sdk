@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   authConfig,
   baseURL,
@@ -7,38 +7,14 @@ import {
 } from './storybook/stories/OAuth.stories';
 import { DeveloperConfigProvider, RootProviders, RootStack } from '../src';
 import { FhirExampleScreen } from './src/screens/FhirExampleScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NativeEventEmitter } from 'react-native';
+import { useEnvironmentToggle } from '../src/hooks';
 
 if (__DEV__) {
   import('./reactotron').then(() => console.log('Reactotron Configured'));
 }
 
 function App() {
-  const [usePrimaryEnv, setUsePrimaryEnv] = useState(true);
-
-  useEffect(() => {
-    const eventEmitter = new NativeEventEmitter({
-      addListener: () => {},
-      removeListeners: () => {},
-    });
-
-    const subscription = eventEmitter.addListener('environmentToggle', () => {
-      setUsePrimaryEnv((val) => !val);
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const storedEnv =
-        (await AsyncStorage.getItem('environment-toggle')) ?? 'primary';
-      setUsePrimaryEnv(storedEnv === 'primary');
-    })();
-  }, []);
+  const usePrimaryEnv = useEnvironmentToggle();
 
   return (
     <DeveloperConfigProvider
