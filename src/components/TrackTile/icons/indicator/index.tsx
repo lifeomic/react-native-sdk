@@ -5,7 +5,10 @@ import {
   Alcohol,
   Apple,
   BookOpen,
+  Broccoli,
   Burger,
+  Check,
+  Chroma,
   ClockForward,
   Droplet,
   Floss,
@@ -22,7 +25,7 @@ import {
   Soda,
   Star,
   Steps,
-  Chroma,
+  Target,
 } from '@lifeomic/chromicons-native';
 
 type IndicatorProps = {
@@ -56,10 +59,13 @@ const Indicator = ({
       {(!!CustomIcon && <CustomIcon {...svgProps} />) ||
         ({
           apple: <Apple {...svgProps} />,
+          'broccoli': <Broccoli {...svgProps} />,
           'book-open': <BookOpen {...svgProps} />,
+          'check': <Check {...svgProps} />,
           chroma: <Chroma {...svgProps} />,
           'clock-forward': <ClockForward {...svgProps} />,
           cocktail: <Alcohol {...svgProps} />,
+          droplet: <Droplet {...svgProps} />,
           'fast-food': <Burger {...svgProps} />,
           flossing: <Floss {...svgProps} />,
           heart: <Heart {...svgProps} />,
@@ -73,6 +79,7 @@ const Indicator = ({
           smile: <Smile {...svgProps} />,
           soda: <Soda {...svgProps} />,
           star: <Star {...svgProps} />,
+          target: <Target {...svgProps} />,
           walking: <Steps {...svgProps} />,
           water: <Droplet {...svgProps} />,
         }[name] ?? <Helix {...svgProps} />)}
