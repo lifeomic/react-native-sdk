@@ -46,7 +46,11 @@ export function RootStack() {
   return (
     <Stack.Navigator>
       <Stack.Group>
-        <Stack.Screen name="screens/LoginScreen" component={LoginScreen} />
+        <Stack.Screen
+          name="screens/LoginScreen"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
       </Stack.Group>
     </Stack.Navigator>
   );
