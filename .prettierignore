@@ -12,3 +12,4 @@ index.js
 .idea
 *.config.js
 dist
+lib/i18n/locales
