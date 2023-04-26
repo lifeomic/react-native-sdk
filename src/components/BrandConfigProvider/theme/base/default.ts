@@ -4,6 +4,9 @@
  * The base color scheme uses a popular design system to
  * dynamically generate all color tokens from the HTML color:
  * "gray" - #808080	- rgb(128,128,128)
+ *
+ * We are also using this file as a test fixture to make sure
+ * the generateColors function works perfectly.
  */
 export const colors = {
   primary: 'rgb(0, 104, 116)',
