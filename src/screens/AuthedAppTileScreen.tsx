@@ -48,7 +48,6 @@ export const AuthedAppTileScreen = ({ navigation, route }: Props) => {
       parsed.code = data.code;
     }
 
-    // These params will only be needed for LifeOmic app tiles
     if (account?.id) {
       parsed.accountId = account.id;
     }
