@@ -45,7 +45,7 @@ export function Tracker(tracker: TrackerProps) {
         <View style={styles.trackerProgressBarContainer}>
           <RadialProgress
             disabled={disabled}
-            color={theme.colors.primary}
+            color={theme.colors.primarySource}
             target={tracker.target ?? 0}
             value={currentValue}
           />

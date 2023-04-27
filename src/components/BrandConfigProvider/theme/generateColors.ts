@@ -15,6 +15,7 @@ export function generateColors(color: string) {
   const surfaceColors = prepareSurfaceColors(colorTheme, theme.palettes);
 
   return {
+    primarySource: Color(theme.source).rgb().string(),
     ...mainColors,
     elevation,
     ...surfaceColors,
