@@ -10,6 +10,9 @@ export interface AppTile {
     url: string;
   };
   icon?: string;
+  clientId?: string;
+  scope?: string;
+  callbackUrls?: string[];
 }
 
 type Tile = 'todayTile' | 'trackTile' | 'pillarsTile';

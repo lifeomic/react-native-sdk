@@ -32,6 +32,8 @@ export function TilesList({ styles: instanceStyles }: Props) {
     (appTile: AppTile) => () => {
       if (getCustomAppTileComponent(appTileScreens, appTile)) {
         navigate('Home/CustomAppTile', { appTile });
+      } else if (appTile.clientId) {
+        navigate('Home/AuthedAppTile', { appTile });
       } else {
         navigate('Home/AppTile', { appTile });
       }

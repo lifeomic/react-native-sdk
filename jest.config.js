@@ -39,6 +39,6 @@ module.exports = {
     },
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?@?react-native)',
+    'node_modules/(?!(jest-)?@?react-native|query-string|decode-uri-component|split-on-first|filter-obj)',
   ]
 };

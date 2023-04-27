@@ -22,10 +22,12 @@ import {
   HeaderButtons,
   Item,
 } from 'react-navigation-header-buttons';
+import { AuthedAppTileScreen } from '../screens/AuthedAppTileScreen';
 
 export type HomeStackParamList = {
   Home: undefined;
   'Home/AppTile': { appTile: AppTile };
+  'Home/AuthedAppTile': { appTile: AppTile };
   'Home/CustomAppTile': { appTile: AppTile };
   'Home/TrackTile': { tracker: any; valuesContext: any };
   'Home/TrackTileSettings': {
@@ -53,6 +55,7 @@ export function HomeStack() {
     >
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Home/AppTile" component={AppTileScreen} />
+      <Stack.Screen name="Home/AuthedAppTile" component={AuthedAppTileScreen} />
       <Stack.Screen name="Home/CustomAppTile" component={CustomAppTileScreen} />
       <Stack.Screen name="Home/TrackTile" component={TrackTileTrackerScreen} />
       <Stack.Screen

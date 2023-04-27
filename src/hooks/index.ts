@@ -7,6 +7,7 @@ export * from './useAuth';
 export * from './useCurrentAppState';
 export * from './useDeveloperConfig';
 export * from './useEnvironmentToggle';
+export * from './useExchangeToken';
 export * from './useFhirClient';
 export * from './useHttpClient';
 export * from './useMe';
