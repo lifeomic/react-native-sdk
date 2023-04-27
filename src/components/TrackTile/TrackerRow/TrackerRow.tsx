@@ -6,7 +6,6 @@ import {
   View,
 } from 'react-native';
 import { SvgProps } from 'react-native-svg';
-import { convertToPreferredUnit } from '../util/convert-value';
 import { tID } from '../common/testID';
 import {
   Tracker as TrackerType,
@@ -64,13 +63,12 @@ export function TrackerRow(props: TrackerRowProps) {
             <Tracker
               {...tracker}
               icons={icons}
-              value={convertToPreferredUnit(
+              value={
                 values[tracker.metricId ?? '']?.reduce(
                   (total, { value }) => total + value,
                   0,
-                ) ?? 0,
-                tracker,
-              )}
+                ) ?? 0
+              }
             />
           </TouchableOpacity>
         ))}
@@ -78,7 +76,7 @@ export function TrackerRow(props: TrackerRowProps) {
   );
 }
 
-const defaultStyles = createStyles('TrackerRowx', (theme) => ({
+const defaultStyles = createStyles('TrackerRow', (theme) => ({
   trackerRowLoadingIndicator: {
     height: 131,
     paddingHorizontal: theme.spacing.medium,
