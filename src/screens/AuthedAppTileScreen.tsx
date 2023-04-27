@@ -4,6 +4,7 @@ import { HomeStackParamList } from '../navigators/HomeStack';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useActiveAccount, useActiveProject, useExchangeToken } from '../hooks';
 import queryString from 'query-string';
+import { ActivityIndicator } from 'react-native-paper';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home/AuthedAppTile'>;
 
@@ -37,6 +38,7 @@ export const AuthedAppTileScreen = ({ navigation, route }: Props) => {
   const isLoading = loadingCode || loadingAccounts || loadingProject;
   const isFetched = codeFetched && accountFetched && projectedFetched;
   const hasData = data?.code && account?.id && activeProject?.id;
+
   const readyToBuildUri = isFetched && !isLoading && hasData;
 
   const isLifeOmicHosted = appTile.scope === 'PUBLIC';
@@ -44,12 +46,19 @@ export const AuthedAppTileScreen = ({ navigation, route }: Props) => {
 
   const buildUri = useCallback(() => {
     const parsed = queryString.parse('');
-    parsed.code = data!.code;
+    if (data?.code) {
+      parsed.code = data.code;
+    }
 
     // These params will only be needed for LifeOmic app tiles
     if (isLifeOmicHosted) {
-      parsed.accountId = account!.id;
-      parsed.projectId = activeProject!.id;
+      if (account?.id) {
+        parsed.accountId = account.id;
+      }
+
+      if (activeProject?.id) {
+        parsed.projectId = activeProject.id;
+      }
     }
 
     return `${oauthCallbackUrl}?${queryString.stringify(parsed)}`;
@@ -57,7 +66,7 @@ export const AuthedAppTileScreen = ({ navigation, route }: Props) => {
 
   // Do not proceed until all queries have resolved
   if (!readyToBuildUri) {
-    return null;
+    return <ActivityIndicator animating={true} />;
   }
 
   const source = {
