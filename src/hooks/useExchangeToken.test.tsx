@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { useHttpClient } from './useHttpClient';
-import { useUser } from './useUser';
 import { useAuth } from './useAuth';
 import { ExchangeResult, useExchangeToken } from './useExchangeToken';
 
@@ -32,7 +31,6 @@ jest.mock('./useAuth', () => ({
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useHttpClientMock = useHttpClient as jest.Mock;
-const useUserMock = useUser as jest.Mock;
 const useAuthMock = useAuth as jest.Mock;
 
 const renderHookInContext = async () => {
@@ -51,14 +49,6 @@ beforeEach(() => {
     accountHeaders: { 'LifeOmic-Account': 'acct1' },
   });
   useHttpClientMock.mockReturnValue({ httpClient: axiosInstance });
-  useUserMock.mockReturnValue({
-    data: {
-      id: 'userId',
-      profile: {},
-    },
-    isLoading: false,
-    isFetched: true,
-  });
   useAuthMock.mockReturnValue({
     authResult: {
       accessToken: 'someToken',
