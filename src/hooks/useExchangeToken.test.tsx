@@ -66,14 +66,12 @@ beforeEach(() => {
   });
 });
 
-test('fetches and parses $me', async () => {
+test('posts token/clientId to /v1/client-tokens', async () => {
   axiosMock.onPost('/v1/client-tokens').reply<ExchangeResult>(200, {
     code: 'some-code',
   });
   const { result } = await renderHookInContext();
   await waitFor(() => result.current.isSuccess === true);
-  console.log(result.current);
-  console.log(axiosMock.history.post);
   expect(axiosMock.history.post[0].url).toBe('/v1/client-tokens');
   expect(axiosMock.history.post[0].data).toBe(
     JSON.stringify({

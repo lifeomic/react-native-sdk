@@ -40,8 +40,6 @@ export const AuthedAppTileScreen = ({ navigation, route }: Props) => {
   const hasData = data?.code && account?.id && activeProject?.id;
 
   const readyToBuildUri = isFetched && !isLoading && hasData;
-
-  const isLifeOmicHosted = appTile.scope === 'PUBLIC';
   const oauthCallbackUrl = appTile.callbackUrls?.[0]!;
 
   const buildUri = useCallback(() => {
@@ -51,18 +49,15 @@ export const AuthedAppTileScreen = ({ navigation, route }: Props) => {
     }
 
     // These params will only be needed for LifeOmic app tiles
-    if (isLifeOmicHosted) {
-      if (account?.id) {
-        parsed.accountId = account.id;
-      }
-
-      if (activeProject?.id) {
-        parsed.projectId = activeProject.id;
-      }
+    if (account?.id) {
+      parsed.accountId = account.id;
     }
 
+    if (activeProject?.id) {
+      parsed.projectId = activeProject.id;
+    }
     return `${oauthCallbackUrl}?${queryString.stringify(parsed)}`;
-  }, [account, activeProject, data, isLifeOmicHosted, oauthCallbackUrl]);
+  }, [account, activeProject, data, oauthCallbackUrl]);
 
   // Do not proceed until all queries have resolved
   if (!readyToBuildUri) {

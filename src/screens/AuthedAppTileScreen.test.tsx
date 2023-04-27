@@ -51,27 +51,7 @@ beforeEach(() => {
   });
 });
 
-test('builds uri with code only when appTile is not "LifeOmic" hosted', () => {
-  const appTile = {
-    id: 'appTileId',
-    title: 'app tile title',
-    source: {
-      url: 'http://unit-test/app-tile',
-    },
-    clientId: 'someClientId',
-    callbackUrls: ['http://unit-test/app-tile/callback'],
-  };
-  route.params.appTile = appTile;
-  render(<AuthedAppTileScreen navigation={navigation} route={route} />);
-  expect(useExchangeTokenMock).toHaveBeenCalledTimes(1);
-  expect(webviewMock.mock.calls[0][0]).toMatchObject({
-    source: {
-      uri: 'http://unit-test/app-tile/callback?code=someCode',
-    },
-  });
-});
-
-test('builds uri with code, projectId, and accountId for "LifeOmic" hosted tiles', () => {
+test('builds uri with code, projectId, and accountId', () => {
   const appTile = {
     id: 'appTileId',
     title: 'app tile title',
