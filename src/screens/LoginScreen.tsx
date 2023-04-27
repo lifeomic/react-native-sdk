@@ -4,14 +4,17 @@ import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
 import { useStyles } from '../hooks/useStyles';
 import { createStyles } from '../components/BrandConfigProvider';
+import { EnvironmentSelection } from 'src/components/EnvironmentSelection';
 
 export const LoginScreen: FC = () => {
   const { styles } = useStyles(defaultStyles);
-
   return (
-    <View style={styles.containerView}>
-      <OAuthLoginButton label={t('login-button-title', 'Login')} />
-    </View>
+    <>
+      <View style={styles.containerView}>
+        <OAuthLoginButton label={t('login-button-title', 'Login')} />
+        <EnvironmentSelection />
+      </View>
+    </>
   );
 };
 

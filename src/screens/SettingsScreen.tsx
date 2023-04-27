@@ -12,7 +12,6 @@ import { SettingsStackParamList } from '../navigators/SettingsStack';
 import { useStyles } from '../hooks/useStyles';
 import { Theme, createStyles } from '../components/BrandConfigProvider';
 import { Text, Divider } from 'react-native-paper';
-import { ToggleEnvironmentMenuItem } from '../components/ToggleEnvironmentMenuItem';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -47,12 +46,6 @@ export const SettingsScreen = () => {
             action={() => navigate('Settings/Wearables')}
           />
           <Divider />
-          {__DEV__ && process.env.NODE_ENV !== 'test' && (
-            <>
-              <ToggleEnvironmentMenuItem />
-              <Divider />
-            </>
-          )}
         </ScrollView>
         <View style={styles.subMenuContainer}>
           <OAuthLogoutButton
