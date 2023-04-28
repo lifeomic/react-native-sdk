@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert } from 'react-native';
+import { DevSettings } from 'react-native';
 import { SegmentedButtons, Text } from 'react-native-paper';
 import { createStyles } from './BrandConfigProvider';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
@@ -8,8 +8,7 @@ import { emitEnvironmentToggled, useStyles } from 'src/hooks';
 
 /*
     Debug menu for selecting a secondary environment during runtime.
-    See AppDemo.tsx for implementation. Due to caching the app will require a manual
-    reload (via metro) after switching.
+    See AppDemo.tsx for implementation.
 */
 
 export function EnvironmentSelection() {
@@ -22,10 +21,7 @@ export function EnvironmentSelection() {
     (value: string) => {
       setStoredEnvironment(value);
       setSelectedButton(value);
-      Alert.alert(
-        `Switched to ${value} environment`,
-        'To ensure new content is loaded perform a manual refresh of the app now.',
-      );
+      DevSettings.reload();
     },
     [setStoredEnvironment],
   );
