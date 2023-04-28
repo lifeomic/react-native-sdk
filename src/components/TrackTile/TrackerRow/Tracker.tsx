@@ -36,8 +36,8 @@ export function Tracker(tracker: TrackerProps) {
   const id = tracker.metricId || tracker.id;
 
   const scale = isInstalled
-    ? styles.trackerIconInstalledHeight?.height ?? 20
-    : styles.trackerIconInstalledUninstalledHeight?.height ?? 25;
+    ? styles.trackerIconInstalledHeight?.height ?? 30
+    : styles.trackerIconInstalledUninstalledHeight?.height ?? 35;
 
   return (
     <View style={styles.tracker}>
@@ -90,7 +90,7 @@ export function Tracker(tracker: TrackerProps) {
   );
 }
 
-const size = 70;
+const size = 95;
 const defaultStyles = createStyles('Tracker', (theme) => ({
   trackerNameText: {},
   trackerNameDisabledText: {
@@ -98,13 +98,12 @@ const defaultStyles = createStyles('Tracker', (theme) => ({
   },
   trackerUnitText: { fontSize: 10, color: '#7B8996' },
   trackerCurrentValueText: {
-    fontSize: 14,
-    color: theme.colors.onSurfaceVariant,
+    fontSize: 24,
+    color: theme.colors.onSurface,
     textAlign: 'center',
   },
   tracker: {
-    marginBottom: 8,
-    marginHorizontal: 10,
+    marginHorizontal: 8,
     alignItems: 'center',
     position: 'relative',
   },

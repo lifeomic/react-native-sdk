@@ -52,23 +52,23 @@ export function TrackTile({
   };
 
   return (
-    <Card style={styles.card}>
-      <Card.Title
-        title={title}
-        titleStyle={styles.titleText}
-        right={settingsButton}
-        rightStyle={styles.settingsButton}
-        style={styles.title}
-      />
-      <Card.Content style={styles.content}>
-        <TrackerRow
-          onOpenTracker={(tracker) => onOpenTracker(tracker, valuesContext)}
-          trackers={trackers}
-          values={trackerValues[0]}
-          loading={trackersLoading || valuesLoading}
-          icons={icons}
+    <Card elevation={0} style={styles.card}>
+      {title && (
+        <Card.Title
+          title={title}
+          titleStyle={styles.titleText}
+          right={settingsButton}
+          rightStyle={styles.settingsButton}
+          style={styles.title}
         />
-      </Card.Content>
+      )}
+      <TrackerRow
+        onOpenTracker={(tracker) => onOpenTracker(tracker, valuesContext)}
+        trackers={trackers}
+        values={trackerValues[0]}
+        loading={trackersLoading || valuesLoading}
+        icons={icons}
+      />
     </Card>
   );
 }
@@ -87,7 +87,6 @@ const defaultStyles = createStyles('TrackTile', (theme) => ({
     marginRight: theme.spacing.medium,
     marginTop: -8,
   },
-  content: {},
 }));
 
 declare module '@styles' {

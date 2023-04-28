@@ -29,7 +29,6 @@ module.exports = {
     'src/common/LoggedInProviders',
     'src/common/ThemedNavigationContainer',
     'src/navigators', 'src/components/TrackTile',
-    'src/screens',
     'components/BrandConfigProvider/theme/generateColors.ts',
   ],
   coverageThreshold: {

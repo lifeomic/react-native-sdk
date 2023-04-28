@@ -5,13 +5,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Animated, Easing, View, StyleSheet } from 'react-native';
+import { Animated, Easing, View, StyleSheet, ViewStyle } from 'react-native';
 import { Svg, Circle } from 'react-native-svg';
 import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { StylesProp, useStyleOverrides } from '../styles';
 import { usePrevious } from '../hooks/usePrevious';
 import { darkenHexColor } from '../util/darken-hex-color';
 import { useTheme } from '../../../hooks/useTheme';
+import { shadow } from 'react-native-paper';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -26,7 +27,7 @@ type Props = {
 
 export const RadialProgress: FC<Props> = (props) => {
   const { target: incomingTarget, value } = props;
-  const { color = '', radius = 25, strokeWidth = 7, disabled = false } = props;
+  const { color = '', radius = 25, strokeWidth = 5, disabled = false } = props;
   const circumference = Math.PI * 2 * radius;
   const size = radius * 2 + strokeWidth;
   const target = incomingTarget || 1;
@@ -119,7 +120,7 @@ export const RadialProgress: FC<Props> = (props) => {
   ]);
 
   return (
-    <View style={{ position: 'relative' }}>
+    <View style={[{ position: 'relative' }, shadow(3) as ViewStyle]}>
       <Svg viewBox={`0 0 ${size} ${size}`}>
         <Circle
           stroke={flatStyles.trackerCircleBorder.borderColor}
@@ -166,7 +167,7 @@ export const RadialProgress: FC<Props> = (props) => {
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={ref.current}
-            fill={theme.colors.surfaceVariant}
+            fill={theme.colors.surface}
           />
         </Svg>
       )}
@@ -183,7 +184,7 @@ const defaultStyles = StyleSheet.create({
     opacity: 0.3,
   },
   trackerCircleBorder: {
-    borderWidth: 1,
+    borderWidth: 2,
     opacity: 0.4,
     borderColor: '#B2B9C0',
     backgroundColor: undefined,
