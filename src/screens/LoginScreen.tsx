@@ -4,7 +4,7 @@ import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
 import { useStyles } from '../hooks/useStyles';
 import { createStyles } from '../components/BrandConfigProvider';
-import { EnvironmentSelection } from 'src/components/EnvironmentSelection';
+import { EnvironmentSelection } from '../components/EnvironmentSelection';
 
 export const LoginScreen: FC = () => {
   const { styles } = useStyles(defaultStyles);
