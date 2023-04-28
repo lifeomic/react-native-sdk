@@ -4,7 +4,7 @@ import { SegmentedButtons, Text } from 'react-native-paper';
 import { createStyles } from './BrandConfigProvider';
 import { useAsyncStorage } from '../hooks/useAsyncStorage';
 import { View } from 'react-native';
-import { emitEnvironmentToggled, useStyles } from 'src/hooks';
+import { emitEnvironmentToggled, useStyles } from '../hooks';
 
 /*
     Debug menu for selecting a secondary environment during runtime.
