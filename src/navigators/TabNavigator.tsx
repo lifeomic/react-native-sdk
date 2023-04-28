@@ -5,6 +5,11 @@ import { t } from 'i18next';
 import { SettingsStack, SettingsStackParamList } from './SettingsStack';
 import { HomeStack } from './HomeStack';
 import { NotificationsStack } from './NotificationsStack';
+import { useStyles } from '../hooks/useStyles';
+import { createStyles } from '../components/BrandConfigProvider';
+import { useTheme } from '../hooks/useTheme';
+import { shadow } from 'react-native-paper';
+import { ViewStyle } from 'react-native';
 
 export type TabParamList = {
   HomeTab: undefined;
@@ -15,8 +20,17 @@ export type TabParamList = {
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
 export function TabNavigator() {
+  const { styles } = useStyles(defaultStyles);
+  const theme = useTheme();
+
   return (
-    <Tab.Navigator shifting={true}>
+    <Tab.Navigator
+      shifting={true}
+      barStyle={styles.barStyle}
+      activeColor={theme.colors.onSurface}
+      inactiveColor={theme.colors.onSurfaceDisabled}
+      labeled
+    >
       <Tab.Screen
         name="HomeTab"
         component={HomeStack}
@@ -45,3 +59,18 @@ export function TabNavigator() {
     </Tab.Navigator>
   );
 }
+
+const defaultStyles = createStyles('TabNavigator', () => ({
+  barStyle: {
+    backgroundColor: '#fff',
+    zIndex: 1,
+    ...shadow(4),
+  } as ViewStyle,
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type TabNavigatorStyles = NamedStylesProp<typeof defaultStyles>;

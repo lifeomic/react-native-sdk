@@ -1,6 +1,6 @@
 import React from 'react';
-import { Dimensions, TouchableOpacity, View } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Dimensions, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Text, shadow } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { createStyles } from '../BrandConfigProvider';
 import TileSelectIcon from './icons/tile-select-chevron.svg';
@@ -80,16 +80,10 @@ const defaultStyles = createStyles('Tile', (theme) => ({
     height: 55,
     borderRadius: 10,
     backgroundColor: theme.colors.surface,
-    shadowColor: theme.colors.shadow,
-    shadowOpacity: 0.1,
-    shadowOffset: {
-      height: 2,
-      width: 0,
-    },
-    shadowRadius: 8,
-    marginHorizontal: theme.spacing.large,
-    marginBottom: theme.spacing.extraSmall,
-  },
+    marginHorizontal: theme.spacing.medium,
+    marginBottom: theme.spacing.medium,
+    ...shadow(2),
+  } as ViewStyle,
   titleText: {
     ...theme.fonts.titleMedium,
     color: theme.colors.text,

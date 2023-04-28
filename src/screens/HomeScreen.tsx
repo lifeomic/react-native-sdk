@@ -1,5 +1,4 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { t } from 'i18next';
 import { HomeStackParamList } from '../navigators/HomeStack';
@@ -7,6 +6,7 @@ import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { TilesList } from '../components/tiles/TilesList';
+import { ScreenSurface } from '../components/ScreenSurface';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 export type HomeScreenNavigation = Props['navigation'];
@@ -35,16 +35,8 @@ export const HomeScreen = () => {
   }
 
   return (
-    <View style={styles.container} testID="home-screen">
-      <ScrollView overScrollMode="always" showsVerticalScrollIndicator={false}>
-        <TilesList />
-      </ScrollView>
-    </View>
+    <ScreenSurface testID="home-screen">
+      <TilesList />
+    </ScreenSurface>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

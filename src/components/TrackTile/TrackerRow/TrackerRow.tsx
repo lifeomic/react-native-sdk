@@ -41,6 +41,7 @@ export function TrackerRow(props: TrackerRowProps) {
       horizontal
       scrollEnabled={true}
       contentContainerStyle={styles.trackerRowContainer}
+      showsHorizontalScrollIndicator={false}
     >
       {loading && (
         <View style={styles.trackerRowLoadingIndicator}>

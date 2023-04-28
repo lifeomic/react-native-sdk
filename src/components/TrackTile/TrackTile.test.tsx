@@ -94,7 +94,11 @@ describe('Track Tile', () => {
 
     const { findByLabelText } = render(
       <TrackTileProvider>
-        <TrackTile onOpenSettings={onOpenSettings} onOpenTracker={jest.fn()} />
+        <TrackTile
+          onOpenSettings={onOpenSettings}
+          onOpenTracker={jest.fn()}
+          title="Test Title"
+        />
       </TrackTileProvider>,
     );
 
