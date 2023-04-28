@@ -1,18 +1,12 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from '../screens/HomeScreen';
-import { AppTile } from '../hooks/useAppConfig';
 import { AppTileScreen } from '../screens/AppTileScreen';
 import { CustomAppTileScreen } from '../screens/CustomAppTileScreen';
 import { TrackTileTrackerScreen } from '../screens/TrackTileTrackerScreen';
 import { AppNavHeader } from '../components/AppNavHeader';
 import { t } from '../../lib/i18n';
-import {
-  Tracker,
-  TrackerValue,
-  TrackerValuesContext,
-  notifySaveEditTrackerValue,
-} from '../components/TrackTile/main';
+import { notifySaveEditTrackerValue } from '../components/TrackTile/main';
 import TrackTileSettingsScreen from '../screens/TrackTileSettingsScreen';
 import TrackTileAdvancedDetailsScreen from '../screens/TrackTileAdvancedDetailsScreen';
 import TrackTileAdvancedEditorScreen from '../screens/TrackTileAdvancedEditorScreen';
@@ -23,26 +17,7 @@ import {
   Item,
 } from 'react-navigation-header-buttons';
 import { AuthedAppTileScreen } from '../screens/AuthedAppTileScreen';
-
-export type HomeStackParamList = {
-  Home: undefined;
-  'Home/AppTile': { appTile: AppTile };
-  'Home/AuthedAppTile': { appTile: AppTile };
-  'Home/CustomAppTile': { appTile: AppTile };
-  'Home/TrackTile': { tracker: any; valuesContext: any };
-  'Home/TrackTileSettings': {
-    valuesContext: TrackerValuesContext;
-  };
-  'Home/AdvancedTrackerDetails': {
-    tracker: Tracker;
-    valuesContext: TrackerValuesContext;
-  };
-  'Home/AdvancedTrackerEditor': {
-    tracker: Tracker;
-    trackerValue: TrackerValue;
-    valuesContext: TrackerValuesContext;
-  };
-};
+import { HomeStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
