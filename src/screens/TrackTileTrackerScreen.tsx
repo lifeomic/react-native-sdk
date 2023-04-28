@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TrackerDetails } from '../components/TrackTile/TrackerDetails/TrackerDetails';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { HomeStackParamList } from '../navigators/HomeStack';
+import { HomeStackParamList } from '../navigators/types';
 import { t } from '../../lib/i18n';
 
 const styles = StyleSheet.create({

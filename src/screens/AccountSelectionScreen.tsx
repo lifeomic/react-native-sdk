@@ -6,23 +6,23 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { tID } from '../common/testID';
 import { Account } from '../hooks/useAccounts';
+import { SettingsStackScreenProps } from '../navigators/types';
 
-export const AccountSelectionScreen = () => {
+export const AccountSelectionScreen = ({
+  navigation,
+}: SettingsStackScreenProps<'Settings/AccountSelection'>) => {
   const { accountsWithProduct, setActiveAccountId } = useActiveAccount();
-  const { canGoBack, goBack } = useNavigation();
-
   const selectAccount = useCallback(
     (selectedAccount: Account) => async () => {
       await setActiveAccountId(selectedAccount.id);
-      if (canGoBack()) {
-        goBack();
+      if (navigation.canGoBack()) {
+        navigation.goBack();
       }
     },
-    [setActiveAccountId, canGoBack, goBack],
+    [setActiveAccountId, navigation],
   );
 
   return (

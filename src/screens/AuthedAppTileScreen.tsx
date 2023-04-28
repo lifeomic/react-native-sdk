@@ -1,14 +1,14 @@
 import React, { useCallback, useLayoutEffect, useRef } from 'react';
 import { WebView } from 'react-native-webview';
-import { HomeStackParamList } from '../navigators/HomeStack';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useActiveAccount, useActiveProject, useExchangeToken } from '../hooks';
 import queryString from 'query-string';
 import { ActivityIndicator } from 'react-native-paper';
+import { HomeStackScreenProps } from '../navigators/types';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'Home/AuthedAppTile'>;
-
-export const AuthedAppTileScreen = ({ navigation, route }: Props) => {
+export const AuthedAppTileScreen = ({
+  navigation,
+  route,
+}: HomeStackScreenProps<'Home/AuthedAppTile'>) => {
   const appTile = route.params.appTile;
   const webViewRef = useRef<WebView>(null);
 

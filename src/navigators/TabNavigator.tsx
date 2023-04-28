@@ -1,8 +1,7 @@
 import React from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { NavigatorScreenParams } from '@react-navigation/native';
 import { t } from 'i18next';
-import { SettingsStack, SettingsStackParamList } from './SettingsStack';
+import { SettingsStack } from './SettingsStack';
 import { HomeStack } from './HomeStack';
 import { NotificationsStack } from './NotificationsStack';
 import { useStyles } from '../hooks/useStyles';
@@ -10,12 +9,7 @@ import { createStyles } from '../components/BrandConfigProvider';
 import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
-
-export type TabParamList = {
-  HomeTab: undefined;
-  NotificationsTab: undefined;
-  SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
-};
+import { TabParamList } from './types';
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 

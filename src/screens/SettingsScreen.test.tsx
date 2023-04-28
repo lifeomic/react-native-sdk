@@ -26,7 +26,9 @@ beforeEach(() => {
 });
 
 test('shows logout button and version', async () => {
-  const { getByTestId } = await render(<SettingsScreen />);
+  const { getByTestId } = await render(
+    <SettingsScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
 
   await waitFor(() => {
     expect(getByTestId('oauth-logout-button')).toBeDefined();
@@ -35,7 +37,9 @@ test('shows logout button and version', async () => {
 });
 
 test('shows account name', async () => {
-  const { getByText } = await render(<SettingsScreen />);
+  const { getByText } = await render(
+    <SettingsScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
 
   await waitFor(() => {
     expect(getByText('Account Name')).toBeDefined();
@@ -44,7 +48,9 @@ test('shows account name', async () => {
 
 test('shows placeholder if account still loading', async () => {
   useActiveAccountMock.mockReturnValue({});
-  const { getByText } = await render(<SettingsScreen />);
+  const { getByText } = await render(
+    <SettingsScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
 
   await waitFor(() => {
     expect(getByText('Accounts')).toBeDefined();
@@ -52,7 +58,9 @@ test('shows placeholder if account still loading', async () => {
 });
 
 test('navigates to user profile', async () => {
-  const { getByText } = await render(<SettingsScreen />);
+  const { getByText } = await render(
+    <SettingsScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
 
   await waitFor(() => {
     expect(getByText('Profile')).toBeDefined();
@@ -63,7 +71,9 @@ test('navigates to user profile', async () => {
 });
 
 test('navigates to account selection', async () => {
-  const { getByText } = await render(<SettingsScreen />);
+  const { getByText } = await render(
+    <SettingsScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
 
   await waitFor(() => {
     expect(getByText('Account Name')).toBeDefined();

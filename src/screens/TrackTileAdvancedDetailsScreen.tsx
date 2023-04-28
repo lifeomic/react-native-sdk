@@ -1,17 +1,11 @@
 import React from 'react';
 import { AdvancedTrackerDetails } from '../components/TrackTile/TrackerDetails/AdvancedTrackerDetails/AdvancedTrackerDetails';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { HomeStackParamList } from '../navigators/HomeStack';
-
-type Props = NativeStackScreenProps<
-  HomeStackParamList,
-  'Home/AdvancedTrackerDetails'
->;
+import { HomeStackScreenProps } from '../navigators/types';
 
 export const AdvancedTrackerDetailsScreen = ({
   navigation,
   route: { params },
-}: Props) => {
+}: HomeStackScreenProps<'Home/AdvancedTrackerDetails'>) => {
   const { tracker, valuesContext } = params;
 
   React.useLayoutEffect(() =>
