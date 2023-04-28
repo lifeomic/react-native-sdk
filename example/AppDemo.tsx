@@ -7,14 +7,14 @@ import {
 } from './storybook/stories/OAuth.stories';
 import { DeveloperConfigProvider, RootProviders, RootStack } from '../src';
 import { FhirExampleScreen } from './src/screens/FhirExampleScreen';
-import { useEnvironmentToggle } from '../src/hooks';
+import { useEnvironmentSelection } from '../src/hooks';
 
 if (__DEV__) {
   import('./reactotron').then(() => console.log('Reactotron Configured'));
 }
 
 function App() {
-  const usePrimaryEnv = useEnvironmentToggle();
+  const usePrimaryEnvironment = useEnvironmentSelection();
 
   return (
     <DeveloperConfigProvider
@@ -26,10 +26,12 @@ function App() {
         simpleTheme: {
           primaryColor: '#fb5607',
         },
-        apiBaseURL: usePrimaryEnv ? baseURL : secondaryBaseURL,
+        apiBaseURL: usePrimaryEnvironment ? baseURL : secondaryBaseURL,
       }}
     >
-      <RootProviders authConfig={usePrimaryEnv ? authConfig : secondaryConfig}>
+      <RootProviders
+        authConfig={usePrimaryEnvironment ? authConfig : secondaryConfig}
+      >
         <RootStack />
       </RootProviders>
     </DeveloperConfigProvider>
