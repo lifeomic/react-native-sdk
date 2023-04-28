@@ -7,6 +7,7 @@ import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { TilesList } from '../components/tiles/TilesList';
+import { colors } from '../components/BrandConfigProvider/theme/base';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home'>;
 export type HomeScreenNavigation = Props['navigation'];
@@ -46,5 +47,6 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.surfaceVariant,
   },
 });

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { ScrollView, Image } from 'react-native';
+import { Image, View } from 'react-native';
 import { AppTile, useAppConfig } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
@@ -8,7 +8,6 @@ import { useNavigation } from '@react-navigation/native';
 import { HomeScreenNavigation } from '../../screens/HomeScreen';
 import { useStyles, useDeveloperConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
-import { spacing } from '../BrandConfigProvider/theme/base';
 import { createStyles } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
 import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
@@ -42,7 +41,7 @@ export function TilesList({ styles: instanceStyles }: Props) {
   );
 
   return (
-    <ScrollView testID={tID('tiles-list')} style={styles.scrollView}>
+    <View testID={tID('tiles-list')} style={styles.view}>
       {pillarsTileEnabled && (
         <PillarsTile
           onOpenDetails={(tracker, valuesContext) => {
@@ -74,16 +73,18 @@ export function TilesList({ styles: instanceStyles }: Props) {
           title={trackTileTitle}
         />
       )}
-      {data?.homeTab?.appTiles?.map((appTile: AppTile) => (
-        <Tile
-          id={appTile.id}
-          key={appTile.id}
-          title={appTile.title}
-          onPress={onAppTilePress(appTile)}
-          Icon={appTileIcon(appTile.icon)}
-        />
-      ))}
-    </ScrollView>
+      <View style={styles.tiles}>
+        {data?.homeTab?.appTiles?.map((appTile: AppTile) => (
+          <Tile
+            id={appTile.id}
+            key={appTile.id}
+            title={appTile.title}
+            onPress={onAppTilePress(appTile)}
+            Icon={appTileIcon(appTile.icon)}
+          />
+        ))}
+      </View>
+    </View>
   );
 }
 
@@ -99,10 +100,11 @@ const appTileIcon = (uri?: string) =>
     return null;
   };
 
-const defaultStyles = createStyles('TilesList', () => ({
-  scrollView: {
-    flexDirection: 'column',
-    marginBottom: spacing.extraLarge,
+const defaultStyles = createStyles('TilesList', (theme) => ({
+  view: {},
+  tiles: {
+    marginHorizontal: theme.spacing.large,
+    marginBottom: theme.spacing.large,
   },
 }));
 

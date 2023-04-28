@@ -79,7 +79,9 @@ const defaultStyles = createStyles('TrackTile', (theme) => ({
   },
   titleText: {},
   card: {
-    margin: theme.spacing.large,
+    marginHorizontal: theme.spacing.large,
+    marginBottom: theme.spacing.large,
+    backgroundColor: theme.colors.surface,
   },
   settingsButton: {
     marginRight: theme.spacing.medium,
