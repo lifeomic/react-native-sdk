@@ -15,7 +15,7 @@ export function AppNavHeader({
   const title = options.title || route.name;
 
   return (
-    <Appbar.Header style={styles.style}>
+    <Appbar.Header style={styles.style} elevated>
       {back ? (
         <Appbar.BackAction
           onPress={navigation.goBack}
@@ -27,8 +27,10 @@ export function AppNavHeader({
   );
 }
 
-const defaultStyles = createStyles('AppNavHeader', () => ({
-  style: {},
+const defaultStyles = createStyles('AppNavHeader', (theme) => ({
+  style: {
+    backgroundColor: theme.colors.background,
+  },
   content: {},
   backAction: {},
 }));

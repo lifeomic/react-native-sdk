@@ -14,6 +14,7 @@ import {
 import { NamedStyles, StylesProp, useStyleOverrides } from '../styles';
 import { Pillar } from './Pillar';
 import { Card } from 'react-native-paper';
+import { spacing, colors } from '../../BrandConfigProvider/theme/base';
 
 export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 
@@ -92,7 +93,8 @@ export const PillarsTile = ({
 const defaultStyles = StyleSheet.create({
   pillarsTile: {
     overflow: 'hidden',
-    marginHorizontal: 24,
+    margin: spacing.large,
+    backgroundColor: colors.surface,
   },
   pillarsTileBackgroundContainer: {
     flexDirection: 'row',
