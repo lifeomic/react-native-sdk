@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { Image, View } from 'react-native';
-import { AppTile, useAppConfig } from '../../hooks/useAppConfig';
+import { AppTile, CircleTile, useAppConfig } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
 import { TrackTile } from '../TrackTile';
@@ -24,6 +24,13 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const pillarSettings = data?.homeTab?.pillarSettings;
   const trackTileEnabled = data?.homeTab?.tiles?.includes?.('trackTile');
   const trackTileTitle = data?.homeTab?.trackTileSettings?.title;
+
+  const onCircleTilePress = useCallback(
+    (circleTile: CircleTile) => () => {
+      navigation.navigate('Home/Posts', { circleTile });
+    },
+    [navigation],
+  );
 
   const onAppTilePress = useCallback(
     (appTile: AppTile) => () => {
@@ -72,6 +79,14 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
         />
       )}
       <View style={styles.tiles}>
+        {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
+          <Tile
+            id={circleTile.circleId}
+            key={circleTile.circleId}
+            title={circleTile.circleName}
+            onPress={onCircleTilePress(circleTile)}
+          />
+        ))}
         {data?.homeTab?.appTiles?.map((appTile: AppTile) => (
           <Tile
             id={appTile.id}

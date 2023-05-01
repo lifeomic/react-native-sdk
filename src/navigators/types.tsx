@@ -3,7 +3,7 @@ import type {
   NavigatorScreenParams,
 } from '@react-navigation/native';
 import type { StackScreenProps } from '@react-navigation/stack';
-import { AppTile } from '../hooks/useAppConfig';
+import { AppTile, CircleTile } from '../hooks/useAppConfig';
 import {
   Tracker,
   TrackerValue,
@@ -39,6 +39,7 @@ export type HomeStackParamList = {
   'Home/AppTile': { appTile: AppTile };
   'Home/AuthedAppTile': { appTile: AppTile };
   'Home/CustomAppTile': { appTile: AppTile };
+  'Home/Posts': { circleTile: CircleTile };
   'Home/TrackTile': {
     tracker: Tracker;
     valuesContext: TrackerValuesContext;
