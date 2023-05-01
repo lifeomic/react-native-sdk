@@ -26,12 +26,8 @@ storiesOf('Wearables View', module)
   .add('default', () => <DefaultView loading={false} />)
   .add('loading (initially)', () => <WearablesView {...loadingProps} />)
   .add('loading (after wearables change)', () => <DefaultView loading={true} />)
-  .add('enable sync types', () => (
-    <DefaultView loading={false} enableMultiWearable={true} />
-  ))
-  .add('loading with enable sync types', () => (
-    <DefaultView loading={true} enableMultiWearable={true} />
-  ));
+  .add('enable sync types', () => <DefaultView loading={false} />)
+  .add('loading with enable sync types', () => <DefaultView loading={true} />);
 
 const mockWearables: WearableIntegration[] = [
   {
@@ -113,14 +109,10 @@ const mockWearables: WearableIntegration[] = [
 ];
 
 interface DefaultViewProps {
-  enableMultiWearable?: boolean;
   loading: boolean;
 }
 
-const DefaultView: FC<DefaultViewProps> = ({
-  enableMultiWearable,
-  loading: initialLoading,
-}) => {
+const DefaultView: FC<DefaultViewProps> = ({ loading: initialLoading }) => {
   const [loading, setLoading] = useState(initialLoading);
   const [wearables, setWearables] = useState(mockWearables);
 
@@ -162,10 +154,6 @@ const DefaultView: FC<DefaultViewProps> = ({
   return (
     <WearablesView
       {...viewActions}
-      enableMultiWearable={boolean(
-        'enableMultiWearable',
-        !!enableMultiWearable,
-      )}
       loading={boolean('loading', loading)}
       onRefreshNeeded={onRefreshNeeded}
       onSyncTypeSelectionsUpdate={onSyncTypeSelectionsUpdate}
