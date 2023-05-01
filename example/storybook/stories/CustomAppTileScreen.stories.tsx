@@ -2,19 +2,16 @@ import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  createNativeStackNavigator,
-  NativeStackNavigationProp,
-} from '@react-navigation/native-stack';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 import {
   AppTileScreen,
   CustomAppTileScreen,
   DeveloperConfigProvider,
-  HomeStackParamList,
   Tile,
 } from 'src';
 import { TilesList } from 'src/components/tiles/TilesList';
+import { HomeStackParamList, HomeStackScreenProps } from 'src/navigators/types';
 
 storiesOf('Custom App Tile Screen', module).add('demo', () => (
   <DeveloperConfigProvider
@@ -37,10 +34,7 @@ function MyCustomAppTileScreen1() {
   );
 }
 
-function HomeScreen() {
-  type NavigationParams = NativeStackNavigationProp<HomeStackParamList, 'Home'>;
-  const { navigate } = useNavigation<NavigationParams>();
-
+function HomeScreen({ navigation, route }: HomeStackScreenProps<'Home'>) {
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView>
@@ -48,13 +42,13 @@ function HomeScreen() {
           overScrollMode="always"
           showsVerticalScrollIndicator={false}
         >
-          <TilesList />
+          <TilesList navigation={navigation} route={route} />
           <View style={{ padding: 8 }}>
             <Tile
               id="app-tile-invalid"
               title="Error 2"
               onPress={() => {
-                navigate('Home/CustomAppTile', {
+                navigation.navigate('Home/CustomAppTile', {
                   appTile: {
                     id: 'app-tile-invalid',
                     title: 'Title 3',

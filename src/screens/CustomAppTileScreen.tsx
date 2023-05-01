@@ -1,17 +1,17 @@
 import React, { useLayoutEffect } from 'react';
 import { Text, View } from 'react-native';
 import { t } from 'i18next';
-import { HomeStackParamList } from '../navigators/HomeStack';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { getCustomAppTileComponent } from '../common/DeveloperConfig';
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { tID } from '../common/testID';
+import { HomeStackScreenProps } from '../navigators/types';
 
-type Props = NativeStackScreenProps<HomeStackParamList, 'Home/CustomAppTile'>;
-
-export const CustomAppTileScreen = ({ navigation, route }: Props) => {
+export const CustomAppTileScreen = ({
+  navigation,
+  route,
+}: HomeStackScreenProps<'Home/CustomAppTile'>) => {
   const { appTileScreens } = useDeveloperConfig();
   const appTile = route.params.appTile;
   const CustomAppTileComponent = getCustomAppTileComponent(

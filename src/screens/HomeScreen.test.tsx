@@ -56,7 +56,9 @@ test('renders loading indicator while account fetching', async () => {
   useActiveAccountMock.mockReturnValue({
     isLoading: true,
   });
-  const { getByTestId } = render(<HomeScreen />);
+  const { getByTestId } = render(
+    <HomeScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
   expect(getByTestId('activity-indicator-view')).toBeDefined();
 });
 
@@ -64,19 +66,25 @@ test('renders loading indicator while app config fetching', async () => {
   useAppConfigMock.mockReturnValue({
     isLoading: true,
   });
-  const { getByTestId } = render(<HomeScreen />);
+  const { getByTestId } = render(
+    <HomeScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
   expect(getByTestId('activity-indicator-view')).toBeDefined();
 });
 
 test('renders app tiles', async () => {
-  const { getByTestId } = render(<HomeScreen />);
+  const { getByTestId } = render(
+    <HomeScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
   expect(
     getByTestId(`tile-button-${exampleAppConfig.homeTab?.appTiles?.[0].id}`),
   ).toBeDefined();
 });
 
 test('handles app tile taps via navigation', async () => {
-  const { getByTestId } = render(<HomeScreen />);
+  const { getByTestId } = render(
+    <HomeScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
   const firstTile = exampleAppConfig.homeTab?.appTiles?.[0];
   fireEvent.press(getByTestId(`tile-button-${firstTile?.id}`));
   expect(navigateMock).toHaveBeenCalledWith('Home/AppTile', {

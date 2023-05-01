@@ -2,29 +2,23 @@ import React from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { t } from 'i18next';
 import DeviceInfo from 'react-native-device-info';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OAuthLogoutButton } from '../components/OAuthLogoutButton';
 import { tID } from '../common/testID';
 import { useActiveAccount } from '../hooks/useActiveAccount';
-import { SettingsStackParamList } from '../navigators/SettingsStack';
 import { useStyles } from '../hooks/useStyles';
 import { Theme, createStyles } from '../components/BrandConfigProvider';
 import { Text, Divider } from 'react-native-paper';
+import { SettingsStackScreenProps } from '../navigators/types';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
 const fullVersion = versionNumber + ' (' + buildNumber + ')';
 
-type NavigationParams = NativeStackNavigationProp<
-  SettingsStackParamList,
-  'Settings'
->;
-
-export const SettingsScreen = () => {
+export const SettingsScreen = ({
+  navigation,
+}: SettingsStackScreenProps<'Settings'>) => {
   const { account } = useActiveAccount();
-  const { navigate } = useNavigation<NavigationParams>();
   const { styles } = useStyles(defaultStyles);
 
   return (
@@ -33,17 +27,17 @@ export const SettingsScreen = () => {
         <ScrollView style={styles.scroll}>
           <MainMenuItem
             title={t('settings-profile-row-title', 'Profile')}
-            action={() => navigate('Settings/Profile')}
+            action={() => navigation.navigate('Settings/Profile')}
           />
           <Divider />
           <MainMenuItem
             title={account?.name || t('settings-account-selection', 'Accounts')}
-            action={() => navigate('Settings/AccountSelection')}
+            action={() => navigation.navigate('Settings/AccountSelection')}
           />
           <Divider />
           <MainMenuItem
             title={t('settings-sync-data', 'Sync Data')}
-            action={() => navigate('Settings/Wearables')}
+            action={() => navigation.navigate('Settings/Wearables')}
           />
           <Divider />
         </ScrollView>
