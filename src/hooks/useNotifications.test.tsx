@@ -26,7 +26,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const baseURL = 'https://some-domain/unit-test/v1/graphql';
+const baseURL = 'https://some-domain/unit-test';
 const renderHookWithInjectedClient = async () => {
   return renderHook(() => useNotifications(), {
     wrapper: ({ children }) => (
@@ -63,7 +63,11 @@ test('returns query result', async () => {
       edges: [],
     },
   };
-  const scope = mockGraphQLResponse(baseURL, undefined, notificationResponse);
+  const scope = mockGraphQLResponse(
+    `${baseURL}/v1/graphql`,
+    undefined,
+    notificationResponse,
+  );
   const { result } = await renderHookWithInjectedClient();
   await waitFor(() => {
     expect(scope.isDone()).toBe(true);

@@ -38,7 +38,7 @@ export const GraphQLClientContextProvider = ({
     injectedGraphQLInstance || defaultGraphQLClientInstance;
 
   if (baseURL) {
-    graphQLInstance.setEndpoint(baseURL || defaultBaseURL);
+    graphQLInstance.setEndpoint(`${baseURL}/v1/graphql` || defaultBaseURL);
   }
 
   const graphQLClient = useMemo(() => {

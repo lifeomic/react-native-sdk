@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const baseURL = 'https://some-domain/unit-test/v1/graphql';
+const baseURL = 'https://some-domain/unit-test';
 const notificationsScreen = (
   <QueryClientProvider client={queryClient}>
     <GraphQLClientContextProvider baseURL={baseURL}>
@@ -63,7 +63,11 @@ test('renders no notification message', async () => {
       edges: [],
     },
   };
-  const scope = mockGraphQLResponse(baseURL, undefined, notificationResponse);
+  const scope = mockGraphQLResponse(
+    `${baseURL}/v1/graphql`,
+    undefined,
+    notificationResponse,
+  );
   const { getByTestId } = render(notificationsScreen);
   await waitFor(() => {
     expect(scope.isDone()).toBe(true);
@@ -90,7 +94,11 @@ test('renders notifications', async () => {
       ],
     },
   };
-  const scope = mockGraphQLResponse(baseURL, undefined, notificationResponse);
+  const scope = mockGraphQLResponse(
+    `${baseURL}/v1/graphql`,
+    undefined,
+    notificationResponse,
+  );
   const { getByTestId, getByText } = render(notificationsScreen);
   await waitFor(() => {
     expect(scope.isDone()).toBe(true);
