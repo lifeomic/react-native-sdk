@@ -14,7 +14,6 @@ export function useJoinCircles() {
     `/v1/life-research/projects/${activeProject?.id}/app-config/circles`,
     () => {
       if (data?.homeTab?.circleTiles?.some((c) => !c.isMember)) {
-        console.log('And here?');
         httpClient
           .patch<CircleTile[]>(
             `/v1/life-research/projects/${activeProject?.id}/app-config/circles`,
