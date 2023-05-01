@@ -6,13 +6,7 @@ import { ProfileScreen } from '../screens/ProfileScreen';
 import { AccountSelectionScreen } from '../screens/AccountSelectionScreen';
 import { AppNavHeader } from '../components/AppNavHeader';
 import WearablesScreen from '../screens/WearablesScreen';
-
-export type SettingsStackParamList = {
-  Settings: undefined;
-  'Settings/Profile': undefined;
-  'Settings/AccountSelection': undefined;
-  'Settings/Wearables': undefined;
-};
+import { SettingsStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 

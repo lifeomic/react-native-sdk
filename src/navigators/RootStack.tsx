@@ -1,20 +1,12 @@
 import React from 'react';
 import { t } from 'i18next';
-import { NavigatorScreenParams } from '@react-navigation/native';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { useAuth } from '../hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoggedInProviders } from '../common/LoggedInProviders';
 import { LoginScreen } from '../screens/LoginScreen';
-import { TabNavigator, TabParamList } from './TabNavigator';
-
-export type LoggedInRootParamList = {
-  app: NavigatorScreenParams<TabParamList> | undefined;
-};
-
-export type NotLoggedInRootParamList = {
-  'screens/LoginScreen': { username?: string };
-};
+import { TabNavigator } from './TabNavigator';
+import { LoggedInRootParamList, NotLoggedInRootParamList } from './types';
 
 export function RootStack() {
   const { isLoggedIn, loading } = useAuth();

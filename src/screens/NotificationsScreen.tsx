@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { useNotifications } from '../hooks/useNotifications';
@@ -8,15 +7,7 @@ import { SafeAreaView, View } from 'react-native';
 import formatRelative from 'date-fns/formatRelative';
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
-import { NotificationsStackParamList } from '../navigators/NotificationsStack';
 import { tID } from '../common';
-
-type Props = NativeStackScreenProps<
-  NotificationsStackParamList,
-  'Notifications'
->;
-
-export type NotificationsScreenNavigationProps = Props['navigation'];
 
 export const NotificationsScreen = () => {
   const { isLoading, data } = useNotifications();

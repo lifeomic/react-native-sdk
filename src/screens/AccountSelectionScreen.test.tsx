@@ -33,7 +33,12 @@ test('renders buttons to select account', async () => {
     ],
     setActiveAccountId,
   });
-  const { getByTestId } = await render(<AccountSelectionScreen />);
+  const { getByTestId } = await render(
+    <AccountSelectionScreen
+      navigation={useNavigation() as any}
+      route={{} as any}
+    />,
+  );
 
   expect(getByTestId('select-account-account1')).toBeDefined();
   expect(getByTestId('select-account-account2')).toBeDefined();
@@ -51,7 +56,12 @@ test('allows for selecting account via button', async () => {
     ],
     setActiveAccountId,
   });
-  const { getByTestId } = await render(<AccountSelectionScreen />);
+  const { getByTestId } = await render(
+    <AccountSelectionScreen
+      navigation={useNavigation() as any}
+      route={{} as any}
+    />,
+  );
 
   await waitFor(() => {
     expect(getByTestId('select-account-account2')).toBeDefined();

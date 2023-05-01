@@ -1,8 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { HomeStackParamList } from '../navigators/HomeStack';
+import { HomeStackScreenProps } from '../navigators/types';
 import { ManageTrackers } from '../components/TrackTile/ManageTrackers/ManageTrackers';
 
 const styles = StyleSheet.create({
@@ -11,12 +9,10 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = NativeStackScreenProps<
-  HomeStackParamList,
-  'Home/TrackTileSettings'
->;
-
-export const SettingsScreen = ({ navigation, route: { params } }: Props) => {
+export const SettingsScreen = ({
+  navigation,
+  route: { params },
+}: HomeStackScreenProps<'Home/TrackTileSettings'>) => {
   const { valuesContext } = params;
 
   return (

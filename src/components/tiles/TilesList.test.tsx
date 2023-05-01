@@ -2,6 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import { render } from '@testing-library/react-native';
 import { TilesList } from './TilesList';
+import { useNavigation } from '@react-navigation/native';
 
 jest.unmock('i18next');
 
@@ -35,7 +36,9 @@ jest.mock('../../hooks/useAppConfig', () => ({
 }));
 
 test('renders multiple tiles', () => {
-  const tileList = render(<TilesList />);
+  const tileList = render(
+    <TilesList navigation={useNavigation()} route={{} as any} />,
+  );
 
   expect(tileList.getByText('TrackTile Title')).toBeDefined();
 

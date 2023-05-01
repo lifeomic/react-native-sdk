@@ -4,21 +4,19 @@ import { AppTile, useAppConfig } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
 import { TrackTile } from '../TrackTile';
-import { useNavigation } from '@react-navigation/native';
-import { HomeScreenNavigation } from '../../screens/HomeScreen';
 import { useStyles, useDeveloperConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { createStyles } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
 import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
+import { HomeStackScreenProps } from '../../navigators/types';
 
-interface Props {
+interface Props extends HomeStackScreenProps<'Home'> {
   styles?: TilesListStyles;
 }
 
-export function TilesList({ styles: instanceStyles }: Props) {
+export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
-  const { navigate } = useNavigation<HomeScreenNavigation>();
   const { appTileScreens } = useDeveloperConfig();
   const { data } = useAppConfig();
 
@@ -30,14 +28,14 @@ export function TilesList({ styles: instanceStyles }: Props) {
   const onAppTilePress = useCallback(
     (appTile: AppTile) => () => {
       if (getCustomAppTileComponent(appTileScreens, appTile)) {
-        navigate('Home/CustomAppTile', { appTile });
+        navigation.navigate('Home/CustomAppTile', { appTile });
       } else if (appTile.clientId) {
-        navigate('Home/AuthedAppTile', { appTile });
+        navigation.navigate('Home/AuthedAppTile', { appTile });
       } else {
-        navigate('Home/AppTile', { appTile });
+        navigation.navigate('Home/AppTile', { appTile });
       }
     },
-    [navigate, appTileScreens],
+    [navigation, appTileScreens],
   );
 
   return (
@@ -50,7 +48,7 @@ export function TilesList({ styles: instanceStyles }: Props) {
             )
               ? 'Home/AdvancedTrackerDetails'
               : 'Home/TrackTile';
-            navigate(screenName, {
+            navigation.navigate(screenName, {
               tracker,
               valuesContext,
             });
@@ -60,12 +58,12 @@ export function TilesList({ styles: instanceStyles }: Props) {
       {trackTileEnabled && (
         <TrackTile
           onOpenSettings={(valuesContext) =>
-            navigate('Home/TrackTileSettings', {
+            navigation.navigate('Home/TrackTileSettings', {
               valuesContext,
             })
           }
           onOpenTracker={(tracker, valuesContext) =>
-            navigate('Home/TrackTile', {
+            navigation.navigate('Home/TrackTile', {
               tracker,
               valuesContext,
             })
