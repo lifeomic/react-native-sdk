@@ -98,7 +98,7 @@ const defaultStyles = createStyles('Tile', (theme) => ({
     height: '100%',
     aspectRatio: 1,
     justifyContent: 'center',
-    backgroundColor: theme.colors.primary,
+    backgroundColor: theme.colors.primarySource,
   },
   arrowImage: {
     height: '60%',

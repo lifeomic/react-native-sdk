@@ -28,7 +28,7 @@ export function ActivityIndicatorView({
         size="large"
         animating
         testID={tID('activity-indicator-view')}
-        color={colors.primary}
+        color={colors.primarySource}
         {...props}
       />
       {timeOutMessage && showMessage() && (

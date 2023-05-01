@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { SvgProps } from 'react-native-svg';
 import { tID } from '../common/testID';
 import { useTrackers } from '../hooks/useTrackers';
@@ -11,10 +11,11 @@ import {
   TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
 } from '../services/TrackTileService';
-import { NamedStyles, StylesProp, useStyleOverrides } from '../styles';
+import { NamedStyles, StylesProp } from '../styles';
 import { Pillar } from './Pillar';
 import { Card } from 'react-native-paper';
-import { spacing, colors } from '../../BrandConfigProvider/theme/base';
+import { useStyles } from '../../../hooks/useStyles';
+import { createStyles } from '../../BrandConfigProvider';
 
 export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 
@@ -30,14 +31,16 @@ export type PillarsTileProps = {
   ) => void;
   background?: ReactNode;
   icons?: Record<string, React.ComponentType<SvgProps>>;
+  styles?: PillarsTileStyles;
 };
 
 export const PillarsTile = ({
   onOpenDetails,
   onSaveNewValueOverride,
   icons,
+  styles: instanceStyles,
 }: PillarsTileProps) => {
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
   const valuesContext: TrackerValuesContext = {
     system: TRACKER_PILLAR_CODE_SYSTEM,
     codeBelow: TRACKER_PILLAR_CODE,
@@ -90,19 +93,26 @@ export const PillarsTile = ({
   );
 };
 
-const defaultStyles = StyleSheet.create({
+const defaultStyles = createStyles('PillarsTile', (theme) => ({
   pillarsTile: {
     overflow: 'hidden',
-    margin: spacing.large,
-    backgroundColor: colors.surface,
+    margin: theme.spacing.large,
+    backgroundColor: theme.colors.surface,
   },
   pillarsTileBackgroundContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    height: 326,
+    height: 395,
   },
   pillarsTileLoadingIndicator: {
     height: '100%',
     justifyContent: 'center',
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type PillarsTileStyles = NamedStylesProp<typeof defaultStyles>;

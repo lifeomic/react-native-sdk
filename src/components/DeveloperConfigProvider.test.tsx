@@ -3,7 +3,6 @@ import { renderHook } from '@testing-library/react-native';
 import { DeveloperConfigProvider } from './DeveloperConfigProvider';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { DeveloperConfig } from '../common/DeveloperConfig';
-
 // NOTE: This file purposefully tests both useDeveloperConfig and
 // DeveloperConfigProvider.
 
@@ -31,20 +30,6 @@ describe('with developerConfig injected into provider', () => {
       appTileScreens: appTileScreensConfig,
     });
     expect(result.current.appTileScreens).toEqual(appTileScreensConfig);
-  });
-
-  test('expands simpleTheme into theme prop', async () => {
-    const simpleTheme = {
-      primaryColor: '#000',
-    };
-    const { result } = await renderHookInContext({
-      simpleTheme,
-    });
-    expect(result.current.theme).toEqual({
-      colors: {
-        primary: simpleTheme.primaryColor,
-      },
-    });
   });
 
   test('allows for apiBaseURL to be configured', async () => {

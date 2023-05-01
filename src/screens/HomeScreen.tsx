@@ -1,11 +1,10 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
 import { t } from 'i18next';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { TilesList } from '../components/tiles/TilesList';
-import { colors } from '../components/BrandConfigProvider/theme/base';
+import { ScreenSurface } from '../components/ScreenSurface';
 import { HomeStackScreenProps } from '../navigators/types';
 
 export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
@@ -32,17 +31,8 @@ export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
   }
 
   return (
-    <View style={styles.container} testID="home-screen">
-      <ScrollView overScrollMode="always" showsVerticalScrollIndicator={false}>
-        <TilesList {...navProps} />
-      </ScrollView>
-    </View>
+    <ScreenSurface testID="home-screen">
+      <TilesList {...navProps} />
+    </ScreenSurface>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.surfaceVariant,
-  },
-});

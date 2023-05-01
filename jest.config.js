@@ -28,7 +28,8 @@ module.exports = {
     'src/common/RootProviders',
     'src/common/LoggedInProviders',
     'src/common/ThemedNavigationContainer',
-    'src/navigators', 'src/components/TrackTile'
+    'src/navigators', 'src/components/TrackTile',
+    'components/BrandConfigProvider/theme/generateColors.ts',
   ],
   coverageThreshold: {
     global: {

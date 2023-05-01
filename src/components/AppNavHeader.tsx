@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { Appbar } from 'react-native-paper';
+import { Appbar, Text } from 'react-native-paper';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { createStyles } from './BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
+import { TextStyle } from 'react-native';
 
 export function AppNavHeader({
   back,
@@ -22,16 +23,28 @@ export function AppNavHeader({
           style={styles.backAction}
         />
       ) : null}
-      <Appbar.Content title={title} style={styles.content} />
+      <Appbar.Content
+        title={<Title text={title} style={styles.titleText} />}
+        style={styles.content}
+      />
     </Appbar.Header>
   );
 }
+
+const Title = ({ text, style }: { text: string; style?: TextStyle }) => (
+  <Text variant="titleMedium" style={style}>
+    {text}
+  </Text>
+);
 
 const defaultStyles = createStyles('AppNavHeader', (theme) => ({
   style: {
     backgroundColor: theme.colors.background,
   },
   content: {},
+  titleText: {
+    color: theme.colors.onSurfaceVariant,
+  },
   backAction: {},
 }));
 

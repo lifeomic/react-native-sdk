@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { DeveloperConfig } from '../common/DeveloperConfig';
 import { ThemeProp } from './BrandConfigProvider';
+import { generateColors } from './BrandConfigProvider/theme/generateColors';
 
 export type ExpandedDeveloperConfig = DeveloperConfig & {
   theme?: ThemeProp;
@@ -23,10 +24,9 @@ export function DeveloperConfigProvider({ developerConfig, children }: Props) {
   // simpleTheme expansion to theme prop
   if (developerConfig.simpleTheme) {
     const { primaryColor } = developerConfig.simpleTheme;
+    const colors = generateColors(primaryColor);
     expandedDevConfig.theme = {
-      colors: {
-        primary: primaryColor,
-      },
+      colors,
     };
   }
 

@@ -65,7 +65,7 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
 
   const Stepper = (
     <Paginator
-      color={theme.colors.primary}
+      color={theme.colors.primarySource}
       range={dateRange}
       onChangeRange={advanceDays}
     />
@@ -76,7 +76,7 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
       {stepperPosition === 'top' && Stepper}
       <Chart
         variant={variant}
-        color={theme.colors.primary}
+        color={theme.colors.primarySource}
         loading={loading}
         range={dateRange}
         target={target}

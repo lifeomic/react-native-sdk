@@ -219,7 +219,7 @@ export const Pillar: FC<PillarProps> = (props) => {
             CustomIcon={icons?.[metricId]}
             name={icon}
             color={hasMetGoal ? metGoalColor : notMetGoalColor}
-            scale={1.4}
+            scale={2.0}
           />
           <View style={styles.pillarBase}>
             <View style={styles.pillarBackground} />
@@ -302,7 +302,7 @@ export const Pillar: FC<PillarProps> = (props) => {
       <Text
         testID={tID(`pillar-value-${metricId}`)}
         variant="bold"
-        style={{ color, marginTop: 4 }}
+        style={{ color, marginTop: 4, fontSize: 22 }}
       >
         {currentValue}
       </Text>
@@ -317,14 +317,14 @@ export const Pillar: FC<PillarProps> = (props) => {
           CustomIcon={icons?.['pillars-add-data-button-icon']}
           name="plus-circle"
           color={color}
-          scale={1.3}
+          scale={2.2}
         />
       </TouchableOpacity>
     </View>
   );
 };
 
-const defaultPillarWidth = 32;
+const defaultPillarWidth = 40;
 
 const defaultStyles = StyleSheet.create({
   pillarViewWrapper: {
