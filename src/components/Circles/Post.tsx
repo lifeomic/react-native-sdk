@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Avatar, Divider, List, Text } from 'react-native-paper';
 import { useStyles } from '../../hooks';
-import { ActivePost } from '../../hooks/usePosts';
+import { ActivePost } from '../../hooks/useInfinitePosts';
 import { createStyles } from '../BrandConfigProvider';
 
 interface PostProps {

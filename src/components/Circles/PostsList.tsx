@@ -8,7 +8,7 @@ import {
 import { Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { CircleTile } from '../../hooks/useAppConfig';
-import { usePosts } from '../../hooks/usePosts';
+import { useInfinitePosts } from '../../hooks/useInfinitePosts';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { createStyles } from '../BrandConfigProvider/styles/createStyles';
 import { Post } from './Post';
@@ -19,8 +19,8 @@ interface PostsListProps {
 }
 
 export const PostsList = ({ circleTile }: PostsListProps) => {
-  const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
-    usePosts({
+  const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
+    useInfinitePosts({
       circleId: circleTile?.circleId,
     });
   const { styles } = useStyles(defaultStyles);

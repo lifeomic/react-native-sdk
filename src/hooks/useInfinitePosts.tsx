@@ -1,9 +1,13 @@
-import { useInfiniteQuery } from 'react-query';
+import { InfiniteData, useInfiniteQuery } from 'react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
 
-export function usePosts({ circleId }: { circleId?: string }) {
+interface useInfinitePostsProps {
+  circleId?: string;
+}
+
+export function useInfinitePosts({ circleId }: useInfinitePostsProps) {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
 
@@ -16,7 +20,7 @@ export function usePosts({ circleId }: { circleId?: string }) {
       after: pageParam,
     };
 
-    return graphQLClient.request<PostsQueryResponse>(
+    return graphQLClient.request<PostsData>(
       postsV2Query,
       variables,
       accountHeaders,
@@ -51,7 +55,8 @@ export function usePosts({ circleId }: { circleId?: string }) {
   };
 }
 
-type PostsQueryResponse = {
+export type InfinitePostsData = InfiniteData<PostsData>;
+export type PostsData = {
   postsV2: {
     pageInfo: {
       endCursor: string;
