@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Image, View } from 'react-native';
+import { Image, ImageStyle, View } from 'react-native';
 import { AppTile, CircleTile, useAppConfig } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
@@ -93,7 +93,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             key={appTile.id}
             title={appTile.title}
             onPress={onAppTilePress(appTile)}
-            Icon={appTileIcon(appTile.icon)}
+            Icon={appTileIcon(appTile.icon, styles.iconImage)}
           />
         ))}
       </View>
@@ -101,13 +101,13 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   );
 }
 
-const appTileIcon = (uri?: string) =>
+const appTileIcon = (uri?: string, styles?: ImageStyle) =>
   function AppTileIcon() {
     if (uri) {
       if (uri.endsWith('svg')) {
         return <SvgUri uri={uri} />;
       } else {
-        return <Image source={{ uri }} />;
+        return <Image source={{ uri }} style={styles} />;
       }
     }
     return null;
@@ -118,6 +118,11 @@ const defaultStyles = createStyles('TilesList', (theme) => ({
   tiles: {
     marginHorizontal: theme.spacing.large,
     marginBottom: theme.spacing.large,
+  },
+  iconImage: {
+    width: 30,
+    height: 30,
+    marginRight: theme.spacing.small,
   },
 }));
 
