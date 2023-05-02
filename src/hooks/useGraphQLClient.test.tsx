@@ -21,7 +21,7 @@ const authResult: AuthResult = {
   refreshToken: 'refreshToken',
 };
 
-const baseURL = 'http://localhost:8080/unit-test/v1/graphql';
+const baseURL = 'http://localhost:8080/unit-test';
 const renderHookInContext = async () => {
   return renderHook(() => useGraphQLClient(), {
     wrapper: ({ children }) => (
@@ -43,7 +43,7 @@ test('initial state test', async () => {
 
 test('if authResult is not present, has no Authorization header', async () => {
   const { result } = await renderHookInContext();
-  const scope = mockGraphQLResponse(baseURL, {
+  const scope = mockGraphQLResponse(`${baseURL}/v1/graphql`, {
     authorization: undefined,
   });
   await result.current.graphQLClient.request('');
@@ -58,7 +58,7 @@ test('once authResult is set, adds bearer token', async () => {
     rerender({});
   });
 
-  const scope = mockGraphQLResponse(baseURL, {
+  const scope = mockGraphQLResponse(`${baseURL}/v1/graphql`, {
     'content-type': 'application/json',
     authorization: `Bearer ${authResult.accessToken}`,
   });

@@ -15,11 +15,19 @@ export interface AppTile {
   callbackUrls?: string[];
 }
 
+export interface CircleTile {
+  buttonText: string;
+  circleName: string;
+  circleId: string;
+  isMember: boolean;
+}
+
 type Tile = 'todayTile' | 'trackTile' | 'pillarsTile';
 
 export interface AppConfig {
   homeTab?: {
     appTiles?: AppTile[];
+    circleTiles?: CircleTile[];
     tiles?: Tile[];
     trackTileSettings?: { title: string };
     pillarSettings?: { advancedScreenTrackers: string[] };

@@ -1,8 +1,9 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { useNavigation } from '@react-navigation/native';
 import { AppConfig, useActiveAccount, useAppConfig } from '../hooks';
 import { HomeScreen } from './HomeScreen';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
 jest.unmock('i18next');
 
@@ -15,8 +16,9 @@ jest.mock('../hooks/useAppConfig', () => ({
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useAppConfigMock = useAppConfig as jest.Mock;
-const useNavigationMock = useNavigation as jest.Mock;
-const navigateMock = jest.fn();
+const navigateMock = {
+  navigate: jest.fn(),
+};
 
 const exampleAppConfig: AppConfig = {
   homeTab: {
@@ -39,10 +41,24 @@ const exampleAppConfig: AppConfig = {
   },
 };
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
+const baseURL = 'https://some-domain/unit-test';
+const homeScreen = (
+  <QueryClientProvider client={queryClient}>
+    <GraphQLClientContextProvider baseURL={baseURL}>
+      <HomeScreen navigation={navigateMock as any} route={{} as any} />
+    </GraphQLClientContextProvider>
+  </QueryClientProvider>
+);
+
 beforeEach(() => {
-  useNavigationMock.mockReturnValue({
-    navigate: navigateMock,
-  });
   useActiveAccountMock.mockReturnValue({
     isLoading: false,
   });
@@ -56,9 +72,7 @@ test('renders loading indicator while account fetching', async () => {
   useActiveAccountMock.mockReturnValue({
     isLoading: true,
   });
-  const { getByTestId } = render(
-    <HomeScreen navigation={useNavigation() as any} route={{} as any} />,
-  );
+  const { getByTestId } = render(homeScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
 });
 
@@ -66,28 +80,22 @@ test('renders loading indicator while app config fetching', async () => {
   useAppConfigMock.mockReturnValue({
     isLoading: true,
   });
-  const { getByTestId } = render(
-    <HomeScreen navigation={useNavigation() as any} route={{} as any} />,
-  );
+  const { getByTestId } = render(homeScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
 });
 
 test('renders app tiles', async () => {
-  const { getByTestId } = render(
-    <HomeScreen navigation={useNavigation() as any} route={{} as any} />,
-  );
+  const { getByTestId } = render(homeScreen);
   expect(
     getByTestId(`tile-button-${exampleAppConfig.homeTab?.appTiles?.[0].id}`),
   ).toBeDefined();
 });
 
 test('handles app tile taps via navigation', async () => {
-  const { getByTestId } = render(
-    <HomeScreen navigation={useNavigation() as any} route={{} as any} />,
-  );
+  const { getByTestId } = render(homeScreen);
   const firstTile = exampleAppConfig.homeTab?.appTiles?.[0];
   fireEvent.press(getByTestId(`tile-button-${firstTile?.id}`));
-  expect(navigateMock).toHaveBeenCalledWith('Home/AppTile', {
+  expect(navigateMock.navigate).toHaveBeenCalledWith('Home/AppTile', {
     appTile: firstTile,
   });
 });
