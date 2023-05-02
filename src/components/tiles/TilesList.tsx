@@ -27,7 +27,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
 
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
-      navigation.navigate('Home/Posts', { circleTile });
+      navigation.navigate('Home/Circle/Discussion', { circleTile });
     },
     [navigation],
   );
