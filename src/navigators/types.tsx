@@ -39,7 +39,7 @@ export type HomeStackParamList = {
   'Home/AppTile': { appTile: AppTile };
   'Home/AuthedAppTile': { appTile: AppTile };
   'Home/CustomAppTile': { appTile: AppTile };
-  'Home/Posts': { circleTile: CircleTile };
+  'Home/Circle/Discussion': { circleTile: CircleTile };
   'Home/TrackTile': {
     tracker: Tracker;
     valuesContext: TrackerValuesContext;

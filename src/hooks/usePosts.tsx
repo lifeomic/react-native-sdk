@@ -26,6 +26,7 @@ export function usePosts({ circleId }: { circleId?: string }) {
   const {
     isLoading: postsLoading,
     isFetched: postsFetched,
+    isFetchingNextPage,
     data: postsData,
     error: postsError,
     hasNextPage,
@@ -42,6 +43,7 @@ export function usePosts({ circleId }: { circleId?: string }) {
   return {
     isLoading: postsLoading,
     isFetched: postsFetched,
+    isFetchingNextPage,
     error: postsError,
     data: postsData,
     hasNextPage,
@@ -56,12 +58,12 @@ type PostsQueryResponse = {
       hasNextPage: boolean;
     };
     edges: {
-      node: UserPost;
+      node: ActivePost;
     }[];
   };
 };
 
-export type UserPost = {
+export type ActivePost = {
   id: string;
   author: {
     profile: {

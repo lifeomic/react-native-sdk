@@ -1,19 +1,32 @@
 import { t } from 'i18next';
 import React, { useCallback } from 'react';
-import { ScrollView } from 'react-native';
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  ScrollView,
+} from 'react-native';
 import { Text } from 'react-native-paper';
+import { useStyles } from '../../hooks/useStyles';
 import { CircleTile } from '../../hooks/useAppConfig';
 import { usePosts } from '../../hooks/usePosts';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
+import { createStyles } from '../BrandConfigProvider/styles/createStyles';
 import { Post } from './Post';
+import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
 
-const PostsList = ({ circleTile }: { circleTile?: CircleTile }) => {
-  const { data, hasNextPage, fetchNextPage, isLoading } = usePosts({
-    circleId: circleTile?.circleId,
-  });
+interface PostsListProps {
+  circleTile?: CircleTile;
+}
+
+export const PostsList = ({ circleTile }: PostsListProps) => {
+  const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
+    usePosts({
+      circleId: circleTile?.circleId,
+    });
+  const { styles } = useStyles(defaultStyles);
 
   const handleScroll = useCallback(
-    (event: any) => {
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       if (
         event.nativeEvent.contentOffset.y +
           event.nativeEvent.layoutMeasurement.height >=
@@ -36,20 +49,47 @@ const PostsList = ({ circleTile }: { circleTile?: CircleTile }) => {
   }
 
   return (
-    <ScrollView onScroll={handleScroll} scrollEventThrottle={400}>
-      {data.pages.map((page, i) => (
-        <React.Fragment key={i}>
+    <ScrollView
+      onScroll={handleScroll}
+      scrollEventThrottle={400}
+      contentContainerStyle={styles.scrollView}
+    >
+      {data.pages.map((page, pageIndex) => (
+        <React.Fragment key={`page-${pageIndex}`}>
           {page?.postsV2?.edges.length > 0 ? (
-            page.postsV2.edges.map((edge) => (
-              <Post key={edge.node.id} post={edge.node} />
+            page.postsV2.edges.map((edge, postIndex) => (
+              <Post key={`post-${postIndex}`} post={edge.node} />
             ))
           ) : (
-            <Text>{t('posts-no-posts', 'No posts yet.')}</Text>
+            <Text style={styles.noPostsText}>
+              {t('posts-no-posts', 'No posts yet.')}
+            </Text>
           )}
         </React.Fragment>
       ))}
+      <ActivityIndicatorView
+        animating={isFetchingNextPage}
+        style={styles.morePostsIndicatorAny}
+      />
     </ScrollView>
   );
 };
 
-export default PostsList;
+const defaultStyles = createStyles('PostsList', (theme) => {
+  const activityIndicatorStyle: ActivityIndicatorViewStyles = {
+    view: { paddingTop: theme.spacing.medium },
+  };
+
+  return {
+    scrollView: {},
+    morePostsIndicatorAny: activityIndicatorStyle,
+    noPostsText: {},
+  };
+});
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type PostsListStyle = NamedStylesProp<typeof defaultStyles>;
