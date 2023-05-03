@@ -3,8 +3,8 @@ import {
   View,
   Animated,
   Easing,
-  StyleSheet,
   TouchableOpacity,
+  ColorValue,
 } from 'react-native';
 import { Text } from '../styles';
 import Svg, { Rect, Pattern, Defs, Path, SvgProps } from 'react-native-svg';
@@ -23,9 +23,9 @@ import {
   convertToPreferredUnit,
   getPreferredUnitType,
 } from '../util/convert-value';
-import { useStyleOverrides } from '../styles';
 import { isCodeEqual } from '../util/is-code-equal';
-import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
+import { useStyles } from '../../../hooks/useStyles';
+import { createStyles } from '../../BrandConfigProvider';
 
 type PillarProps = {
   trackerValues?: TrackerValue[];
@@ -36,9 +36,10 @@ type PillarProps = {
   onOpenDetails: () => void;
   onError?: (e: any) => void;
   onSaveNewValueOverride?: (newValue: number) => void;
+  styles?: PillarStyles;
 };
 
-const processCurrentColor = (color: string, currentColor: string) =>
+const processCurrentColor = (color?: ColorValue, currentColor?: string) =>
   color === 'currentColor' ? currentColor : color;
 
 export const Pillar: FC<PillarProps> = (props) => {
@@ -51,22 +52,19 @@ export const Pillar: FC<PillarProps> = (props) => {
     tracker,
     valuesContext,
     icons,
+    styles: instanceStyles,
   } = props;
   const { color, icon, target: installTarget } = tracker;
   const selectedUnit = getPreferredUnitType(tracker);
   const { target: unitDefaultTarget, display, increment = 1 } = selectedUnit;
-  const styles = useStyleOverrides(defaultStyles);
-  const flatStyles = useFlattenedStyles(styles, [
-    'pillarIconGoalMet',
-    'pillarIconGoalNotMet',
-  ]);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
   const target = installTarget ?? unitDefaultTarget;
   const metGoalColor = processCurrentColor(
-    flatStyles.pillarIconGoalMet.color,
+    styles.pillarIconGoalMetText?.color,
     color,
   );
   const notMetGoalColor = processCurrentColor(
-    flatStyles.pillarIconGoalNotMet.color,
+    styles.pillarIconGoalNotMetText?.color,
     color,
   );
 
@@ -219,7 +217,7 @@ export const Pillar: FC<PillarProps> = (props) => {
             CustomIcon={icons?.[metricId]}
             name={icon}
             color={hasMetGoal ? metGoalColor : notMetGoalColor}
-            scale={2.0}
+            scale={1.8}
           />
           <View style={styles.pillarBase}>
             <View style={styles.pillarBackground} />
@@ -302,11 +300,11 @@ export const Pillar: FC<PillarProps> = (props) => {
       <Text
         testID={tID(`pillar-value-${metricId}`)}
         variant="bold"
-        style={{ color, marginTop: 4, fontSize: 22 }}
+        style={{ color, marginTop: 4, fontSize: 20 }}
       >
         {currentValue}
       </Text>
-      <Text variant="bold" style={{ color, marginBottom: 4 }}>
+      <Text variant="bold" style={{ color, marginBottom: 6 }}>
         {display}
       </Text>
       <TouchableOpacity
@@ -317,19 +315,19 @@ export const Pillar: FC<PillarProps> = (props) => {
           CustomIcon={icons?.['pillars-add-data-button-icon']}
           name="plus-circle"
           color={color}
-          scale={2.2}
+          scale={2.1}
         />
       </TouchableOpacity>
     </View>
   );
 };
 
-const defaultPillarWidth = 40;
+const defaultPillarWidth = 37;
 
-const defaultStyles = StyleSheet.create({
+const defaultStyles = createStyles('Pillar', (theme) => ({
   pillarViewWrapper: {
     alignItems: 'center',
-    paddingVertical: 2,
+    paddingVertical: theme.spacing.medium,
     width: defaultPillarWidth * 2,
   },
   pillarView: {
@@ -340,7 +338,8 @@ const defaultStyles = StyleSheet.create({
     position: 'relative',
     flex: 1,
     justifyContent: 'flex-end',
-    marginVertical: 8,
+    marginTop: theme.spacing.medium,
+    marginBottom: 8,
     borderRadius: defaultPillarWidth,
     overflow: 'hidden',
   },
@@ -348,7 +347,7 @@ const defaultStyles = StyleSheet.create({
     position: 'absolute',
     width: defaultPillarWidth,
     height: '100%',
-    backgroundColor: '#2D4B67',
+    backgroundColor: theme.colors.surfaceVariant,
   },
   pillarFill: {
     width: defaultPillarWidth,
@@ -374,14 +373,20 @@ const defaultStyles = StyleSheet.create({
   /**
    * @property {string} color - Set to 'currentValue' to use the tracker's color
    */
-  pillarIconGoalMet: {
+  pillarIconGoalMetText: {
     color: 'currentColor',
   },
   /**
    * @property {string} color - Set to 'currentValue' to use the tracker's color
    */
-  pillarIconGoalNotMet: {
-    // TODO: use theme.colors.onSurfaceDisabled
-    color: 'rgba(25, 28, 29, 0.38)',
+  pillarIconGoalNotMetText: {
+    color: theme.colors.onSurfaceDisabled,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type PillarStyles = NamedStylesProp<typeof defaultStyles>;
