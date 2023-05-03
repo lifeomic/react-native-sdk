@@ -1,26 +1,17 @@
 import { formatRelative } from 'date-fns';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import {
-  Avatar,
-  Button,
-  Divider,
-  IconButton,
-  List,
-  Text,
-  Portal,
-} from 'react-native-paper';
+import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
 import { useStyles } from '../../hooks';
 import { ActivePost } from '../../hooks/useInfinitePosts';
 import { createStyles } from '../BrandConfigProvider';
-import EmojiModal from 'react-native-emoji-modal';
+import { ReactionsToolbar } from './ReactionsToolbar';
 
 interface PostProps {
   post: ActivePost;
 }
 
 export const Post = ({ post }: PostProps) => {
-  const [showPicker, setShowPicker] = useState(false);
   const { styles } = useStyles(defaultStyles);
   const avatarIcon = useMemo(
     () =>
@@ -35,22 +26,9 @@ export const Post = ({ post }: PostProps) => {
       ),
     [post.author.profile.picture, styles.icon],
   );
+
   return (
     <View style={styles.container}>
-      {showPicker && (
-        <Portal>
-          <EmojiModal
-            columns={7}
-            onEmojiSelected={() => {
-              // TODO: Post mutation to add new reaction
-              setShowPicker((currentVal) => !currentVal);
-            }}
-            onPressOutside={() => {
-              setShowPicker((currentVal) => !currentVal);
-            }}
-          />
-        </Portal>
-      )}
       <List.Item
         title={post.author.profile.displayName}
         description={formatRelative(new Date(post.createdAt), new Date())}
@@ -61,7 +39,7 @@ export const Post = ({ post }: PostProps) => {
       <Text variant="titleMedium" style={styles.messageText}>
         {post.message}
       </Text>
-      <View style={styles.reactionControlsContainer}>
+      <View style={styles.toolbarContainer}>
         <Button
           style={styles.commentButton}
           contentStyle={styles.commentButtonContainer}
@@ -72,31 +50,7 @@ export const Post = ({ post }: PostProps) => {
         >
           {post.replyCount} COMMENTS
         </Button>
-        <IconButton
-          size={20}
-          icon="emoticon-happy-outline"
-          iconColor={'rgba(0, 0, 0, .2)'}
-          style={styles.addReactionButton}
-          onPress={() => setShowPicker((currentVal) => !currentVal)}
-        />
-        {post.reactionTotals.map((reaction, i) => {
-          if (reaction.count) {
-            return (
-              <View key={i} style={styles.reactionContainer}>
-                <Button
-                  mode="contained"
-                  compact={true}
-                  onPress={() => {}} //TODO: Post mutation to either increment or remove reaction
-                  style={styles.reactionContainer}
-                  contentStyle={styles.reactionContent}
-                  labelStyle={styles.reactionLabel}
-                >
-                  {reaction.type} {reaction.count}
-                </Button>
-              </View>
-            );
-          }
-        })}
+        <ReactionsToolbar post={post} />
       </View>
       <Divider />
     </View>
@@ -111,7 +65,7 @@ const defaultStyles = createStyles('Post', (theme) => ({
     paddingHorizontal: theme.spacing.small,
     paddingBottom: theme.spacing.tiny,
   },
-  reactionControlsContainer: {
+  toolbarContainer: {
     flex: 1,
     flexDirection: 'row',
     paddingLeft: theme.spacing.extraSmall,
@@ -125,26 +79,6 @@ const defaultStyles = createStyles('Post', (theme) => ({
     color: 'rgba(0, 0, 0, 0.4)',
     fontSize: 8,
     lineHeight: 10,
-  },
-  addReactionButton: {
-    height: 20,
-    width: 20,
-  },
-  emojiPickerContainer: {
-    backgroundColor: 'white',
-    height: '80%',
-  },
-  reactionContainer: {
-    paddingRight: theme.spacing.micro,
-  },
-  reactionContent: {
-    height: 30,
-  },
-  reactionLabel: {
-    paddingTop: 4,
-    paddingBottom: 14,
-    fontSize: 14,
-    lineHeight: 14,
   },
 }));
 
