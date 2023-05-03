@@ -10,6 +10,7 @@ import { createStyles } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
 import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
 import { HomeStackScreenProps } from '../../navigators/types';
+import DefaultCircleIcon from './icons/heart-circle.svg';
 
 interface Props extends HomeStackScreenProps<'Home'> {
   styles?: TilesListStyles;
@@ -27,7 +28,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
 
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
-      navigation.navigate('Home/Posts', { circleTile });
+      navigation.navigate('Home/Circle/Discussion', { circleTile });
     },
     [navigation],
   );
@@ -79,14 +80,6 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
         />
       )}
       <View style={styles.tiles}>
-        {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
-          <Tile
-            id={circleTile.circleId}
-            key={circleTile.circleId}
-            title={circleTile.circleName}
-            onPress={onCircleTilePress(circleTile)}
-          />
-        ))}
         {data?.homeTab?.appTiles?.map((appTile: AppTile) => (
           <Tile
             id={appTile.id}
@@ -94,6 +87,15 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             title={appTile.title}
             onPress={onAppTilePress(appTile)}
             Icon={appTileIcon(appTile.icon, styles.iconImage)}
+          />
+        ))}
+        {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
+          <Tile
+            id={circleTile.circleId}
+            key={circleTile.circleId}
+            title={circleTile.buttonText ?? circleTile.circleName}
+            onPress={onCircleTilePress(circleTile)}
+            Icon={DefaultCircleIcon}
           />
         ))}
       </View>

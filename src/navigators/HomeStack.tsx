@@ -18,7 +18,7 @@ import {
 } from 'react-navigation-header-buttons';
 import { AuthedAppTileScreen } from '../screens/AuthedAppTileScreen';
 import { HomeStackParamList } from './types';
-import { PostsScreen } from '../screens/PostsScreen';
+import { CircleDiscussionScreen } from '../screens/CircleDiscussionScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -34,7 +34,10 @@ export function HomeStack() {
       <Stack.Screen name="Home/AuthedAppTile" component={AuthedAppTileScreen} />
       <Stack.Screen name="Home/CustomAppTile" component={CustomAppTileScreen} />
       <Stack.Screen name="Home/TrackTile" component={TrackTileTrackerScreen} />
-      <Stack.Screen name="Home/Posts" component={PostsScreen} />
+      <Stack.Screen
+        name="Home/Circle/Discussion"
+        component={CircleDiscussionScreen}
+      />
       <Stack.Screen
         name="Home/TrackTileSettings"
         component={TrackTileSettingsScreen}

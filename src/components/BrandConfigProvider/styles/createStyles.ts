@@ -37,6 +37,8 @@ export type NamedStyles<T> = {
     ? TextStyle
     : P extends `${string}${IgnoreCapitals<ImageSuffixes>}`
     ? ImageStyle
+    : P extends `${string}${IgnoreCapitals<AnySuffix>}`
+    ? any
     : ViewStyle;
 };
 
@@ -51,6 +53,8 @@ type IgnoreCapitals<T> = T extends string
 type TextSuffixes = 'Text' | 'Label';
 
 type ImageSuffixes = 'Image';
+
+type AnySuffix = 'Any';
 
 type StylesBuilder<T> = (theme: Theme) => T;
 
