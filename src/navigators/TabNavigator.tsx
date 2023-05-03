@@ -10,10 +10,17 @@ import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
+import { OptionalStack } from './OptionalStack';
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
-export function TabNavigator() {
+type TabNavigatorProps = {
+  optionalParam: { message: string };
+};
+
+export const TabNavigator: React.FC<TabNavigatorProps> = ({
+  optionalParam,
+}: TabNavigatorProps) => {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
 
@@ -50,9 +57,12 @@ export function TabNavigator() {
           tabBarIcon: 'cog',
         }}
       />
+      {optionalParam && (
+        <Tab.Screen name="OptionalTab" component={OptionalStack} />
+      )}
     </Tab.Navigator>
   );
-}
+};
 
 const defaultStyles = createStyles('TabNavigator', (theme) => ({
   barStyle: {

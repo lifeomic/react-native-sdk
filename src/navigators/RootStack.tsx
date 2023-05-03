@@ -8,6 +8,10 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { TabNavigator } from './TabNavigator';
 import { LoggedInRootParamList, NotLoggedInRootParamList } from './types';
 
+function TabNavigatorWrapper() {
+  return <TabNavigator optionalParam={{ message: 'hello world' }} />;
+}
+
 export function RootStack() {
   const { isLoggedIn, loading } = useAuth();
 
@@ -26,7 +30,7 @@ export function RootStack() {
         <Stack.Navigator>
           <Stack.Screen
             name="app"
-            component={TabNavigator}
+            component={TabNavigatorWrapper}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>

@@ -26,6 +26,7 @@ export type TabParamList = {
   HomeTab: undefined;
   NotificationsTab: undefined;
   SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
+  OptionalTab?: undefined;
 };
 
 export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
@@ -73,6 +74,10 @@ export type SettingsStackParamList = {
   'Settings/Profile': undefined;
   'Settings/AccountSelection': undefined;
   'Settings/Wearables': undefined;
+};
+
+export type OptionalStackParamList = {
+  Optional: undefined;
 };
 
 declare global {
