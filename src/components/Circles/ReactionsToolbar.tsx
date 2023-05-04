@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { Button, IconButton, Portal } from 'react-native-paper';
+import { Button, IconButton } from 'react-native-paper';
 import { useStyles, useUser } from '../../hooks';
 import { ActivePost } from '../../hooks/useInfinitePosts';
 import { createStyles } from '../BrandConfigProvider';
-import EmojiModal from 'react-native-emoji-modal';
+import EmojiPicker from 'rn-emoji-keyboard';
 import {
   useCreateReactionMutation,
   useUndoReactionMutation,
@@ -73,20 +73,14 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
 
   return (
     <View style={styles.reactionToolbarContainer}>
-      {showPicker && (
-        <Portal>
-          <EmojiModal
-            columns={7}
-            onEmojiSelected={(type) => {
-              handleEmojiSelection(type);
-              setShowPicker((currentVal) => !currentVal);
-            }}
-            onPressOutside={() => {
-              setShowPicker((currentVal) => !currentVal);
-            }}
-          />
-        </Portal>
-      )}
+      <EmojiPicker
+        onEmojiSelected={(selection) => {
+          handleEmojiSelection(selection.emoji);
+          setShowPicker((currentVal) => !currentVal);
+        }}
+        open={showPicker}
+        onClose={() => setShowPicker(false)}
+      />
       <IconButton
         size={20}
         icon="emoticon-happy-outline"
