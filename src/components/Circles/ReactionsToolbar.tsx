@@ -15,28 +15,30 @@ interface ReactionsToolbarProps {
 }
 
 export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
-  const useCreateReaction = useCreateReactionMutation();
-  const useUndoReaction = useUndoReactionMutation();
+  const createReaction = useCreateReactionMutation();
+  const undoReaction = useUndoReactionMutation();
   const { data } = useUser();
   const [localReactions, setLocalReactions] = useState(post.reactionTotals);
   const [showPicker, setShowPicker] = useState(false);
   const { styles } = useStyles(defaultStyles);
 
   const handleEmojiSelection = useCallback(
-    (type: string) => {
-      if (type === null || !post.id || !data?.id) {
+    (emojiType: string | null) => {
+      if (emojiType === null || !post.id || !data?.id) {
         return;
       }
 
-      const reactionIndex = localReactions.findIndex((r) => r.type === type);
+      const reactionIndex = localReactions.findIndex(
+        (r) => r.type === emojiType,
+      );
 
       // if the reaction type doesn't exist locally
       if (reactionIndex < 0) {
         setLocalReactions((reactions) => [
           ...reactions,
-          { type, count: 1, userHasReacted: true },
+          { type: emojiType, count: 1, userHasReacted: true },
         ]);
-        useCreateReaction.mutate({ postId: post.id, type });
+        createReaction.mutate({ postId: post.id, type: emojiType });
         return;
       }
 
@@ -47,7 +49,7 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
           reactions[reactionIndex].userHasReacted = true;
           return reactions;
         });
-        useCreateReaction.mutate({ postId: post.id, type: type });
+        createReaction.mutate({ postId: post.id, type: emojiType });
         return;
       }
 
@@ -58,11 +60,15 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
           reactions[reactionIndex].userHasReacted = false;
           return reactions;
         });
-        useUndoReaction.mutate({ userId: data.id, postId: post.id, type });
+        undoReaction.mutate({
+          userId: data.id,
+          postId: post.id,
+          type: emojiType,
+        });
         return;
       }
     },
-    [data?.id, localReactions, post.id, useCreateReaction, useUndoReaction],
+    [data?.id, localReactions, post.id, createReaction, undoReaction],
   );
 
   return (
@@ -72,7 +78,7 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
           <EmojiModal
             columns={7}
             onEmojiSelected={(type) => {
-              handleEmojiSelection(type!);
+              handleEmojiSelection(type);
               setShowPicker((currentVal) => !currentVal);
             }}
             onPressOutside={() => {
@@ -88,10 +94,13 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
         style={styles.addReactionButton}
         onPress={() => setShowPicker((currentVal) => !currentVal)}
       />
-      {localReactions.map((reaction, i) => {
+      {localReactions.map((reaction) => {
         if (reaction.count) {
           return (
-            <View key={i} style={styles.reactionContainer}>
+            <View
+              key={`${post.id}-${reaction.type}`}
+              style={styles.reactionContainer}
+            >
               <Button
                 mode="contained"
                 compact={true}
