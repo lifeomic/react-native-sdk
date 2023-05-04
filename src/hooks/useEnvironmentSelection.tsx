@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { NativeEventEmitter } from 'react-native';
 
@@ -13,6 +14,13 @@ export const emitEnvironmentToggled = (value: string) =>
 
 export const useEnvironmentSelection = () => {
   const [usePrimaryEnvironment, setUsePrimaryEnvironment] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const environment = await AsyncStorage.getItem('environment-toggle');
+      setUsePrimaryEnvironment(environment !== 'secondary');
+    })();
+  }, []);
 
   useEffect(() => {
     const subscription = eventEmitter.addListener(
