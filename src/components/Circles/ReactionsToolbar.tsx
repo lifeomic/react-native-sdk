@@ -8,7 +8,8 @@ import EmojiPicker from 'rn-emoji-keyboard';
 import {
   useCreateReactionMutation,
   useUndoReactionMutation,
-} from '../../hooks/useMutateReaction';
+} from '../../hooks/useReactionMutations';
+import { tID } from '../../common';
 
 interface ReactionsToolbarProps {
   post: ActivePost;
@@ -82,6 +83,7 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
         onClose={() => setShowPicker(false)}
       />
       <IconButton
+        testID={tID('select-emoji-button')}
         size={20}
         icon="emoticon-happy-outline"
         iconColor={'rgba(0, 0, 0, .2)'}
@@ -96,6 +98,7 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
               style={styles.reactionContainer}
             >
               <Button
+                testID={tID(`${reaction.type}-button`)}
                 mode="contained"
                 compact={true}
                 onPress={() => {

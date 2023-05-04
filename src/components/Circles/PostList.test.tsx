@@ -7,6 +7,7 @@ import { useInfinitePosts } from '../../hooks/useInfinitePosts';
 jest.mock('../../hooks/useInfinitePosts', () => ({
   useInfinitePosts: jest.fn(),
 }));
+jest.mock('./ReactionsToolbar');
 
 const useInfinitePostsMock = useInfinitePosts as jest.Mock;
 

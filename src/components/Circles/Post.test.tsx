@@ -2,6 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Post } from './Post';
 
+jest.mock('./ReactionsToolbar');
+
 test('renders a post', () => {
   const post = {
     id: '123',

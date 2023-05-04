@@ -1,7 +1,7 @@
-import { formatRelative } from 'date-fns';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
+import { formatRelative } from 'date-fns';
 import { useStyles } from '../../hooks';
 import { ActivePost } from '../../hooks/useInfinitePosts';
 import { createStyles } from '../BrandConfigProvider';
