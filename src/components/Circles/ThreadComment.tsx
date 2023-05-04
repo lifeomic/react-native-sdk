@@ -6,9 +6,9 @@ import { Avatar } from 'react-native-paper';
 import { initials } from './initials';
 import { createStyles } from '../BrandConfigProvider';
 
-type Props = { post: Post; style?: CirclesCommentStyles };
+type Props = { post: Post; style?: ThreadCommentStyles };
 
-export const Comment = ({ post, style }: Props) => {
+export const ThreadComment = ({ post, style }: Props) => {
   const { styles } = useStyles(defaultStyles, style);
   const theme = useTheme();
 
@@ -33,34 +33,36 @@ export const Comment = ({ post, style }: Props) => {
             {formatDistanceToNow(created)} ago
           </Text>
         )}
-        <Text style={styles.messageText}>{post?.message}</Text>
+        <View style={styles.messageContainer}>
+          <Text style={styles.messageText}>{post?.message}</Text>
+        </View>
       </View>
     </View>
   );
 };
 
-const defaultStyles = createStyles('Circles.Comment', (theme) => ({
+const defaultStyles = createStyles('Circles.ThreadComment', (theme) => ({
   container: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     padding: theme.spacing.medium,
     paddingBottom: theme.spacing.extraSmall,
   },
+  details: { flex: 1 },
   avatar: {
     marginRight: theme.spacing.extraSmall,
     width: theme.spacing.large,
     height: theme.spacing.large,
   },
-  messageText: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: theme.spacing.tiny,
+  messageContainer: {
+    padding: theme.spacing.small / 2,
     borderRadius: theme.roundness,
     marginTop: theme.spacing.extraSmall,
-    color: theme.colors.onSecondaryContainer,
-    backgroundColor: theme.colors.secondaryContainer,
+    color: theme.colors.onSurfaceVariant,
+    backgroundColor: theme.colors.surfaceVariant,
+    flex: 1,
   },
-  details: {},
+  messageText: {},
   usernameText: {},
   responseTimeText: {},
 }));
@@ -70,4 +72,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
-export type CirclesCommentStyles = NamedStylesProp<typeof defaultStyles>;
+export type ThreadCommentStyles = NamedStylesProp<typeof defaultStyles>;

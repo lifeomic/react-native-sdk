@@ -6,9 +6,9 @@ import { Avatar } from 'react-native-paper';
 import { initials } from './initials';
 import { createStyles } from '../BrandConfigProvider';
 
-type Props = { post: PostType; style?: CirclesPostStyles };
+type Props = { post: PostType; style?: ThreadPostStyles };
 
-export const Post = ({ post, style }: Props) => {
+export const ThreadPost = ({ post, style }: Props) => {
   const { styles } = useStyles(defaultStyles, style);
   const theme = useTheme();
 
@@ -41,7 +41,7 @@ export const Post = ({ post, style }: Props) => {
   );
 };
 
-const defaultStyles = createStyles('Circles.Post', (theme) => ({
+const defaultStyles = createStyles('Circles.ThreadPost', (theme) => ({
   container: {
     marginBottom: theme.spacing.extraSmall,
     padding: theme.spacing.medium,
@@ -71,4 +71,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
-export type CirclesPostStyles = NamedStylesProp<typeof defaultStyles>;
+export type ThreadPostStyles = NamedStylesProp<typeof defaultStyles>;

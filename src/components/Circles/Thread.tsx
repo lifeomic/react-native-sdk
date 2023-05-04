@@ -1,19 +1,19 @@
 import React, { useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import { useCirclePost, Post, useStyles } from '../../hooks';
-import { Comment } from './Comment';
-import { Post as PostView } from './PostV2';
+import { ThreadComment } from './ThreadComment';
+import { ThreadPost } from './ThreadPost';
 import { PostUnavailable } from './PostUnavailable';
 import { EmptyComments } from './EmptyComments';
 import { createStyles } from '../BrandConfigProvider';
 
-export interface PostDetailsProps {
+export interface ThreadProps {
   postId: string;
   post?: Post;
-  style?: CirclesPostDetailsStyles;
+  style?: CirclesThreadStyles;
 }
 
-export const PostDetails = ({ postId, post: postIn }: PostDetailsProps) => {
+export const Thread = ({ postId, post: postIn }: ThreadProps) => {
   const { styles } = useStyles(defaultStyles);
   const { data, isLoading, error, refetch, isRefetching } = useCirclePost(
     postId,
@@ -37,7 +37,7 @@ export const PostDetails = ({ postId, post: postIn }: PostDetailsProps) => {
       onRefresh={postIn ? undefined : refetch}
       initialNumToRender={35}
       style={styles.container}
-      ListHeaderComponent={!error && post ? <PostView post={post} /> : null}
+      ListHeaderComponent={!error && post ? <ThreadPost post={post} /> : null}
       ListEmptyComponent={
         <View
           style={styles.emptyPostCommentsContainer}
@@ -59,7 +59,7 @@ export type PostListEntry = {
 const renderItem = ({ item }: { item: PostListEntry }) => {
   return (
     <View style={{ paddingLeft: (item.depth ?? 0) * 20 }}>
-      <Comment post={item.post} />
+      <ThreadComment post={item.post} />
     </View>
   );
 };
@@ -81,7 +81,7 @@ const entriesForPost = (post: Post, depth = 0): PostListEntry[] => {
   ];
 };
 
-const defaultStyles = createStyles('Circles.PostDetails', (theme) => ({
+const defaultStyles = createStyles('Circles.Thread', (theme) => ({
   container: { flex: 1 },
   emptyPostCommentsContainer: {
     marginTop: theme.spacing.extraLarge,
@@ -96,4 +96,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
-export type CirclesPostDetailsStyles = NamedStylesProp<typeof defaultStyles>;
+export type CirclesThreadStyles = NamedStylesProp<typeof defaultStyles>;

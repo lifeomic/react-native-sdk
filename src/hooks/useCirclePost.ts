@@ -16,7 +16,7 @@ export const useCirclePost = (postId: string, disabled?: boolean) => {
       },
       accountHeaders,
     );
-  }, [accountHeaders, graphQLClient]);
+  }, [accountHeaders, graphQLClient, postId]);
 
   return useQuery('postDetails', queryForPostDetails, {
     enabled: !disabled && isFetched && !!accountHeaders,
