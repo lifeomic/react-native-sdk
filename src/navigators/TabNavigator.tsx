@@ -9,13 +9,17 @@ import { createStyles } from '../components/BrandConfigProvider';
 import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
-import { TabParamList } from './types';
+import { LoggedInRootOptionalRouteProp, TabParamList } from './types';
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
-export function TabNavigator() {
+export function TabNavigator(optionalRoute: {
+  route?: LoggedInRootOptionalRouteProp;
+}) {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
+
+  const { showNewComponent = false } = optionalRoute.route?.params || {};
 
   return (
     <Tab.Navigator
@@ -50,6 +54,16 @@ export function TabNavigator() {
           tabBarIcon: 'cog',
         }}
       />
+      {showNewComponent && (
+        <Tab.Screen
+          name="OptionalTab"
+          component={SettingsStack}
+          options={{
+            tabBarLabel: t('tabs-settings', 'Settings'),
+            tabBarIcon: 'cog',
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 }

@@ -1,6 +1,7 @@
 import type {
   CompositeScreenProps,
   NavigatorScreenParams,
+  RouteProp,
 } from '@react-navigation/native';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { AppTile, CircleTile } from '../hooks/useAppConfig';
@@ -16,7 +17,13 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> =
 
 export type LoggedInRootParamList = {
   app: NavigatorScreenParams<TabParamList> | undefined;
+  optional: { showNewComponent?: boolean };
 };
+
+export type LoggedInRootOptionalRouteProp = RouteProp<
+  LoggedInRootParamList,
+  'optional'
+>;
 
 export type NotLoggedInRootParamList = {
   'screens/LoginScreen': { username?: string };
@@ -26,6 +33,7 @@ export type TabParamList = {
   HomeTab: undefined;
   NotificationsTab: undefined;
   SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
+  OptionalTab?: NavigatorScreenParams<SettingsStackParamList>;
 };
 
 export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
