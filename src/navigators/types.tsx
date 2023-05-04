@@ -83,6 +83,10 @@ export type SettingsStackParamList = {
   'Settings/Wearables': undefined;
 };
 
+export type OptionalStackParamList = {
+  Optional: { message: 'hello world' };
+};
+
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}

@@ -10,6 +10,7 @@ import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { LoggedInRootOptionalRouteProp, TabParamList } from './types';
+import { OptionalStack } from './OptionalStack';
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
@@ -19,7 +20,7 @@ export function TabNavigator(optionalRoute: {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
 
-  const { showNewComponent = false } = optionalRoute.route?.params || {};
+  const { showNewComponent = true } = optionalRoute.route?.params || {};
 
   return (
     <Tab.Navigator
@@ -57,10 +58,10 @@ export function TabNavigator(optionalRoute: {
       {showNewComponent && (
         <Tab.Screen
           name="OptionalTab"
-          component={SettingsStack}
+          component={OptionalStack}
           options={{
-            tabBarLabel: t('tabs-settings', 'Settings'),
-            tabBarIcon: 'cog',
+            tabBarLabel: t('tabs-menu', 'Menu'),
+            tabBarIcon: 'menu',
           }}
         />
       )}
