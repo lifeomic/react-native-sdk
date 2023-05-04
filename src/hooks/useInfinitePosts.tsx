@@ -82,6 +82,7 @@ export type ActivePost = {
   reactionTotals: {
     type: string;
     count: number;
+    userHasReacted?: boolean;
   }[];
 };
 
@@ -98,6 +99,7 @@ const postsV2Query = gql`
       }
       edges {
         node {
+          id
           ... on ActivePost {
             author {
               profile {
@@ -111,6 +113,7 @@ const postsV2Query = gql`
             reactionTotals {
               count
               type
+              userHasReacted
             }
           }
         }

@@ -1433,6 +1433,11 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@material/material-color-utilities@^0.2.5":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@material/material-color-utilities/-/material-color-utilities-0.2.6.tgz#eb2e86e618e1646be5ba84a25c859b04544aad56"
+  integrity sha512-pMdkH7PvuJQS1q9igiPFfrS04Zu1feDXOVV69uWe2kr+RcK+7v3OylIYMwJDIwip1pFdGyTY4KkMy6vPIA/uSw==
+
 "@mdx-js/mdx@^1.6.22":
   version "1.6.22"
   resolved "https://registry.yarnpkg.com/@mdx-js/mdx/-/mdx-1.6.22.tgz#8a723157bf90e78f17dc0f27995398e6c731f1ba"
@@ -10974,6 +10979,11 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
   dependencies:
     hash-base "^3.0.0"
     inherits "^2.0.1"
+
+rn-emoji-keyboard@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/rn-emoji-keyboard/-/rn-emoji-keyboard-1.2.2.tgz#cdcfff32a76791b0b3aa7ee5d2f4c1d79196f3b2"
+  integrity sha512-Vc6T77FaEq8dfXZPfjmge9OHZI1Lcpl96SU4XgXzIdFLjpLx8NA0HuGxg10CYAYHmAxZoJ4FdHTdyw/yfxIJdA==
 
 rn-host-detect@1.2.0:
   version "1.2.0"

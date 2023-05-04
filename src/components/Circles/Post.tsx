@@ -1,10 +1,11 @@
-import { formatRelative } from 'date-fns';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { Avatar, Divider, List, Text } from 'react-native-paper';
+import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
+import { formatRelative } from 'date-fns';
 import { useStyles } from '../../hooks';
 import { ActivePost } from '../../hooks/useInfinitePosts';
 import { createStyles } from '../BrandConfigProvider';
+import { ReactionsToolbar } from './ReactionsToolbar';
 
 interface PostProps {
   post: ActivePost;
@@ -25,6 +26,7 @@ export const Post = ({ post }: PostProps) => {
       ),
     [post.author.profile.picture, styles.icon],
   );
+
   return (
     <View style={styles.container}>
       <List.Item
@@ -37,6 +39,19 @@ export const Post = ({ post }: PostProps) => {
       <Text variant="titleMedium" style={styles.messageText}>
         {post.message}
       </Text>
+      <View style={styles.toolbarContainer}>
+        <Button
+          style={styles.commentButton}
+          contentStyle={styles.commentButtonContainer}
+          labelStyle={styles.commentButtonText}
+          compact={true}
+          mode={'outlined'}
+          onPress={() => {}} // TODO: Navigate to post details/comments page
+        >
+          {post.replyCount} COMMENTS
+        </Button>
+        <ReactionsToolbar post={post} />
+      </View>
       <Divider />
     </View>
   );
@@ -48,7 +63,22 @@ const defaultStyles = createStyles('Post', (theme) => ({
   icon: {},
   messageText: {
     paddingHorizontal: theme.spacing.small,
-    paddingBottom: theme.spacing.small,
+    paddingBottom: theme.spacing.tiny,
+  },
+  toolbarContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingLeft: theme.spacing.extraSmall,
+    marginBottom: theme.spacing.small,
+  },
+  commentButtonContainer: {},
+  commentButton: {
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  commentButtonText: {
+    color: 'rgba(0, 0, 0, 0.4)',
+    fontSize: 8,
+    lineHeight: 10,
   },
 }));
 
