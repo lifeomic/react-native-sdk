@@ -4,6 +4,7 @@ export * from './useActiveAccount';
 export * from './useActiveProject';
 export * from './useAppConfig';
 export * from './useAuth';
+export * from './useCirclePost';
 export * from './useCurrentAppState';
 export * from './useDeveloperConfig';
 export * from './useEnvironmentSelection';
