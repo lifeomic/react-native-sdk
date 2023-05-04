@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { formatDistanceToNow, isValid } from 'date-fns';
+import { t } from 'i18next';
 import { Post, useStyles, useTheme } from '../../hooks';
 import { Avatar } from 'react-native-paper';
 import { initials } from './initials';
@@ -30,7 +31,9 @@ export const ThreadComment = ({ post, style }: Props) => {
         </Text>
         {isValid(created) && (
           <Text style={styles.responseTimeText}>
-            {formatDistanceToNow(created)} ago
+            {t('circles.thread-comment.responseTime', '{{responseTime}} ago', {
+              responseTime: formatDistanceToNow(created),
+            })}
           </Text>
         )}
         <View style={styles.messageContainer}>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import { t } from 'i18next';
 import { formatDistanceToNow, isValid } from 'date-fns';
 import { Post as PostType, useStyles, useTheme } from '../../hooks';
 import { Avatar } from 'react-native-paper';
@@ -31,7 +32,9 @@ export const ThreadPost = ({ post, style }: Props) => {
           </Text>
           {isValid(created) && (
             <Text style={styles.responseTimeText}>
-              {formatDistanceToNow(new Date(post?.createdAt!))} ago
+              {t('circles.thread-post.responseTime', '{{responseTime}} ago', {
+                responseTime: formatDistanceToNow(created),
+              })}
             </Text>
           )}
         </View>

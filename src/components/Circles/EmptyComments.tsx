@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import { t } from 'i18next';
 import { MessageSquare } from '@lifeomic/chromicons-native';
 import { useStyles } from '../../hooks';
 import { createStyles } from '../BrandConfigProvider';
@@ -16,9 +17,13 @@ export const EmptyComments = ({ style }: Props) => {
         style={styles.iconImage}
       />
 
-      <Text style={styles.bodyText}>No comments yet.</Text>
+      <Text style={styles.bodyText}>
+        {t('circles.empty-comments.body', 'No comments yet.')}
+      </Text>
 
-      <Text style={styles.helpText}>Be the first!</Text>
+      <Text style={styles.helpText}>
+        {t('circles.empty-comments.help', 'Be the first!')}
+      </Text>
     </View>
   );
 };
