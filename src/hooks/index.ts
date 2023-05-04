@@ -13,6 +13,7 @@ export * from './useHttpClient';
 export * from './useMe';
 export * from './useNotifications';
 export * from './useOAuthFlow';
+export * from './usePost';
 export * from './useStyles';
 export * from './useSubjectProjects';
 export * from './useTheme';

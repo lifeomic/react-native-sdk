@@ -56,7 +56,7 @@ type ImageSuffixes = 'Image';
 
 type AnySuffix = 'Any';
 
-type StylesBuilder<T> = (theme: Theme) => T;
+type StylesBuilder<T> = (theme: Theme) => NamedStyles<T>;
 
 /**
  * Allows a string literal but not a variable of type string
