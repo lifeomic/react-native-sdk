@@ -4,7 +4,7 @@ import { useActiveAccount } from './useActiveAccount';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 
-export const useCirclePost = (postId: string, disabled?: boolean) => {
+export const usePost = (postId: string, disabled?: boolean) => {
   const { graphQLClient } = useGraphQLClient();
   const { isFetched, accountHeaders } = useActiveAccount();
 
@@ -55,30 +55,6 @@ export type Post = {
       hasNextPage?: boolean;
     };
   };
-  circle?: {
-    id: string;
-    name: string;
-    image: string;
-    isMember: boolean;
-    owner: {
-      userId: string;
-    };
-    managingGroups: {
-      edges: {
-        role: string;
-        node: {
-          userId: string;
-        };
-      }[];
-    };
-    forumSettings?: {
-      userSettings?: {
-        comment: {};
-        includeImages: boolean;
-        includeLinks: boolean;
-      };
-    };
-  };
 };
 
 export type PostDetailsPostQueryResponse = {
@@ -104,13 +80,6 @@ const postDetailsQuery = gql`
   query PostDetailsPost($id: ID!, $after: String) {
     post(id: $id) {
       ...PostDetails
-      ... on ActivePost {
-        circle {
-          id
-          name
-          image
-        }
-      }
       replies(order: NEWEST, first: 10, after: $after) {
         pageInfo {
           endCursor

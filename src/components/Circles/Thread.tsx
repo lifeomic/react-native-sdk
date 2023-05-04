@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { FlatList, View } from 'react-native';
-import { useCirclePost, Post, useStyles } from '../../hooks';
+import { usePost, Post, useStyles } from '../../hooks';
 import { ThreadComment } from './ThreadComment';
 import { ThreadPost } from './ThreadPost';
 import { PostUnavailable } from './PostUnavailable';
@@ -15,7 +15,7 @@ export interface ThreadProps {
 
 export const Thread = ({ postId, post: postIn }: ThreadProps) => {
   const { styles } = useStyles(defaultStyles);
-  const { data, isLoading, error, refetch, isRefetching } = useCirclePost(
+  const { data, isLoading, error, refetch, isRefetching } = usePost(
     postId,
     !!postIn,
   );
