@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import { t } from 'i18next';
 import { LinkBroken } from '@lifeomic/chromicons-native';
 import { createStyles } from '../BrandConfigProvider';
 import { useStyles } from '../../hooks';
@@ -15,13 +16,20 @@ export const PostUnavailable = ({ style }: Props) => {
         style={styles.icon}
       />
 
-      <Text style={styles.headerText}>Oh No!</Text>
-
-      <Text style={styles.bodyText}>
-        Something went wrong loading this post.
+      <Text style={styles.headerText}>
+        {t('circles.post-unavailable.header', 'Oh No!')}
       </Text>
 
-      <Text style={styles.helpText}>Please try again later.</Text>
+      <Text style={styles.bodyText}>
+        {t(
+          'circles.post-unavailable.body',
+          'Something went wrong loading this post.',
+        )}
+      </Text>
+
+      <Text style={styles.helpText}>
+        {t('circles.post-unavailable.help', 'Please try again later.')}
+      </Text>
     </View>
   );
 };
