@@ -46,12 +46,13 @@ beforeEach(() => {
   });
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
+    activeSubjectId: 'subjectId',
     isFetched: true,
     isLoading: false,
   });
 });
 
-test('builds uri with code, projectId, and accountId', () => {
+test('builds uri with code, projectId, patientId, and accountId', () => {
   const appTile = {
     id: 'appTileId',
     title: 'app tile title',
@@ -67,7 +68,7 @@ test('builds uri with code, projectId, and accountId', () => {
   expect(useExchangeTokenMock).toHaveBeenCalledTimes(1);
   expect(webviewMock.mock.calls[0][0]).toMatchObject({
     source: {
-      uri: 'http://unit-test/app-tile/callback?accountId=acct1&code=someCode&projectId=projectId',
+      uri: 'http://unit-test/app-tile/callback?accountId=acct1&code=someCode&patientId=subjectId&projectId=projectId',
     },
   });
 });

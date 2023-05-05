@@ -20,6 +20,7 @@ export const AuthedAppTileScreen = ({
 
   const {
     activeProject,
+    activeSubjectId,
     isLoading: loadingProject,
     isFetched: projectedFetched,
   } = useActiveProject();
@@ -55,8 +56,12 @@ export const AuthedAppTileScreen = ({
     if (activeProject?.id) {
       parsed.projectId = activeProject.id;
     }
+
+    if (activeSubjectId) {
+      parsed.patientId = activeSubjectId;
+    }
     return `${oauthCallbackUrl}?${queryString.stringify(parsed)}`;
-  }, [account, activeProject, data, oauthCallbackUrl]);
+  }, [account, activeProject, data, oauthCallbackUrl, activeSubjectId]);
 
   // Do not proceed until all queries have resolved
   if (!readyToBuildUri) {
