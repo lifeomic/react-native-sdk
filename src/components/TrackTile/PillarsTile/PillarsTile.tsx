@@ -103,7 +103,7 @@ const defaultStyles = createStyles('PillarsTile', (theme) => ({
   pillarsTileBackgroundContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    height: 395,
+    height: 404,
   },
   pillarsTileLoadingIndicator: {
     height: '100%',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { ColorValue, View } from 'react-native';
 import { SvgProps } from 'react-native-svg';
 import {
   Alcohol,
@@ -30,7 +30,7 @@ import {
 
 type IndicatorProps = {
   name: string;
-  color?: string;
+  color?: ColorValue;
   scale?: number;
   CustomIcon?: React.ComponentType<SvgProps>;
 };
@@ -59,9 +59,9 @@ const Indicator = ({
       {(!!CustomIcon && <CustomIcon {...svgProps} />) ||
         ({
           apple: <Apple {...svgProps} />,
-          'broccoli': <Broccoli {...svgProps} />,
+          broccoli: <Broccoli {...svgProps} />,
           'book-open': <BookOpen {...svgProps} />,
-          'check': <Check {...svgProps} />,
+          check: <Check {...svgProps} />,
           chroma: <Chroma {...svgProps} />,
           'clock-forward': <ClockForward {...svgProps} />,
           cocktail: <Alcohol {...svgProps} />,
