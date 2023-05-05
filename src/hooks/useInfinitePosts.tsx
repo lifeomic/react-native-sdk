@@ -73,7 +73,7 @@ export type ActivePost = {
   author: {
     profile: {
       displayName: string;
-      picture: string;
+      picture?: string;
     };
   };
   createdAt: string;

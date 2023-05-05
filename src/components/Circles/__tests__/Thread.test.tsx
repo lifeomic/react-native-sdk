@@ -6,6 +6,7 @@ import { usePost, Post } from '../../../hooks/usePost';
 jest.mock('../../../hooks/usePost', () => ({
   usePost: jest.fn(() => ({})),
 }));
+jest.mock('../ReactionsToolbar');
 
 const mockUsePost = usePost as jest.Mock;
 
