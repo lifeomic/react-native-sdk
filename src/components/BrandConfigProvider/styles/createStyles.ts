@@ -1,5 +1,5 @@
 import { ImageStyle, TextStyle, ViewStyle } from 'react-native';
-import { Theme } from '../theme/ThemeProvider';
+import { Theme } from '../theme/types';
 
 /**
  *

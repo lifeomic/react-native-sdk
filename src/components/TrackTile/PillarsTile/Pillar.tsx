@@ -26,6 +26,7 @@ import {
 import { isCodeEqual } from '../util/is-code-equal';
 import { useStyles } from '../../../hooks/useStyles';
 import { createStyles } from '../../BrandConfigProvider';
+import { useDynamicColorGroup } from '../../../hooks/useDynamicColorGroup';
 
 type PillarProps = {
   trackerValues?: TrackerValue[];
@@ -55,6 +56,7 @@ export const Pillar: FC<PillarProps> = (props) => {
     styles: instanceStyles,
   } = props;
   const { color, icon, target: installTarget } = tracker;
+  const { onColor, backdrop } = useDynamicColorGroup(color);
   const selectedUnit = getPreferredUnitType(tracker);
   const { target: unitDefaultTarget, display, increment = 1 } = selectedUnit;
   const { styles } = useStyles(defaultStyles, instanceStyles);
@@ -268,7 +270,12 @@ export const Pillar: FC<PillarProps> = (props) => {
                   ]}
                 />
                 {hasMetGoal && (
-                  <View style={styles.pillarStarBackground}>
+                  <View
+                    style={[
+                      { backgroundColor: backdrop },
+                      styles.pillarStarBackground,
+                    ]}
+                  >
                     <Animated.View
                       style={{
                         opacity: opacityAnimation,
@@ -286,7 +293,7 @@ export const Pillar: FC<PillarProps> = (props) => {
                       <Indicator
                         CustomIcon={icons?.['pillars-goal-met-icon']}
                         name="star"
-                        color={color}
+                        color={onColor}
                         scale={1.1}
                       />
                     </Animated.View>
@@ -365,7 +372,6 @@ const defaultStyles = createStyles('Pillar', (theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#272b2f',
   },
   pillarLoading: {
     width: defaultPillarWidth,

@@ -1,3 +1,4 @@
 export { BrandConfigProvider } from './BrandConfigProvider';
-export { Theme, ThemeProp, ThemeProvider } from './theme/ThemeProvider';
+export { ThemeProp, ThemeProvider } from './theme/ThemeProvider';
 export { createStyles } from './styles/createStyles';
+export * from './theme/types';
