@@ -96,7 +96,8 @@ export const PillarsTile = ({
 const defaultStyles = createStyles('PillarsTile', (theme) => ({
   pillarsTile: {
     overflow: 'hidden',
-    margin: theme.spacing.large,
+    marginHorizontal: theme.spacing.medium,
+    marginBottom: theme.spacing.medium,
     backgroundColor: theme.colors.surface,
   },
   pillarsTileBackgroundContainer: {
