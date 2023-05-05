@@ -5,7 +5,12 @@ import {
   secondaryBaseURL,
   secondaryConfig,
 } from './storybook/stories/OAuth.stories';
-import { DeveloperConfigProvider, RootProviders, RootStack } from '../src';
+import {
+  DeveloperConfigProvider,
+  RootProviders,
+  RootStack,
+  TabScreen,
+} from '../src';
 import { FhirExampleScreen } from './src/screens/FhirExampleScreen';
 import { useEnvironmentSelection } from '../src/hooks';
 
@@ -15,6 +20,27 @@ if (__DEV__) {
 
 function App() {
   const usePrimaryEnvironment = useEnvironmentSelection();
+
+  // structure of single element of array
+  // <Tab.Screen
+  //     name="OptionalTab"
+  //     component={OptionalScreen}
+  //     options={{
+  //       tabBarLabel: t('tabs-menu', 'Menu'),
+  //       tabBarIcon: 'menu',
+  //     }}
+  // />
+
+  const tabScreens: TabScreen[] = [
+    {
+      name: 'test',
+      component: <div>hello world</div>,
+      options: {
+        tabBarLabel: 'test',
+        tabBarIcon: 'test',
+      },
+    },
+  ];
 
   return (
     <DeveloperConfigProvider
@@ -27,6 +53,7 @@ function App() {
           primaryColor: '#fb5607',
         },
         apiBaseURL: usePrimaryEnvironment ? baseURL : secondaryBaseURL,
+        tabScreen: tabScreens,
       }}
     >
       <RootProviders

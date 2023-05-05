@@ -8,6 +8,7 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { TabNavigator } from './TabNavigator';
 import { LoggedInRootParamList, NotLoggedInRootParamList } from './types';
 
+// allow this to take an optional array of screens - this is just a pass through
 export function RootStack() {
   const { isLoggedIn, loading } = useAuth();
 

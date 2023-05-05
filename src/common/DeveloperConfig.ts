@@ -17,19 +17,31 @@ import { AppTile } from '../hooks/useAppConfig';
  *
  * @param apiBaseURL Allows for configuring a custom base API URL. This is only
  * needed when performing advanced debugging involving a dev mock server.
+ *
+ * @param tabScreen TODO: fill in description
  */
 export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
+  tabScreen?: TabScreen[];
+};
+
+export type AppTileScreens = {
+  [key: string]: ComponentType;
 };
 
 export type SimpleTheme = {
   primaryColor: string;
 };
 
-export type AppTileScreens = {
-  [key: string]: ComponentType;
+export type TabScreen = {
+  name: string;
+  component: JSX.Element; //i think this is ComponentType maybe
+  options: {
+    tabBarLabel: string | undefined;
+    tabBarIcon: string | undefined;
+  };
 };
 
 export function getCustomAppTileComponent(
