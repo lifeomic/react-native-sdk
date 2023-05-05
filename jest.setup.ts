@@ -12,8 +12,22 @@ jest.mock('i18next', () => ({
     init: jest.fn(),
   }),
   changeLanguage: jest.fn(),
-  t: (_key: string, defaultValue: string, params?: any) =>
-    `${defaultValue}${params ? JSON.stringify(params) : ''}`,
+  t: (
+    _key: string,
+    defaultValue: string,
+    params: Record<string, string> = {},
+  ) => {
+    // if function was called without a key
+    if (typeof defaultValue !== 'string') {
+      params = defaultValue ?? {};
+      defaultValue = _key;
+    }
+
+    return Object.entries(params).reduce(
+      (s, [k, v]) => s.replace(new RegExp(`{{\s*${k}\s*}}`, 'g'), v),
+      defaultValue,
+    );
+  },
 }));
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);

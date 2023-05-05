@@ -58,7 +58,7 @@ export type PostListEntry = {
 
 const renderItem = ({ item }: { item: PostListEntry }) => {
   return (
-    <View style={{ paddingLeft: (item.depth ?? 0) * 20 }}>
+    <View style={{ paddingLeft: item.depth * 20 }}>
       <ThreadComment post={item.post} />
     </View>
   );
