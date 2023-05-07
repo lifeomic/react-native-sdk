@@ -37,7 +37,7 @@ export type SimpleTheme = {
 
 export type TabScreen = {
   name: string;
-  component: JSX.Element; //i think this is ComponentType maybe
+  component: React.ComponentType; //i think this is ComponentType maybe
   options: {
     tabBarLabel: string | undefined;
     tabBarIcon: string | undefined;

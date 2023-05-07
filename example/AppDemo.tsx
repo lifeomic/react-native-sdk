@@ -21,23 +21,21 @@ if (__DEV__) {
 function App() {
   const usePrimaryEnvironment = useEnvironmentSelection();
 
-  // structure of single element of array
-  // <Tab.Screen
-  //     name="OptionalTab"
-  //     component={OptionalScreen}
-  //     options={{
-  //       tabBarLabel: t('tabs-menu', 'Menu'),
-  //       tabBarIcon: 'menu',
-  //     }}
-  // />
+  // const component = () => {
+  //     <Stack.Navigator>
+  //       <Stack.Screen>
+
+  //       </Stack.Screen>
+  //     </Stack.Navigator>
+  // }
 
   const tabScreens: TabScreen[] = [
     {
       name: 'test',
-      component: <div>hello world</div>,
+      component: (<div>asdf</div>) as unknown as React.ComponentType<any>,
       options: {
         tabBarLabel: 'test',
-        tabBarIcon: 'test',
+        tabBarIcon: 'menu',
       },
     },
   ];
