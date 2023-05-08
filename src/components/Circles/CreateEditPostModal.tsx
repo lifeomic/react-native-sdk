@@ -57,7 +57,7 @@ export const CreateEditPostModal = ({
           />
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={20}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 40}
             style={styles.toolbarContainer}
           >
             <View style={styles.rightToolbarContainer}>
@@ -115,6 +115,7 @@ const defaultStyles = createStyles('CreateEditPostModal', (theme) => ({
     height: 60,
     flex: 1,
     flexGrow: 0.1,
+    paddingBottom: 8,
   },
   rightToolbarContainer: {
     paddingTop: theme.spacing.medium,
@@ -136,9 +137,9 @@ const defaultStyles = createStyles('CreateEditPostModal', (theme) => ({
     width: 55,
   },
   postButtonLabel: {
-    marginTop: 0,
+    color: theme.colors.text,
+    marginVertical: 0,
     paddingTop: 4,
-    paddingBottom: 16,
     fontSize: 14,
     lineHeight: 16,
   },
