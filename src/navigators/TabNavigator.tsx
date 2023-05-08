@@ -18,7 +18,7 @@ export function TabNavigator() {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
 
-  const { navigationTab } = useDeveloperConfig();
+  const { additionalNavigationTab } = useDeveloperConfig();
 
   return (
     <Tab.Navigator
@@ -53,12 +53,12 @@ export function TabNavigator() {
           tabBarIcon: 'cog',
         }}
       />
-      {navigationTab?.map((tab: any) => (
+      {additionalNavigationTab?.map((tab: any) => (
         <Tab.Screen
           name={tab.name}
           component={tab.component}
           options={{
-            tabBarLabel: t(tab.options.tabBarLabel.key),
+            tabBarLabel: t(tab.options.tabBarLabel),
             tabBarIcon: tab.options.tabBarIcon,
           }}
         />

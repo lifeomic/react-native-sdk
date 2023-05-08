@@ -25,7 +25,7 @@ export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
-  navigationTab?: NavigationTab[];
+  additionalNavigationTab?: AdditionalNavigationTab[];
 };
 
 export type AppTileScreens = {
@@ -43,11 +43,11 @@ export type SimpleTheme = {
   primaryColor: string;
 };
 
-type NavigationTab = {
+type AdditionalNavigationTab = {
   name: string;
   component: () => JSX.Element;
   options: {
-    tabBarLabel: { key: [string, string] };
+    tabBarLabel: string | string[];
     tabBarIcon: string;
   };
 };
