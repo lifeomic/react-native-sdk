@@ -19,7 +19,6 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
   const createReaction = useCreateReactionMutation();
   const undoReaction = useUndoReactionMutation();
   const { data } = useUser();
-  const [localReactions, setLocalReactions] = useState(post.reactionTotals);
   const [showPicker, setShowPicker] = useState(false);
   const { styles } = useStyles(defaultStyles);
 
@@ -29,38 +28,24 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
         return;
       }
 
-      const reactionIndex = localReactions.findIndex(
+      const reactionIndex = post.reactionTotals.findIndex(
         (r) => r.type === emojiType,
       );
 
       // if the reaction type doesn't exist locally
       if (reactionIndex < 0) {
-        setLocalReactions((reactions) => [
-          ...reactions,
-          { type: emojiType, count: 1, userHasReacted: true },
-        ]);
         createReaction.mutate({ postId: post.id, type: emojiType });
         return;
       }
 
       // reaction exists locally but current user has not reacted
-      if (!localReactions[reactionIndex].userHasReacted) {
-        setLocalReactions((reactions) => {
-          reactions[reactionIndex].count += 1;
-          reactions[reactionIndex].userHasReacted = true;
-          return reactions;
-        });
+      if (!post.reactionTotals[reactionIndex].userHasReacted) {
         createReaction.mutate({ postId: post.id, type: emojiType });
         return;
       }
 
       // reaction exists locally and user has already reacted
-      if (localReactions[reactionIndex].userHasReacted) {
-        setLocalReactions((reactions) => {
-          reactions[reactionIndex].count -= 1;
-          reactions[reactionIndex].userHasReacted = false;
-          return reactions;
-        });
+      if (post.reactionTotals[reactionIndex].userHasReacted) {
         undoReaction.mutate({
           userId: data.id,
           postId: post.id,
@@ -69,7 +54,7 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
         return;
       }
     },
-    [data?.id, localReactions, post.id, createReaction, undoReaction],
+    [post.id, post.reactionTotals, data?.id, createReaction, undoReaction],
   );
 
   return (
@@ -90,7 +75,7 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
         style={styles.addReactionButton}
         onPress={() => setShowPicker((currentVal) => !currentVal)}
       />
-      {localReactions.map((reaction) => {
+      {post.reactionTotals.map((reaction) => {
         if (reaction.count) {
           return (
             <View
