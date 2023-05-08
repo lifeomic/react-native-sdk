@@ -43,7 +43,7 @@ export function getCustomAppTileComponent(
   return !!appTile?.source.url && appTileScreens?.[appTile.source.url];
 }
 
-type AdditionalNavigationTab = {
+export type AdditionalNavigationTab = {
   name: string;
   component: () => JSX.Element;
   options: {
