@@ -14,7 +14,7 @@ jest.mock('../../hooks/useAppConfig', () => ({
   useAppConfig: () => ({
     data: {
       homeTab: {
-        tiles: ['trackTile'],
+        tiles: ['trackTile', 'todayTile'],
         trackTileSettings: {
           title: 'TrackTile Title',
         },
@@ -30,6 +30,11 @@ jest.mock('../../hooks/useAppConfig', () => ({
             source: { url: 'https://tile.com' },
           },
         ],
+        todayTile: {
+          id: 'today-tile',
+          title: 'Today',
+          source: { url: 'https://today-tile.com' },
+        },
       },
     },
   }),
@@ -47,4 +52,7 @@ test('renders multiple tiles', () => {
 
   expect(tileList.getByText('My Second Tile')).toBeDefined();
   expect(tileList.getByTestId('tile-button-tile-id-2')).toBeDefined();
+
+  expect(tileList.getByText('Today')).toBeDefined();
+  expect(tileList.getByTestId('tile-button-today-tile')).toBeDefined();
 });

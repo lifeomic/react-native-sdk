@@ -31,6 +31,7 @@ export interface AppConfig {
     tiles?: Tile[];
     trackTileSettings?: { title: string };
     pillarSettings?: { advancedScreenTrackers: string[] };
+    todayTile?: AppTile;
   };
 }
 
