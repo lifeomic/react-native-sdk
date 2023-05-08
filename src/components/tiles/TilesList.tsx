@@ -11,6 +11,7 @@ import { SvgUri } from 'react-native-svg';
 import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
 import { HomeStackScreenProps } from '../../navigators/types';
 import DefaultCircleIcon from './icons/heart-circle.svg';
+import TodayIcon from './icons/today-tile.svg';
 
 interface Props extends HomeStackScreenProps<'Home'> {
   styles?: TilesListStyles;
@@ -25,6 +26,8 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const pillarSettings = data?.homeTab?.pillarSettings;
   const trackTileEnabled = data?.homeTab?.tiles?.includes?.('trackTile');
   const trackTileTitle = data?.homeTab?.trackTileSettings?.title;
+  const todayTileEnabled = data?.homeTab?.tiles?.includes?.('todayTile');
+  const todayTile = data?.homeTab?.todayTile;
 
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
@@ -45,6 +48,13 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
     },
     [navigation, appTileScreens],
   );
+
+  const onTodayTilePress = useCallback(() => {
+    if (!todayTile) {
+      return;
+    }
+    navigation.navigate('Home/AuthedAppTile', { appTile: todayTile });
+  }, [navigation, todayTile]);
 
   return (
     <View testID={tID('tiles-list')} style={styles.view}>
@@ -80,6 +90,15 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
         />
       )}
       <View style={styles.tiles}>
+        {todayTileEnabled && todayTile && (
+          <Tile
+            id={todayTile.id}
+            key={todayTile.id}
+            title={todayTile.title}
+            Icon={TodayIcon}
+            onPress={onTodayTilePress}
+          />
+        )}
         {data?.homeTab?.appTiles?.map((appTile: AppTile) => (
           <Tile
             id={appTile.id}
