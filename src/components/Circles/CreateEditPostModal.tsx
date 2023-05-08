@@ -37,10 +37,10 @@ export const CreateEditPostModal = ({
       <Modal
         visible={visible}
         onDismiss={hideModal}
-        style={{ marginTop: 0, marginBottom: 0 }}
+        style={styles.modal}
         animationType={'slide'}
       >
-        <View style={{ height: '100%', flex: 1 }}>
+        <View style={styles.container}>
           <Appbar.Header style={styles.header}>
             <Appbar.BackAction onPress={hideModal} />
             <Appbar.Content title="Create Post" />
@@ -95,10 +95,14 @@ export const CreateEditPostModal = ({
   );
 };
 
-const defaultStyles = createStyles('Post', (theme) => ({
+const defaultStyles = createStyles('CreateEditPostModal', (theme) => ({
+  modal: {
+    marginTop: 0,
+    marginBottom: 0,
+  },
   container: {
     height: '100%',
-    backgroundColor: theme.colors.notification,
+    flex: 1,
   },
   header: {},
   textArea: {
@@ -145,4 +149,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
-export type PostStyle = NamedStylesProp<typeof defaultStyles>;
+export type CreateEditPostModalStyles = NamedStylesProp<typeof defaultStyles>;
