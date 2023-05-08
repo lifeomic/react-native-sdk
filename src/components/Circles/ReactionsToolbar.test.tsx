@@ -3,7 +3,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { ReactionsToolbar } from './ReactionsToolbar';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from '../../hooks/useGraphQLClient';
-import { ActivePost } from '../../hooks/useInfinitePosts';
+import type { Post } from '../../hooks/usePosts';
 import {
   useCreateReactionMutation,
   useUndoReactionMutation,
@@ -29,19 +29,23 @@ useUserMock.mockReturnValue({
 });
 
 const baseURL = 'https://some-domain/unit-test';
-const toolbarComponent = (post: ActivePost) => (
+const toolbarComponent = (post: Post) => (
   <QueryClientProvider client={new QueryClient()}>
     <GraphQLClientContextProvider baseURL={baseURL} />
     <ReactionsToolbar post={post} />
   </QueryClientProvider>
 );
 
-const renderToolbar = (post: ActivePost) => {
+const renderToolbar = (post: Post) => {
   return render(toolbarComponent(post));
 };
 
 test('renders toolbar without reaction when count is 0', () => {
-  const post = {
+  const post: Post = {
+    __typename: 'ActivePost',
+    parentId: '456',
+    replies: { edges: [], pageInfo: {} },
+    status: 'READY',
     id: '123',
     message: 'Some message!',
     author: {
@@ -66,8 +70,12 @@ test('renders toolbar without reaction when count is 0', () => {
 });
 
 test('renders toolbar with reaction', () => {
-  const post = {
+  const post: Post = {
     id: '123',
+    __typename: 'ActivePost',
+    parentId: '456',
+    replies: { edges: [], pageInfo: {} },
+    status: 'READY',
     message: 'Some message!',
     author: {
       profile: {
@@ -91,8 +99,12 @@ test('renders toolbar with reaction', () => {
 });
 
 test('multiple emoji selections create and undo reaction respectively', async () => {
-  const post = {
+  const post: Post = {
     id: '123',
+    __typename: 'ActivePost',
+    parentId: '456',
+    replies: { edges: [], pageInfo: {} },
+    status: 'READY',
     message: 'Some message!',
     author: {
       profile: {

@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { Button, IconButton } from 'react-native-paper';
 import { useStyles, useUser } from '../../hooks';
-import { ActivePost } from '../../hooks/useInfinitePosts';
+import type { Post } from '../../hooks/usePosts';
 import { createStyles } from '../BrandConfigProvider';
 import EmojiPicker from 'rn-emoji-keyboard';
 import {
@@ -12,7 +12,7 @@ import {
 import { tID } from '../../common';
 
 interface ReactionsToolbarProps {
-  post: ActivePost;
+  post: Post;
 }
 
 export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
