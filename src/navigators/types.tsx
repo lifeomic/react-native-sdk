@@ -27,7 +27,7 @@ export type TabParamList = {
   NotificationsTab: undefined;
   SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
 } & {
-  [key: string]: undefined;
+  [keyof: string]: undefined;
 };
 
 export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
