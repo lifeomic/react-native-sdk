@@ -11,7 +11,6 @@ import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
 import { useDeveloperConfig } from 'src/hooks';
-import { HomeScreen } from 'src/screens';
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
@@ -19,9 +18,7 @@ export function TabNavigator() {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
 
-  const { tabScreen } = useDeveloperConfig();
-
-  tabScreen?.map((screen) => console.log(screen.name));
+  const { additionalNavigationTabs } = useDeveloperConfig();
 
   return (
     <Tab.Navigator
@@ -56,13 +53,13 @@ export function TabNavigator() {
           tabBarIcon: 'cog',
         }}
       />
-      {tabScreen?.map((screen) => (
+      {additionalNavigationTabs?.map((tab) => (
         <Tab.Screen
-          name={screen.name}
-          component={SettingsStack}
+          name={tab.name}
+          component={tab.component}
           options={{
-            tabBarLabel: t('tabs-settings', 'Settings'),
-            tabBarIcon: 'cog',
+            tabBarLabel: tab.options.tabBarLabel,
+            tabBarIcon: tab.options.tabBarIcon,
           }}
         />
       ))}

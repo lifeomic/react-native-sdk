@@ -5,14 +5,11 @@ import {
   secondaryBaseURL,
   secondaryConfig,
 } from './storybook/stories/OAuth.stories';
-import {
-  DeveloperConfigProvider,
-  RootProviders,
-  RootStack,
-  TabScreen,
-} from '../src';
+import { DeveloperConfigProvider, RootProviders, RootStack } from '../src';
 import { FhirExampleScreen } from './src/screens/FhirExampleScreen';
+import { HelloWorldScreen } from './src/screens/HelloWorldScreen';
 import { useEnvironmentSelection } from '../src/hooks';
+import { t } from 'i18next';
 
 if (__DEV__) {
   import('./reactotron').then(() => console.log('Reactotron Configured'));
@@ -20,25 +17,6 @@ if (__DEV__) {
 
 function App() {
   const usePrimaryEnvironment = useEnvironmentSelection();
-
-  // const component = () => {
-  //     <Stack.Navigator>
-  //       <Stack.Screen>
-
-  //       </Stack.Screen>
-  //     </Stack.Navigator>
-  // }
-
-  const tabScreens: TabScreen[] = [
-    {
-      name: 'test',
-      component: (<div>asdf</div>) as unknown as React.ComponentType<any>,
-      options: {
-        tabBarLabel: 'test',
-        tabBarIcon: 'menu',
-      },
-    },
-  ];
 
   return (
     <DeveloperConfigProvider
@@ -51,7 +29,16 @@ function App() {
           primaryColor: '#fb5607',
         },
         apiBaseURL: usePrimaryEnvironment ? baseURL : secondaryBaseURL,
-        tabScreen: tabScreens,
+        additionalNavigationTabs: [
+          {
+            name: 'AdditionalTab',
+            component: HelloWorldScreen,
+            options: {
+              tabBarLabel: t('tabs-settings', 'Settings'),
+              tabBarIcon: 'menu',
+            },
+          },
+        ],
       }}
     >
       <RootProviders
