@@ -1,21 +1,21 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { ReactionsToolbar } from './ReactionsToolbar';
+import { ReactionsToolbar } from '../ReactionsToolbar';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { GraphQLClientContextProvider } from '../../hooks/useGraphQLClient';
-import { ActivePost } from '../../hooks/useInfinitePosts';
+import { GraphQLClientContextProvider } from '../../../hooks/useGraphQLClient';
+import { ActivePost } from '../../../hooks/useInfinitePosts';
 import {
   useCreateReactionMutation,
   useUndoReactionMutation,
-} from '../../hooks/useReactionMutations';
-import { useUser } from '../../hooks/useUser';
+} from '../../../hooks/useReactionMutations';
+import { useUser } from '../../../hooks/useUser';
 
 jest.useFakeTimers();
-jest.mock('../../hooks/useReactionMutations', () => ({
+jest.mock('../../../hooks/useReactionMutations', () => ({
   useCreateReactionMutation: jest.fn(),
   useUndoReactionMutation: jest.fn(),
 }));
-jest.mock('../../hooks/useUser', () => ({
+jest.mock('../../../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));
 

@@ -1,13 +1,13 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { PostsList } from './PostsList';
-import { CircleTile } from '../../hooks/useAppConfig';
-import { useInfinitePosts } from '../../hooks/useInfinitePosts';
+import { PostsList } from '../PostsList';
+import { CircleTile } from '../../../hooks/useAppConfig';
+import { useInfinitePosts } from '../../../hooks/useInfinitePosts';
 
-jest.mock('../../hooks/useInfinitePosts', () => ({
+jest.mock('../../../hooks/useInfinitePosts', () => ({
   useInfinitePosts: jest.fn(),
 }));
-jest.mock('./ReactionsToolbar');
+jest.mock('../ReactionsToolbar');
 
 const useInfinitePostsMock = useInfinitePosts as jest.Mock;
 
