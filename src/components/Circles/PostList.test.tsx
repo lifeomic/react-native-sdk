@@ -4,9 +4,7 @@ import { PostsList } from './PostsList';
 import { CircleTile } from '../../hooks/useAppConfig';
 import { useInfinitePosts } from '../../hooks/usePosts';
 
-jest.mock('../../hooks/useInfinitePosts', () => ({
-  useInfinitePosts: jest.fn(),
-}));
+jest.mock('../../hooks/usePosts');
 jest.mock('./ReactionsToolbar');
 
 const useInfinitePostsMock = useInfinitePosts as jest.Mock;

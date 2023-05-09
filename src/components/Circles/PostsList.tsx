@@ -15,7 +15,7 @@ import { createStyles } from '../BrandConfigProvider/styles/createStyles';
 import { Post } from './Post';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
 import { CreateEditPostModal } from './CreateEditPostModal';
-import { ParentType } from 'src/hooks/usePosts';
+import { ParentType } from '../../hooks/usePosts';
 
 interface PostsListProps {
   circleTile?: CircleTile;
