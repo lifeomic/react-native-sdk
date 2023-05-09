@@ -2,11 +2,11 @@ import React from 'react';
 
 import { storiesOf } from '@storybook/react-native';
 import { object } from '@storybook/addon-knobs';
-import { BrandConfigProvider } from 'src';
+import { BrandConfigProvider } from '../../../../src';
 import { ThemeExampleScreen } from './ThemeExampleScreen';
-import * as baseTheme from 'src/components/BrandConfigProvider/theme/base';
+import * as baseTheme from '../../../../src/components/BrandConfigProvider/theme/base';
 import { ExampleBox, ExampleBoxStyles } from './ExampleBox';
-import { BrandConfigProviderStyles } from 'src/components/BrandConfigProvider/styles/types';
+import { BrandConfigProviderStyles } from '../../../../src/components/BrandConfigProvider/styles/types';
 import { CenterView } from 'example/storybook/helpers/CenterView';
 
 storiesOf('BrandConfigProvider', module)

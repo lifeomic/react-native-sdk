@@ -5,4 +5,10 @@ module.exports = {
     requireConfigFile: false,
   },
   plugins: ['@lifeomic/i18next'],
+  rules: {
+    "no-restricted-imports": ["error", {
+      "paths": ['src'],
+      "patterns": ['src/*']
+    }]
+  }
 };

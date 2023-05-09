@@ -5,7 +5,7 @@ import {
   ActivityIndicatorView,
   DeveloperConfigProvider,
   RootProviders,
-} from 'src';
+} from '../../../src';
 import { withKnobs, color } from '@storybook/addon-knobs';
 
 storiesOf('ActivityIndicatorView', module)

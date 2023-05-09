@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ThreadPost } from '../ThreadPost';
-import { Post } from 'src/hooks';
+import { Post } from '../../../hooks';
 
 jest.mock('date-fns', () => ({
   ...jest.requireActual('date-fns'),

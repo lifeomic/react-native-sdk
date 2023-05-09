@@ -10,7 +10,7 @@ import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
-import { useDeveloperConfig } from 'src/hooks';
+import { useDeveloperConfig } from '../hooks';
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
