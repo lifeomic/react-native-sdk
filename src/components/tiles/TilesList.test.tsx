@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 import { render } from '@testing-library/react-native';
 import { TilesList } from './TilesList';
 import { useNavigation } from '@react-navigation/native';
+import { useAppConfig } from '../../hooks/useAppConfig';
 
 jest.unmock('i18next');
 
@@ -11,7 +12,11 @@ jest.mock('../TrackTile', () => ({
 }));
 
 jest.mock('../../hooks/useAppConfig', () => ({
-  useAppConfig: () => ({
+  useAppConfig: jest.fn(),
+}));
+
+beforeEach(() => {
+  (useAppConfig as jest.Mock).mockReturnValue({
     data: {
       homeTab: {
         tiles: ['trackTile', 'todayTile'],
@@ -37,8 +42,8 @@ jest.mock('../../hooks/useAppConfig', () => ({
         },
       },
     },
-  }),
-}));
+  });
+});
 
 test('renders multiple tiles', () => {
   const tileList = render(
@@ -55,4 +60,36 @@ test('renders multiple tiles', () => {
 
   expect(tileList.getByText('Today')).toBeDefined();
   expect(tileList.getByTestId('tile-button-today-tile')).toBeDefined();
+});
+
+test('does not render the today tile if not enabled', () => {
+  (useAppConfig as jest.Mock).mockReturnValue({
+    data: {
+      homeTab: {
+        tiles: ['trackTile'],
+        trackTileSettings: {
+          title: 'TrackTile Title',
+        },
+        appTiles: [
+          {
+            id: 'tile-id-1',
+            title: 'My First Tile',
+            source: { url: 'https://tile.com' },
+          },
+          {
+            id: 'tile-id-2',
+            title: 'My Second Tile',
+            source: { url: 'https://tile.com' },
+          },
+        ],
+      },
+    },
+  });
+
+  const tileList = render(
+    <TilesList navigation={useNavigation()} route={{} as any} />,
+  );
+
+  expect(tileList.queryByText('Today')).toBe(null);
+  expect(tileList.queryByTestId('tile-button-today-tile')).toBe(null);
 });
