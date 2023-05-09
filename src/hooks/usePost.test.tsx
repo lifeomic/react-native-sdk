@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useActiveAccount } from './useActiveAccount';
-import { PostDetailsPostQueryResponse, usePost } from './usePost';
+import { PostDetailsPostQueryResponse, usePost } from './usePosts';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from './useGraphQLClient';
@@ -82,6 +82,7 @@ describe('usePost', () => {
         author: {
           profile: {
             displayName: 'Shaggy',
+            picture: '',
           },
         },
         __typename: 'ActivePost',

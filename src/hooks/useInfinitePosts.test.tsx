@@ -3,7 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react-native';
 import { useActiveAccount } from './useActiveAccount';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from './useGraphQLClient';
-import { InfinitePostsData, useInfinitePosts } from './useInfinitePosts';
+import { InfinitePostsData, useInfinitePosts } from './usePosts';
 import nock from 'nock';
 
 jest.mock('./useActiveAccount', () => ({

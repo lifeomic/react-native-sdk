@@ -16,6 +16,7 @@ const mockPost: Post = {
   createdAt: '2021-11-22T18:42:36.000Z',
   author: {
     profile: {
+      picture: '',
       displayName: 'Shaggy',
     },
   },

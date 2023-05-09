@@ -3,7 +3,7 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { ReactionsToolbar } from '../ReactionsToolbar';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from '../../../hooks/useGraphQLClient';
-import { ActivePost } from '../../../hooks/useInfinitePosts';
+import type { Post } from '../../../hooks/usePosts';
 import {
   useCreateReactionMutation,
   useUndoReactionMutation,
@@ -29,19 +29,23 @@ useUserMock.mockReturnValue({
 });
 
 const baseURL = 'https://some-domain/unit-test';
-const toolbarComponent = (post: ActivePost) => (
+const toolbarComponent = (post: Post) => (
   <QueryClientProvider client={new QueryClient()}>
     <GraphQLClientContextProvider baseURL={baseURL} />
     <ReactionsToolbar post={post} />
   </QueryClientProvider>
 );
 
-const renderToolbar = (post: ActivePost) => {
+const renderToolbar = (post: Post) => {
   return render(toolbarComponent(post));
 };
 
 test('renders toolbar without reaction when count is 0', () => {
-  const post = {
+  const post: Post = {
+    __typename: 'ActivePost',
+    parentId: '456',
+    replies: { edges: [], pageInfo: {} },
+    status: 'READY',
     id: '123',
     message: 'Some message!',
     author: {
@@ -66,8 +70,12 @@ test('renders toolbar without reaction when count is 0', () => {
 });
 
 test('renders toolbar with reaction', () => {
-  const post = {
+  const post: Post = {
     id: '123',
+    __typename: 'ActivePost',
+    parentId: '456',
+    replies: { edges: [], pageInfo: {} },
+    status: 'READY',
     message: 'Some message!',
     author: {
       profile: {
@@ -91,8 +99,14 @@ test('renders toolbar with reaction', () => {
 });
 
 test('multiple emoji selections create and undo reaction respectively', async () => {
-  const post = {
+  const postWithReactions = (
+    reactions: { type: string; count: number; userHasReacted?: boolean }[],
+  ) => ({
     id: '123',
+    __typename: 'ActivePost',
+    parentId: '456',
+    replies: { edges: [], pageInfo: {} },
+    status: 'READY',
     message: 'Some message!',
     author: {
       profile: {
@@ -102,13 +116,8 @@ test('multiple emoji selections create and undo reaction respectively', async ()
     },
     createdAt: '2023-05-02T02:00:00',
     replyCount: 0,
-    reactionTotals: [
-      {
-        type: '😃',
-        count: 1,
-      },
-    ],
-  };
+    reactionTotals: reactions,
+  });
 
   const createReaction = jest.fn();
   const undoReaction = jest.fn();
@@ -119,12 +128,36 @@ test('multiple emoji selections create and undo reaction respectively', async ()
     mutate: undoReaction,
   });
 
-  const toolbar = renderToolbar(post);
+  const toolbar = renderToolbar(
+    postWithReactions([
+      {
+        type: '😃',
+        count: 1,
+      },
+    ]),
+  );
 
   // Confirm that selecting an emoji will create a reaction
   fireEvent.press(toolbar.getByTestId('select-emoji-button'));
   fireEvent.press(toolbar.getByText('😁'));
   expect(createReaction).toBeCalledWith({ type: '😁', postId: '123' });
+
+  toolbar.rerender(
+    toolbarComponent(
+      postWithReactions([
+        {
+          type: '😃',
+          count: 1,
+        },
+        {
+          type: '😁',
+          count: 1,
+          userHasReacted: true,
+        },
+      ]),
+    ),
+  );
+
   expect(toolbar.getByTestId('😁-button')).toBeDefined();
 
   // Confirm that repeating the same selection removes the reaction
@@ -135,13 +168,42 @@ test('multiple emoji selections create and undo reaction respectively', async ()
     postId: '123',
     userId: 'userId',
   });
+
+  toolbar.rerender(
+    toolbarComponent(
+      postWithReactions([
+        {
+          type: '😃',
+          count: 1,
+        },
+        {
+          type: '😁',
+          count: 0,
+          userHasReacted: false,
+        },
+      ]),
+    ),
+  );
+
   expect(toolbar.queryByTestId('😁-button')).toBe(null);
   undoReaction.mockClear();
 
-  // Select reaction again to prepare for next assertion
-  fireEvent.press(toolbar.getByTestId('select-emoji-button'));
-  fireEvent.press(toolbar.getByText('😁'));
-  expect(createReaction).toBeCalledWith({ type: '😁', postId: '123' });
+  toolbar.rerender(
+    toolbarComponent(
+      postWithReactions([
+        {
+          type: '😃',
+          count: 1,
+        },
+        {
+          type: '😁',
+          count: 1,
+          userHasReacted: true,
+        },
+      ]),
+    ),
+  );
+
   expect(toolbar.getByTestId('😁-button')).toBeDefined();
 
   // Confirm that clicking on the reaction itself removes it
@@ -151,7 +213,4 @@ test('multiple emoji selections create and undo reaction respectively', async ()
     postId: '123',
     userId: 'userId',
   });
-
-  toolbar.rerender(toolbarComponent(post));
-  expect(toolbar.queryByTestId('😁-button')).toBe(null);
 });
