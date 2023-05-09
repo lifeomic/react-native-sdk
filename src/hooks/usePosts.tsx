@@ -9,7 +9,6 @@ import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
 import { useCallback } from 'react';
-import uuid from 'react-native-uuid';
 import { useUser } from './useUser';
 import omit from 'lodash/omit';
 
@@ -155,7 +154,7 @@ export const usePost = (postId: string, disabled?: boolean) => {
 
 type CreatePostInput = {
   post: {
-    id?: string;
+    id: string;
     message: string;
     parentId: string;
     parentType: ParentType;
@@ -175,14 +174,8 @@ export function useCreatePost() {
   const queryClient = useQueryClient();
 
   const createPostMutation = async (input: CreatePostInput) => {
-    const postId = input?.post.id ?? uuid.v4().toString();
     const variables = {
-      input: {
-        post: {
-          ...input.post,
-          id: postId,
-        },
-      },
+      input,
     };
 
     return graphQLClient.request(
@@ -217,10 +210,9 @@ export function useCreatePost() {
 
         const optimisticPost: Post = {
           ...omit(newPost.post, 'parentType'),
-          id: newPost.post.id!,
           __typename: 'ActivePost',
           reactionTotals: [],
-          createdAt: `${new Date().getTime()}`,
+          createdAt: new Date().toISOString(),
           replyCount: 0,
           status: 'READY',
           replies: { edges: [], pageInfo: {} },

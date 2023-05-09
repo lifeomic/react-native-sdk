@@ -13,6 +13,7 @@ import { useStyles } from '../../hooks';
 import { createStyles } from '../BrandConfigProvider';
 import { t } from 'i18next';
 import { tID } from '../../common';
+import uuid from 'react-native-uuid';
 
 interface CreateEditPostModalProps {
   parentId: string;
@@ -98,6 +99,7 @@ export const CreateEditPostModal = ({
                   onPress={() => {
                     createPost.mutate({
                       post: {
+                        id: uuid.v4().toString(),
                         message: postText,
                         parentId: parentId,
                         parentType: parentType,

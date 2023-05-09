@@ -56,14 +56,12 @@ describe('useCreatePost', () => {
 
   test('useCreatePost mutation', async () => {
     const RealDate = Date;
-    const mockTime = 1620586800000;
     global.Date = class extends RealDate {
       constructor() {
         super();
-        return new RealDate(mockTime);
       }
-      getTime() {
-        return mockTime;
+      toISOString(): string {
+        return '2023-05-09T02:00:00';
       }
     } as any;
 
@@ -83,7 +81,7 @@ describe('useCreatePost', () => {
       __typename: 'ActivePost',
       parentId: '456',
       replyCount: 0,
-      createdAt: `${new Date().getTime()}`,
+      createdAt: new Date().toISOString(),
       status: 'READY',
       reactionTotals: [],
       replies: { edges: [], pageInfo: {} },
