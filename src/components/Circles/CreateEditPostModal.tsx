@@ -11,6 +11,8 @@ import {
 import { ParentType, useCreatePost, Post } from '../../hooks/usePosts';
 import { useStyles } from '../../hooks';
 import { createStyles } from '../BrandConfigProvider';
+import { t } from 'i18next';
+import { tID } from '../../common';
 
 interface CreateEditPostModalProps {
   parentId: string;
@@ -55,12 +57,18 @@ export const CreateEditPostModal = ({
           <View style={styles.container}>
             <Appbar.Header style={styles.header}>
               <Appbar.BackAction onPress={hideModal} />
-              <Appbar.Content title="Create Post" />
+              <Appbar.Content
+                title={t('create-post-modal-title', 'Create Post')}
+              />
             </Appbar.Header>
             <TextInput
+              testID={tID('post-text-input')}
               multiline
               numberOfLines={12}
-              placeholder="What do you want to share?"
+              placeholder={t(
+                'create-post-placeholder-text',
+                'What do you want to share?',
+              )}
               style={styles.textArea}
               onChangeText={(text: string) => {
                 setPostText(text);
@@ -81,6 +89,7 @@ export const CreateEditPostModal = ({
                   }
                 >{`${characterCount}/1200`}</Text>
                 <Button
+                  testID={tID('create-post-button')}
                   compact={true}
                   style={styles.postButton}
                   labelStyle={styles.postButtonLabel}

@@ -16,6 +16,7 @@ import { Post } from './Post';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
 import { CreateEditPostModal } from './CreateEditPostModal';
 import { ParentType } from '../../hooks/usePosts';
+import { tID } from '../../common';
 
 interface PostsListProps {
   circleTile?: CircleTile;
@@ -85,6 +86,7 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
         />
       </ScrollView>
       <FAB
+        testID={tID('new-post-button')}
         icon="pencil"
         style={styles.fab}
         onPress={() => setVisible(() => true)}
