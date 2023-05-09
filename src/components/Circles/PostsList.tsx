@@ -1,11 +1,12 @@
 import { t } from 'i18next';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
+  View,
 } from 'react-native';
-import { Text } from 'react-native-paper';
+import { FAB, Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { CircleTile } from '../../hooks/useAppConfig';
 import { useInfinitePosts } from '../../hooks/usePosts';
@@ -13,12 +14,16 @@ import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { createStyles } from '../BrandConfigProvider/styles/createStyles';
 import { Post } from './Post';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
+import { CreateEditPostModal } from './CreateEditPostModal';
+import { ParentType } from '../../hooks/usePosts';
 
 interface PostsListProps {
   circleTile?: CircleTile;
 }
 
 export const PostsList = ({ circleTile }: PostsListProps) => {
+  const [visible, setVisible] = useState(false);
+
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfinitePosts({
       circleId: circleTile?.circleId,
@@ -40,7 +45,7 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
     [hasNextPage, isLoading, fetchNextPage],
   );
 
-  if (!data) {
+  if (!data || !circleTile?.circleId) {
     return (
       <ActivityIndicatorView
         message={t('posts-screen-loading-notifications', 'Loading results')}
@@ -49,29 +54,42 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
   }
 
   return (
-    <ScrollView
-      onScroll={handleScroll}
-      scrollEventThrottle={400}
-      contentContainerStyle={styles.scrollView}
-    >
-      {data.pages.map((page, pageIndex) => (
-        <React.Fragment key={`page-${pageIndex}`}>
-          {page?.postsV2?.edges.length > 0 ? (
-            page.postsV2.edges.map((edge, postIndex) => (
-              <Post key={`post-${postIndex}`} post={edge.node} />
-            ))
-          ) : (
-            <Text style={styles.noPostsText}>
-              {t('posts-no-posts', 'No posts yet.')}
-            </Text>
-          )}
-        </React.Fragment>
-      ))}
-      <ActivityIndicatorView
-        animating={isFetchingNextPage}
-        style={styles.morePostsIndicatorAny}
+    <View>
+      <CreateEditPostModal
+        visible={visible}
+        setVisible={setVisible}
+        parentType={ParentType.CIRCLE}
+        parentId={circleTile.circleId}
       />
-    </ScrollView>
+      <ScrollView
+        onScroll={handleScroll}
+        scrollEventThrottle={400}
+        contentContainerStyle={styles.scrollView}
+      >
+        {data.pages.map((page, pageIndex) => (
+          <React.Fragment key={`page-${pageIndex}`}>
+            {page?.postsV2?.edges.length > 0 ? (
+              page.postsV2.edges.map((edge, postIndex) => (
+                <Post key={`post-${postIndex}`} post={edge.node} />
+              ))
+            ) : (
+              <Text style={styles.noPostsText}>
+                {t('posts-no-posts', 'No posts yet.')}
+              </Text>
+            )}
+          </React.Fragment>
+        ))}
+        <ActivityIndicatorView
+          animating={isFetchingNextPage}
+          style={styles.morePostsIndicatorAny}
+        />
+      </ScrollView>
+      <FAB
+        icon="pencil"
+        style={styles.fab}
+        onPress={() => setVisible(() => true)}
+      />
+    </View>
   );
 };
 
@@ -84,6 +102,13 @@ const defaultStyles = createStyles('PostsList', (theme) => {
     scrollView: {},
     morePostsIndicatorAny: activityIndicatorStyle,
     noPostsText: {},
+    fab: {
+      position: 'absolute',
+      margin: theme.spacing.medium,
+      right: 0,
+      bottom: 0,
+      borderRadius: 32,
+    },
   };
 });
 
