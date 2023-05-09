@@ -6,13 +6,13 @@ import {
   Tracker,
   TrackTileServiceProvider,
   useAxiosTrackTileService,
-} from 'src/components/TrackTile/main';
+} from '../../../../src/components/TrackTile/main';
 import {
   FetchTrackerResponse,
   QueryOntologyResponse,
-} from 'src/components/TrackTile/hooks/useAxiosTrackTileService';
+} from '../../../../src/components/TrackTile/hooks/useAxiosTrackTileService';
 import { nutrition } from './ontologies';
-import { HttpClientContextProvider } from 'src/hooks/useHttpClient';
+import { HttpClientContextProvider } from '../../../../src/hooks/useHttpClient';
 
 const axiosInstance = axios.create();
 const mock = new MockAdapter(axiosInstance);

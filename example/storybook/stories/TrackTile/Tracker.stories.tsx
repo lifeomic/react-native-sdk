@@ -1,8 +1,8 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { Anchor } from '@lifeomic/chromicons-native';
-import { Tracker } from 'src/components/TrackTile/TrackerRow/Tracker';
-import { Tracker as TrackerType } from 'src/components/TrackTile/main';
+import { Tracker } from '../../../../src/components/TrackTile/TrackerRow/Tracker';
+import { Tracker as TrackerType } from '../../../../src/components/TrackTile/main';
 import { View } from 'react-native';
 import {
   withKnobs,

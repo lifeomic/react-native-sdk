@@ -1,13 +1,13 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
-import { AdvancedTrackerEditor } from 'src/components/TrackTile/TrackerDetails/AdvancedTrackerEditor/AdvancedTrackerEditor';
+import { AdvancedTrackerEditor } from '../../../../src/components/TrackTile/TrackerDetails/AdvancedTrackerEditor/AdvancedTrackerEditor';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import {
   Code,
   Tracker,
   TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
-} from 'src/components/TrackTile/services/TrackTileService';
+} from '../../../../src/components/TrackTile/services/TrackTileService';
 import { nutrition, activity, mindful, sleep } from './util/ontologies';
 import { withKnobs, select, boolean } from '@storybook/addon-knobs';
 // import { createStackNavigator } from '@react-navigation/stack';
@@ -18,7 +18,7 @@ import {
   HeaderButtons,
   Item,
 } from 'react-navigation-header-buttons';
-import { notifySaveEditTrackerValue } from 'src/components/TrackTile/services/EmitterService';
+import { notifySaveEditTrackerValue } from '../../../../src/components/TrackTile/services/EmitterService';
 import { View } from 'react-native';
 
 const ontology = {} as any;

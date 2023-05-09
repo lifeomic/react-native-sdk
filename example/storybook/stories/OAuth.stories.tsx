@@ -10,7 +10,7 @@ import { OAuthLogoutButton } from '../../../src/components/OAuthLogoutButton';
 import { OAuthContextProvider } from '../../../src/hooks/useOAuthFlow';
 import { AuthContextProvider, useAuth } from '../../../src/hooks/useAuth';
 import { CenterView } from '../helpers/CenterView';
-import { BrandConfigProvider } from 'src/components/BrandConfigProvider';
+import { BrandConfigProvider } from '../../../src/components/BrandConfigProvider';
 
 export const authConfig: AuthConfiguration = {
   clientId: Config.OAUTH_CLIENT_ID!,

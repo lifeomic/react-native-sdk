@@ -3,7 +3,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import { action } from '@storybook/addon-actions';
-import { TrackTile } from 'src/components/TrackTile';
+import { TrackTile } from '../../../../src/components/TrackTile';
 
 storiesOf('TrackTile', module)
   .addDecorator(

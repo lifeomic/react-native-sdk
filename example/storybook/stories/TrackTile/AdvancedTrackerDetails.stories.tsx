@@ -1,12 +1,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
-import { AdvancedTrackerDetails } from 'src/components/TrackTile/TrackerDetails/AdvancedTrackerDetails/AdvancedTrackerDetails';
+import { AdvancedTrackerDetails } from '../../../../src/components/TrackTile/TrackerDetails/AdvancedTrackerDetails/AdvancedTrackerDetails';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import {
   Tracker,
   TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
-} from 'src/components/TrackTile/services/TrackTileService';
+} from '../../../../src/components/TrackTile/services/TrackTileService';
 import { select, withKnobs } from '@storybook/addon-knobs';
 import { activity, mindful, nutrition, sleep } from './util/ontologies';
 

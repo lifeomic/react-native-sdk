@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
-import { Pillar } from 'src/components/TrackTile/PillarsTile/Pillar';
+import { Pillar } from '../../../../src/components/TrackTile/PillarsTile/Pillar';
 import { action } from '@storybook/addon-actions';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import {
@@ -9,10 +9,10 @@ import {
   TrackerValue,
   TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
-} from 'src/components/TrackTile/services/TrackTileService';
+} from '../../../../src/components/TrackTile/services/TrackTileService';
 import { boolean } from '@storybook/addon-knobs';
 import { Anchor, CheckCircle, PlusSquare } from '@lifeomic/chromicons-native';
-import { StyleOverridesProvider } from 'src/components/TrackTile/styles';
+import { StyleOverridesProvider } from '../../../../src/components/TrackTile/styles';
 
 const nutritionTracker: Tracker = {
   id: 'nutrition',

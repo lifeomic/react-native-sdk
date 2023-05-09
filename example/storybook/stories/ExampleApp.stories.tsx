@@ -1,7 +1,11 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { authConfig } from './OAuth.stories';
-import { DeveloperConfigProvider, RootProviders, RootStack } from 'src';
+import {
+  DeveloperConfigProvider,
+  RootProviders,
+  RootStack,
+} from '../../../src';
 import { withKnobs, color } from '@storybook/addon-knobs';
 import Color from 'color';
 
