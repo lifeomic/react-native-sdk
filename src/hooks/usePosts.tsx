@@ -11,6 +11,7 @@ import { useActiveAccount } from './useActiveAccount';
 import { useCallback } from 'react';
 import uuid from 'react-native-uuid';
 import { useUser } from './useUser';
+import omit from 'lodash/omit';
 
 export enum ParentType {
   CIRCLE = 'CIRCLE',
@@ -173,8 +174,8 @@ export function useCreatePost() {
   const { data } = useUser();
   const queryClient = useQueryClient();
 
-  const postId = uuid.v4().toString();
   const createPostMutation = async (input: CreatePostInput) => {
+    const postId = input?.post.id ?? uuid.v4().toString();
     const variables = {
       input: {
         post: {
@@ -215,10 +216,11 @@ export function useCreatePost() {
         };
 
         const optimisticPost: Post = {
-          ...newPost.post,
+          ...omit(newPost.post, 'parentType'),
+          id: newPost.post.id!,
           __typename: 'ActivePost',
           reactionTotals: [],
-          createdAt: new Date().toString(),
+          createdAt: `${new Date().getTime()}`,
           replyCount: 0,
           status: 'READY',
           replies: { edges: [], pageInfo: {} },
@@ -228,7 +230,6 @@ export function useCreatePost() {
               picture: data?.profile.picture ?? '',
             },
           },
-          id: postId,
         };
 
         newData.pages[0].postsV2.edges.unshift({ node: optimisticPost });
