@@ -10,12 +10,15 @@ import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
+import { useDeveloperConfig } from 'src/hooks';
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
 export function TabNavigator() {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
+
+  const { additionalNavigationTabs } = useDeveloperConfig();
 
   return (
     <Tab.Navigator
@@ -50,6 +53,16 @@ export function TabNavigator() {
           tabBarIcon: 'cog',
         }}
       />
+      {additionalNavigationTabs?.map((tab) => (
+        <Tab.Screen
+          name={tab.name}
+          component={tab.component}
+          options={{
+            tabBarLabel: tab.options.tabBarLabel,
+            tabBarIcon: tab.options.tabBarIcon,
+          }}
+        />
+      ))}
     </Tab.Navigator>
   );
 }

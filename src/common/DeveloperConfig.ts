@@ -17,19 +17,23 @@ import { AppTile } from '../hooks/useAppConfig';
  *
  * @param apiBaseURL Allows for configuring a custom base API URL. This is only
  * needed when performing advanced debugging involving a dev mock server.
+ *
+ * @param additionalNavigationTab Allows for configuring a custom additional material
+ * bottom navigation tab (in addition to Home, Notifications, and Settings.
  */
 export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
-};
-
-export type SimpleTheme = {
-  primaryColor: string;
+  additionalNavigationTabs?: AdditionalNavigationTab[];
 };
 
 export type AppTileScreens = {
   [key: string]: ComponentType;
+};
+
+export type SimpleTheme = {
+  primaryColor: string;
 };
 
 export function getCustomAppTileComponent(
@@ -38,3 +42,12 @@ export function getCustomAppTileComponent(
 ) {
   return !!appTile?.source.url && appTileScreens?.[appTile.source.url];
 }
+
+export type AdditionalNavigationTab = {
+  name: string;
+  component: () => JSX.Element;
+  options: {
+    tabBarLabel: string;
+    tabBarIcon: string;
+  };
+};
