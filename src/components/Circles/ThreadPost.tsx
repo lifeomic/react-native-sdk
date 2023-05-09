@@ -6,6 +6,7 @@ import { Post as PostType, useStyles, useTheme } from '../../hooks';
 import { Avatar } from 'react-native-paper';
 import { initials } from './initials';
 import { createStyles } from '../BrandConfigProvider';
+import { ReactionsToolbar } from './ReactionsToolbar';
 
 type Props = { post: PostType; style?: ThreadPostStyles };
 
@@ -40,6 +41,7 @@ export const ThreadPost = ({ post, style }: Props) => {
         </View>
       </View>
       <Text style={styles.messageText}>{post?.message}</Text>
+      <ReactionsToolbar post={post} />
     </View>
   );
 };
@@ -63,6 +65,7 @@ const defaultStyles = createStyles('Circles.ThreadPost', (theme) => ({
   messageText: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: theme.spacing.extraSmall,
     ...theme.fonts.bodyLarge,
   },
   usernameText: {},

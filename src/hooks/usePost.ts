@@ -75,6 +75,12 @@ const postDetailsQuery = gql`
           displayName
         }
       }
+      reactionTotals {
+        type
+        url
+        count
+        userHasReacted
+      }
     }
   }
   query PostDetailsPost($id: ID!, $after: String) {

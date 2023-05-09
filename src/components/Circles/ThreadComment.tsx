@@ -6,6 +6,7 @@ import { Post, useStyles, useTheme } from '../../hooks';
 import { Avatar } from 'react-native-paper';
 import { initials } from './initials';
 import { createStyles } from '../BrandConfigProvider';
+import { ReactionsToolbar } from './ReactionsToolbar';
 
 type Props = { post: Post; style?: ThreadCommentStyles };
 
@@ -39,6 +40,7 @@ export const ThreadComment = ({ post, style }: Props) => {
         <View style={styles.messageContainer}>
           <Text style={styles.messageText}>{post?.message}</Text>
         </View>
+        <ReactionsToolbar post={post} />
       </View>
     </View>
   );
@@ -60,7 +62,7 @@ const defaultStyles = createStyles('Circles.ThreadComment', (theme) => ({
   messageContainer: {
     padding: theme.spacing.small / 2,
     borderRadius: theme.roundness,
-    marginTop: theme.spacing.extraSmall,
+    marginVertical: theme.spacing.extraSmall,
     color: theme.colors.onSurfaceVariant,
     backgroundColor: theme.colors.surfaceVariant,
     flex: 1,

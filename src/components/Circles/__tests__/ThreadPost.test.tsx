@@ -7,6 +7,7 @@ jest.mock('date-fns', () => ({
   ...jest.requireActual('date-fns'),
   formatDistanceToNow: jest.fn(() => '5 minutes'),
 }));
+jest.mock('../ReactionsToolbar');
 
 const mockPost: Post = {
   id: 'post',
