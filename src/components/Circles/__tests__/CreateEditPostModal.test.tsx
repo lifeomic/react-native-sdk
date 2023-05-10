@@ -13,6 +13,7 @@ jest.mock('react-native-paper', () => {
     Appbar: {
       Header: jest.fn(),
       BackAction: jest.fn(),
+      Action: jest.fn(),
       Content: jest.fn(),
     },
   };

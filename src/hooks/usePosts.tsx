@@ -133,7 +133,7 @@ export function useInfinitePosts({ circleId }: useInfinitePostsProps) {
   };
 }
 
-export const usePost = (postId: string, disabled?: boolean) => {
+export const usePost = (post: Partial<Post> & Pick<Post, 'id'>) => {
   const { graphQLClient } = useGraphQLClient();
   const { isFetched, accountHeaders } = useActiveAccount();
 
@@ -141,14 +141,18 @@ export const usePost = (postId: string, disabled?: boolean) => {
     return graphQLClient.request<PostDetailsPostQueryResponse, { id: string }>(
       postDetailsQueryDocument,
       {
-        id: postId,
+        id: post.id,
       },
       accountHeaders,
     );
-  }, [accountHeaders, graphQLClient, postId]);
+  }, [accountHeaders, graphQLClient, post.id]);
 
   return useQuery('postDetails', queryForPostDetails, {
-    enabled: !disabled && isFetched && !!accountHeaders,
+    enabled: isFetched && !!accountHeaders,
+    placeholderData: {
+      post,
+    },
+    queryHash: post.id,
   });
 };
 

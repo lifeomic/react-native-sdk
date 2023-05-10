@@ -5,6 +5,7 @@ import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { createStyles } from './BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { TextStyle } from 'react-native';
+import { ChevronLeft } from '@lifeomic/chromicons-native';
 
 export function AppNavHeader({
   back,
@@ -18,7 +19,8 @@ export function AppNavHeader({
   return (
     <Appbar.Header style={styles.style} elevated>
       {back ? (
-        <Appbar.BackAction
+        <Appbar.Action
+          icon={ChevronLeft}
           onPress={navigation.goBack}
           style={styles.backAction}
         />

@@ -19,6 +19,7 @@ import {
 import { AuthedAppTileScreen } from '../screens/AuthedAppTileScreen';
 import { HomeStackParamList } from './types';
 import { CircleDiscussionScreen } from '../screens/CircleDiscussionScreen';
+import { CircleThreadScreen } from '../screens/CircleThreadScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -38,6 +39,7 @@ export function HomeStack() {
         name="Home/Circle/Discussion"
         component={CircleDiscussionScreen}
       />
+      <Stack.Screen name="Home/Circle/Thread" component={CircleThreadScreen} />
       <Stack.Screen
         name="Home/TrackTileSettings"
         component={TrackTileSettingsScreen}

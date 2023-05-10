@@ -8,19 +8,15 @@ import { EmptyComments } from './EmptyComments';
 import { createStyles } from '../BrandConfigProvider';
 
 export interface ThreadProps {
-  postId: string;
-  post?: Post;
+  post: Post;
   style?: CirclesThreadStyles;
 }
 
-export const Thread = ({ postId, post: postIn }: ThreadProps) => {
-  const { styles } = useStyles(defaultStyles);
-  const { data, isLoading, error, refetch, isRefetching } = usePost(
-    postId,
-    !!postIn,
-  );
+export const Thread = ({ post: postIn, style }: ThreadProps) => {
+  const { styles } = useStyles(defaultStyles, style);
+  const { data, isLoading, error, refetch, isRefetching } = usePost(postIn);
 
-  const post = data?.post ?? postIn;
+  const post = data?.post;
   const replies = post?.replies?.edges;
 
   const entries = useMemo(() => {
@@ -34,17 +30,21 @@ export const Thread = ({ postId, post: postIn }: ThreadProps) => {
       data={entries}
       renderItem={renderItem}
       refreshing={isLoading || isRefetching}
-      onRefresh={postIn ? undefined : refetch}
+      onRefresh={refetch}
       initialNumToRender={35}
       style={styles.container}
-      ListHeaderComponent={!error && post ? <ThreadPost post={post} /> : null}
+      ListHeaderComponent={
+        !error && post ? <ThreadPost post={post as Post} /> : null
+      }
       ListEmptyComponent={
-        <View
-          style={styles.emptyPostCommentsContainer}
-          testID="empty-state-post-list-details"
-        >
-          {error ? <PostUnavailable /> : <EmptyComments />}
-        </View>
+        isLoading || isRefetching ? null : (
+          <View
+            style={styles.emptyPostCommentsContainer}
+            testID="empty-state-post-list-details"
+          >
+            {error ? <PostUnavailable /> : <EmptyComments />}
+          </View>
+        )
       }
     />
   );
