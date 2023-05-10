@@ -3,7 +3,6 @@ import { render } from '@testing-library/react-native';
 import { ThreadPost } from '../ThreadPost';
 import { Post } from '../../../hooks/usePosts';
 
-
 jest.mock('date-fns', () => ({
   ...jest.requireActual('date-fns'),
   formatDistanceToNow: jest.fn(() => '5 minutes'),
