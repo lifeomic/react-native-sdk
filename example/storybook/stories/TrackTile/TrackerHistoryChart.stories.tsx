@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
-import { Chart } from 'src/components/TrackTile/TrackerDetails/TrackerHistoryChart/Chart';
+import { Chart } from '../../../../src/components/TrackTile/TrackerDetails/TrackerHistoryChart/Chart';
 import { View } from 'react-native';
 import { endOfToday, subDays, startOfToday } from 'date-fns';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Text, TextStyle, View, ViewStyle } from 'react-native';
-import { createStyles, Theme, useStyles } from 'src';
+import { createStyles, Theme, useStyles } from '../../../../src';
 
 interface Props {
   message: string;

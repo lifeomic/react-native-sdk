@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { ActivityIndicator, ScrollView, Text } from 'react-native';
 import { Button } from 'react-native-paper';
-import { useFhirClient } from 'src';
+import { useFhirClient } from '../../../src';
 
 export function FhirExampleScreen() {
   const {

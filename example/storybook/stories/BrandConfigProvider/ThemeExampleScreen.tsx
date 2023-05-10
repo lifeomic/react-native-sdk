@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Text, TextStyle, View, ViewStyle } from 'react-native';
-import { useTheme } from 'src/hooks/useTheme';
+import { useTheme } from '../../../../src/hooks/useTheme';
 
 export function ThemeExampleScreen() {
   const theme = useTheme();

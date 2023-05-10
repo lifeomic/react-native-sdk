@@ -9,9 +9,12 @@ import {
   CustomAppTileScreen,
   DeveloperConfigProvider,
   Tile,
-} from 'src';
-import { TilesList } from 'src/components/tiles/TilesList';
-import { HomeStackParamList, HomeStackScreenProps } from 'src/navigators/types';
+} from '../../../src';
+import { TilesList } from '../../../src/components/tiles/TilesList';
+import {
+  HomeStackParamList,
+  HomeStackScreenProps,
+} from '../../../src/navigators/types';
 
 storiesOf('Custom App Tile Screen', module).add('demo', () => (
   <DeveloperConfigProvider

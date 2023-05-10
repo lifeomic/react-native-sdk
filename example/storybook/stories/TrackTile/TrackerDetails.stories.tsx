@@ -2,20 +2,20 @@ import React from 'react';
 
 import { View } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
-import { TrackerDetails } from 'src/components/TrackTile/TrackerDetails/TrackerDetails';
+import { TrackerDetails } from '../../../../src/components/TrackTile/TrackerDetails/TrackerDetails';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import {
   MetricType,
   TRACKER_CODE,
   TRACKER_CODE_SYSTEM,
-} from 'src/components/TrackTile/services/TrackTileService';
+} from '../../../../src/components/TrackTile/services/TrackTileService';
 import { t } from '../../../../lib/i18n';
 import { boolean, withKnobs, object } from '@storybook/addon-knobs';
 import { Anchor } from '@lifeomic/chromicons-native';
 import {
   UnitPicker,
   UnitPickerProps,
-} from 'src/components/TrackTile/TrackerDetails/UnitPicker';
+} from '../../../../src/components/TrackTile/TrackerDetails/UnitPicker';
 
 storiesOf('TrackerDetails', module)
   .addDecorator(withKnobs)

@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
-import { ManageTrackers } from 'src/components/TrackTile/ManageTrackers/ManageTrackers';
-import { Tracker } from 'src/components/TrackTile/services/TrackTileService';
+import { ManageTrackers } from '../../../../src/components/TrackTile/ManageTrackers/ManageTrackers';
+import { Tracker } from '../../../../src/components/TrackTile/services/TrackTileService';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import { action } from '@storybook/addon-actions';
 import { boolean } from '@storybook/addon-knobs';

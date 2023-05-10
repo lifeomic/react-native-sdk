@@ -1,12 +1,12 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
-import { PillarsTile } from 'src/components/TrackTile/PillarsTile/PillarsTile';
+import { PillarsTile } from '../../../../src/components/TrackTile/PillarsTile/PillarsTile';
 import { action } from '@storybook/addon-actions';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import {
   Tracker,
   TRACKER_PILLAR_CODE_SYSTEM,
-} from 'src/components/TrackTile/services/TrackTileService';
+} from '../../../../src/components/TrackTile/services/TrackTileService';
 import { View } from 'react-native';
 import { boolean } from '@storybook/addon-knobs';
 import {
