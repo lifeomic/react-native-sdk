@@ -11,6 +11,7 @@ import { useActiveAccount } from './useActiveAccount';
 import { useCallback } from 'react';
 import { useUser } from './useUser';
 import omit from 'lodash/omit';
+import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
 
 export enum ParentType {
   CIRCLE = 'CIRCLE',
@@ -190,17 +191,12 @@ export function useCreatePost() {
 
   return useMutation('createPost', createPostMutation, {
     onMutate: async (newPost) => {
-      const parentType = newPost.post.parentType;
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey: ['posts'] });
 
       // Snapshot the previous value
       const previousPosts = queryClient.getQueryData(['posts']);
-      const previousPost = queryClient.getQueryData([
-        'postDetails',
-        newPost.post.parentId,
-      ]);
 
       // Optimistically update to the new value
       const optimisticPost: Post = {
@@ -219,49 +215,42 @@ export function useCreatePost() {
         },
       };
 
-      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
-        const newData: InfinitePostsData = currentData ?? {
-          pages: [
-            {
-              postsV2: {
-                edges: [],
-                pageInfo: { endCursor: '', hasNextPage: false },
-              },
-            },
-          ],
-          pageParams: [],
-        };
+      if (newPost.post.parentType === ParentType.CIRCLE) {
+        queryClient.setQueryData(
+          ['posts'],
+          (currentData?: InfinitePostsData) => {
+            const newData: InfinitePostsData = currentData ?? {
+              pages: [
+                {
+                  postsV2: {
+                    edges: [],
+                    pageInfo: { endCursor: '', hasNextPage: false },
+                  },
+                },
+              ],
+              pageParams: [],
+            };
 
-        if (parentType === ParentType.CIRCLE) {
-          newData.pages[0].postsV2.edges.unshift({ node: optimisticPost });
-        } else if (parentType === ParentType.POST) {
-          const parent = newData.pages
-            .map((page) => page.postsV2.edges)
-            .flat()
-            .find((post) => post.node.id === newPost.post.parentId);
+            newData.pages[0].postsV2.edges.unshift({ node: optimisticPost });
+            return newData;
+          },
+        );
+      } else if (newPost.post.parentType === ParentType.POST) {
+        optimisticallyUpdatePosts({
+          queryClient,
+          postId: newPost.post.parentId,
+          updatePost: (post) => {
+            post.replyCount++;
+            post.replies = post.replies || { edges: [] };
+            post.replies.edges.unshift({ node: optimisticPost });
 
-          if (parent) {
-            parent.node.replyCount++;
-            parent.node.replies = parent.node.replies || { edges: [] };
-            parent.node.replies.edges.unshift({ node: optimisticPost });
-          }
-        }
-
-        return newData;
-      });
-
-      queryClient.setQueryData<PostDetailsPostQueryResponse>(
-        ['postDetails', newPost.post.parentId],
-        (currentData) => {
-          if (!currentData) return currentData!;
-
-          currentData.post.replies.edges.unshift({ node: optimisticPost });
-          return currentData;
-        },
-      );
+            return post;
+          },
+        });
+      }
 
       // Return a context object with the snapshotted value
-      return { previousPosts, previousPost };
+      return { previousPosts };
     },
   });
 }

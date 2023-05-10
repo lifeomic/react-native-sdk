@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   FlatList,
   View,
@@ -27,6 +27,7 @@ export const Thread = (props: ThreadProps) => {
   const { colors } = useTheme();
   const { post: postIn, style, createComment = false, onOpenThread } = props;
   const [isCreateCommentOpen, setIsCreateCommentOpen] = useState(createComment);
+  const [shouldScrollToEnd, setShouldScrollToEnd] = useState(false);
   const listRef = useRef<FlatList>(null);
   const { styles } = useStyles(defaultStyles, style);
   const { data, isLoading, error, refetch, isRefetching, isFetched } =
@@ -35,18 +36,27 @@ export const Thread = (props: ThreadProps) => {
   const post = data?.post;
   const replies = post?.replies?.edges;
 
-  const handleCreatePostVisibilityChanged = useCallback(
-    (isVisible: boolean) => {
-      setIsCreateCommentOpen(isVisible);
-      listRef.current?.scrollToEnd();
-    },
-    [listRef],
-  );
+  const handleCreatePostClosed = useCallback((createdNewPost?: boolean) => {
+    setIsCreateCommentOpen(false);
+    setShouldScrollToEnd(!!createdNewPost);
+  }, []);
 
-  const entries = useMemo(() => {
-    const comments = replies?.map(({ node }) => node).reverse() ?? [];
-    return comments.flatMap((comment) => entriesForPost(comment));
-  }, [replies, replies?.length]);
+  const comments = replies?.map(({ node }) => node).reverse() ?? [];
+  const entries = comments.flatMap((comment) => entriesForPost(comment));
+
+  const handleContentSizeChanged = useCallback(() => {
+    if (shouldScrollToEnd) {
+      setShouldScrollToEnd(false);
+      try {
+        listRef.current?.scrollToIndex({
+          index: entries.length - 1,
+          viewOffset: 100,
+        });
+      } catch {
+        // Scrolling failed but that's okay.
+      }
+    }
+  }, [shouldScrollToEnd, entries.length]);
 
   return (
     <>
@@ -63,6 +73,7 @@ export const Thread = (props: ThreadProps) => {
             tintColor={colors.inversePrimary}
           />
         }
+        onContentSizeChange={handleContentSizeChanged}
         initialNumToRender={35}
         style={styles.container}
         ListHeaderComponent={
@@ -100,7 +111,7 @@ export const Thread = (props: ThreadProps) => {
         {post?.id && (
           <CreateEditPostModal
             visible={isCreateCommentOpen}
-            setVisible={handleCreatePostVisibilityChanged}
+            onModalClose={handleCreatePostClosed}
             parentType={ParentType.POST}
             parentId={post.id}
             postToEdit={post as Post}

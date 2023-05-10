@@ -19,7 +19,7 @@ interface CreateEditPostModalProps {
   parentId: string;
   parentType: ParentType;
   visible: boolean;
-  setVisible: (arg: boolean) => void;
+  onModalClose: (createdNewPost?: boolean) => void;
   postToEdit?: Post;
 }
 
@@ -27,14 +27,14 @@ export const CreateEditPostModal = ({
   parentId,
   parentType,
   visible,
-  setVisible,
+  onModalClose: setVisible,
   postToEdit,
 }: CreateEditPostModalProps) => {
   const createPost = useCreatePost();
-  const hideModal = () => {
+  const hideModal = (createdNewPost?: boolean) => {
     setPostText('');
     setCharacterCount(0);
-    setVisible(false);
+    setVisible(createdNewPost);
   };
 
   const [postText, setPostText] = useState(postToEdit?.message ?? '');
@@ -57,7 +57,7 @@ export const CreateEditPostModal = ({
         >
           <View style={styles.container}>
             <Appbar.Header style={styles.header}>
-              <Appbar.BackAction onPress={hideModal} />
+              <Appbar.BackAction onPress={() => hideModal(false)} />
               <Appbar.Content
                 title={t('create-post-modal-title', 'Create Post')}
               />
@@ -106,7 +106,7 @@ export const CreateEditPostModal = ({
                         parentType: parentType,
                       },
                     });
-                    hideModal();
+                    hideModal(true);
                   }}
                 >
                   Post

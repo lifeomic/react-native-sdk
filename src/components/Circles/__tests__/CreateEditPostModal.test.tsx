@@ -20,7 +20,7 @@ test('Post button disabled if no text entered', () => {
       parentId={'123'}
       parentType={ParentType.CIRCLE}
       visible={true}
-      setVisible={setVisibleMock}
+      onModalClose={setVisibleMock}
     />,
   );
   fireEvent.press(createPostModal.getByTestId('create-post-button'));
@@ -40,7 +40,7 @@ test('Post button enabled if valid post is entered', () => {
       parentId={'123'}
       parentType={ParentType.CIRCLE}
       visible={true}
-      setVisible={setVisibleMock}
+      onModalClose={setVisibleMock}
       postToEdit={validPost as any}
     />,
   );
@@ -61,7 +61,7 @@ test('Post button disabled if post is too long', () => {
       parentId={'123'}
       parentType={ParentType.CIRCLE}
       visible={true}
-      setVisible={setVisibleMock}
+      onModalClose={setVisibleMock}
       postToEdit={validPost as any}
     />,
   );
