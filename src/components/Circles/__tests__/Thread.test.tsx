@@ -1,9 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Thread } from '../Thread';
-import { usePost, Post } from '../../../hooks/usePost';
+import { usePost, Post } from '../../../hooks/usePosts';
 
-jest.mock('../../../hooks/usePost', () => ({
+jest.mock('../../../hooks/usePosts', () => ({
   usePost: jest.fn(() => ({})),
 }));
 jest.mock('../ReactionsToolbar');
@@ -18,6 +18,7 @@ const mockPost: Post = {
   author: {
     profile: {
       displayName: 'Shaggy',
+      picture: '',
     },
   },
   __typename: 'ActivePost',
@@ -39,6 +40,7 @@ const mockPost: Post = {
           author: {
             profile: {
               displayName: 'Velma',
+              picture: '',
             },
           },
           __typename: 'ActivePost',
@@ -60,6 +62,7 @@ const mockPost: Post = {
                   author: {
                     profile: {
                       displayName: 'Scooby Doo',
+                      picture: '',
                     },
                   },
                   __typename: 'ActivePost',

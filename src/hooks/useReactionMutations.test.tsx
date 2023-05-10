@@ -42,9 +42,46 @@ const renderUndoReactionHook = async () => {
   });
 };
 
+const getDataWithCount = ({
+  count,
+  userHasReacted,
+}: {
+  count: number;
+  userHasReacted: boolean;
+}) => ({
+  pages: [
+    {
+      postsV2: {
+        pageInfo: { endCursor: '10', hasNextPage: true },
+        edges: [
+          {
+            node: {
+              __typename: 'ActivePost',
+              createdAt: '0',
+              status: 'READY',
+              parentId: '123',
+              replyCount: 0,
+              replies: { edges: [], pageInfo: {} },
+              id: 'somePostId',
+              reactionTotals: [{ type: '(-_-)', count: count, userHasReacted }],
+            },
+          },
+        ],
+      },
+    },
+  ],
+  pageParams: [],
+});
+
 test('useCreateReaction mutation', async () => {
+  queryClient.setQueryData(
+    'posts',
+    getDataWithCount({ count: 0, userHasReacted: false }),
+  );
+
   const scope = nock(`${baseURL}/v1/graphql`)
     .post('')
+    .times(1)
     .reply(200, function (_, requestBody) {
       const body = JSON.parse(JSON.stringify(requestBody));
       const { postId, type } = body.variables.input;
@@ -60,24 +97,23 @@ test('useCreateReaction mutation', async () => {
 
   await waitFor(() => {
     expect(scope.isDone()).toBe(true);
-    expect(onSuccessMock).toBeCalledWith(
-      {
-        postId: 'somePostId',
-        type: '(-_-)',
-        userId: 'someUser',
-      },
-      {
-        postId: 'somePostId',
-        type: '(-_-)',
-      },
-      undefined,
-    );
+    expect(onSuccessMock).toBeCalled();
   });
+
+  expect(queryClient.getQueryData('posts')).toEqual(
+    getDataWithCount({ count: 1, userHasReacted: true }),
+  );
 });
 
 test('useUndoReaction mutation', async () => {
+  queryClient.setQueryData(
+    'posts',
+    getDataWithCount({ count: 1, userHasReacted: true }),
+  );
+
   const scope = nock(`${baseURL}/v1/graphql`)
     .post('')
+    .times(1)
     .reply(200, function (_, requestBody) {
       const body = JSON.parse(JSON.stringify(requestBody));
       const { postId, type } = body.variables.input;
@@ -93,18 +129,10 @@ test('useUndoReaction mutation', async () => {
 
   await waitFor(() => {
     expect(scope.isDone()).toBe(true);
-    expect(onSuccessMock).toBeCalledWith(
-      {
-        postId: 'somePostId',
-        type: '(-_-)',
-        userId: 'someUser',
-      },
-      {
-        postId: 'somePostId',
-        type: '(-_-)',
-        userId: 'someUser',
-      },
-      undefined,
-    );
+    expect(onSuccessMock).toBeCalled();
   });
+
+  expect(queryClient.getQueryData('posts')).toEqual(
+    getDataWithCount({ count: 0, userHasReacted: false }),
+  );
 });

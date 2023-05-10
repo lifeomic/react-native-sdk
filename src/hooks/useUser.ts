@@ -9,6 +9,7 @@ export interface User {
     displayName?: string;
     givenName?: string;
     familyName?: string;
+    picture?: string;
   };
 }
 
