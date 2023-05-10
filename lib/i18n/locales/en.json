@@ -58,5 +58,7 @@
   "readout-learnmore":"Readout Health records will be ingested periodically in the cloud. You will need to sync with the Biosense app for your records to be available.",
   "toggle-wearable":"Toggle {{wearableName}} background sync",
   "your-data-is-not-syncing-message":"Your data is not syncing. Please toggle back on to reauthorize.",
-  "configure-data-to-sync-message": "Your data is not syncing because it is not configured as a Data Source above."
+  "configure-data-to-sync-message": "Your data is not syncing because it is not configured as a Data Source above.",
+  "post-comments_zero": "COMMENT",
+  "post-comments_other": "{{count}} COMMENTS"
 }
