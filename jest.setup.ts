@@ -7,28 +7,36 @@ jest.mock('./src/common/testID', () => ({
   tID: (id: string) => id,
 }));
 
-jest.mock('i18next', () => ({
-  use: () => ({
-    init: jest.fn(),
-  }),
-  changeLanguage: jest.fn(),
-  t: (
-    _key: string,
-    defaultValue: string,
-    params: Record<string, string> = {},
-  ) => {
-    // if function was called without a key
-    if (typeof defaultValue !== 'string') {
-      params = defaultValue ?? {};
-      defaultValue = _key;
-    }
+const use = jest.fn();
+const changeLanguage = jest.fn();
+const init = jest.fn();
+const t = (
+  _key: string,
+  defaultValue: string,
+  params: Record<string, string> = {},
+) => {
+  // if function was called without a key
+  if (typeof defaultValue !== 'string') {
+    params = defaultValue ?? {};
+    defaultValue = _key;
+  }
 
-    return Object.entries(params).reduce(
-      (s, [k, v]) => s.replace(new RegExp(`{{\s*${k}\s*}}`, 'g'), v),
-      defaultValue,
-    );
-  },
-}));
+  return Object.entries(params).reduce(
+    (s, [k, v]) => s.replace(new RegExp(`{{\s*${k}\s*}}`, 'g'), v),
+    defaultValue,
+  );
+};
+const i18nextMock = {
+  use,
+  init,
+  changeLanguage,
+  t,
+};
+
+// Adds chaining support
+use.mockImplementation(() => i18nextMock);
+init.mockImplementation(() => i18nextMock);
+jest.mock('i18next', () => i18nextMock);
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);
 jest.mock('@react-native-async-storage/async-storage', () =>

@@ -37,6 +37,17 @@ export function configure() {
     )
     .init({
       fallbackLng: 'en',
+      supportedLngs: ['en', 'es', 'fr', 'ar', 'tr', 'pt', 'de'],
+      resources: {
+        en: {},
+        es: {},
+        fr: {},
+        ar: {},
+        pt: {},
+        tr: {},
+        de: {},
+      },
+
       debug: false && __DEV__ && process.env.NODE_ENV !== 'test', // Remove `false` to debug locally
 
       react: {
