@@ -1,12 +1,32 @@
-import { InfiniteData, useInfiniteQuery, useQuery } from 'react-query';
+import {
+  InfiniteData,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from 'react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
 import { useCallback } from 'react';
+import { useUser } from './useUser';
+import omit from 'lodash/omit';
 
 export enum ParentType {
   CIRCLE = 'CIRCLE',
   POST = 'POST',
+}
+
+export enum Priority {
+  STANDARD = 'STANDARD',
+  ANNOUNCEMENT = 'ANNOUNCEMENT',
+}
+
+export enum AttachmentType {
+  VIDEO = 'VIDEO',
+  IMAGE = 'IMAGE',
+  EVENT = 'EVENT',
+  PDF = 'PDF',
 }
 
 export type InfinitePostsData = InfiniteData<PostsData>;
@@ -132,6 +152,88 @@ export const usePost = (postId: string, disabled?: boolean) => {
   });
 };
 
+type CreatePostInput = {
+  post: {
+    id: string;
+    message: string;
+    parentId: string;
+    parentType: ParentType;
+    priority?: Priority;
+    attachmentsV2?: {
+      externalId: string;
+      type: AttachmentType;
+      subType: string;
+    }[];
+  };
+};
+
+export function useCreatePost() {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+  const { data } = useUser();
+  const queryClient = useQueryClient();
+
+  const createPostMutation = async (input: CreatePostInput) => {
+    const variables = {
+      input,
+    };
+
+    return graphQLClient.request(
+      createPostMutationDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useMutation('createPost', createPostMutation, {
+    onMutate: async (newPost) => {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ['posts'] });
+
+      // Snapshot the previous value
+      const previousPosts = queryClient.getQueryData(['posts']);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
+        const newData: InfinitePostsData = currentData ?? {
+          pages: [
+            {
+              postsV2: {
+                edges: [],
+                pageInfo: { endCursor: '', hasNextPage: false },
+              },
+            },
+          ],
+          pageParams: [],
+        };
+
+        const optimisticPost: Post = {
+          ...omit(newPost.post, 'parentType'),
+          __typename: 'ActivePost',
+          reactionTotals: [],
+          createdAt: new Date().toISOString(),
+          replyCount: 0,
+          status: 'READY',
+          replies: { edges: [], pageInfo: {} },
+          author: {
+            profile: {
+              displayName: data?.profile.displayName ?? '',
+              picture: data?.profile.picture ?? '',
+            },
+          },
+        };
+
+        newData.pages[0].postsV2.edges.unshift({ node: optimisticPost });
+        return newData;
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousPosts };
+    },
+  });
+}
+
 const postsV2QueryDocument = gql`
   query PostsV2($filter: PostFilter!, $after: String) {
     postsV2(filter: $filter, after: $after) {
@@ -211,6 +313,16 @@ const postDetailsQueryDocument = gql`
             }
           }
         }
+      }
+    }
+  }
+`;
+
+const createPostMutationDocument = gql`
+  mutation CreatePost($input: CreatePostInput!) {
+    createPost(input: $input) {
+      post {
+        id
       }
     }
   }
