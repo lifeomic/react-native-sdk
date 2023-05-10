@@ -9,6 +9,7 @@ import { useTheme } from './useTheme';
 import { ThemedNavigationContainer } from '../common/ThemedNavigationContainer';
 
 jest.unmock('@react-navigation/native');
+jest.unmock('react-native-paper');
 
 const renderHookInContext = async (theme?: ThemeProp) => {
   return renderHook(() => useTheme(), {

@@ -9,17 +9,8 @@ import {
   adaptNavigationTheme,
   Provider as PaperProvider,
 } from 'react-native-paper';
-import * as baseDefaultTheme from './base/default';
-
-// Merges baseDefaultTheme and reactNavigationDefault into MD3DefaultTheme
-// which is the default theme returned by usePaperTheme
-const combinedDefaultTheme = merge(
-  MD3DefaultTheme,
-  reactNavigationDefault,
-  baseDefaultTheme,
-);
-
-export type Theme = typeof combinedDefaultTheme;
+import baseDefaultTheme from './base/default';
+import { Theme } from './types';
 
 export type ThemeProp = RecursivePartial<Theme>;
 

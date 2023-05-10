@@ -1,9 +1,10 @@
 import {
   argbFromHex,
   themeFromSourceColor,
-  Theme,
+  Theme as MaterialTheme,
 } from '@material/material-color-utilities';
 import Color from 'color';
+import { Theme } from './types';
 
 export function generateColors(color: string) {
   const theme = themeFromSourceColor(argbFromHex(color));
@@ -19,12 +20,12 @@ export function generateColors(color: string) {
     ...mainColors,
     elevation,
     ...surfaceColors,
-  };
+  } as Theme['colors'];
 }
 
 type ColorTheme = ReturnType<typeof lightColorTheme>;
 
-const lightColorTheme = (theme: Theme) => {
+const lightColorTheme = (theme: MaterialTheme) => {
   return theme.schemes.light.toJSON();
 };
 
@@ -58,7 +59,7 @@ const prepareElevations = (colorTheme: ColorTheme) => {
 
 const prepareSurfaceColors = (
   colorTheme: ColorTheme,
-  palettes: Theme['palettes'],
+  palettes: MaterialTheme['palettes'],
 ) => {
   const surfaceDisabled = Color(colorTheme.onSurface)
     .alpha(0.12)

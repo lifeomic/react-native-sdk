@@ -37,6 +37,7 @@ import { numberFormatters } from '../formatters';
 import { SvgProps } from 'react-native-svg';
 import { endOfToday, isToday, startOfToday } from 'date-fns';
 import { DatePicker } from './DatePicker';
+import { useDynamicColorGroup } from '../../../hooks/useDynamicColorGroup';
 
 export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 export type TrackerDetailsProps = {
@@ -51,6 +52,7 @@ const { numberFormat } = numberFormatters;
 
 export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   const { tracker, valuesContext, onError, canEditUnit, icons } = props;
+  const { colorContainer } = useDynamicColorGroup(tracker.color);
   const defaultUnit = getStoredUnitType(tracker);
   const styles = useStyleOverrides(defaultStyles);
   const fontWeights = useFontOverrides();
@@ -185,7 +187,12 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           tracker={tracker}
           unit={selectedUnit}
         />
-        <View style={styles.trackerDetailsHeaderContainer}>
+        <View
+          style={[
+            { backgroundColor: colorContainer },
+            styles.trackerDetailsHeaderContainer,
+          ]}
+        >
           <Indicator
             CustomIcon={icons?.[metricId]}
             name={tracker.icon}
@@ -265,7 +272,6 @@ const defaultStyles = StyleSheet.create({
     width: '100%',
     flex: 1,
     maxHeight: 153,
-    backgroundColor: '#EEF0F2',
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 37.5,

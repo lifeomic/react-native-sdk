@@ -1,3 +1,5 @@
+import { Theme } from '../types';
+
 /**
  * Base (wireFrame-like) color scheme
  *
@@ -9,7 +11,7 @@
  * We are also using this file as a test fixture to make sure
  * the generateColors function works perfectly.
  */
-export const colors = {
+export const colors: Partial<Theme['colors']> = {
   primarySource: 'rgb(128,128,128)',
 
   primary: 'rgb(0, 104, 116)',
@@ -64,9 +66,7 @@ export const colors = {
   backdrop: 'rgba(41, 50, 52, 0.4)',
 };
 
-export type Colors = typeof colors;
-
-export const spacing = {
+export const spacing: Theme['spacing'] = {
   micro: 2,
   tiny: 4,
   extraSmall: 8,
@@ -77,3 +77,5 @@ export const spacing = {
   huge: 48,
   massive: 64,
 };
+
+export default { colors, spacing };
