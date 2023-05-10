@@ -63,6 +63,7 @@ export const CreateEditPostModal = ({
               />
             </Appbar.Header>
             <TextInput
+              autoFocus
               testID={tID('post-text-input')}
               multiline
               numberOfLines={12}

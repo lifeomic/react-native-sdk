@@ -1,7 +1,8 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useCallback } from 'react';
 import { t } from 'i18next';
 import { HomeStackScreenProps } from '../navigators/types';
 import { Thread } from '../components/Circles/Thread';
+import { Post } from '../hooks';
 
 export const CircleThreadScreen = ({
   navigation,
@@ -17,5 +18,18 @@ export const CircleThreadScreen = ({
     }
   }, [navigation, route.params.post.author]);
 
-  return <Thread post={route.params.post} />;
+  const openPost = useCallback(
+    (post: Post, createNewComment: boolean) => {
+      navigation.push('Home/Circle/Thread', { post, createNewComment });
+    },
+    [navigation],
+  );
+
+  return (
+    <Thread
+      post={route.params.post}
+      createComment={route.params.createNewComment ?? false}
+      onOpenThread={openPost}
+    />
+  );
 };

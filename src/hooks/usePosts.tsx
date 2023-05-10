@@ -147,12 +147,11 @@ export const usePost = (post: Partial<Post> & Pick<Post, 'id'>) => {
     );
   }, [accountHeaders, graphQLClient, post.id]);
 
-  return useQuery('postDetails', queryForPostDetails, {
+  return useQuery(['postDetails', post.id], queryForPostDetails, {
     enabled: isFetched && !!accountHeaders,
     placeholderData: {
       post,
     },
-    queryHash: post.id,
   });
 };
 
@@ -191,14 +190,35 @@ export function useCreatePost() {
 
   return useMutation('createPost', createPostMutation, {
     onMutate: async (newPost) => {
+      const parentType = newPost.post.parentType;
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
       await queryClient.cancelQueries({ queryKey: ['posts'] });
 
       // Snapshot the previous value
       const previousPosts = queryClient.getQueryData(['posts']);
+      const previousPost = queryClient.getQueryData([
+        'postDetails',
+        newPost.post.parentId,
+      ]);
 
       // Optimistically update to the new value
+      const optimisticPost: Post = {
+        ...omit(newPost.post, 'parentType'),
+        __typename: 'ActivePost',
+        reactionTotals: [],
+        createdAt: new Date().toISOString(),
+        replyCount: 0,
+        status: 'READY',
+        replies: { edges: [], pageInfo: {} },
+        author: {
+          profile: {
+            displayName: data?.profile.displayName ?? '',
+            picture: data?.profile.picture ?? '',
+          },
+        },
+      };
+
       queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
         const newData: InfinitePostsData = currentData ?? {
           pages: [
@@ -212,28 +232,36 @@ export function useCreatePost() {
           pageParams: [],
         };
 
-        const optimisticPost: Post = {
-          ...omit(newPost.post, 'parentType'),
-          __typename: 'ActivePost',
-          reactionTotals: [],
-          createdAt: new Date().toISOString(),
-          replyCount: 0,
-          status: 'READY',
-          replies: { edges: [], pageInfo: {} },
-          author: {
-            profile: {
-              displayName: data?.profile.displayName ?? '',
-              picture: data?.profile.picture ?? '',
-            },
-          },
-        };
+        if (parentType === ParentType.CIRCLE) {
+          newData.pages[0].postsV2.edges.unshift({ node: optimisticPost });
+        } else if (parentType === ParentType.POST) {
+          const parent = newData.pages
+            .map((page) => page.postsV2.edges)
+            .flat()
+            .find((post) => post.node.id === newPost.post.parentId);
 
-        newData.pages[0].postsV2.edges.unshift({ node: optimisticPost });
+          if (parent) {
+            parent.node.replyCount++;
+            parent.node.replies = parent.node.replies || { edges: [] };
+            parent.node.replies.edges.unshift({ node: optimisticPost });
+          }
+        }
+
         return newData;
       });
 
+      queryClient.setQueryData<PostDetailsPostQueryResponse>(
+        ['postDetails', newPost.post.parentId],
+        (currentData) => {
+          if (!currentData) return currentData!;
+
+          currentData.post.replies.edges.unshift({ node: optimisticPost });
+          return currentData;
+        },
+      );
+
       // Return a context object with the snapshotted value
-      return { previousPosts };
+      return { previousPosts, previousPost };
     },
   });
 }
@@ -279,6 +307,7 @@ const postDetailsQueryDocument = gql`
     }
     ... on ActivePost {
       message
+      replyCount
       author {
         profile {
           displayName
