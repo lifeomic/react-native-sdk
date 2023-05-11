@@ -1,12 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
-import {
-  FlatList,
-  View,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { FlatList, View, RefreshControl, TouchableOpacity } from 'react-native';
 import { t } from 'i18next';
+import { Text } from 'react-native-paper';
 import { usePost, Post, useStyles, useTheme, ParentType } from '../../hooks';
 import { ThreadComment } from './ThreadComment';
 import { ThreadPost } from './ThreadPost';
