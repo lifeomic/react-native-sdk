@@ -53,7 +53,7 @@ export type Post = {
   };
   id: string;
   parentId: string;
-  priority?: string;
+  priority?: Priority;
   replyCount: number;
   createdAt: string;
   deletedAt?: string;
@@ -265,6 +265,7 @@ const postsV2QueryDocument = gql`
       edges {
         node {
           id
+          priority
           ... on ActivePost {
             author {
               profile {
@@ -291,6 +292,7 @@ const postDetailsQueryDocument = gql`
   fragment PostDetails on Post {
     id
     createdAt
+    priority
     ... on DeletedPost {
       deletedAt
     }

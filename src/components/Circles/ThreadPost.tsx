@@ -2,11 +2,12 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { t } from 'i18next';
 import { formatDistanceToNow, isValid } from 'date-fns';
-import { Post as PostType, useStyles, useTheme } from '../../hooks';
+import { Post as PostType, Priority, useStyles, useTheme } from '../../hooks';
 import { Avatar } from 'react-native-paper';
 import { initials } from './initials';
 import { createStyles } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
+import { AnnouncementBanner } from './AnnouncementBanner';
 
 type Props = { post: PostType; style?: ThreadPostStyles };
 
@@ -20,29 +21,32 @@ export const ThreadPost = ({ post, style }: Props) => {
     theme.spacing.huge;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Avatar.Text
-          size={size}
-          style={styles.avatar}
-          label={initials(post?.author?.profile?.displayName)}
-        />
-        <View>
-          <Text style={styles.usernameText}>
-            {post?.author?.profile?.displayName}
-          </Text>
-          {isValid(created) && (
-            <Text style={styles.responseTimeText}>
-              {t('circles.thread-post.responseTime', '{{responseTime}} ago', {
-                responseTime: formatDistanceToNow(created),
-              })}
+    <>
+      {post.priority === Priority.ANNOUNCEMENT && <AnnouncementBanner />}
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Avatar.Text
+            size={size}
+            style={styles.avatar}
+            label={initials(post?.author?.profile?.displayName)}
+          />
+          <View>
+            <Text style={styles.usernameText}>
+              {post?.author?.profile?.displayName}
             </Text>
-          )}
+            {isValid(created) && (
+              <Text style={styles.responseTimeText}>
+                {t('circles.thread-post.responseTime', '{{responseTime}} ago', {
+                  responseTime: formatDistanceToNow(created),
+                })}
+              </Text>
+            )}
+          </View>
         </View>
+        <Text style={styles.messageText}>{post?.message}</Text>
+        <ReactionsToolbar post={post} />
       </View>
-      <Text style={styles.messageText}>{post?.message}</Text>
-      <ReactionsToolbar post={post} />
-    </View>
+    </>
   );
 };
 

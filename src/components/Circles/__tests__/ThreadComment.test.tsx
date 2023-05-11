@@ -22,7 +22,6 @@ const mockPost: Post = {
   },
   __typename: 'ActivePost',
   message: 'Zoinks!',
-  priority: 'high',
   metadata: {},
   status: 'status',
   attachments: [],
