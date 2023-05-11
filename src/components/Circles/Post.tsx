@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
 import { formatDistanceToNow, isValid } from 'date-fns';
 import { useStyles, useTheme } from '../../hooks';
-import { Post as PostType, Priority } from '../../hooks/usePosts';
+import { ParentType, Post as PostType, Priority } from '../../hooks/usePosts';
 import { createStyles } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
 import { initials } from './initials';
@@ -47,7 +47,7 @@ export const Post = ({ post, onComment }: PostProps) => {
 
   const created = new Date(post?.createdAt!);
   const showPostMenuButton = useMemo(
-    () => <ShowPostMenuButton post={post} />,
+    () => <ShowPostMenuButton post={post} parentType={ParentType.CIRCLE} />,
     [post],
   );
 

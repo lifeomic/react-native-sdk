@@ -356,6 +356,53 @@ export function useDeletePost() {
   });
 }
 
+export function useUpdatePostMessage() {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+  const queryClient = useQueryClient();
+
+  const updatePostMessageMutation = async (input: {
+    id: string;
+    message: string;
+  }) => {
+    const variables = {
+      input,
+    };
+
+    return graphQLClient.request(
+      updatePostMessageMutationDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useMutation('updatePostMessage', updatePostMessageMutation, {
+    onMutate: async (updatedPost) => {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ['posts'] });
+
+      // Snapshot the previous value
+      const previousPosts = queryClient.getQueryData(['posts']);
+
+      // Optimistically update to delete the target post
+      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
+        forEach(currentData!.pages, (page) => {
+          forEach(page.postsV2.edges, (edge) => {
+            if (edge.node.id === updatedPost.id) {
+              edge.node.message = updatedPost.message;
+            }
+          });
+        });
+        return currentData!;
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousPosts };
+    },
+  });
+}
+
 const postsV2QueryDocument = gql`
   query PostsV2($filter: PostFilter!, $after: String) {
     postsV2(filter: $filter, after: $after) {
@@ -484,6 +531,17 @@ const deletePostMutationDocument = gql`
     deletePost(input: $input) {
       post {
         id
+      }
+    }
+  }
+`;
+
+const updatePostMessageMutationDocument = gql`
+  mutation UpdatePostMessage($input: UpdatePostMessageInput!) {
+    updatePostMessage(input: $input) {
+      post {
+        id
+        message
       }
     }
   }

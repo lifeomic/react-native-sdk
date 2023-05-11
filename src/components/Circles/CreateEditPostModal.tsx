@@ -8,7 +8,12 @@ import {
   Text,
   Provider,
 } from 'react-native-paper';
-import { ParentType, useCreatePost, Post } from '../../hooks/usePosts';
+import {
+  ParentType,
+  useCreatePost,
+  Post,
+  useUpdatePostMessage,
+} from '../../hooks/usePosts';
 import { useStyles } from '../../hooks';
 import { createStyles } from '../BrandConfigProvider';
 import { t } from 'i18next';
@@ -31,6 +36,7 @@ export const CreateEditPostModal = ({
   postToEdit,
 }: CreateEditPostModalProps) => {
   const createPost = useCreatePost();
+  const updatePost = useUpdatePostMessage();
   const hideModal = (createdNewPost?: boolean) => {
     setPostText('');
     setCharacterCount(0);
@@ -98,18 +104,28 @@ export const CreateEditPostModal = ({
                   disabled={characterCount === 0 || overCharacterLimit}
                   mode="outlined"
                   onPress={() => {
-                    createPost.mutate({
-                      post: {
-                        id: uuid.v4().toString(),
+                    if (postToEdit) {
+                      updatePost.mutate({
+                        id: postToEdit.id,
                         message: postText,
-                        parentId: parentId,
-                        parentType: parentType,
-                      },
-                    });
+                      });
+                    } else {
+                      createPost.mutate({
+                        post: {
+                          id: uuid.v4().toString(),
+                          message: postText,
+                          parentId: parentId,
+                          parentType: parentType,
+                        },
+                      });
+                    }
+
                     hideModal(true);
                   }}
                 >
-                  Post
+                  {postToEdit
+                    ? t('done-editing', 'Done')
+                    : t('submit-post', 'Post')}
                 </Button>
               </View>
             </KeyboardAvoidingView>

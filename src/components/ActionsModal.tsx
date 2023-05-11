@@ -53,7 +53,10 @@ export const ActionsModal = ({
           <List.Section>
             {subHeading && <List.Subheader>{subHeading}</List.Subheader>}
             {actions.map(
-              ({ title, action, style, promptForConfirmation }, index) => (
+              (
+                { title, action, style, promptForConfirmation = false },
+                index,
+              ) => (
                 <>
                   <List.Item
                     key={title}
@@ -62,8 +65,9 @@ export const ActionsModal = ({
                       if (promptForConfirmation) {
                         setConfirmationAction(() => action);
                         setShowConfirmation(true);
-                      } else if (promptForConfirmation === false) {
+                      } else {
                         action?.();
+                        setShowModal(false);
                       }
                     }}
                     titleStyle={[styles.label, style]}
