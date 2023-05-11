@@ -6,19 +6,6 @@ import { useInfinitePosts, useCreatePost } from '../../../hooks/usePosts';
 
 jest.mock('../../../hooks/usePosts');
 jest.mock('../ReactionsToolbar');
-jest.mock('react-native-paper', () => {
-  const lib = jest.requireActual('react-native-paper');
-
-  return {
-    ...lib,
-    Appbar: {
-      Header: jest.fn(),
-      BackAction: jest.fn(),
-      Action: jest.fn(),
-      Content: jest.fn(),
-    },
-  };
-});
 
 const useInfinitePostsMock = useInfinitePosts as jest.Mock;
 const useCreatePostMock = useCreatePost as jest.Mock;

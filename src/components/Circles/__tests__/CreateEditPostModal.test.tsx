@@ -5,19 +5,6 @@ import { CreateEditPostModal } from '../CreateEditPostModal';
 
 jest.mock('../../../hooks/usePosts');
 jest.mock('../ReactionsToolbar');
-jest.mock('react-native-paper', () => {
-  const lib = jest.requireActual('react-native-paper');
-
-  return {
-    ...lib,
-    Appbar: {
-      Header: jest.fn(),
-      BackAction: jest.fn(),
-      Action: jest.fn(),
-      Content: jest.fn(),
-    },
-  };
-});
 
 const useCreatePostMock = useCreatePost as jest.Mock;
 
