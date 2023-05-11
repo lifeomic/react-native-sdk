@@ -90,26 +90,9 @@ describe('Thread', () => {
   test('renders the component by fetching the post based on the postId', () => {
     mockUsePost.mockReturnValue({ data: { post: mockPost } });
 
-    const { getByText } = render(<Thread postId="post" />);
+    const { getByText } = render(<Thread post={mockPost} />);
 
-    expect(mockUsePost).toHaveBeenCalledWith('post', false);
-
-    expect(getByText('Shaggy')).toBeDefined();
-    expect(getByText('Zoinks!')).toBeDefined();
-
-    expect(getByText('Velma')).toBeDefined();
-    expect(getByText('Jinkies!')).toBeDefined();
-
-    expect(getByText('Scooby Doo')).toBeDefined();
-    expect(getByText('Ruh Roh!')).toBeDefined();
-  });
-
-  test('renders the component by passing a post to it directly', () => {
-    mockUsePost.mockReturnValue({});
-
-    const { getByText } = render(<Thread postId="" post={mockPost} />);
-
-    expect(mockUsePost).toHaveBeenCalledWith('', true); // will not fetch the post
+    expect(mockUsePost).toHaveBeenCalledWith(mockPost);
 
     expect(getByText('Shaggy')).toBeDefined();
     expect(getByText('Zoinks!')).toBeDefined();
@@ -122,12 +105,14 @@ describe('Thread', () => {
   });
 
   test('can handle a post with no replies', () => {
-    mockUsePost.mockReturnValue({});
-
     const post = Object.assign({}, mockPost);
     post.replies = undefined as any;
 
-    const { getByText } = render(<Thread postId="" post={post} />);
+    mockUsePost.mockReturnValue({
+      data: { post },
+    });
+
+    const { getByText } = render(<Thread post={post} />);
 
     expect(getByText('Shaggy')).toBeDefined();
     expect(getByText('Zoinks!')).toBeDefined();
@@ -139,7 +124,7 @@ describe('Thread', () => {
       data: { post: undefined },
     });
 
-    const { getByText, queryByText } = render(<Thread postId="post" />);
+    const { getByText, queryByText } = render(<Thread post={mockPost} />);
 
     expect(getByText('Oh No!')).toBeDefined();
     expect(queryByText('Shaggy')).toBeNull();

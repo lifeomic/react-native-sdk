@@ -9,9 +9,10 @@ import { ReactionsToolbar } from './ReactionsToolbar';
 
 interface PostProps {
   post: PostType;
+  onComment: () => void;
 }
 
-export const Post = ({ post }: PostProps) => {
+export const Post = ({ post, onComment }: PostProps) => {
   const { styles } = useStyles(defaultStyles);
   const avatarIcon = useMemo(
     () =>
@@ -46,7 +47,7 @@ export const Post = ({ post }: PostProps) => {
           labelStyle={styles.commentButtonText}
           compact={true}
           mode={'outlined'}
-          onPress={() => {}} // TODO: Navigate to post details/comments page
+          onPress={onComment}
         >
           {post.replyCount} COMMENTS
         </Button>
