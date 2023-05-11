@@ -68,7 +68,7 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
     <View>
       <CreateEditPostModal
         visible={visible}
-        setVisible={setVisible}
+        onModalClose={() => setVisible(false)}
         parentType={ParentType.CIRCLE}
         parentId={circleTile.circleId}
       />

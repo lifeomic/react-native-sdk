@@ -105,6 +105,43 @@ test('useCreateReaction mutation', async () => {
   );
 });
 
+test('useCreateReaction mutation updates postDetails', async () => {
+  queryClient.setQueryData(['postDetails', '1'], {
+    post: {
+      id: '1',
+      reactionTotals: [{ type: '(-_-)', count: 0, userHasReacted: false }],
+    },
+  });
+
+  const scope = nock(`${baseURL}/v1/graphql`)
+    .post('')
+    .times(1)
+    .reply(200, function (_, requestBody) {
+      const body = JSON.parse(JSON.stringify(requestBody));
+      const { postId, type } = body.variables.input;
+      return { data: { postId, type, userId: 'someUser' } };
+    });
+
+  const onSuccessMock = jest.fn();
+  const { result } = await renderCreateReactionHook();
+  result.current.mutate(
+    { postId: '1', type: '(-_-)' },
+    { onSuccess: onSuccessMock },
+  );
+
+  await waitFor(() => {
+    expect(scope.isDone()).toBe(true);
+    expect(onSuccessMock).toBeCalled();
+  });
+
+  expect(queryClient.getQueryData(['postDetails', '1'])).toEqual({
+    post: {
+      id: '1',
+      reactionTotals: [{ type: '(-_-)', count: 1, userHasReacted: true }],
+    },
+  });
+});
+
 test('useUndoReaction mutation', async () => {
   queryClient.setQueryData(
     'posts',

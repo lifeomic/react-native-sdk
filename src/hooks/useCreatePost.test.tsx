@@ -68,7 +68,7 @@ describe('useCreatePost', () => {
     queryClient.setQueryData('posts', getDataWithPosts([]));
     const scope = nock(`${baseURL}/v1/graphql`)
       .post('')
-      .times(1)
+      .times(2)
       .reply(200, function (_, requestBody) {
         const body = JSON.parse(JSON.stringify(requestBody));
         const { postId, type } = body.variables.input;
@@ -102,8 +102,30 @@ describe('useCreatePost', () => {
       parentType: ParentType.CIRCLE,
     };
 
+    onSuccessMock.mockReset();
+
     result.current.mutate(
       { post: createPostInput },
+      { onSuccess: onSuccessMock },
+    );
+
+    await waitFor(() => {
+      expect(onSuccessMock).toBeCalled();
+    });
+
+    expect(queryClient.getQueryData('posts')).toEqual(
+      getDataWithPosts([{ node: expectedPost }]),
+    );
+
+    const createSubPostInput = {
+      message: 'someCommentPost',
+      id: '789',
+      parentId: createPostInput.id,
+      parentType: ParentType.POST,
+    };
+
+    result.current.mutate(
+      { post: createSubPostInput },
       { onSuccess: onSuccessMock },
     );
 
@@ -112,6 +134,28 @@ describe('useCreatePost', () => {
       expect(onSuccessMock).toBeCalled();
     });
 
+    const expectedCommentPost: Post = {
+      __typename: 'ActivePost',
+      parentId: '123',
+      replyCount: 0,
+      createdAt: new Date().toISOString(),
+      status: 'READY',
+      reactionTotals: [],
+      replies: { edges: [], pageInfo: {} },
+      id: '789',
+      message: 'someCommentPost',
+      author: {
+        profile: {
+          displayName: '',
+          picture: '',
+        },
+      },
+    };
+
+    expectedPost.replyCount = 1;
+    expectedPost.replies.edges.push({
+      node: expectedCommentPost,
+    });
     expect(queryClient.getQueryData('posts')).toEqual(
       getDataWithPosts([{ node: expectedPost }]),
     );
