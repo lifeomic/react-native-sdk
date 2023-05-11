@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
-import { FlatList, View } from 'react-native';
-import { usePost, Post, useStyles } from '../../hooks';
+import { FlatList, View, RefreshControl } from 'react-native';
+import { usePost, Post, useStyles, useTheme } from '../../hooks';
 import { ThreadComment } from './ThreadComment';
 import { ThreadPost } from './ThreadPost';
 import { PostUnavailable } from './PostUnavailable';
 import { EmptyComments } from './EmptyComments';
 import { createStyles } from '../BrandConfigProvider';
+import { ActivityIndicatorView } from '../ActivityIndicatorView';
+import { t } from 'i18next';
 
 export interface ThreadProps {
   post: Post;
@@ -13,8 +15,10 @@ export interface ThreadProps {
 }
 
 export const Thread = ({ post: postIn, style }: ThreadProps) => {
+  const { colors } = useTheme();
   const { styles } = useStyles(defaultStyles, style);
-  const { data, isLoading, error, refetch, isRefetching } = usePost(postIn);
+  const { data, isLoading, error, refetch, isRefetching, isFetched } =
+    usePost(postIn);
 
   const post = data?.post;
   const replies = post?.replies?.edges;
@@ -29,12 +33,25 @@ export const Thread = ({ post: postIn, style }: ThreadProps) => {
       testID="post-details-list"
       data={entries}
       renderItem={renderItem}
-      refreshing={isLoading || isRefetching}
-      onRefresh={refetch}
+      refreshControl={
+        <RefreshControl
+          onRefresh={refetch}
+          refreshing={isFetched && (isLoading || isRefetching)}
+          colors={[colors.primarySource]}
+          tintColor={colors.inversePrimary}
+        />
+      }
       initialNumToRender={35}
       style={styles.container}
       ListHeaderComponent={
         !error && post ? <ThreadPost post={post as Post} /> : null
+      }
+      ListFooterComponent={
+        !isFetched && (isLoading || isRefetching) ? (
+          <ActivityIndicatorView
+            message={t('thread-screen-loading-comments', 'Loading comments')}
+          />
+        ) : null
       }
       ListEmptyComponent={
         isLoading || isRefetching ? null : (
