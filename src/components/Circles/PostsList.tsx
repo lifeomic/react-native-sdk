@@ -5,11 +5,12 @@ import {
   NativeSyntheticEvent,
   ScrollView,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import { FAB, Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { CircleTile } from '../../hooks/useAppConfig';
-import { useInfinitePosts } from '../../hooks/usePosts';
+import { Post as PostType, useInfinitePosts } from '../../hooks/usePosts';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { createStyles } from '../BrandConfigProvider/styles/createStyles';
 import { Post } from './Post';
@@ -20,9 +21,10 @@ import { tID } from '../../common';
 
 interface PostsListProps {
   circleTile?: CircleTile;
+  onOpenPost: (post: PostType, openComment: boolean) => void;
 }
 
-export const PostsList = ({ circleTile }: PostsListProps) => {
+export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
   const [visible, setVisible] = useState(false);
 
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
@@ -46,6 +48,14 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
     [hasNextPage, isLoading, fetchNextPage],
   );
 
+  const handlePostTapped = useCallback(
+    (post: PostType, createNewComment = false) =>
+      () => {
+        onOpenPost(post, createNewComment);
+      },
+    [onOpenPost],
+  );
+
   if (!data || !circleTile?.circleId) {
     return (
       <ActivityIndicatorView
@@ -58,7 +68,7 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
     <View>
       <CreateEditPostModal
         visible={visible}
-        setVisible={setVisible}
+        onModalClose={() => setVisible(false)}
         parentType={ParentType.CIRCLE}
         parentId={circleTile.circleId}
       />
@@ -71,7 +81,16 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
           <React.Fragment key={`page-${pageIndex}`}>
             {page?.postsV2?.edges.length > 0 ? (
               page.postsV2.edges.map((edge, postIndex) => (
-                <Post key={`post-${postIndex}`} post={edge.node} />
+                <TouchableOpacity
+                  key={`post-${postIndex}`}
+                  onPress={handlePostTapped(edge.node)}
+                  activeOpacity={0.6}
+                >
+                  <Post
+                    post={edge.node}
+                    onComment={handlePostTapped(edge.node, true)}
+                  />
+                </TouchableOpacity>
               ))
             ) : (
               <Text style={styles.noPostsText}>

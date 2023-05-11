@@ -11,5 +11,6 @@ export const useTheme = jest.fn().mockReturnValue({
 export const Appbar = {
   Header: jest.fn(),
   BackAction: jest.fn(),
+  Action: jest.fn(),
   Content: jest.fn(),
 };
