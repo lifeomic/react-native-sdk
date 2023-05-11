@@ -12,6 +12,8 @@ import { useCallback, useState } from 'react';
 import { useUser } from './useUser';
 import omit from 'lodash/omit';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
+import forEach from 'lodash/forEach';
+import remove from 'lodash/remove';
 
 export enum ParentType {
   CIRCLE = 'CIRCLE',
@@ -45,6 +47,7 @@ export type PostsData = {
 
 export type Post = {
   __typename: string;
+  authorId?: string;
   author?: {
     profile: {
       displayName: string;
@@ -313,6 +316,46 @@ export function useCreatePost() {
   });
 }
 
+export function useDeletePost() {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+  const queryClient = useQueryClient();
+
+  const deletePostMutation = async (input: { id: string }) => {
+    const variables = {
+      input,
+    };
+
+    return graphQLClient.request(
+      deletePostMutationDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useMutation('deletePost', deletePostMutation, {
+    onMutate: async (deletedPost) => {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ['posts'] });
+
+      // Snapshot the previous value
+      const previousPosts = queryClient.getQueryData(['posts']);
+
+      // Optimistically update to delete the target post
+      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
+        forEach(currentData?.pages, (page) => {
+          remove(page.postsV2.edges, (edge) => edge.node.id === deletedPost.id);
+        });
+        return currentData!;
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousPosts };
+    },
+  });
+}
+
 const postsV2QueryDocument = gql`
   query PostsV2($filter: PostFilter!, $after: String) {
     postsV2(filter: $filter, after: $after) {
@@ -325,6 +368,7 @@ const postsV2QueryDocument = gql`
           id
           priority
           ... on ActivePost {
+            authorId
             author {
               profile {
                 displayName
@@ -428,6 +472,16 @@ const postRepliesQueryDocument = gql`
 const createPostMutationDocument = gql`
   mutation CreatePost($input: CreatePostInput!) {
     createPost(input: $input) {
+      post {
+        id
+      }
+    }
+  }
+`;
+
+const deletePostMutationDocument = gql`
+  mutation DeletePost($input: DeletePostInput!) {
+    deletePost(input: $input) {
       post {
         id
       }

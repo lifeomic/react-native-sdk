@@ -9,6 +9,7 @@ import { ReactionsToolbar } from './ReactionsToolbar';
 import { initials } from './initials';
 import { t } from 'i18next';
 import { AnnouncementBanner } from './AnnouncementBanner';
+import { ShowPostMenuButton } from './ShowPostMenuButton';
 
 interface PostProps {
   post: PostType;
@@ -45,6 +46,11 @@ export const Post = ({ post, onComment }: PostProps) => {
   );
 
   const created = new Date(post?.createdAt!);
+  const showPostMenuButton = useMemo(
+    () => <ShowPostMenuButton post={post} />,
+    [post],
+  );
+
   return (
     <View style={styles.container}>
       {post.priority === Priority.ANNOUNCEMENT && <AnnouncementBanner />}
@@ -59,6 +65,7 @@ export const Post = ({ post, onComment }: PostProps) => {
         titleNumberOfLines={4}
         style={styles.listItem}
         left={() => avatarIcon}
+        right={() => showPostMenuButton}
       />
       <Text variant="titleMedium" style={styles.messageText}>
         {post.message}
