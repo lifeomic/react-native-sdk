@@ -1,42 +1,13 @@
 import mockDeviceInfo from 'react-native-device-info/jest/react-native-device-info-mock';
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock';
+import i18next from './lib/i18n';
+import { initReactI18next } from 'react-i18next';
 
 jest.mock('react-native-device-info', () => mockDeviceInfo);
 
 jest.mock('./src/common/testID', () => ({
   tID: (id: string) => id,
 }));
-
-const use = jest.fn();
-const changeLanguage = jest.fn();
-const init = jest.fn();
-const t = (
-  _key: string,
-  defaultValue: string,
-  params: Record<string, string> = {},
-) => {
-  // if function was called without a key
-  if (typeof defaultValue !== 'string') {
-    params = defaultValue ?? {};
-    defaultValue = _key;
-  }
-
-  return Object.entries(params).reduce(
-    (s, [k, v]) => s.replace(new RegExp(`{{\s*${k}\s*}}`, 'g'), v),
-    defaultValue,
-  );
-};
-const i18nextMock = {
-  use,
-  init,
-  changeLanguage,
-  t,
-};
-
-// Adds chaining support
-use.mockImplementation(() => i18nextMock);
-init.mockImplementation(() => i18nextMock);
-jest.mock('i18next', () => i18nextMock);
 
 jest.mock('@react-native-community/netinfo', () => mockRNCNetInfo);
 jest.mock('@react-native-async-storage/async-storage', () =>
@@ -97,3 +68,38 @@ jest.mock('react-native-notifications', () => ({
   },
   NotificationBackgroundFetchResult: { NEW_DATA: 'NEW_DATA' },
 }));
+
+beforeAll(async () => {
+  // Setup minimal i18next instance
+  jest.useRealTimers(); // Required to deal with hook timeout bug
+  return i18next.use(initReactI18next).init({
+    fallbackLng: 'en',
+    supportedLngs: ['en'],
+    react: {
+      useSuspense: true,
+    },
+
+    ns: ['common'],
+    defaultNS: 'common',
+
+    interpolation: {
+      escapeValue: false,
+    },
+    resources: {
+      en: {
+        common: {
+          // Plurals are an uncommon case where a defaultValue is not provided
+          'post-comments_zero': 'COMMENT',
+          'post-comments_one': '1 COMMENT',
+          'post-comments_other': '{{count}} COMMENTS',
+        },
+      },
+    },
+  });
+
+  // i18next.addResources('en', 'common', {
+  //   'post-comments_zero': 'COMMENT',
+  //   'post-comments_one': '1 COMMENT',
+  //   'post-comments_other': '{{count}} COMMENTS',
+  // });
+});

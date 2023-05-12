@@ -60,13 +60,5 @@ export function configure() {
     });
 }
 
-// There are some load order issues in the test suite, and this is needed to ensure that
-// the tests force the configuration no matter what order things are loaded in
-if (process.env.NODE_ENV === 'test') {
-  if (!i18next.isInitialized) {
-    configure();
-  }
-}
-
 export { t };
 export default i18next;

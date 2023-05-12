@@ -153,7 +153,7 @@ test('clicking post or comment calls onOpenPost with correct data', () => {
 
   expect(onOpenPost).toHaveBeenLastCalledWith(post, false);
 
-  fireEvent.press(postsList.getByText('0 COMMENTS'));
+  fireEvent.press(postsList.getByText('COMMENT'));
 
   expect(onOpenPost).toHaveBeenLastCalledWith(post, true);
 });

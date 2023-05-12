@@ -50,7 +50,7 @@ describe('ThreadComment', () => {
       <ThreadComment post={mockPost} onComment={onComment} />,
     );
 
-    fireEvent.press(getByText('0 COMMENTS'));
+    fireEvent.press(getByText('COMMENT'));
 
     expect(onComment).toHaveBeenCalled();
   });
