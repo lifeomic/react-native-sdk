@@ -96,10 +96,4 @@ beforeAll(async () => {
       },
     },
   });
-
-  // i18next.addResources('en', 'common', {
-  //   'post-comments_zero': 'COMMENT',
-  //   'post-comments_one': '1 COMMENT',
-  //   'post-comments_other': '{{count}} COMMENTS',
-  // });
 });
