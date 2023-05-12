@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
-import { formatRelative } from 'date-fns';
-import { useStyles } from '../../hooks';
+import { formatDistanceToNow, isValid } from 'date-fns';
+import { useStyles, useTheme } from '../../hooks';
 import { Post as PostType, Priority } from '../../hooks/usePosts';
 import { createStyles } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
+import { initials } from './initials';
+import { t } from 'i18next';
 import { AnnouncementBanner } from './AnnouncementBanner';
 
 interface PostProps {
@@ -15,26 +17,45 @@ interface PostProps {
 
 export const Post = ({ post, onComment }: PostProps) => {
   const { styles } = useStyles(defaultStyles);
+  const theme = useTheme();
+  const size =
+    Math.min(Number(styles.avatar?.width), Number(styles.avatar?.height)) ||
+    theme.spacing.large;
   const avatarIcon = useMemo(
     () =>
       post.author?.profile.picture ? (
         <Avatar.Image
-          size={50}
-          style={styles.icon}
+          size={size}
+          style={styles.avatar}
           source={{ uri: post.author?.profile.picture }}
         />
       ) : (
-        <Avatar.Icon size={50} style={styles.icon} icon={'account'} />
+        <Avatar.Text
+          size={size}
+          style={styles.avatar}
+          label={initials(post?.author?.profile?.displayName)}
+        />
       ),
-    [post.author?.profile.picture, styles.icon],
+    [
+      post.author?.profile?.displayName,
+      post.author?.profile.picture,
+      size,
+      styles.avatar,
+    ],
   );
 
+  const created = new Date(post?.createdAt!);
   return (
     <View style={styles.container}>
       {post.priority === Priority.ANNOUNCEMENT && <AnnouncementBanner />}
       <List.Item
         title={post.author?.profile.displayName}
-        description={formatRelative(new Date(post.createdAt), new Date())}
+        description={
+          isValid(created) &&
+          t('circles.thread-post.responseTime', '{{responseTime}} ago', {
+            responseTime: formatDistanceToNow(created),
+          })
+        }
         titleNumberOfLines={4}
         style={styles.listItem}
         left={() => avatarIcon}
@@ -51,7 +72,7 @@ export const Post = ({ post, onComment }: PostProps) => {
           mode={'outlined'}
           onPress={onComment}
         >
-          {post.replyCount} COMMENTS
+          {t('post-comments', { count: post.replyCount })}
         </Button>
         <ReactionsToolbar post={post} />
       </View>
@@ -63,7 +84,11 @@ export const Post = ({ post, onComment }: PostProps) => {
 const defaultStyles = createStyles('Post', (theme) => ({
   container: {},
   listItem: { paddingLeft: theme.spacing.small },
-  icon: {},
+  avatar: {
+    marginRight: theme.spacing.extraSmall,
+    width: theme.spacing.huge,
+    height: theme.spacing.huge,
+  },
   messageText: {
     paddingHorizontal: theme.spacing.small,
     paddingBottom: theme.spacing.tiny,

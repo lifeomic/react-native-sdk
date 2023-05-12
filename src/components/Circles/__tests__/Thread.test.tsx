@@ -164,7 +164,7 @@ describe('Thread', () => {
     fireEvent.press(getByText('Jinkies!'));
     expect(onOpenThread).toHaveBeenLastCalledWith(firstComment, false);
 
-    fireEvent.press(getByText('0 COMMENTS'));
+    fireEvent.press(getByText('COMMENT'));
     expect(onOpenThread).toHaveBeenLastCalledWith(firstComment, true);
   });
 });

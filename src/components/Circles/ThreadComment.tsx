@@ -49,7 +49,7 @@ export const ThreadComment = ({ post, style, onComment }: Props) => {
             mode={'outlined'}
             onPress={onComment}
           >
-            {post.replyCount} COMMENTS
+            {t('post-comments', { count: post.replyCount })}
           </Button>
           <ReactionsToolbar post={post} />
         </View>

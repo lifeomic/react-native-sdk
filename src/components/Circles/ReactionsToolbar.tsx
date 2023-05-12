@@ -124,9 +124,9 @@ const defaultStyles = createStyles('ReactionsToolbar', (theme) => ({
   },
   reactionLabel: {
     marginVertical: 0,
-    paddingTop: 8,
+    paddingTop: 4,
     fontSize: 14,
-    lineHeight: 8,
+    lineHeight: 14,
   },
 }));
 

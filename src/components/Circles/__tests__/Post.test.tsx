@@ -40,7 +40,7 @@ test('clicking comment calls onComment', () => {
   const onComment = jest.fn();
   const postItem = render(<Post post={post} onComment={onComment} />);
 
-  fireEvent.press(postItem.getByText('0 COMMENTS'));
+  fireEvent.press(postItem.getByText('COMMENT'));
 
   expect(onComment).toHaveBeenCalled();
 });
