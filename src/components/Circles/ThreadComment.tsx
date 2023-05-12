@@ -63,6 +63,7 @@ const defaultStyles = createStyles('Circles.ThreadComment', (theme) => ({
     flexDirection: 'row',
     alignItems: 'flex-start',
     padding: theme.spacing.medium,
+    paddingLeft: 0,
     paddingBottom: theme.spacing.extraSmall,
   },
   details: { flex: 1 },

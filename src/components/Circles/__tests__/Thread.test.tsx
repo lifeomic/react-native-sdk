@@ -2,18 +2,21 @@ import React from 'react';
 import {
   fireEvent,
   render as renderComponent,
+  waitFor,
 } from '@testing-library/react-native';
 import { Thread } from '../Thread';
-import { usePost, Post } from '../../../hooks/usePosts';
+import { usePost, Post, useLoadReplies } from '../../../hooks/usePosts';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
 jest.mock('../../../hooks/usePosts', () => ({
   ...jest.requireActual('../../../hooks/usePosts'),
   usePost: jest.fn(() => ({})),
+  useLoadReplies: jest.fn(() => ({})),
 }));
 jest.mock('../ReactionsToolbar');
 
 const mockUsePost = usePost as jest.Mock;
+const mockUseLoadReplies = useLoadReplies as jest.Mock;
 
 const mockPost: Post = {
   id: 'post',
@@ -166,5 +169,32 @@ describe('Thread', () => {
 
     fireEvent.press(getByText('COMMENT'));
     expect(onOpenThread).toHaveBeenLastCalledWith(firstComment, true);
+  });
+
+  test('loads more replies when clicking Read X earlier comments', async () => {
+    const post = Object.assign({}, mockPost);
+    post.replies = {
+      edges: [],
+      pageInfo: { endCursor: 'nextPage', hasNextPage: true },
+    };
+    post.replyCount = 1; // Has reply but isn't loaded
+    const mockLoadReplies = jest.fn();
+
+    mockUsePost.mockReturnValue({
+      data: { post },
+    });
+    mockUseLoadReplies.mockReturnValue({
+      loadReplies: mockLoadReplies,
+    });
+
+    const { getByText } = render(
+      <Thread post={post} onOpenThread={jest.fn()} />,
+    );
+
+    fireEvent.press(getByText('Read 1 earlier comments...'));
+
+    await waitFor(() => {
+      expect(mockLoadReplies).toHaveBeenCalledWith(post);
+    });
   });
 });
