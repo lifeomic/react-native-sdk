@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { Post } from '../Post';
-import type { Post as PostType } from '../../../hooks/usePosts';
+import { Post as PostType, Priority } from '../../../hooks/usePosts';
 
 jest.mock('../ReactionsToolbar');
 
@@ -12,6 +12,7 @@ const post: PostType = {
   parentId: '456',
   status: 'READY',
   message: 'Some message!',
+  priority: Priority.ANNOUNCEMENT,
   author: {
     profile: {
       displayName: 'Joe Shmoe',
@@ -30,6 +31,7 @@ const post: PostType = {
 
 test('renders a post', () => {
   const postItem = render(<Post post={post} onComment={jest.fn()} />);
+  expect(postItem.getByText('Announcement')).toBeDefined();
   expect(postItem.getByText(post.message!)).toBeDefined();
   expect(postItem.getByText(post.author!.profile.displayName)).toBeDefined();
 });

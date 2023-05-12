@@ -3,9 +3,10 @@ import { View } from 'react-native';
 import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
 import { formatRelative } from 'date-fns';
 import { useStyles } from '../../hooks';
-import type { Post as PostType } from '../../hooks/usePosts';
+import { Post as PostType, Priority } from '../../hooks/usePosts';
 import { createStyles } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
+import { AnnouncementBanner } from './AnnouncementBanner';
 
 interface PostProps {
   post: PostType;
@@ -30,6 +31,7 @@ export const Post = ({ post, onComment }: PostProps) => {
 
   return (
     <View style={styles.container}>
+      {post.priority === Priority.ANNOUNCEMENT && <AnnouncementBanner />}
       <List.Item
         title={post.author?.profile.displayName}
         description={formatRelative(new Date(post.createdAt), new Date())}
