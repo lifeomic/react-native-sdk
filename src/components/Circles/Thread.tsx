@@ -4,6 +4,7 @@ import React, {
   useRef,
   useMemo,
   useEffect,
+  useLayoutEffect,
 } from 'react';
 import { FlatList, View, RefreshControl, TouchableOpacity } from 'react-native';
 import { t } from 'i18next';
@@ -34,6 +35,7 @@ export interface ThreadProps {
 export const Thread = (props: ThreadProps) => {
   const { colors } = useTheme();
   const { post: postIn, style, createComment = false, onOpenThread } = props;
+  const [isCreateCommentOpen, setIsCreateCommentOpen] = useState(createComment);
   const [shouldScrollToEnd, setShouldScrollToEnd] = useState(false);
   const listRef = useRef<FlatList>(null);
   const { styles } = useStyles(defaultStyles, style);
@@ -48,6 +50,7 @@ export const Thread = (props: ThreadProps) => {
   const post = data?.post;
 
   const handleCreatePostClosed = useCallback((createdNewPost?: boolean) => {
+    setIsCreateCommentOpen(false);
     setShouldScrollToEnd(!!createdNewPost);
   }, []);
 
@@ -78,13 +81,15 @@ export const Thread = (props: ThreadProps) => {
     [loadReplies, onOpenThread],
   );
 
-  if (createComment) {
-    showCreateEditPostModal({
-      parentType: ParentType.POST,
-      parentId: post?.id,
-      onModalClose: handleCreatePostClosed,
-    });
-  }
+  useLayoutEffect(() => {
+    if (isCreateCommentOpen && post?.id && !isLoading) {
+      showCreateEditPostModal({
+        parentType: ParentType.POST,
+        parentId: post.id,
+        onModalClose: handleCreatePostClosed,
+      });
+    }
+  }, [isCreateCommentOpen, handleCreatePostClosed, post?.id, isLoading]);
 
   return (
     <>

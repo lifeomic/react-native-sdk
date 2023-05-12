@@ -35,8 +35,8 @@ type EmitEventProps = {
   postToEdit?: Post;
 };
 
-export const showCreateEditPostModal = (payload: EmitEventProps) =>
-  eventEmitter.emit(showCreateEditPostModelEvent, payload);
+export const showCreateEditPostModal = (props: EmitEventProps) =>
+  eventEmitter.emit(showCreateEditPostModelEvent, props);
 
 export const CreateEditPostModal = () => {
   const createPost = useCreatePost();
