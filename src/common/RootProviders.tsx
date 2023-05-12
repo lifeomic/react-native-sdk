@@ -15,6 +15,7 @@ import { BrandConfigProvider } from '../components/BrandConfigProvider';
 import { TrackTileProvider } from '../components/TrackTile/TrackTileProvider';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { WearableLifecycleProvider } from '../components/Wearables/WearableLifecycleProvider';
+import { CreateEditPostModal } from '../components/Circles/CreateEditPostModal';
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ export function RootProviders({
                             <ThemedNavigationContainer>
                               {children}
                             </ThemedNavigationContainer>
+                            <CreateEditPostModal />
                             <Toast />
                           </SafeAreaProvider>
                         </NoInternetToastProvider>

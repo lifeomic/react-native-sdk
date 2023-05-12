@@ -363,7 +363,7 @@ export function useUpdatePostMessage() {
 
   const updatePostMessageMutation = async (input: {
     id: string;
-    message: string;
+    newMessage: string;
   }) => {
     const variables = {
       input,
@@ -387,10 +387,10 @@ export function useUpdatePostMessage() {
 
       // Optimistically update to delete the target post
       queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
-        forEach(currentData!.pages, (page) => {
+        forEach(currentData?.pages, (page) => {
           forEach(page.postsV2.edges, (edge) => {
             if (edge.node.id === updatedPost.id) {
-              edge.node.message = updatedPost.message;
+              edge.node.message = updatedPost.newMessage;
             }
           });
         });
@@ -446,6 +446,7 @@ const postDetailsFragment = gql`
       deletedAt
     }
     ... on ActivePost {
+      authorId
       message
       replyCount
       author {

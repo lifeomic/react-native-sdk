@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -15,9 +15,9 @@ import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { createStyles } from '../BrandConfigProvider/styles/createStyles';
 import { Post } from './Post';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
-import { CreateEditPostModal } from './CreateEditPostModal';
 import { ParentType } from '../../hooks/usePosts';
 import { tID } from '../../common';
+import { showCreateEditPostModal } from './CreateEditPostModal';
 
 interface PostsListProps {
   circleTile?: CircleTile;
@@ -25,8 +25,6 @@ interface PostsListProps {
 }
 
 export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
-  const [visible, setVisible] = useState(false);
-
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfinitePosts({
       circleId: circleTile?.circleId,
@@ -66,12 +64,6 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
 
   return (
     <View>
-      <CreateEditPostModal
-        visible={visible}
-        onModalClose={() => setVisible(false)}
-        parentType={ParentType.CIRCLE}
-        parentId={circleTile.circleId}
-      />
       <ScrollView
         onScroll={handleScroll}
         scrollEventThrottle={400}
@@ -108,7 +100,12 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
         testID={tID('new-post-button')}
         icon="pencil"
         style={styles.fab}
-        onPress={() => setVisible(() => true)}
+        onPress={() => {
+          showCreateEditPostModal({
+            parentType: ParentType.CIRCLE,
+            parentId: circleTile.circleId,
+          });
+        }}
       />
     </View>
   );

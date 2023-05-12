@@ -1,5 +1,8 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+} from '../../../common/testHelpers/testing-library-wrapper';
 import { Post } from '../Post';
 import { Post as PostType, Priority } from '../../../hooks/usePosts';
 

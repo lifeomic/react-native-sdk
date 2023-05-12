@@ -22,7 +22,7 @@ import { PostUnavailable } from './PostUnavailable';
 import { EmptyComments } from './EmptyComments';
 import { createStyles } from '../BrandConfigProvider';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
-import { CreateEditPostModal } from './CreateEditPostModal';
+import { showCreateEditPostModal } from './CreateEditPostModal';
 
 export interface ThreadProps {
   post: Post;
@@ -34,7 +34,6 @@ export interface ThreadProps {
 export const Thread = (props: ThreadProps) => {
   const { colors } = useTheme();
   const { post: postIn, style, createComment = false, onOpenThread } = props;
-  const [isCreateCommentOpen, setIsCreateCommentOpen] = useState(createComment);
   const [shouldScrollToEnd, setShouldScrollToEnd] = useState(false);
   const listRef = useRef<FlatList>(null);
   const { styles } = useStyles(defaultStyles, style);
@@ -49,7 +48,6 @@ export const Thread = (props: ThreadProps) => {
   const post = data?.post;
 
   const handleCreatePostClosed = useCallback((createdNewPost?: boolean) => {
-    setIsCreateCommentOpen(false);
     setShouldScrollToEnd(!!createdNewPost);
   }, []);
 
@@ -79,6 +77,14 @@ export const Thread = (props: ThreadProps) => {
       }),
     [loadReplies, onOpenThread],
   );
+
+  if (createComment) {
+    showCreateEditPostModal({
+      parentType: ParentType.POST,
+      parentId: post?.id,
+      onModalClose: handleCreatePostClosed,
+    });
+  }
 
   return (
     <>
@@ -122,24 +128,18 @@ export const Thread = (props: ThreadProps) => {
 
       <TouchableOpacity
         style={styles.addCommentBox}
-        onPress={() => setIsCreateCommentOpen(true)}
+        onPress={() =>
+          showCreateEditPostModal({
+            parentType: ParentType.POST,
+            parentId: post?.id,
+            onModalClose: handleCreatePostClosed,
+          })
+        }
       >
         <Text style={styles.addCommentText}>
           {t('thread-screen-add-comment', 'Add a comment')}
         </Text>
       </TouchableOpacity>
-
-      <View style={style?.createPostModalContainer}>
-        {post?.id && (
-          <CreateEditPostModal
-            visible={isCreateCommentOpen}
-            onModalClose={handleCreatePostClosed}
-            parentType={ParentType.POST}
-            parentId={post.id}
-            postToEdit={post as Post}
-          />
-        )}
-      </View>
     </>
   );
 };

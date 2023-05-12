@@ -8,7 +8,7 @@ import {
 } from '../../hooks/usePosts';
 import { t } from 'i18next';
 import { Actions, ActionsModal } from '../ActionsModal';
-import { CreateEditPostModal } from './CreateEditPostModal';
+import { showCreateEditPostModal } from './CreateEditPostModal';
 
 interface PostProps {
   post: PostType;
@@ -17,41 +17,43 @@ interface PostProps {
 
 export const ShowPostMenuButton = ({ post, parentType }: PostProps) => {
   const [showPostMenu, setShowPostMenu] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-
   const { data } = useUser();
   const deletePost = useDeletePost();
+
+  // For now only render this button on your own posts
+  if (data?.id && data.id !== post.authorId) {
+    return null;
+  }
+
   const actions: Actions = [
     {
-      title: t('edit-post', 'Edit Post'),
+      title:
+        parentType === ParentType.CIRCLE
+          ? t('edit-post', 'Edit Post')
+          : t('edit-comment', 'Edit Comment'),
       action: () => {
-        console.log('Clicked!');
-        setShowEditModal(true);
+        showCreateEditPostModal({
+          parentId: post.id,
+          parentType: parentType,
+          postToEdit: post,
+        });
       },
     },
   ];
 
-  if (data?.id && data.id === post.authorId) {
-    actions.push({
-      title: t('delete-post', 'Delete Post'),
-      action: () => deletePost.mutate({ id: post.id }),
-      promptForConfirmation: true,
-    });
-  }
+  actions.push({
+    title:
+      parentType === ParentType.CIRCLE
+        ? t('delete-post', 'Delete Post')
+        : t('delete-comment', 'Delete Comment'),
+    action: () => deletePost.mutate({ id: post.id }),
+    promptForConfirmation: true,
+  });
 
   return (
     <>
       {showPostMenu && (
         <ActionsModal setShowModal={setShowPostMenu} actions={actions} />
-      )}
-      {showEditModal && (
-        <CreateEditPostModal
-          parentId={post.parentId}
-          parentType={parentType}
-          postToEdit={post}
-          setVisible={setShowEditModal}
-          visible={true}
-        />
       )}
       <IconButton
         icon="dots-horizontal"
