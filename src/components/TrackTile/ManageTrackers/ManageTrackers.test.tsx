@@ -1,5 +1,9 @@
 import React from 'react';
-import { fireEvent, render, act } from '../../../common/testHelpers/testing-library-wrapper';
+import {
+  fireEvent,
+  render,
+  act,
+} from '../../../common/testHelpers/testing-library-wrapper';
 import {
   ManageTrackersProvider,
   ManageTrackersProviderProps,

@@ -76,7 +76,7 @@ export const CreateEditPostModal = () => {
     return null;
   }
 
-  const { parentId, parentType, postToEdit, onModalClose } = emitProps
+  const { parentId, parentType, postToEdit, onModalClose } = emitProps;
 
   return (
     <Provider>
