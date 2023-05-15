@@ -1,6 +1,7 @@
 import { ComponentType } from 'react';
 import { getBundleId } from 'react-native-device-info';
 import { AppTile } from '../hooks/useAppConfig';
+import { SvgProps } from 'react-native-svg';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -53,6 +54,6 @@ export type AdditionalNavigationTab = {
   component: () => JSX.Element;
   options: {
     tabBarLabel: string;
-    tabBarIcon: string;
+    tabBarIcon: string | ((props: SvgProps) => JSX.Element);
   };
 };

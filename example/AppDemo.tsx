@@ -4,6 +4,7 @@ import { DeveloperConfigProvider, RootProviders, RootStack } from '../src';
 import { FhirExampleScreen } from './src/screens/FhirExampleScreen';
 import { HelloWorldScreen } from './src/screens/HelloWorldScreen';
 import { t } from 'i18next';
+import { Menu } from '@lifeomic/chromicons-native';
 
 if (__DEV__) {
   import('./reactotron').then(() => console.log('Reactotron Configured'));
@@ -27,7 +28,7 @@ function App() {
             component: HelloWorldScreen,
             options: {
               tabBarLabel: t('tabs-settings', 'Settings'),
-              tabBarIcon: 'menu',
+              tabBarIcon: Menu,
             },
           },
         ],
