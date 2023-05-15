@@ -175,12 +175,7 @@ export const useLoadReplies = () => {
       PostRepliesQueryResponse,
       { id: string; after?: string }
     >(postRepliesQueryDocument, queryVariables, accountHeaders);
-  }, [
-    accountHeaders,
-    graphQLClient,
-    queryVariables?.after,
-    queryVariables?.id,
-  ]);
+  }, [accountHeaders, graphQLClient, queryVariables]);
 
   const repliesRes = useQuery(
     ['loadReplies', queryVariables.id, queryVariables.after],

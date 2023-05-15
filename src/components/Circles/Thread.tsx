@@ -69,7 +69,7 @@ export const Thread = (props: ThreadProps) => {
         // Scrolling failed but that's okay.
       }
     }
-  }, [shouldScrollToEnd, entries?.length]);
+  }, [shouldScrollToEnd, entries]);
 
   const renderItemMemoized = useMemo(
     () =>
