@@ -2,7 +2,7 @@ import { QueryClient } from 'react-query';
 import type {
   InfinitePostsData,
   PostDetailsPostQueryResponse,
-} from '../usePosts';
+} from '../useInfinitePosts';
 import forEach from 'lodash/forEach';
 import remove from 'lodash/remove';
 

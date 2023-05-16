@@ -6,7 +6,7 @@ import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { TilesList } from '../components/tiles/TilesList';
 import { ScreenSurface } from '../components/ScreenSurface';
 import { HomeStackScreenProps } from '../navigators/types';
-import { useJoinCircles } from '../hooks/useJoinCircles';
+import { useJoinCircles } from '../hooks';
 
 export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
   const { isLoading: loadingAccount } = useActiveAccount();

@@ -1,9 +1,9 @@
 import { QueryClient } from 'react-query';
 import type {
   InfinitePostsData,
-  Post,
   PostDetailsPostQueryResponse,
-} from '../usePosts';
+} from '../useInfinitePosts';
+import { Post } from '../types';
 
 type UpdatePostsConfig = {
   queryClient: QueryClient;
@@ -19,7 +19,9 @@ export const optimisticallyUpdatePosts = ({
   queryClient.setQueryData<InfinitePostsData>(['posts'], (currentData) => {
     const edge = findEdgeById(currentData!, postId);
 
-    if (!edge.node) return currentData!;
+    if (!edge.node) {
+      return currentData!;
+    }
 
     edge.node = updatePost(edge.node);
 
@@ -32,7 +34,9 @@ export const optimisticallyUpdatePosts = ({
     .findAll({ queryKey: ['postDetails'] })
     .map((query) => {
       query?.setData((currentData: PostDetailsPostQueryResponse) => {
-        if (!currentData) return currentData!;
+        if (!currentData) {
+          return currentData!;
+        }
 
         const posts = extractPosts({ node: currentData.post });
 

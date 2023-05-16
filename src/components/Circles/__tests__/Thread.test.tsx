@@ -5,18 +5,12 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import { Thread } from '../Thread';
-import { usePost, Post, useLoadReplies } from '../../../hooks/usePosts';
+import { usePost, Post, useLoadReplies } from '../../../hooks';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
-jest.mock('../../../hooks/usePosts', () => ({
-  ...jest.requireActual('../../../hooks/usePosts'),
-  usePost: jest.fn(() => ({})),
-  useLoadReplies: jest.fn(() => ({})),
-}));
+jest.mock('../../../hooks/Circles/usePost');
+jest.mock('../../../hooks/Circles/useLoadReplies');
 jest.mock('../ReactionsToolbar');
-
-const mockUsePost = usePost as jest.Mock;
-const mockUseLoadReplies = useLoadReplies as jest.Mock;
 
 const mockPost: Post = {
   id: 'post',
@@ -98,6 +92,15 @@ const render = (children: React.ReactNode) => {
     </QueryClientProvider>,
   );
 };
+
+const mockUsePost = usePost as jest.Mock;
+const mockUseLoadReplies = useLoadReplies as jest.Mock;
+
+beforeEach(() => {
+  mockUseLoadReplies.mockReturnValue({
+    loadReplies: jest.fn(),
+  });
+});
 
 describe('Thread', () => {
   test('renders the component by fetching the post based on the postId', () => {

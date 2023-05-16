@@ -4,7 +4,7 @@ import {
   render,
 } from '../../../common/testHelpers/testing-library-wrapper';
 import { PostItem } from '../PostItem';
-import { Post as PostType, Priority } from '../../../hooks/usePosts';
+import { Post as PostType, Priority } from '../../../hooks';
 
 jest.mock('../ReactionsToolbar');
 

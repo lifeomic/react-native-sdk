@@ -1,12 +1,14 @@
-import { renderHook, waitFor, act } from '@testing-library/react-native';
-import { useActiveAccount } from './useActiveAccount';
-import { PostRepliesQueryResponse, useLoadReplies, Post } from './usePosts';
 import React from 'react';
+import { renderHook, waitFor, act } from '@testing-library/react-native';
+import { useActiveAccount } from '../useActiveAccount';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { GraphQLClientContextProvider } from './useGraphQLClient';
-import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
+import { GraphQLClientContextProvider } from '../useGraphQLClient';
+import { mockGraphQLResponse } from '../../common/testHelpers/mockGraphQLResponse';
+import { Post } from './types';
+import { PostRepliesQueryResponse } from './useInfinitePosts';
+import { useLoadReplies } from './useLoadReplies';
 
-jest.mock('./useActiveAccount', () => ({
+jest.mock('../useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));
 

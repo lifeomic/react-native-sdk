@@ -5,10 +5,11 @@ import {
 } from '../../../common/testHelpers/testing-library-wrapper';
 import { PostsList } from '../PostsList';
 import { CircleTile } from '../../../hooks/useAppConfig';
-import { useInfinitePosts, useCreatePost } from '../../../hooks/usePosts';
+import { useInfinitePosts, useCreatePost } from '../../../hooks';
 import { CreateEditPostModal } from '../CreateEditPostModal';
 
-jest.mock('../../../hooks/usePosts');
+jest.mock('../../../hooks/Circles/useInfinitePosts');
+jest.mock('../../../hooks/Circles/useCreatePost');
 jest.mock('../ReactionsToolbar');
 
 const useInfinitePostsMock = useInfinitePosts as jest.Mock;

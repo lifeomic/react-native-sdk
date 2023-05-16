@@ -13,7 +13,7 @@ import {
   useCreatePost,
   Post,
   useUpdatePostMessage,
-} from '../../hooks/usePosts';
+} from '../../hooks';
 import { useStyles } from '../../hooks/useStyles';
 import { createStyles } from '../BrandConfigProvider';
 import { t } from 'i18next';

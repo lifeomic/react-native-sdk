@@ -8,13 +8,14 @@ import {
   useUpdatePostMessage,
   useCreatePost,
   ParentType,
-} from '../../../hooks/usePosts';
+} from '../../../hooks';
 import {
   CreateEditPostModal,
   showCreateEditPostModal,
 } from '../CreateEditPostModal';
 
-jest.mock('../../../hooks/usePosts');
+jest.mock('../../../hooks/Circles/useCreatePost');
+jest.mock('../../../hooks/Circles/useUpdatePostMessage');
 jest.mock('../ReactionsToolbar');
 
 const useCreatePostMock = useCreatePost as jest.Mock;

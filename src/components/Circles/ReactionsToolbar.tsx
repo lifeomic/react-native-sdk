@@ -2,13 +2,13 @@ import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { Button, IconButton } from 'react-native-paper';
 import { useStyles, useUser } from '../../hooks';
-import type { Post } from '../../hooks/usePosts';
+import type { Post } from '../../hooks';
 import { createStyles } from '../BrandConfigProvider';
 import EmojiPicker from 'rn-emoji-keyboard';
 import {
   useCreateReactionMutation,
   useUndoReactionMutation,
-} from '../../hooks/useReactionMutations';
+} from '../../hooks';
 import { tID } from '../../common';
 
 interface ReactionsToolbarProps {

@@ -1,13 +1,13 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useAuth } from './useAuth';
+import { useAuth } from '../useAuth';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
-import { useHttpClient } from './useHttpClient';
-import { useActiveAccount } from './useActiveAccount';
-import { useActiveProject } from './useActiveProject';
-import { CircleTile, useAppConfig } from './useAppConfig';
+import { useHttpClient } from '../useHttpClient';
+import { useActiveAccount } from '../useActiveAccount';
+import { useActiveProject } from '../useActiveProject';
+import { CircleTile, useAppConfig } from '../useAppConfig';
 import { useJoinCircles } from './useJoinCircles';
 
 const queryClient = new QueryClient({
@@ -29,19 +29,19 @@ const renderHookInContext = async () => {
 const axiosInstance = axios.create();
 const axiosMock = new MockAdapter(axiosInstance);
 
-jest.mock('./useActiveAccount', () => ({
+jest.mock('../useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));
-jest.mock('./useHttpClient', () => ({
+jest.mock('../useHttpClient', () => ({
   useHttpClient: jest.fn(),
 }));
-jest.mock('./useActiveProject', () => ({
+jest.mock('../useActiveProject', () => ({
   useActiveProject: jest.fn(),
 }));
-jest.mock('./useAuth', () => ({
+jest.mock('../useAuth', () => ({
   useAuth: jest.fn(),
 }));
-jest.mock('./useAppConfig', () => ({
+jest.mock('../useAppConfig', () => ({
   useAppConfig: jest.fn(),
 }));
 

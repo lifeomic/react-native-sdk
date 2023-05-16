@@ -1,12 +1,12 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useActiveAccount } from './useActiveAccount';
+import { useActiveAccount } from '../useActiveAccount';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { GraphQLClientContextProvider } from './useGraphQLClient';
-import { InfinitePostsData, useInfinitePosts } from './usePosts';
+import { GraphQLClientContextProvider } from '../useGraphQLClient';
+import { InfinitePostsData, useInfinitePosts } from './useInfinitePosts';
 import nock from 'nock';
 
-jest.mock('./useActiveAccount', () => ({
+jest.mock('../useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));
 

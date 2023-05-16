@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Avatar, Button, List, Text } from 'react-native-paper';
 import { formatDistanceToNow, isValid } from 'date-fns';
 import { useStyles, useTheme } from '../../hooks';
-import { ParentType, Post as PostType, Priority } from '../../hooks/usePosts';
+import { ParentType, Post, Priority } from '../../hooks';
 import { createStyles } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
 import { initials } from './initials';
@@ -12,7 +12,7 @@ import { AnnouncementBanner } from './AnnouncementBanner';
 import { ShowPostMenuButton } from './ShowPostMenuButton';
 
 interface PostProps {
-  post: PostType;
+  post: Post;
   onComment?: () => void;
 }
 

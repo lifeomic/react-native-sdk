@@ -1,8 +1,8 @@
 import { useQuery } from 'react-query';
-import { useActiveAccount } from './useActiveAccount';
-import { useActiveProject } from './useActiveProject';
-import { CircleTile, useAppConfig } from './useAppConfig';
-import { useHttpClient } from './useHttpClient';
+import { useActiveAccount } from '../useActiveAccount';
+import { useActiveProject } from '../useActiveProject';
+import { CircleTile, useAppConfig } from '../useAppConfig';
+import { useHttpClient } from '../useHttpClient';
 
 export function useJoinCircles() {
   const { data } = useAppConfig();
