@@ -8,7 +8,7 @@ import {
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useUser } from './useUser';
 import omit from 'lodash/omit';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
@@ -80,6 +80,10 @@ export type Post = {
 
 export type PostDetailsPostQueryResponse = {
   post: Post;
+};
+
+export type PostRepliesQueryResponse = {
+  post: Pick<Post, 'replies'>;
 };
 
 type useInfinitePostsProps = {
@@ -154,6 +158,60 @@ export const usePost = (post: Partial<Post> & Pick<Post, 'id'>) => {
       post,
     },
   });
+};
+
+export const useLoadReplies = () => {
+  const { graphQLClient } = useGraphQLClient();
+  const queryClient = useQueryClient();
+  const { isFetched, accountHeaders } = useActiveAccount();
+  const [queryVariables, setQueryVariables] = useState({
+    after: undefined as string | undefined,
+    id: '',
+  });
+
+  const queryForPostReplies = useCallback(async () => {
+    if (!queryVariables?.id) return;
+    return graphQLClient.request<
+      PostRepliesQueryResponse,
+      { id: string; after?: string }
+    >(postRepliesQueryDocument, queryVariables, accountHeaders);
+  }, [accountHeaders, graphQLClient, queryVariables]);
+
+  const repliesRes = useQuery(
+    ['loadReplies', queryVariables.id, queryVariables.after],
+    queryForPostReplies,
+    {
+      enabled: isFetched && !!accountHeaders && !!queryVariables.id,
+      onSuccess(data) {
+        if (!data) return;
+
+        optimisticallyUpdatePosts({
+          queryClient,
+          postId: queryVariables.id,
+          updatePost: (post) => {
+            post.replies = post.replies ?? { edges: [] };
+            post.replies.edges.push(...data.post.replies.edges);
+            post.replies.pageInfo = data.post.replies.pageInfo;
+
+            return post;
+          },
+        });
+      },
+    },
+  );
+
+  const loadReplies = (post: Post) => {
+    setQueryVariables({
+      id: post.id,
+      after: post.replies?.pageInfo?.endCursor,
+    });
+  };
+
+  return {
+    ...repliesRes,
+    queryVariables,
+    loadReplies,
+  };
 };
 
 type CreatePostInput = {
@@ -288,7 +346,7 @@ const postsV2QueryDocument = gql`
   }
 `;
 
-const postDetailsQueryDocument = gql`
+const postDetailsFragment = gql`
   fragment PostDetails on Post {
     id
     createdAt
@@ -312,10 +370,15 @@ const postDetailsQueryDocument = gql`
       }
     }
   }
-  query PostDetailsPost($id: ID!, $after: String) {
+`;
+
+const postDetailsQueryDocument = gql`
+  ${postDetailsFragment}
+
+  query PostDetailsPost($id: ID!) {
     post(id: $id) {
       ...PostDetails
-      replies(order: NEWEST, first: 10, after: $after) {
+      replies(order: NEWEST, first: 10) {
         pageInfo {
           endCursor
           hasNextPage
@@ -335,6 +398,26 @@ const postDetailsQueryDocument = gql`
                 }
               }
             }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const postRepliesQueryDocument = gql`
+  ${postDetailsFragment}
+
+  query PostReplies($id: ID!, $after: String) {
+    post(id: $id) {
+      replies(order: NEWEST, first: 10, after: $after) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            ...PostDetails
           }
         }
       }

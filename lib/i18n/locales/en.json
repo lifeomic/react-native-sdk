@@ -61,5 +61,7 @@
   "configure-data-to-sync-message": "Your data is not syncing because it is not configured as a Data Source above.",
   "post-comments_zero": "COMMENT",
   "post-comments_one": "1 COMMENT",
-  "post-comments_other": "{{count}} COMMENTS"
+  "post-comments_other": "{{count}} COMMENTS",
+  "thread-load-comments_one": "Read {{count}} earlier comment...",
+  "thread-load-comments_other": "Read {{count}} earlier comments..."
 }
