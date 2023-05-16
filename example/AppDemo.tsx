@@ -1,14 +1,8 @@
 import React from 'react';
-import {
-  authConfig,
-  baseURL,
-  secondaryBaseURL,
-  secondaryConfig,
-} from './storybook/stories/OAuth.stories';
+import { authConfig, baseURL } from './storybook/stories/OAuth.stories';
 import { DeveloperConfigProvider, RootProviders, RootStack } from '../src';
 import { FhirExampleScreen } from './src/screens/FhirExampleScreen';
 import { HelloWorldScreen } from './src/screens/HelloWorldScreen';
-import { useEnvironmentSelection } from '../src/hooks';
 import { t } from 'i18next';
 
 if (__DEV__) {
@@ -16,8 +10,6 @@ if (__DEV__) {
 }
 
 function App() {
-  const usePrimaryEnvironment = useEnvironmentSelection();
-
   return (
     <DeveloperConfigProvider
       developerConfig={{
@@ -28,7 +20,7 @@ function App() {
         simpleTheme: {
           primaryColor: '#fb5607',
         },
-        apiBaseURL: usePrimaryEnvironment ? baseURL : secondaryBaseURL,
+        apiBaseURL: baseURL,
         additionalNavigationTabs: [
           {
             name: 'AdditionalTab',
@@ -41,9 +33,7 @@ function App() {
         ],
       }}
     >
-      <RootProviders
-        authConfig={usePrimaryEnvironment ? authConfig : secondaryConfig}
-      >
+      <RootProviders authConfig={authConfig}>
         <RootStack />
       </RootProviders>
     </DeveloperConfigProvider>
