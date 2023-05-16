@@ -1,7 +1,10 @@
 import mockDeviceInfo from 'react-native-device-info/jest/react-native-device-info-mock';
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock';
 
-jest.mock('react-native-device-info', () => mockDeviceInfo);
+jest.mock('react-native-device-info', () => ({
+  ...mockDeviceInfo,
+  getBundleId: () => 'com.unit-test.app',
+}));
 
 jest.mock('./src/common/testID', () => ({
   tID: (id: string) => id,

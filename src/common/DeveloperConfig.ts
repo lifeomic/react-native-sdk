@@ -1,4 +1,5 @@
 import { ComponentType } from 'react';
+import { getBundleId } from 'react-native-device-info';
 import { AppTile } from '../hooks/useAppConfig';
 
 /**
@@ -36,5 +37,9 @@ export function getCustomAppTileComponent(
   appTileScreens?: AppTileScreens,
   appTile?: AppTile,
 ) {
-  return !!appTile?.source.url && appTileScreens?.[appTile.source.url];
+  return (
+    !!appTile?.source.url &&
+    (appTileScreens?.[appTile.source.url] ||
+      appTile.source.url.startsWith(getBundleId()))
+  );
 }
