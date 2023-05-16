@@ -3,7 +3,7 @@ import {
   fireEvent,
   render,
 } from '../../../common/testHelpers/testing-library-wrapper';
-import { Post } from '../Post';
+import { PostItem } from '../PostItem';
 import { Post as PostType, Priority } from '../../../hooks/usePosts';
 
 jest.mock('../ReactionsToolbar');
@@ -33,7 +33,7 @@ const post: PostType = {
 };
 
 test('renders a post', () => {
-  const postItem = render(<Post post={post} onComment={jest.fn()} />);
+  const postItem = render(<PostItem post={post} onComment={jest.fn()} />);
   expect(postItem.getByText('Announcement')).toBeDefined();
   expect(postItem.getByText(post.message!)).toBeDefined();
   expect(postItem.getByText(post.author!.profile.displayName)).toBeDefined();
@@ -41,7 +41,7 @@ test('renders a post', () => {
 
 test('clicking comment calls onComment', () => {
   const onComment = jest.fn();
-  const postItem = render(<Post post={post} onComment={onComment} />);
+  const postItem = render(<PostItem post={post} onComment={onComment} />);
 
   fireEvent.press(postItem.getByText('COMMENT'));
 

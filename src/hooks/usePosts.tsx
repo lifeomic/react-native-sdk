@@ -12,8 +12,7 @@ import { useCallback, useState } from 'react';
 import { useUser } from './useUser';
 import omit from 'lodash/omit';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
-import forEach from 'lodash/forEach';
-import remove from 'lodash/remove';
+import { optimisticallyDeletePosts } from './utils/optimisticallyDeletePosts';
 
 export enum ParentType {
   CIRCLE = 'CIRCLE',
@@ -173,7 +172,9 @@ export const useLoadReplies = () => {
   });
 
   const queryForPostReplies = useCallback(async () => {
-    if (!queryVariables?.id) return;
+    if (!queryVariables?.id) {
+      return;
+    }
     return graphQLClient.request<
       PostRepliesQueryResponse,
       { id: string; after?: string }
@@ -186,7 +187,9 @@ export const useLoadReplies = () => {
     {
       enabled: isFetched && !!accountHeaders && !!queryVariables.id,
       onSuccess(data) {
-        if (!data) return;
+        if (!data) {
+          return;
+        }
 
         optimisticallyUpdatePosts({
           queryClient,
@@ -262,6 +265,7 @@ export function useCreatePost() {
       // Optimistically update to the new value
       const optimisticPost: Post = {
         ...omit(newPost.post, 'parentType'),
+        id: newPost.post.id,
         __typename: 'ActivePost',
         reactionTotals: [],
         createdAt: new Date().toISOString(),
@@ -274,6 +278,7 @@ export function useCreatePost() {
             picture: data?.profile.picture ?? '',
           },
         },
+        authorId: data?.id,
       };
 
       if (newPost.post.parentType === ParentType.CIRCLE) {
@@ -342,12 +347,9 @@ export function useDeletePost() {
       // Snapshot the previous value
       const previousPosts = queryClient.getQueryData(['posts']);
 
-      // Optimistically update to delete the target post
-      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
-        forEach(currentData?.pages, (page) => {
-          remove(page.postsV2.edges, (edge) => edge.node.id === deletedPost.id);
-        });
-        return currentData!;
+      optimisticallyDeletePosts({
+        queryClient,
+        postId: deletedPost.id,
       });
 
       // Return a context object with the snapshotted value
@@ -385,16 +387,13 @@ export function useUpdatePostMessage() {
       // Snapshot the previous value
       const previousPosts = queryClient.getQueryData(['posts']);
 
-      // Optimistically update to delete the target post
-      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
-        forEach(currentData?.pages, (page) => {
-          forEach(page.postsV2.edges, (edge) => {
-            if (edge.node.id === updatedPost.id) {
-              edge.node.message = updatedPost.newMessage;
-            }
-          });
-        });
-        return currentData!;
+      optimisticallyUpdatePosts({
+        queryClient,
+        postId: updatedPost.id,
+        updatePost: (post) => {
+          post.message = updatedPost.newMessage;
+          return post;
+        },
       });
 
       // Return a context object with the snapshotted value
@@ -403,7 +402,36 @@ export function useUpdatePostMessage() {
   });
 }
 
+const postDetailsFragment = gql`
+  fragment PostDetails on Post {
+    id
+    createdAt
+    priority
+    ... on DeletedPost {
+      deletedAt
+    }
+    ... on ActivePost {
+      authorId
+      message
+      replyCount
+      author {
+        profile {
+          displayName
+        }
+      }
+      reactionTotals {
+        type
+        url
+        count
+        userHasReacted
+      }
+    }
+  }
+`;
+
 const postsV2QueryDocument = gql`
+  ${postDetailsFragment}
+
   query PostsV2($filter: PostFilter!, $after: String) {
     postsV2(filter: $filter, after: $after) {
       pageInfo {
@@ -430,35 +458,19 @@ const postsV2QueryDocument = gql`
               type
               userHasReacted
             }
+            replies(order: NEWEST, first: 2) {
+              pageInfo {
+                endCursor
+                hasNextPage
+              }
+              edges {
+                node {
+                  ...PostDetails
+                }
+              }
+            }
           }
         }
-      }
-    }
-  }
-`;
-
-const postDetailsFragment = gql`
-  fragment PostDetails on Post {
-    id
-    createdAt
-    priority
-    ... on DeletedPost {
-      deletedAt
-    }
-    ... on ActivePost {
-      authorId
-      message
-      replyCount
-      author {
-        profile {
-          displayName
-        }
-      }
-      reactionTotals {
-        type
-        url
-        count
-        userHasReacted
       }
     }
   }

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
+import { Avatar, Button, List, Text } from 'react-native-paper';
 import { formatDistanceToNow, isValid } from 'date-fns';
 import { useStyles, useTheme } from '../../hooks';
 import { ParentType, Post as PostType, Priority } from '../../hooks/usePosts';
@@ -13,10 +13,10 @@ import { ShowPostMenuButton } from './ShowPostMenuButton';
 
 interface PostProps {
   post: PostType;
-  onComment: () => void;
+  onComment?: () => void;
 }
 
-export const Post = ({ post, onComment }: PostProps) => {
+export const PostItem = ({ post, onComment }: PostProps) => {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
   const size =
@@ -47,8 +47,14 @@ export const Post = ({ post, onComment }: PostProps) => {
 
   const created = new Date(post?.createdAt!);
   const showPostMenuButton = useMemo(
-    () => <ShowPostMenuButton post={post} parentType={ParentType.CIRCLE} />,
-    [post],
+    () => (
+      <ShowPostMenuButton
+        post={post}
+        parentType={ParentType.CIRCLE}
+        styles={{ iconButton: styles.showPostMenuButton }}
+      />
+    ),
+    [post, styles.showPostMenuButton],
   );
 
   return (
@@ -71,19 +77,20 @@ export const Post = ({ post, onComment }: PostProps) => {
         {post.message}
       </Text>
       <View style={styles.toolbarContainer}>
-        <Button
-          style={styles.commentButton}
-          contentStyle={styles.commentButtonContainer}
-          labelStyle={styles.commentButtonText}
-          compact={true}
-          mode={'outlined'}
-          onPress={onComment}
-        >
-          {t('post-comments', { count: post.replyCount })}
-        </Button>
+        {onComment && (
+          <Button
+            style={styles.commentButton}
+            contentStyle={styles.commentButtonContainer}
+            labelStyle={styles.commentButtonText}
+            compact={true}
+            mode={'outlined'}
+            onPress={onComment}
+          >
+            {t('post-comments', { count: post.replyCount })}
+          </Button>
+        )}
         <ReactionsToolbar post={post} />
       </View>
-      <Divider />
     </View>
   );
 };
@@ -114,6 +121,10 @@ const defaultStyles = createStyles('Post', (theme) => ({
     color: 'rgba(0, 0, 0, 0.4)',
     fontSize: 8,
     lineHeight: 10,
+  },
+  showPostMenuButton: {
+    paddingLeft: theme.spacing.medium,
+    marginTop: 0,
   },
 }));
 
