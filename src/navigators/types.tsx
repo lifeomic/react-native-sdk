@@ -39,7 +39,10 @@ export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
 export type HomeStackParamList = {
   Home: undefined;
   'Home/AppTile': { appTile: AppTile };
-  'Home/AuthedAppTile': { appTile: AppTile };
+  'Home/AuthedAppTile': {
+    appTile: AppTile;
+    searchParams?: { [key: string]: string };
+  };
   'Home/CustomAppTile': { appTile: AppTile };
   'Home/Circle/Discussion': { circleTile: CircleTile };
   'Home/TrackTile': {

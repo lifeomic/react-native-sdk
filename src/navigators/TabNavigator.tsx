@@ -31,6 +31,7 @@ export function TabNavigator() {
       <Tab.Screen
         name="HomeTab"
         component={HomeStack}
+        key="HomeTab"
         options={{
           tabBarLabel: t('tabs-home', 'Home'),
           tabBarIcon: 'home',
@@ -39,6 +40,7 @@ export function TabNavigator() {
       <Tab.Screen
         name="NotificationsTab"
         component={NotificationsStack}
+        key="NotificationsTab"
         options={{
           tabBarLabel: t('tabs-notifications', 'Notifications'),
           tabBarIcon: 'bell',
@@ -47,6 +49,7 @@ export function TabNavigator() {
       />
       <Tab.Screen
         name="SettingsTab"
+        key="SettingsTab"
         component={SettingsStack}
         options={{
           tabBarLabel: t('tabs-settings', 'Settings'),
@@ -57,6 +60,7 @@ export function TabNavigator() {
         <Tab.Screen
           name={tab.name}
           component={tab.component}
+          key={tab.name}
           options={{
             tabBarLabel: tab.options.tabBarLabel,
             tabBarIcon: tab.options.tabBarIcon,

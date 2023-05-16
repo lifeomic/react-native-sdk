@@ -32,6 +32,10 @@ export interface AppConfig {
     trackTileSettings?: { title: string };
     pillarSettings?: { advancedScreenTrackers: string[] };
     todayTile?: AppTile;
+    todayTileSettings?: {
+      todayTile: AppTile;
+      surveysTile: AppTile;
+    };
   };
 }
 
