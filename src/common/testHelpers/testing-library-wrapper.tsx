@@ -1,5 +1,5 @@
 import React from 'react';
-import * as testingLibrary from '@testing-library/react-native';
+import { render as realRender } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from '../../hooks/useGraphQLClient';
 
@@ -23,8 +23,8 @@ const wrapper = ({ children }: any) => {
   );
 };
 
-const render = (ui: any, options?: any) =>
-  testingLibrary.render(ui, { wrapper: wrapper, ...options });
+const render: typeof realRender = (ui: any, options?: any) =>
+  realRender(ui, { wrapper: wrapper, ...options });
 
 export * from '@testing-library/react-native';
 export { render };
