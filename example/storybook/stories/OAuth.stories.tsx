@@ -3,7 +3,6 @@ import { Text, View, ViewStyle } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { text, boolean, select } from '@storybook/addon-knobs';
-import Config from 'react-native-config';
 import { AuthConfiguration, AuthorizeResult } from 'react-native-app-auth';
 import { OAuthLoginButton } from '../../../src/components/OAuthLoginButton';
 import { OAuthLogoutButton } from '../../../src/components/OAuthLogoutButton';
@@ -11,33 +10,21 @@ import { OAuthContextProvider } from '../../../src/hooks/useOAuthFlow';
 import { AuthContextProvider, useAuth } from '../../../src/hooks/useAuth';
 import { CenterView } from '../helpers/CenterView';
 import { BrandConfigProvider } from '../../../src/components/BrandConfigProvider';
+import { oauthConfig, apiBaseUrl } from '../../config';
 
 export const authConfig: AuthConfiguration = {
-  clientId: Config.OAUTH_CLIENT_ID!,
-  redirectUrl: Config.OAUTH_REDIRECT_URL!,
+  clientId: oauthConfig.clientId,
+  redirectUrl: oauthConfig.redirectUrl,
   serviceConfiguration: {
-    authorizationEndpoint: Config.OAUTH_AUTHORIZATION_ENDPOINT!,
-    tokenEndpoint: Config.OAUTH_TOKEN_ENDPOINT!,
-    revocationEndpoint: Config.OAUTH_REVOKE_ENDPOINT!,
+    authorizationEndpoint: oauthConfig.authorizationEndpoint,
+    tokenEndpoint: oauthConfig.tokenEndpoint,
+    revocationEndpoint: oauthConfig.revokeEndpoint,
   },
   scopes: ['openid'],
   usePKCE: true,
 };
 
-export const secondaryConfig: AuthConfiguration = {
-  clientId: Config.OAUTH_CLIENT_ID_SECONDARY!,
-  redirectUrl: Config.OAUTH_REDIRECT_URL_SECONDARY!,
-  serviceConfiguration: {
-    authorizationEndpoint: Config.OAUTH_AUTHORIZATION_ENDPOINT_SECONDARY!,
-    tokenEndpoint: Config.OAUTH_TOKEN_ENDPOINT_SECONDARY!,
-    revocationEndpoint: Config.OAUTH_REVOKE_ENDPOINT_SECONDARY!,
-  },
-  scopes: ['openid'],
-  usePKCE: true,
-};
-
-export const baseURL = Config.API_BASE_URL;
-export const secondaryBaseURL = Config.API_BASE_URL_SECONDARY;
+export const baseURL = apiBaseUrl;
 
 storiesOf('OAuth', module)
   .addDecorator((story) => <CenterView>{story()}</CenterView>)

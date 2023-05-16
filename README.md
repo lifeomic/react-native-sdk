@@ -32,9 +32,9 @@ export default function App() {
 }
 ```
 
-> :warning: The OAuth client in the `example/.env.example` file may not be used
-> beyond demonstration purposes. You will need to [contact us] to request an
-> OAuth client for your account.
+> :warning: The OAuth client in the `example/config.example.ts` file may not be
+> used beyond demonstration purposes. You will need to [contact us] to request
+> an OAuth client for your account.
 
 ### Custom app tile screens
 
@@ -107,7 +107,7 @@ both served from the `example` folder.
 
 - Clone this repo locally and `cd` into the project folder
 - `cd example`
-- `cp .env.example .env`
+- `cp config.example.ts config.ts`
 - `yarn install`
 - `yarn pod-install`
 - `npx react-native start`
@@ -131,22 +131,11 @@ mobile app UI.
 #### Build and run the full app demo app
 
 - Run the example app as storybook first (previous section)
-- Open `.env` and set `DEMO_APP` to `'true'`
+- Open `example/config.ts` and set `useDemoApp` to `'true'`
 - `npx react-native start` (from `example` folder)
 - type `i` or `a` to run on either platform
 
 ## Gotchas
-
-### .env files not updating
-
-react-native-config generates files (based on the .env file) via native build
-scripts. Initially, and any time you update the `example/.env` file, you'll need
-to take extra steps to ensure changes get picked up.
-
-For Android do the build from Android Studio.
-
-For iOS you can run "Clean Build Folder" from Xcode or:
-`xcodebuild -workspace ./ios/example.xcworkspace -scheme example clean`
 
 ### Android login not working locally
 
