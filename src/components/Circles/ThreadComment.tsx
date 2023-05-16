@@ -2,11 +2,12 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { formatDistanceToNow, isValid } from 'date-fns';
 import { t } from 'i18next';
-import { Post, useStyles, useTheme } from '../../hooks';
+import { ParentType, Post, useStyles, useTheme } from '../../hooks';
 import { Avatar, Button } from 'react-native-paper';
 import { initials } from './initials';
 import { createStyles } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
+import { ShowPostMenuButton } from './ShowPostMenuButton';
 
 type Props = { post: Post; style?: ThreadCommentStyles; onComment: () => void };
 
@@ -54,6 +55,7 @@ export const ThreadComment = ({ post, style, onComment }: Props) => {
           <ReactionsToolbar post={post} />
         </View>
       </View>
+      <ShowPostMenuButton post={post} parentType={ParentType.POST} />
     </View>
   );
 };

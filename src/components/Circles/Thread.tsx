@@ -18,23 +18,30 @@ import {
   useLoadReplies,
 } from '../../hooks';
 import { ThreadComment } from './ThreadComment';
-import { ThreadPost } from './ThreadPost';
 import { PostUnavailable } from './PostUnavailable';
 import { EmptyComments } from './EmptyComments';
 import { createStyles } from '../BrandConfigProvider';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { showCreateEditPostModal } from './CreateEditPostModal';
+import { PostItem as PostItem } from './PostItem';
 
 export interface ThreadProps {
   post: Post;
   style?: CirclesThreadStyles;
   createComment?: boolean;
   onOpenThread: (post: Post, createNewComment: boolean) => void;
+  onPostDeleted: () => void;
 }
 
 export const Thread = (props: ThreadProps) => {
   const { colors } = useTheme();
-  const { post: postIn, style, createComment = false, onOpenThread } = props;
+  const {
+    post: postIn,
+    style,
+    createComment = false,
+    onOpenThread,
+    onPostDeleted,
+  } = props;
   const [isCreateCommentOpen, setIsCreateCommentOpen] = useState(createComment);
   const [shouldScrollToEnd, setShouldScrollToEnd] = useState(false);
   const listRef = useRef<FlatList>(null);
@@ -91,6 +98,12 @@ export const Thread = (props: ThreadProps) => {
     }
   }, [isCreateCommentOpen, handleCreatePostClosed, post?.id, isLoading]);
 
+  useEffect(() => {
+    if (!data?.post) {
+      onPostDeleted();
+    }
+  });
+
   return (
     <>
       <FlatList
@@ -110,7 +123,7 @@ export const Thread = (props: ThreadProps) => {
         initialNumToRender={35}
         style={styles.container}
         ListHeaderComponent={
-          !error && post ? <ThreadPost post={post as Post} /> : null
+          !error && post ? <PostItem post={post as Post} /> : null
         }
         ListFooterComponent={
           !isFetched && (isLoading || isRefetching) ? (

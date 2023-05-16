@@ -25,11 +25,16 @@ export const CircleThreadScreen = ({
     [navigation],
   );
 
+  const navigateBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
   return (
     <Thread
       post={route.params.post}
       createComment={route.params.createNewComment ?? false}
       onOpenThread={openPost}
+      onPostDeleted={navigateBack}
     />
   );
 };

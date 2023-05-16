@@ -104,7 +104,11 @@ describe('Thread', () => {
     mockUsePost.mockReturnValue({ data: { post: mockPost } });
 
     const { getByText } = render(
-      <Thread post={mockPost} onOpenThread={jest.fn()} />,
+      <Thread
+        post={mockPost}
+        onOpenThread={jest.fn()}
+        onPostDeleted={jest.fn()}
+      />,
     );
 
     expect(mockUsePost).toHaveBeenCalledWith(mockPost);
@@ -128,7 +132,7 @@ describe('Thread', () => {
     });
 
     const { getByText } = render(
-      <Thread post={post} onOpenThread={jest.fn()} />,
+      <Thread post={post} onOpenThread={jest.fn()} onPostDeleted={jest.fn()} />,
     );
 
     expect(getByText('Shaggy')).toBeDefined();
@@ -142,7 +146,11 @@ describe('Thread', () => {
     });
 
     const { getByText, queryByText } = render(
-      <Thread post={mockPost} onOpenThread={jest.fn()} />,
+      <Thread
+        post={mockPost}
+        onOpenThread={jest.fn()}
+        onPostDeleted={jest.fn()}
+      />,
     );
 
     expect(getByText('Oh No!')).toBeDefined();
@@ -161,7 +169,11 @@ describe('Thread', () => {
 
     const onOpenThread = jest.fn();
     const { getByText } = render(
-      <Thread post={post} onOpenThread={onOpenThread} />,
+      <Thread
+        post={post}
+        onOpenThread={onOpenThread}
+        onPostDeleted={jest.fn()}
+      />,
     );
 
     fireEvent.press(getByText('Jinkies!'));
@@ -188,7 +200,7 @@ describe('Thread', () => {
     });
 
     const { getByText } = render(
-      <Thread post={post} onOpenThread={jest.fn()} />,
+      <Thread post={post} onOpenThread={jest.fn()} onPostDeleted={jest.fn()} />,
     );
 
     fireEvent.press(getByText('Read 1 earlier comments...'));

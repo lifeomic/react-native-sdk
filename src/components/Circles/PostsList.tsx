@@ -7,13 +7,13 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import { FAB, Text } from 'react-native-paper';
+import { Divider, FAB, Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { CircleTile } from '../../hooks/useAppConfig';
 import { Post as PostType, useInfinitePosts } from '../../hooks/usePosts';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { createStyles } from '../BrandConfigProvider/styles/createStyles';
-import { Post } from './Post';
+import { PostItem } from './PostItem';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
 import { ParentType } from '../../hooks/usePosts';
 import { tID } from '../../common';
@@ -29,6 +29,7 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
     useInfinitePosts({
       circleId: circleTile?.circleId,
     });
+  // useFocusEffect(() => {});
   const { styles } = useStyles(defaultStyles);
 
   const handleScroll = useCallback(
@@ -78,10 +79,11 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
                   onPress={handlePostTapped(edge.node)}
                   activeOpacity={0.6}
                 >
-                  <Post
+                  <PostItem
                     post={edge.node}
                     onComment={handlePostTapped(edge.node, true)}
                   />
+                  <Divider />
                 </TouchableOpacity>
               ))
             ) : (
