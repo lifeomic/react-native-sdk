@@ -2,17 +2,20 @@ import { useMutation, useQueryClient } from 'react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
-import { InfinitePostsData } from './usePosts';
+import { Post } from './usePosts';
+import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
 
 interface CreateReactionMutationProps {
   type: string;
   postId: string;
+  parentId?: string;
 }
 
 interface UndoReactionMutationProps {
   userId: string;
   type: string;
   postId: string;
+  parentId?: string;
 }
 
 export function useCreateReactionMutation() {
@@ -48,8 +51,10 @@ export function useCreateReactionMutation() {
       const previousPosts = queryClient.getQueryData(['posts']);
 
       // Optimistically update to the new value
-      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
-        return optimisticUpdatePost(currentData!, newReaction);
+      optimisticallyUpdatePosts({
+        queryClient,
+        postId: newReaction.postId,
+        updatePost: (post) => optimisticUpdatePost(post, newReaction)!,
       });
 
       // Return a context object with the snapshotted value
@@ -93,8 +98,10 @@ export function useUndoReactionMutation() {
       const previousPosts = queryClient.getQueryData(['posts']);
 
       // Optimistically update to the new value
-      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
-        return optimisticUpdatePost(currentData!, newReaction, true);
+      optimisticallyUpdatePosts({
+        queryClient,
+        postId: newReaction.postId,
+        updatePost: (post) => optimisticUpdatePost(post, newReaction, true)!,
       });
 
       // Return a context object with the snapshotted value
@@ -111,38 +118,28 @@ export type Reaction = {
 };
 
 const optimisticUpdatePost = (
-  data: InfinitePostsData,
+  post: Post | undefined,
   newReaction: { type: string; postId: string },
   decrement: boolean = false,
 ) => {
-  const pageIndx = data.pages.findIndex((page) =>
-    page.postsV2.edges.some(({ node }) => {
-      return node.id === newReaction.postId;
-    }),
-  );
+  if (!post) return post;
 
-  const edgeIndx = data.pages[pageIndx].postsV2.edges.findIndex(
-    ({ node }) => node.id === newReaction.postId,
-  );
-
-  const { node } = data.pages[pageIndx].postsV2.edges[edgeIndx];
-
-  const reactionIndx = node.reactionTotals?.findIndex((reaction) => {
+  const reactionIndx = post.reactionTotals?.findIndex((reaction) => {
     return reaction.type === newReaction.type;
   });
 
   if (reactionIndx > -1) {
-    node.reactionTotals[reactionIndx].count += decrement ? -1 : 1;
-    node.reactionTotals[reactionIndx].userHasReacted = !decrement;
+    post.reactionTotals[reactionIndx].count += decrement ? -1 : 1;
+    post.reactionTotals[reactionIndx].userHasReacted = !decrement;
   } else {
-    node.reactionTotals.push({
+    post.reactionTotals.push({
       type: newReaction.type,
       count: decrement ? 0 : 1,
       userHasReacted: !decrement,
     });
   }
 
-  return data!;
+  return post!;
 };
 
 const createReactionMutationDocument = gql`

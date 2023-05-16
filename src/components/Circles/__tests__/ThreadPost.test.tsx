@@ -1,7 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render } from '../../../common/testHelpers/testing-library-wrapper';
 import { ThreadPost } from '../ThreadPost';
-import { Post } from '../../../hooks/usePosts';
+import { Post, Priority } from '../../../hooks/usePosts';
 
 jest.mock('date-fns', () => ({
   ...jest.requireActual('date-fns'),
@@ -22,7 +22,7 @@ const mockPost: Post = {
   },
   __typename: 'ActivePost',
   message: 'Zoinks!',
-  priority: 'high',
+  priority: Priority.ANNOUNCEMENT,
   metadata: {},
   status: 'status',
   attachments: [],
@@ -37,6 +37,7 @@ describe('ThreadPost', () => {
   test('renders the component', () => {
     const { getByText } = render(<ThreadPost post={mockPost} />);
 
+    expect(getByText('Announcement')).toBeDefined();
     expect(getByText('Shaggy')).toBeDefined();
     expect(getByText('5 minutes ago')).toBeDefined();
     expect(getByText('Zoinks!')).toBeDefined();

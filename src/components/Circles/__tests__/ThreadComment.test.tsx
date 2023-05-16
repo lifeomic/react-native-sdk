@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import { ThreadComment } from '../ThreadComment';
 import { Post } from '../../../hooks';
 
@@ -22,7 +22,6 @@ const mockPost: Post = {
   },
   __typename: 'ActivePost',
   message: 'Zoinks!',
-  priority: 'high',
   metadata: {},
   status: 'status',
   attachments: [],
@@ -35,10 +34,24 @@ const mockPost: Post = {
 
 describe('ThreadComment', () => {
   test('renders the component', () => {
-    const { getByText } = render(<ThreadComment post={mockPost} />);
+    const { getByText } = render(
+      <ThreadComment post={mockPost} onComment={jest.fn()} />,
+    );
 
     expect(getByText('Shaggy')).toBeDefined();
     expect(getByText('5 minutes ago')).toBeDefined();
     expect(getByText('Zoinks!')).toBeDefined();
+  });
+
+  test('clicking comments calls onComment', () => {
+    const onComment = jest.fn();
+
+    const { getByText } = render(
+      <ThreadComment post={mockPost} onComment={onComment} />,
+    );
+
+    fireEvent.press(getByText('COMMENT'));
+
+    expect(onComment).toHaveBeenCalled();
   });
 });

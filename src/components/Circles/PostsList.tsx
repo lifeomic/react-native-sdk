@@ -1,30 +1,30 @@
 import { t } from 'i18next';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
   View,
+  TouchableOpacity,
 } from 'react-native';
 import { FAB, Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { CircleTile } from '../../hooks/useAppConfig';
-import { useInfinitePosts } from '../../hooks/usePosts';
+import { Post as PostType, useInfinitePosts } from '../../hooks/usePosts';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { createStyles } from '../BrandConfigProvider/styles/createStyles';
 import { Post } from './Post';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
-import { CreateEditPostModal } from './CreateEditPostModal';
 import { ParentType } from '../../hooks/usePosts';
 import { tID } from '../../common';
+import { showCreateEditPostModal } from './CreateEditPostModal';
 
 interface PostsListProps {
   circleTile?: CircleTile;
+  onOpenPost: (post: PostType, openComment: boolean) => void;
 }
 
-export const PostsList = ({ circleTile }: PostsListProps) => {
-  const [visible, setVisible] = useState(false);
-
+export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfinitePosts({
       circleId: circleTile?.circleId,
@@ -46,6 +46,14 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
     [hasNextPage, isLoading, fetchNextPage],
   );
 
+  const handlePostTapped = useCallback(
+    (post: PostType, createNewComment = false) =>
+      () => {
+        onOpenPost(post, createNewComment);
+      },
+    [onOpenPost],
+  );
+
   if (!data || !circleTile?.circleId) {
     return (
       <ActivityIndicatorView
@@ -56,12 +64,6 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
 
   return (
     <View>
-      <CreateEditPostModal
-        visible={visible}
-        setVisible={setVisible}
-        parentType={ParentType.CIRCLE}
-        parentId={circleTile.circleId}
-      />
       <ScrollView
         onScroll={handleScroll}
         scrollEventThrottle={400}
@@ -71,7 +73,16 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
           <React.Fragment key={`page-${pageIndex}`}>
             {page?.postsV2?.edges.length > 0 ? (
               page.postsV2.edges.map((edge, postIndex) => (
-                <Post key={`post-${postIndex}`} post={edge.node} />
+                <TouchableOpacity
+                  key={`post-${postIndex}`}
+                  onPress={handlePostTapped(edge.node)}
+                  activeOpacity={0.6}
+                >
+                  <Post
+                    post={edge.node}
+                    onComment={handlePostTapped(edge.node, true)}
+                  />
+                </TouchableOpacity>
               ))
             ) : (
               <Text style={styles.noPostsText}>
@@ -89,7 +100,12 @@ export const PostsList = ({ circleTile }: PostsListProps) => {
         testID={tID('new-post-button')}
         icon="pencil"
         style={styles.fab}
-        onPress={() => setVisible(() => true)}
+        onPress={() => {
+          showCreateEditPostModal({
+            parentType: ParentType.CIRCLE,
+            parentId: circleTile.circleId,
+          });
+        }}
       />
     </View>
   );

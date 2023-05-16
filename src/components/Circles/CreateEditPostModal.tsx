@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, View, Modal } from 'react-native';
 import {
   Appbar,
@@ -8,43 +8,75 @@ import {
   Text,
   Provider,
 } from 'react-native-paper';
-import { ParentType, useCreatePost, Post } from '../../hooks/usePosts';
-import { useStyles } from '../../hooks';
+import {
+  ParentType,
+  useCreatePost,
+  Post,
+  useUpdatePostMessage,
+} from '../../hooks/usePosts';
+import { useStyles } from '../../hooks/useStyles';
 import { createStyles } from '../BrandConfigProvider';
 import { t } from 'i18next';
-import { tID } from '../../common';
+import { tID } from '../../common/testID';
 import uuid from 'react-native-uuid';
+import { NativeEventEmitter } from 'react-native';
 
-interface CreateEditPostModalProps {
-  parentId: string;
-  parentType: ParentType;
-  visible: boolean;
-  setVisible: (arg: boolean) => void;
+const eventEmitter = new NativeEventEmitter({
+  addListener: () => {},
+  removeListeners: () => {},
+});
+
+const showCreateEditPostModelEvent = 'showCreateEditPostModelEvent';
+
+type EmitEventProps = {
+  parentId?: string;
+  parentType?: ParentType;
+  onModalClose?: (createdNewPost?: boolean) => void;
   postToEdit?: Post;
-}
+};
 
-export const CreateEditPostModal = ({
-  parentId,
-  parentType,
-  visible,
-  setVisible,
-  postToEdit,
-}: CreateEditPostModalProps) => {
+export const showCreateEditPostModal = (props: EmitEventProps) =>
+  eventEmitter.emit(showCreateEditPostModelEvent, props);
+
+export const CreateEditPostModal = () => {
   const createPost = useCreatePost();
-  const hideModal = () => {
+  const updatePost = useUpdatePostMessage();
+  const [visible, setVisible] = useState(false);
+  const [emitProps, setEmitProps] = useState<EmitEventProps | null>();
+  const [characterCount, setCharacterCount] = useState(0);
+  const [postText, setPostText] = useState('');
+
+  const hideModal = (createdNewPost?: boolean) => {
     setPostText('');
     setCharacterCount(0);
-    setVisible(false);
+    setEmitProps(null);
+    onModalClose?.(createdNewPost);
   };
 
-  const [postText, setPostText] = useState(postToEdit?.message ?? '');
-  const [characterCount, setCharacterCount] = useState(postText.length);
   const overCharacterLimit = characterCount > 1200;
   const { styles } = useStyles(defaultStyles);
 
-  if (!parentType || !parentId) {
+  useEffect(() => {
+    const subscription = eventEmitter.addListener(
+      showCreateEditPostModelEvent,
+      (props: EmitEventProps) => {
+        setEmitProps(props);
+        setCharacterCount(props?.postToEdit?.message?.length ?? 0);
+        setVisible(true);
+        setPostText(props?.postToEdit?.message ?? '');
+      },
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  if (!emitProps) {
     return null;
   }
+
+  const { parentId, parentType, postToEdit, onModalClose } = emitProps;
 
   return (
     <Provider>
@@ -57,15 +89,17 @@ export const CreateEditPostModal = ({
         >
           <View style={styles.container}>
             <Appbar.Header style={styles.header}>
-              <Appbar.BackAction onPress={hideModal} />
+              <Appbar.BackAction onPress={() => hideModal(false)} />
               <Appbar.Content
                 title={t('create-post-modal-title', 'Create Post')}
               />
             </Appbar.Header>
             <TextInput
+              autoFocus
               testID={tID('post-text-input')}
               multiline
               numberOfLines={12}
+              defaultValue={postToEdit?.message}
               placeholder={t(
                 'create-post-placeholder-text',
                 'What do you want to share?',
@@ -97,18 +131,28 @@ export const CreateEditPostModal = ({
                   disabled={characterCount === 0 || overCharacterLimit}
                   mode="outlined"
                   onPress={() => {
-                    createPost.mutate({
-                      post: {
-                        id: uuid.v4().toString(),
-                        message: postText,
-                        parentId: parentId,
-                        parentType: parentType,
-                      },
-                    });
-                    hideModal();
+                    if (postToEdit) {
+                      updatePost.mutate({
+                        id: postToEdit.id,
+                        newMessage: postText,
+                      });
+                      hideModal(false);
+                    } else {
+                      createPost.mutate({
+                        post: {
+                          id: uuid.v4().toString(),
+                          message: postText,
+                          parentId: parentId!,
+                          parentType: parentType!,
+                        },
+                      });
+                      hideModal(true);
+                    }
                   }}
                 >
-                  Post
+                  {postToEdit
+                    ? t('done-editing', 'Done')
+                    : t('submit-post', 'Post')}
                 </Button>
               </View>
             </KeyboardAvoidingView>

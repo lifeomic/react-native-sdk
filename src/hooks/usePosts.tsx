@@ -8,9 +8,12 @@ import {
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useUser } from './useUser';
 import omit from 'lodash/omit';
+import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
+import forEach from 'lodash/forEach';
+import remove from 'lodash/remove';
 
 export enum ParentType {
   CIRCLE = 'CIRCLE',
@@ -44,6 +47,7 @@ export type PostsData = {
 
 export type Post = {
   __typename: string;
+  authorId?: string;
   author?: {
     profile: {
       displayName: string;
@@ -52,7 +56,7 @@ export type Post = {
   };
   id: string;
   parentId: string;
-  priority?: string;
+  priority?: Priority;
   replyCount: number;
   createdAt: string;
   deletedAt?: string;
@@ -79,6 +83,10 @@ export type Post = {
 
 export type PostDetailsPostQueryResponse = {
   post: Post;
+};
+
+export type PostRepliesQueryResponse = {
+  post: Pick<Post, 'replies'>;
 };
 
 type useInfinitePostsProps = {
@@ -133,7 +141,7 @@ export function useInfinitePosts({ circleId }: useInfinitePostsProps) {
   };
 }
 
-export const usePost = (postId: string, disabled?: boolean) => {
+export const usePost = (post: Partial<Post> & Pick<Post, 'id'>) => {
   const { graphQLClient } = useGraphQLClient();
   const { isFetched, accountHeaders } = useActiveAccount();
 
@@ -141,15 +149,72 @@ export const usePost = (postId: string, disabled?: boolean) => {
     return graphQLClient.request<PostDetailsPostQueryResponse, { id: string }>(
       postDetailsQueryDocument,
       {
-        id: postId,
+        id: post.id,
       },
       accountHeaders,
     );
-  }, [accountHeaders, graphQLClient, postId]);
+  }, [accountHeaders, graphQLClient, post.id]);
 
-  return useQuery('postDetails', queryForPostDetails, {
-    enabled: !disabled && isFetched && !!accountHeaders,
+  return useQuery(['postDetails', post.id], queryForPostDetails, {
+    enabled: isFetched && !!accountHeaders,
+    placeholderData: {
+      post,
+    },
   });
+};
+
+export const useLoadReplies = () => {
+  const { graphQLClient } = useGraphQLClient();
+  const queryClient = useQueryClient();
+  const { isFetched, accountHeaders } = useActiveAccount();
+  const [queryVariables, setQueryVariables] = useState({
+    after: undefined as string | undefined,
+    id: '',
+  });
+
+  const queryForPostReplies = useCallback(async () => {
+    if (!queryVariables?.id) return;
+    return graphQLClient.request<
+      PostRepliesQueryResponse,
+      { id: string; after?: string }
+    >(postRepliesQueryDocument, queryVariables, accountHeaders);
+  }, [accountHeaders, graphQLClient, queryVariables]);
+
+  const repliesRes = useQuery(
+    ['loadReplies', queryVariables.id, queryVariables.after],
+    queryForPostReplies,
+    {
+      enabled: isFetched && !!accountHeaders && !!queryVariables.id,
+      onSuccess(data) {
+        if (!data) return;
+
+        optimisticallyUpdatePosts({
+          queryClient,
+          postId: queryVariables.id,
+          updatePost: (post) => {
+            post.replies = post.replies ?? { edges: [] };
+            post.replies.edges.push(...data.post.replies.edges);
+            post.replies.pageInfo = data.post.replies.pageInfo;
+
+            return post;
+          },
+        });
+      },
+    },
+  );
+
+  const loadReplies = (post: Post) => {
+    setQueryVariables({
+      id: post.id,
+      after: post.replies?.pageInfo?.endCursor,
+    });
+  };
+
+  return {
+    ...repliesRes,
+    queryVariables,
+    loadReplies,
+  };
 };
 
 type CreatePostInput = {
@@ -195,37 +260,141 @@ export function useCreatePost() {
       const previousPosts = queryClient.getQueryData(['posts']);
 
       // Optimistically update to the new value
-      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
-        const newData: InfinitePostsData = currentData ?? {
-          pages: [
-            {
-              postsV2: {
-                edges: [],
-                pageInfo: { endCursor: '', hasNextPage: false },
-              },
-            },
-          ],
-          pageParams: [],
-        };
-
-        const optimisticPost: Post = {
-          ...omit(newPost.post, 'parentType'),
-          __typename: 'ActivePost',
-          reactionTotals: [],
-          createdAt: new Date().toISOString(),
-          replyCount: 0,
-          status: 'READY',
-          replies: { edges: [], pageInfo: {} },
-          author: {
-            profile: {
-              displayName: data?.profile.displayName ?? '',
-              picture: data?.profile.picture ?? '',
-            },
+      const optimisticPost: Post = {
+        ...omit(newPost.post, 'parentType'),
+        __typename: 'ActivePost',
+        reactionTotals: [],
+        createdAt: new Date().toISOString(),
+        replyCount: 0,
+        status: 'READY',
+        replies: { edges: [], pageInfo: {} },
+        author: {
+          profile: {
+            displayName: data?.profile.displayName ?? '',
+            picture: data?.profile.picture ?? '',
           },
-        };
+        },
+      };
 
-        newData.pages[0].postsV2.edges.unshift({ node: optimisticPost });
-        return newData;
+      if (newPost.post.parentType === ParentType.CIRCLE) {
+        queryClient.setQueryData(
+          ['posts'],
+          (currentData?: InfinitePostsData) => {
+            const newData: InfinitePostsData = currentData ?? {
+              pages: [
+                {
+                  postsV2: {
+                    edges: [],
+                    pageInfo: { endCursor: '', hasNextPage: false },
+                  },
+                },
+              ],
+              pageParams: [],
+            };
+
+            newData.pages[0].postsV2.edges.unshift({ node: optimisticPost });
+            return newData;
+          },
+        );
+      } else if (newPost.post.parentType === ParentType.POST) {
+        optimisticallyUpdatePosts({
+          queryClient,
+          postId: newPost.post.parentId,
+          updatePost: (post) => {
+            post.replyCount++;
+            post.replies = post.replies || { edges: [] };
+            post.replies.edges.unshift({ node: optimisticPost });
+
+            return post;
+          },
+        });
+      }
+
+      // Return a context object with the snapshotted value
+      return { previousPosts };
+    },
+  });
+}
+
+export function useDeletePost() {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+  const queryClient = useQueryClient();
+
+  const deletePostMutation = async (input: { id: string }) => {
+    const variables = {
+      input,
+    };
+
+    return graphQLClient.request(
+      deletePostMutationDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useMutation('deletePost', deletePostMutation, {
+    onMutate: async (deletedPost) => {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ['posts'] });
+
+      // Snapshot the previous value
+      const previousPosts = queryClient.getQueryData(['posts']);
+
+      // Optimistically update to delete the target post
+      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
+        forEach(currentData?.pages, (page) => {
+          remove(page.postsV2.edges, (edge) => edge.node.id === deletedPost.id);
+        });
+        return currentData!;
+      });
+
+      // Return a context object with the snapshotted value
+      return { previousPosts };
+    },
+  });
+}
+
+export function useUpdatePostMessage() {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+  const queryClient = useQueryClient();
+
+  const updatePostMessageMutation = async (input: {
+    id: string;
+    newMessage: string;
+  }) => {
+    const variables = {
+      input,
+    };
+
+    return graphQLClient.request(
+      updatePostMessageMutationDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useMutation('updatePostMessage', updatePostMessageMutation, {
+    onMutate: async (updatedPost) => {
+      // Cancel any outgoing refetches
+      // (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ['posts'] });
+
+      // Snapshot the previous value
+      const previousPosts = queryClient.getQueryData(['posts']);
+
+      // Optimistically update to delete the target post
+      queryClient.setQueryData(['posts'], (currentData?: InfinitePostsData) => {
+        forEach(currentData?.pages, (page) => {
+          forEach(page.postsV2.edges, (edge) => {
+            if (edge.node.id === updatedPost.id) {
+              edge.node.message = updatedPost.newMessage;
+            }
+          });
+        });
+        return currentData!;
       });
 
       // Return a context object with the snapshotted value
@@ -244,7 +413,9 @@ const postsV2QueryDocument = gql`
       edges {
         node {
           id
+          priority
           ... on ActivePost {
+            authorId
             author {
               profile {
                 displayName
@@ -266,15 +437,18 @@ const postsV2QueryDocument = gql`
   }
 `;
 
-const postDetailsQueryDocument = gql`
+const postDetailsFragment = gql`
   fragment PostDetails on Post {
     id
     createdAt
+    priority
     ... on DeletedPost {
       deletedAt
     }
     ... on ActivePost {
+      authorId
       message
+      replyCount
       author {
         profile {
           displayName
@@ -288,10 +462,15 @@ const postDetailsQueryDocument = gql`
       }
     }
   }
-  query PostDetailsPost($id: ID!, $after: String) {
+`;
+
+const postDetailsQueryDocument = gql`
+  ${postDetailsFragment}
+
+  query PostDetailsPost($id: ID!) {
     post(id: $id) {
       ...PostDetails
-      replies(order: NEWEST, first: 10, after: $after) {
+      replies(order: NEWEST, first: 10) {
         pageInfo {
           endCursor
           hasNextPage
@@ -318,11 +497,52 @@ const postDetailsQueryDocument = gql`
   }
 `;
 
+const postRepliesQueryDocument = gql`
+  ${postDetailsFragment}
+
+  query PostReplies($id: ID!, $after: String) {
+    post(id: $id) {
+      replies(order: NEWEST, first: 10, after: $after) {
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+        edges {
+          node {
+            ...PostDetails
+          }
+        }
+      }
+    }
+  }
+`;
+
 const createPostMutationDocument = gql`
   mutation CreatePost($input: CreatePostInput!) {
     createPost(input: $input) {
       post {
         id
+      }
+    }
+  }
+`;
+
+const deletePostMutationDocument = gql`
+  mutation DeletePost($input: DeletePostInput!) {
+    deletePost(input: $input) {
+      post {
+        id
+      }
+    }
+  }
+`;
+
+const updatePostMessageMutationDocument = gql`
+  mutation UpdatePostMessage($input: UpdatePostMessageInput!) {
+    updatePostMessage(input: $input) {
+      post {
+        id
+        message
       }
     }
   }

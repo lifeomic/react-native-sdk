@@ -3,14 +3,14 @@ import { Text, View } from 'react-native';
 import { formatDistanceToNow, isValid } from 'date-fns';
 import { t } from 'i18next';
 import { Post, useStyles, useTheme } from '../../hooks';
-import { Avatar } from 'react-native-paper';
+import { Avatar, Button } from 'react-native-paper';
 import { initials } from './initials';
 import { createStyles } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
 
-type Props = { post: Post; style?: ThreadCommentStyles };
+type Props = { post: Post; style?: ThreadCommentStyles; onComment: () => void };
 
-export const ThreadComment = ({ post, style }: Props) => {
+export const ThreadComment = ({ post, style, onComment }: Props) => {
   const { styles } = useStyles(defaultStyles, style);
   const theme = useTheme();
 
@@ -40,7 +40,19 @@ export const ThreadComment = ({ post, style }: Props) => {
         <View style={styles.messageContainer}>
           <Text style={styles.messageText}>{post?.message}</Text>
         </View>
-        <ReactionsToolbar post={post} />
+        <View style={styles.toolbarContainer}>
+          <Button
+            style={styles.commentButton}
+            contentStyle={styles.commentButtonContainer}
+            labelStyle={styles.commentButtonText}
+            compact={true}
+            mode={'outlined'}
+            onPress={onComment}
+          >
+            {t('post-comments', { count: post.replyCount })}
+          </Button>
+          <ReactionsToolbar post={post} />
+        </View>
       </View>
     </View>
   );
@@ -51,6 +63,7 @@ const defaultStyles = createStyles('Circles.ThreadComment', (theme) => ({
     flexDirection: 'row',
     alignItems: 'flex-start',
     padding: theme.spacing.medium,
+    paddingLeft: 0,
     paddingBottom: theme.spacing.extraSmall,
   },
   details: { flex: 1 },
@@ -70,6 +83,21 @@ const defaultStyles = createStyles('Circles.ThreadComment', (theme) => ({
   messageText: {},
   usernameText: {},
   responseTimeText: {},
+  toolbarContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingLeft: theme.spacing.extraSmall,
+    marginBottom: theme.spacing.small,
+  },
+  commentButtonContainer: {},
+  commentButton: {
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  commentButtonText: {
+    color: 'rgba(0, 0, 0, 0.4)',
+    fontSize: 8,
+    lineHeight: 10,
+  },
 }));
 
 declare module '@styles' {

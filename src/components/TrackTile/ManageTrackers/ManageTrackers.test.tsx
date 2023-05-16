@@ -1,5 +1,9 @@
 import React from 'react';
-import { fireEvent, render, act } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+  act,
+} from '../../../common/testHelpers/testing-library-wrapper';
 import {
   ManageTrackersProvider,
   ManageTrackersProviderProps,

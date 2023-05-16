@@ -9,6 +9,7 @@ import {
   TrackerValue,
   TrackerValuesContext,
 } from '../components/TrackTile/main';
+import { Post } from '../hooks';
 
 export type RootStackParamList = LoggedInRootParamList;
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -45,6 +46,7 @@ export type HomeStackParamList = {
   };
   'Home/CustomAppTile': { appTile: AppTile };
   'Home/Circle/Discussion': { circleTile: CircleTile };
+  'Home/Circle/Thread': { post: Post; createNewComment?: boolean };
   'Home/TrackTile': {
     tracker: Tracker;
     valuesContext: TrackerValuesContext;

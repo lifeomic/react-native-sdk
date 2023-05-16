@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useActiveAccount } from './useActiveAccount';
-import { PostDetailsPostQueryResponse, usePost } from './usePosts';
+import { PostDetailsPostQueryResponse, usePost, Post } from './usePosts';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from './useGraphQLClient';
@@ -19,19 +19,19 @@ const queryClient = new QueryClient({
 });
 
 const baseURL = 'https://some-domain/unit-test';
-const renderHookWithInjectedClient = async (
-  postId: string,
-  disabled = false,
-) => {
-  return renderHook(() => usePost(postId, disabled), {
-    wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>
-        <GraphQLClientContextProvider baseURL={baseURL}>
-          {children}
-        </GraphQLClientContextProvider>
-      </QueryClientProvider>
-    ),
-  });
+const renderHookWithInjectedClient = async (post: string | Post) => {
+  return renderHook(
+    () => usePost(typeof post === 'string' ? { id: post } : post),
+    {
+      wrapper: ({ children }) => (
+        <QueryClientProvider client={queryClient}>
+          <GraphQLClientContextProvider baseURL={baseURL}>
+            {children}
+          </GraphQLClientContextProvider>
+        </QueryClientProvider>
+      ),
+    },
+  );
 };
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
@@ -45,17 +45,6 @@ describe('usePost', () => {
     });
   });
 
-  test('does not fetch the result if disabled', async () => {
-    const { result } = await renderHookWithInjectedClient('post', true); // disabled
-
-    expect(result.current).toEqual(
-      expect.objectContaining({
-        isIdle: true,
-        isLoading: false,
-      }),
-    );
-  });
-
   test('does not fetch the result if there are no account headers', async () => {
     useActiveAccountMock.mockReturnValue({
       isFetched: true,
@@ -66,7 +55,6 @@ describe('usePost', () => {
 
     expect(result.current).toEqual(
       expect.objectContaining({
-        isIdle: true,
         isLoading: false,
       }),
     );
@@ -87,7 +75,6 @@ describe('usePost', () => {
         },
         __typename: 'ActivePost',
         message: 'Zoinks!',
-        priority: 'high',
         metadata: {},
         status: 'status',
         attachments: [],
@@ -108,6 +95,69 @@ describe('usePost', () => {
       expect(scope.isDone()).toBe(true);
       expect(result.current.isLoading).toBe(false);
     });
+    expect(result.current.data).toEqual(response);
+  });
+
+  test('returns placeholder data until result is fetched', async () => {
+    const placeholderPost: Post = {
+      id: 'post2',
+      parentId: '',
+      replyCount: 1,
+      createdAt: '2021-11-22T18:42:36.000Z',
+      author: {
+        profile: {
+          displayName: 'Not Shaggy',
+          picture: '',
+        },
+      },
+      __typename: 'ActivePost',
+      message: 'Temp data',
+      status: 'status',
+      reactionTotals: [],
+      replies: {
+        pageInfo: {},
+        edges: [],
+      },
+    };
+    const response: PostDetailsPostQueryResponse = {
+      post: {
+        id: 'post2',
+        parentId: '',
+        replyCount: 1,
+        createdAt: '2021-11-22T18:42:36.000Z',
+        author: {
+          profile: {
+            displayName: 'Shaggy',
+            picture: '',
+          },
+        },
+        __typename: 'ActivePost',
+        message: 'Zoinks!',
+        metadata: {},
+        status: 'status',
+        attachments: [],
+        reactionTotals: [],
+        replies: {
+          pageInfo: {},
+          edges: [],
+        },
+      },
+    };
+    const scope = mockGraphQLResponse(
+      `${baseURL}/v1/graphql`,
+      undefined,
+      response,
+    );
+    const { result } = await renderHookWithInjectedClient(placeholderPost);
+
+    expect(result.current.isPlaceholderData).toEqual(true);
+    expect(result.current.data?.post).toEqual(placeholderPost);
+
+    await waitFor(() => {
+      expect(scope.isDone()).toBe(true);
+      expect(result.current.isPlaceholderData).toBe(false);
+    });
+
     expect(result.current.data).toEqual(response);
   });
 });
