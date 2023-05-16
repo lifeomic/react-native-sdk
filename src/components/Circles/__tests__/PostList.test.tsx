@@ -1,8 +1,12 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render,
+} from '../../../common/testHelpers/testing-library-wrapper';
 import { PostsList } from '../PostsList';
 import { CircleTile } from '../../../hooks/useAppConfig';
 import { useInfinitePosts, useCreatePost } from '../../../hooks/usePosts';
+import { CreateEditPostModal } from '../CreateEditPostModal';
 
 jest.mock('../../../hooks/usePosts');
 jest.mock('../ReactionsToolbar');
@@ -101,7 +105,10 @@ test('FAB shows the new post modal', () => {
   };
 
   const postsList = render(
-    <PostsList circleTile={circleTile} onOpenPost={jest.fn()} />,
+    <>
+      <CreateEditPostModal />
+      <PostsList circleTile={circleTile} onOpenPost={jest.fn()} />
+    </>,
   );
   expect(postsList.queryByPlaceholderText('What do you want to share?')).toBe(
     null,

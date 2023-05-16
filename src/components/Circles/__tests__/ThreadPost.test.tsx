@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render } from '../../../common/testHelpers/testing-library-wrapper';
 import { ThreadPost } from '../ThreadPost';
 import { Post, Priority } from '../../../hooks/usePosts';
 

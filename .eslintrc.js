@@ -6,9 +6,12 @@ module.exports = {
   },
   plugins: ['@lifeomic/i18next'],
   rules: {
-    "no-restricted-imports": ["error", {
-      "paths": ['src'],
-      "patterns": ['src/*']
-    }]
-  }
+    'no-restricted-imports': [
+      'error',
+      {
+        paths: ['src'],
+        patterns: ['src/*'],
+      },
+    ],
+  },
 };

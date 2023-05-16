@@ -15,6 +15,8 @@ import { BrandConfigProvider } from '../components/BrandConfigProvider';
 import { TrackTileProvider } from '../components/TrackTile/TrackTileProvider';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { WearableLifecycleProvider } from '../components/Wearables/WearableLifecycleProvider';
+import { CreateEditPostModal } from '../components/Circles/CreateEditPostModal';
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 
 const queryClient = new QueryClient();
 
@@ -39,12 +41,15 @@ export function RootProviders({
                     <WearableLifecycleProvider>
                       <BrandConfigProvider theme={theme}>
                         <NoInternetToastProvider>
-                          <SafeAreaProvider>
-                            <ThemedNavigationContainer>
-                              {children}
-                            </ThemedNavigationContainer>
-                            <Toast />
-                          </SafeAreaProvider>
+                          <ActionSheetProvider>
+                            <SafeAreaProvider>
+                              <ThemedNavigationContainer>
+                                {children}
+                              </ThemedNavigationContainer>
+                              <CreateEditPostModal />
+                              <Toast />
+                            </SafeAreaProvider>
+                          </ActionSheetProvider>
                         </NoInternetToastProvider>
                       </BrandConfigProvider>
                     </WearableLifecycleProvider>

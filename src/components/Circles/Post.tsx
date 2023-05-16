@@ -3,12 +3,13 @@ import { View } from 'react-native';
 import { Avatar, Button, Divider, List, Text } from 'react-native-paper';
 import { formatDistanceToNow, isValid } from 'date-fns';
 import { useStyles, useTheme } from '../../hooks';
-import { Post as PostType, Priority } from '../../hooks/usePosts';
+import { ParentType, Post as PostType, Priority } from '../../hooks/usePosts';
 import { createStyles } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
 import { initials } from './initials';
 import { t } from 'i18next';
 import { AnnouncementBanner } from './AnnouncementBanner';
+import { ShowPostMenuButton } from './ShowPostMenuButton';
 
 interface PostProps {
   post: PostType;
@@ -45,6 +46,11 @@ export const Post = ({ post, onComment }: PostProps) => {
   );
 
   const created = new Date(post?.createdAt!);
+  const showPostMenuButton = useMemo(
+    () => <ShowPostMenuButton post={post} parentType={ParentType.CIRCLE} />,
+    [post],
+  );
+
   return (
     <View style={styles.container}>
       {post.priority === Priority.ANNOUNCEMENT && <AnnouncementBanner />}
@@ -59,6 +65,7 @@ export const Post = ({ post, onComment }: PostProps) => {
         titleNumberOfLines={4}
         style={styles.listItem}
         left={() => avatarIcon}
+        right={() => showPostMenuButton}
       />
       <Text variant="titleMedium" style={styles.messageText}>
         {post.message}

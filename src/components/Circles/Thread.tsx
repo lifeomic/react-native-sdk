@@ -4,6 +4,7 @@ import React, {
   useRef,
   useMemo,
   useEffect,
+  useLayoutEffect,
 } from 'react';
 import { FlatList, View, RefreshControl, TouchableOpacity } from 'react-native';
 import { t } from 'i18next';
@@ -22,7 +23,7 @@ import { PostUnavailable } from './PostUnavailable';
 import { EmptyComments } from './EmptyComments';
 import { createStyles } from '../BrandConfigProvider';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
-import { CreateEditPostModal } from './CreateEditPostModal';
+import { showCreateEditPostModal } from './CreateEditPostModal';
 
 export interface ThreadProps {
   post: Post;
@@ -80,6 +81,16 @@ export const Thread = (props: ThreadProps) => {
     [loadReplies, onOpenThread],
   );
 
+  useLayoutEffect(() => {
+    if (isCreateCommentOpen && post?.id && !isLoading) {
+      showCreateEditPostModal({
+        parentType: ParentType.POST,
+        parentId: post.id,
+        onModalClose: handleCreatePostClosed,
+      });
+    }
+  }, [isCreateCommentOpen, handleCreatePostClosed, post?.id, isLoading]);
+
   return (
     <>
       <FlatList
@@ -122,24 +133,18 @@ export const Thread = (props: ThreadProps) => {
 
       <TouchableOpacity
         style={styles.addCommentBox}
-        onPress={() => setIsCreateCommentOpen(true)}
+        onPress={() =>
+          showCreateEditPostModal({
+            parentType: ParentType.POST,
+            parentId: post?.id,
+            onModalClose: handleCreatePostClosed,
+          })
+        }
       >
         <Text style={styles.addCommentText}>
           {t('thread-screen-add-comment', 'Add a comment')}
         </Text>
       </TouchableOpacity>
-
-      <View style={style?.createPostModalContainer}>
-        {post?.id && (
-          <CreateEditPostModal
-            visible={isCreateCommentOpen}
-            onModalClose={handleCreatePostClosed}
-            parentType={ParentType.POST}
-            parentId={post.id}
-            postToEdit={post as Post}
-          />
-        )}
-      </View>
     </>
   );
 };
