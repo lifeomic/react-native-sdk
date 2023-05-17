@@ -7,6 +7,7 @@ import { LoggedInProviders } from '../common/LoggedInProviders';
 import { LoginScreen } from '../screens/LoginScreen';
 import { TabNavigator } from './TabNavigator';
 import { LoggedInRootParamList, NotLoggedInRootParamList } from './types';
+import { CircleThreadScreen } from '../screens/CircleThreadScreen';
 
 export function RootStack() {
   const { isLoggedIn, loading } = useAuth();
@@ -28,6 +29,10 @@ export function RootStack() {
             name="app"
             component={TabNavigator}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Home/Circle/Thread"
+            component={CircleThreadScreen}
           />
         </Stack.Navigator>
       </LoggedInProviders>

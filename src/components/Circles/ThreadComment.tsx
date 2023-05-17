@@ -9,9 +9,9 @@ import { createStyles } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
 import { ShowPostMenuButton } from './ShowPostMenuButton';
 
-type Props = { post: Post; style?: ThreadCommentStyles; onComment: () => void };
+type Props = { post: Post; style?: ThreadCommentStyles; onReply: () => void };
 
-export const ThreadComment = ({ post, style, onComment }: Props) => {
+export const ThreadComment = ({ post, style, onReply }: Props) => {
   const { styles } = useStyles(defaultStyles, style);
   const theme = useTheme();
 
@@ -43,14 +43,14 @@ export const ThreadComment = ({ post, style, onComment }: Props) => {
         </View>
         <View style={styles.toolbarContainer}>
           <Button
-            style={styles.commentButton}
-            contentStyle={styles.commentButtonContainer}
-            labelStyle={styles.commentButtonText}
+            style={styles.replyButton}
+            contentStyle={styles.replyButtonContainer}
+            labelStyle={styles.replyButtonText}
             compact={true}
             mode={'outlined'}
-            onPress={onComment}
+            onPress={onReply}
           >
-            {t('post-comments', { count: post.replyCount })}
+            {t('post-replies', { count: post.replyCount })}
           </Button>
           <ReactionsToolbar post={post} />
         </View>
@@ -91,11 +91,11 @@ const defaultStyles = createStyles('Circles.ThreadComment', (theme) => ({
     paddingLeft: theme.spacing.extraSmall,
     marginBottom: theme.spacing.small,
   },
-  commentButtonContainer: {},
-  commentButton: {
+  replyButtonContainer: {},
+  replyButton: {
     borderColor: 'rgba(0, 0, 0, 0.1)',
   },
-  commentButtonText: {
+  replyButtonText: {
     color: 'rgba(0, 0, 0, 0.4)',
     fontSize: 8,
     lineHeight: 10,

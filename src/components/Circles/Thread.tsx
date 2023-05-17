@@ -6,9 +6,9 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from 'react';
-import { FlatList, View, RefreshControl, TouchableOpacity } from 'react-native';
+import { FlatList, View, RefreshControl, TextInput } from 'react-native';
 import { t } from 'i18next';
-import { Text, Button } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { Post, useStyles, useTheme, ParentType } from '../../hooks';
 import { usePost } from '../../hooks/Circles/usePost';
 import { useLoadReplies } from '../../hooks/Circles/useLoadReplies';
@@ -19,26 +19,22 @@ import { createStyles } from '../BrandConfigProvider';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { showCreateEditPostModal } from './CreateEditPostModal';
 import { PostItem as PostItem } from './PostItem';
+import { CreatePostToolbar } from './CreatePostToolbar';
 
 export interface ThreadProps {
   post: Post;
   style?: CirclesThreadStyles;
   createComment?: boolean;
-  onOpenThread: (post: Post, createNewComment: boolean) => void;
   onPostDeleted: () => void;
 }
 
 export const Thread = (props: ThreadProps) => {
   const { colors } = useTheme();
-  const {
-    post: postIn,
-    style,
-    createComment = false,
-    onOpenThread,
-    onPostDeleted,
-  } = props;
+  const { post: postIn, style, createComment = false, onPostDeleted } = props;
   const [isCreateCommentOpen, setIsCreateCommentOpen] = useState(createComment);
   const [shouldScrollToEnd, setShouldScrollToEnd] = useState(false);
+  const [commentPost, setCommentPost] = useState(postIn.id);
+  const textInputRef = useRef<TextInput>();
   const listRef = useRef<FlatList>(null);
   const { styles } = useStyles(defaultStyles, style);
   const {
@@ -78,9 +74,12 @@ export const Thread = (props: ThreadProps) => {
     () =>
       renderItem({
         onLoadReplies: loadReplies,
-        onOpenThread,
+        onPressReply: (postId: string) => {
+          setCommentPost(postId);
+          textInputRef.current?.focus();
+        },
       }),
-    [loadReplies, onOpenThread],
+    [loadReplies],
   );
 
   useLayoutEffect(() => {
@@ -138,21 +137,12 @@ export const Thread = (props: ThreadProps) => {
           )
         }
       />
-
-      <TouchableOpacity
-        style={styles.addCommentBox}
-        onPress={() =>
-          showCreateEditPostModal({
-            parentType: ParentType.POST,
-            parentId: post?.id,
-            onModalClose: handleCreatePostClosed,
-          })
-        }
-      >
-        <Text style={styles.addCommentText}>
-          {t('thread-screen-add-comment', 'Add a comment')}
-        </Text>
-      </TouchableOpacity>
+      <CreatePostToolbar
+        parentId={commentPost}
+        parentType={ParentType.POST}
+        onSubmit={handleCreatePostClosed}
+        textInputRef={textInputRef}
+      />
     </>
   );
 };
@@ -172,14 +162,19 @@ export type PostListEntry = {
 
 const renderItem =
   ({
-    onOpenThread,
     onLoadReplies,
+    onPressReply,
   }: {
-    onOpenThread: (post: Post, createNewComment: boolean) => void;
     onLoadReplies: (post: Post) => void;
+    onPressReply: (id: string) => void;
   }) =>
   ({ item }: { item: PostListEntry }) => {
     const marginLeft = item.depth * 20;
+    const onPressReplyAtDepth = () => {
+      item.depth > 1
+        ? onPressReply(item?.post?.parentId)
+        : onPressReply(item?.post?.id);
+    };
 
     if ('tag' in item && item.tag === 'load-more-posts') {
       return (
@@ -196,16 +191,9 @@ const renderItem =
     }
 
     return (
-      <TouchableOpacity
-        activeOpacity={0.6}
-        style={{ marginLeft }}
-        onPress={() => onOpenThread(item.post, false)}
-      >
-        <ThreadComment
-          post={item.post}
-          onComment={() => onOpenThread(item.post, true)}
-        />
-      </TouchableOpacity>
+      <View style={{ marginLeft }}>
+        <ThreadComment post={item.post} onReply={() => onPressReplyAtDepth()} />
+      </View>
     );
   };
 
@@ -297,15 +285,46 @@ const defaultStyles = createStyles('Circles.Thread', (theme) => ({
     flex: 0,
   },
   addCommentText: {
-    color: theme.colors.onPrimaryContainer,
-    backgroundColor: theme.colors.primaryContainer,
-    padding: theme.spacing.small,
-    borderRadius: 10,
-    borderWidth: 1,
-    overflow: 'hidden',
+    lineHeight: 16,
+    fontSize: 14,
+    width: '90%',
+    alignSelf: 'center',
   },
   createPostModalContainer: {
     height: 0,
+  },
+  toolbarContainer: {
+    backgroundColor: theme.colors.card,
+    width: '100%',
+    height: 60,
+    flex: 1,
+    paddingBottom: 8,
+  },
+  rightToolbarContainer: {
+    paddingTop: theme.spacing.medium,
+    columnGap: theme.spacing.medium,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+  },
+  characterCountLabel: {
+    color: theme.colors.outline,
+    textAlign: 'center',
+  },
+  overLimitLabel: {
+    color: theme.colors.error,
+  },
+  postButton: {
+    marginRight: theme.spacing.medium,
+    height: 25,
+    width: 55,
+  },
+  postButtonLabel: {
+    color: theme.colors.text,
+    marginVertical: 0,
+    paddingTop: 4,
+    fontSize: 14,
+    lineHeight: 16,
   },
 }));
 
