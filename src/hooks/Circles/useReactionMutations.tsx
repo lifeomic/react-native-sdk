@@ -53,8 +53,8 @@ export function useCreateReactionMutation() {
       // Optimistically update to the new value
       optimisticallyUpdatePosts({
         queryClient,
-        postId: newReaction.postId,
-        updatePost: (post) => optimisticUpdatePost(post, newReaction)!,
+        id: newReaction.postId,
+        transformFn: (post) => optimisticUpdatePost(post, newReaction)!,
       });
 
       // Return a context object with the snapshotted value
@@ -100,8 +100,8 @@ export function useUndoReactionMutation() {
       // Optimistically update to the new value
       optimisticallyUpdatePosts({
         queryClient,
-        postId: newReaction.postId,
-        updatePost: (post) => optimisticUpdatePost(post, newReaction, true)!,
+        id: newReaction.postId,
+        transformFn: (post) => optimisticUpdatePost(post, newReaction, true)!,
       });
 
       // Return a context object with the snapshotted value

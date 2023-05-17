@@ -38,8 +38,8 @@ export const useLoadReplies = () => {
 
         optimisticallyUpdatePosts({
           queryClient,
-          postId: queryVariables.id,
-          updatePost: (post) => {
+          id: queryVariables.id,
+          transformFn: (post) => {
             post.replies = post.replies ?? { edges: [] };
             post.replies.edges.push(...data.post.replies.edges);
             post.replies.pageInfo = data.post.replies.pageInfo;
