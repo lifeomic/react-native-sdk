@@ -7,7 +7,7 @@ export type ExchangeResult = {
   code: string;
 };
 
-export function useExchangeToken(clientId?: string) {
+export function useExchangeToken(appTileId: string, clientId?: string) {
   const { httpClient } = useHttpClient();
   const { authResult } = useAuth();
   const { accountHeaders } = useActiveAccount();
@@ -18,6 +18,7 @@ export function useExchangeToken(clientId?: string) {
       {
         accessToken: authResult?.accessToken,
         targetClientId: clientId,
+        appTileId,
       },
     ],
     () => {

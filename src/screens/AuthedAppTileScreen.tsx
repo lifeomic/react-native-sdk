@@ -1,16 +1,24 @@
-import React, { useCallback, useLayoutEffect, useRef } from 'react';
+import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { WebView } from 'react-native-webview';
-import { useActiveAccount, useActiveProject, useExchangeToken } from '../hooks';
+import {
+  useActiveAccount,
+  useActiveProject,
+  useExchangeToken,
+  useHandleAppTileEvents,
+} from '../hooks';
 import queryString from 'query-string';
 import { ActivityIndicator } from 'react-native-paper';
 import { HomeStackScreenProps } from '../navigators/types';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const AuthedAppTileScreen = ({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/AuthedAppTile'>) => {
-  const appTile = route.params.appTile;
+  const { appTile, searchParams = {} } = route.params;
   const webViewRef = useRef<WebView>(null);
+  const { handleAppTileMessage, handleAppTileNavigationStateChange } =
+    useHandleAppTileEvents();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -33,7 +41,8 @@ export const AuthedAppTileScreen = ({
     data,
     isLoading: loadingCode,
     isFetched: codeFetched,
-  } = useExchangeToken(appTile.clientId);
+  } = useExchangeToken(appTile.id, appTile.clientId);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
 
   // Conditions to be met before building the applet uri
   const isLoading = loadingCode || loadingAccounts || loadingProject;
@@ -60,8 +69,36 @@ export const AuthedAppTileScreen = ({
     if (activeSubjectId) {
       parsed.patientId = activeSubjectId;
     }
+
+    for (const [key, value] of Object.entries(searchParams)) {
+      parsed[key] = value;
+    }
+
     return `${oauthCallbackUrl}?${queryString.stringify(parsed)}`;
-  }, [account, activeProject, data, oauthCallbackUrl, activeSubjectId]);
+  }, [
+    account,
+    activeProject,
+    data,
+    oauthCallbackUrl,
+    activeSubjectId,
+    searchParams,
+  ]);
+
+  const handlePageLoaded = () => {
+    setIsPageLoaded(true);
+  };
+
+  const dispatchLXFocusEvent = useCallback(() => {
+    if (webViewRef.current?.injectJavaScript && isPageLoaded) {
+      const script = `
+        window.dispatchEvent(new Event('lx-focus'));
+        true;
+      `;
+      webViewRef.current.injectJavaScript(script);
+    }
+  }, [isPageLoaded]);
+
+  useFocusEffect(dispatchLXFocusEvent);
 
   // Do not proceed until all queries have resolved
   if (!readyToBuildUri) {
@@ -78,6 +115,10 @@ export const AuthedAppTileScreen = ({
       source={source}
       ref={webViewRef}
       cacheEnabled={false}
+      onMessage={handleAppTileMessage}
+      onNavigationStateChange={handleAppTileNavigationStateChange}
+      onLoad={handlePageLoaded}
+      testID="app-tile-webview"
     />
   );
 };

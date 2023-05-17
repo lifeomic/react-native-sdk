@@ -34,7 +34,7 @@ const useHttpClientMock = useHttpClient as jest.Mock;
 const useAuthMock = useAuth as jest.Mock;
 
 const renderHookInContext = async () => {
-  return renderHook(() => useExchangeToken('someClientId'), {
+  return renderHook(() => useExchangeToken('someAppTileId', 'someClientId'), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     ),
