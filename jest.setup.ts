@@ -3,7 +3,10 @@ import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock';
 import i18next from './lib/i18n';
 import { initReactI18next } from 'react-i18next';
 
-jest.mock('react-native-device-info', () => mockDeviceInfo);
+jest.mock('react-native-device-info', () => ({
+  ...mockDeviceInfo,
+  getBundleId: () => 'com.unit-test.app',
+}));
 
 jest.mock('./src/common/testID', () => ({
   tID: (id: string) => id,

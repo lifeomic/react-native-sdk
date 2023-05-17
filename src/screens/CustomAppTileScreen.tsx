@@ -26,7 +26,7 @@ export const CustomAppTileScreen = ({
     });
   }, [navigation, route.params.appTile.title]);
 
-  if (CustomAppTileComponent) {
+  if (typeof CustomAppTileComponent !== 'boolean') {
     return <CustomAppTileComponent />;
   }
 
@@ -47,6 +47,7 @@ const defaultStyles = createStyles('CustomAppTileScreen', (theme) => ({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: theme.spacing.medium,
   },
   errorLabel: {
     textAlign: 'center',
