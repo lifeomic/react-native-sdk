@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { GraphQLClientContextProvider } from './useGraphQLClient';
+import { GraphQLClientContextProvider } from '../useGraphQLClient';
 import nock from 'nock';
 import {
   useCreateReactionMutation,

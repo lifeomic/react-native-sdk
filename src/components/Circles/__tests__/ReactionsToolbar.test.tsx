@@ -3,15 +3,15 @@ import { fireEvent, render } from '@testing-library/react-native';
 import { ReactionsToolbar } from '../ReactionsToolbar';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from '../../../hooks/useGraphQLClient';
-import type { Post } from '../../../hooks/usePosts';
+import type { Post } from '../../../hooks';
 import {
   useCreateReactionMutation,
   useUndoReactionMutation,
-} from '../../../hooks/useReactionMutations';
+} from '../../../hooks';
 import { useUser } from '../../../hooks/useUser';
 
 jest.useFakeTimers();
-jest.mock('../../../hooks/useReactionMutations', () => ({
+jest.mock('../../../hooks/Circles/useReactionMutations', () => ({
   useCreateReactionMutation: jest.fn(),
   useUndoReactionMutation: jest.fn(),
 }));

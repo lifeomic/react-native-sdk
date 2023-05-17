@@ -9,14 +9,9 @@ import React, {
 import { FlatList, View, RefreshControl, TouchableOpacity } from 'react-native';
 import { t } from 'i18next';
 import { Text, Button } from 'react-native-paper';
-import {
-  usePost,
-  Post,
-  useStyles,
-  useTheme,
-  ParentType,
-  useLoadReplies,
-} from '../../hooks';
+import { Post, useStyles, useTheme, ParentType } from '../../hooks';
+import { usePost } from '../../hooks/Circles/usePost';
+import { useLoadReplies } from '../../hooks/Circles/useLoadReplies';
 import { ThreadComment } from './ThreadComment';
 import { PostUnavailable } from './PostUnavailable';
 import { EmptyComments } from './EmptyComments';

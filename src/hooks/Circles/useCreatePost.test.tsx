@@ -1,12 +1,13 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useActiveAccount } from './useActiveAccount';
-import { ParentType, Post, useCreatePost } from './usePosts';
+import { useActiveAccount } from '../useActiveAccount';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { GraphQLClientContextProvider } from './useGraphQLClient';
+import { GraphQLClientContextProvider } from '../useGraphQLClient';
 import nock from 'nock';
+import { Post, ParentType } from './types';
+import { useCreatePost } from './useCreatePost';
 
-jest.mock('./useActiveAccount', () => ({
+jest.mock('../useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));
 

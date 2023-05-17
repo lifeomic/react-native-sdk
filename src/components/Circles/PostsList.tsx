@@ -10,18 +10,17 @@ import {
 import { Divider, FAB, Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { CircleTile } from '../../hooks/useAppConfig';
-import { Post as PostType, useInfinitePosts } from '../../hooks/usePosts';
+import { Post, useInfinitePosts, ParentType } from '../../hooks';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { createStyles } from '../BrandConfigProvider/styles/createStyles';
 import { PostItem } from './PostItem';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
-import { ParentType } from '../../hooks/usePosts';
 import { tID } from '../../common';
 import { showCreateEditPostModal } from './CreateEditPostModal';
 
 interface PostsListProps {
   circleTile?: CircleTile;
-  onOpenPost: (post: PostType, openComment: boolean) => void;
+  onOpenPost: (post: Post, openComment: boolean) => void;
 }
 
 export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
@@ -29,7 +28,6 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
     useInfinitePosts({
       circleId: circleTile?.circleId,
     });
-  // useFocusEffect(() => {});
   const { styles } = useStyles(defaultStyles);
 
   const handleScroll = useCallback(
@@ -48,7 +46,7 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
   );
 
   const handlePostTapped = useCallback(
-    (post: PostType, createNewComment = false) =>
+    (post: Post, createNewComment = false) =>
       () => {
         onOpenPost(post, createNewComment);
       },

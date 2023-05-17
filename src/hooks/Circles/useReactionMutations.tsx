@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from 'react-query';
 import { gql } from 'graphql-request';
-import { useGraphQLClient } from './useGraphQLClient';
-import { useActiveAccount } from './useActiveAccount';
-import { Post } from './usePosts';
+import { useGraphQLClient } from '../useGraphQLClient';
+import { useActiveAccount } from '../useActiveAccount';
+import { Post } from './types';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
 
 interface CreateReactionMutationProps {
@@ -122,7 +122,9 @@ const optimisticUpdatePost = (
   newReaction: { type: string; postId: string },
   decrement: boolean = false,
 ) => {
-  if (!post) return post;
+  if (!post) {
+    return post;
+  }
 
   const reactionIndx = post.reactionTotals?.findIndex((reaction) => {
     return reaction.type === newReaction.type;

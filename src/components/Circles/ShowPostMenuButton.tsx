@@ -1,11 +1,7 @@
 import React from 'react';
 import { IconButton } from 'react-native-paper';
 import { useStyles, useUser } from '../../hooks';
-import {
-  ParentType,
-  Post as PostType,
-  useDeletePost,
-} from '../../hooks/usePosts';
+import { ParentType, Post, useDeletePost } from '../../hooks';
 import { t } from 'i18next';
 import { showCreateEditPostModal } from './CreateEditPostModal';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -13,7 +9,7 @@ import { isNumber } from 'lodash';
 import { createStyles } from '../BrandConfigProvider';
 
 interface PostProps {
-  post: PostType;
+  post: Post;
   parentType: ParentType;
   styles?: ShowPostMenuButtonStyle;
 }
