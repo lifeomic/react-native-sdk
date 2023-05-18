@@ -28,6 +28,7 @@ export type DeveloperConfig = {
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
   additionalNavigationTabs?: AdditionalNavigationTab[];
+  AppNavHeader?: () => JSX.Element;
 };
 
 export type AppTileScreens = {

@@ -11,6 +11,7 @@ import TrackTileSettingsScreen from '../screens/TrackTileSettingsScreen';
 import TrackTileAdvancedDetailsScreen from '../screens/TrackTileAdvancedDetailsScreen';
 import TrackTileAdvancedEditorScreen from '../screens/TrackTileAdvancedEditorScreen';
 import { useNavigation } from '@react-navigation/native';
+import { useDeveloperConfig } from '../hooks';
 import {
   HeaderButton,
   HeaderButtons,
@@ -19,17 +20,15 @@ import {
 import { AuthedAppTileScreen } from '../screens/AuthedAppTileScreen';
 import { HomeStackParamList } from './types';
 import { CircleDiscussionScreen } from '../screens/CircleDiscussionScreen';
-import { CircleThreadScreen } from '../screens/CircleThreadScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
 export function HomeStack() {
+  const { AppNavHeader: CustomAppNavHeader } = useDeveloperConfig();
+  const header = CustomAppNavHeader || AppNavHeader;
+
   return (
-    <Stack.Navigator
-      screenOptions={{
-        header: AppNavHeader,
-      }}
-    >
+    <Stack.Navigator screenOptions={{ header }}>
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Home/AppTile" component={AppTileScreen} />
       <Stack.Screen name="Home/AuthedAppTile" component={AuthedAppTileScreen} />
@@ -39,7 +38,6 @@ export function HomeStack() {
         name="Home/Circle/Discussion"
         component={CircleDiscussionScreen}
       />
-      <Stack.Screen name="Home/Circle/Thread" component={CircleThreadScreen} />
       <Stack.Screen
         name="Home/TrackTileSettings"
         component={TrackTileSettingsScreen}
