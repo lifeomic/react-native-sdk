@@ -7,17 +7,17 @@ import { Post } from '../types';
 import forEach from 'lodash/forEach';
 import { cloneDeep } from 'lodash';
 
-type UpdatePostsConfig = {
+interface OptimisticallyUpdatePosts {
   queryClient: QueryClient;
   id: string;
   transformFn: (post: Post) => Post;
-};
+}
 
 export const optimisticallyUpdatePosts = ({
   queryClient,
   id,
   transformFn,
-}: UpdatePostsConfig) => {
+}: OptimisticallyUpdatePosts) => {
   queryClient.setQueryData<InfinitePostsData>(['posts'], (currentData) => {
     const newData = cloneDeep(currentData);
     forEach(newData?.pages, (page) => {
@@ -50,16 +50,33 @@ const transformEdgesById = (
   edges: { node: Post }[],
   id: string,
   transformFn: (post: Post) => Post,
-) => {
-  if (!edges) {
-    return;
+  currentDepth: number = 0,
+  maxDepth: number = 10,
+): boolean => {
+  if (!edges || currentDepth > maxDepth) {
+    return false;
   }
-  forEach(edges, (edge) => {
+
+  for (const edge of edges) {
     if (edge.node.id === id) {
       edge.node = transformFn(edge.node);
+      return true;
     }
+
     if (edge.node.replies?.edges) {
-      transformEdgesById(edge.node.replies?.edges, id, transformFn);
+      const transformed = transformEdgesById(
+        edge.node.replies.edges,
+        id,
+        transformFn,
+        currentDepth + 1,
+        maxDepth,
+      );
+
+      if (transformed) {
+        return true;
+      }
     }
-  });
+  }
+
+  return false;
 };
