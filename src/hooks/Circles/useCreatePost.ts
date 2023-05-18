@@ -1,4 +1,4 @@
-import { omit } from 'lodash';
+import { cloneDeep, omit } from 'lodash';
 import { useQueryClient, useMutation } from 'react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
@@ -73,7 +73,7 @@ export function useCreatePost() {
         queryClient.setQueryData(
           ['posts'],
           (currentData?: InfinitePostsData) => {
-            const newData: InfinitePostsData = currentData ?? {
+            const newData: InfinitePostsData = cloneDeep(currentData) ?? {
               pages: [
                 {
                   postsV2: {
@@ -92,8 +92,8 @@ export function useCreatePost() {
       } else if (newPost.post.parentType === ParentType.POST) {
         optimisticallyUpdatePosts({
           queryClient,
-          postId: newPost.post.parentId,
-          updatePost: (post) => {
+          id: newPost.post.parentId,
+          transformFn: (post) => {
             post.replyCount++;
             post.replies = post.replies || { edges: [] };
             post.replies.edges.unshift({ node: optimisticPost });
