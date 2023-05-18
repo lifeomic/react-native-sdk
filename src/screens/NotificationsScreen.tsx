@@ -8,17 +8,18 @@ import formatRelative from 'date-fns/formatRelative';
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { tID } from '../common';
+import { Bell, BellOff } from '@lifeomic/chromicons-native';
 
 export const NotificationsScreen = () => {
   const { isLoading, data } = useNotifications();
   const { styles } = useStyles(defaultStyles);
 
   const surveyIcon = useMemo(
-    () => <List.Icon style={styles.icon} icon="chat-question" />,
+    () => <List.Icon style={styles.icon} icon={Bell} />,
     [styles.icon],
   );
   const noNotificationsIcon = useMemo(
-    () => <List.Icon style={styles.icon} icon="bell-check-outline" />,
+    () => <List.Icon style={styles.icon} icon={BellOff} />,
     [styles.icon],
   );
 

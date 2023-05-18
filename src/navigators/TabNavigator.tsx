@@ -11,6 +11,7 @@ import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
 import { useDeveloperConfig } from '../hooks';
+import { Home, Bell, Settings } from '@lifeomic/chromicons-native';
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
@@ -34,7 +35,7 @@ export function TabNavigator() {
         key="HomeTab"
         options={{
           tabBarLabel: t('tabs-home', 'Home'),
-          tabBarIcon: 'home',
+          tabBarIcon: Home,
         }}
       />
       <Tab.Screen
@@ -43,7 +44,7 @@ export function TabNavigator() {
         key="NotificationsTab"
         options={{
           tabBarLabel: t('tabs-notifications', 'Notifications'),
-          tabBarIcon: 'bell',
+          tabBarIcon: Bell,
           tabBarBadge: false, //TODO: set dynamically for new notifications
         }}
       />
@@ -53,7 +54,7 @@ export function TabNavigator() {
         component={SettingsStack}
         options={{
           tabBarLabel: t('tabs-settings', 'Settings'),
-          tabBarIcon: 'cog',
+          tabBarIcon: Settings,
         }}
       />
       {additionalNavigationTabs?.map((tab) => (
