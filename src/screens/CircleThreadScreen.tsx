@@ -6,7 +6,7 @@ import { Thread } from '../components/Circles/Thread';
 export const CircleThreadScreen = ({
   navigation,
   route,
-}: LoggedInScreenProps<'Home/Circle/Thread'>) => {
+}: LoggedInScreenProps<'Circle/Thread'>) => {
   useLayoutEffect(() => {
     if (route.params.post.author) {
       navigation.setOptions({

@@ -30,10 +30,7 @@ export function RootStack() {
             component={TabNavigator}
             options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="Home/Circle/Thread"
-            component={CircleThreadScreen}
-          />
+          <Stack.Screen name="Circle/Thread" component={CircleThreadScreen} />
         </Stack.Navigator>
       </LoggedInProviders>
     );
