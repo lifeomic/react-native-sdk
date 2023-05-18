@@ -2,10 +2,9 @@ import React from 'react';
 
 import { Appbar, Text } from 'react-native-paper';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
-import { createStyles } from './BrandConfigProvider';
+import { createStyles, useIcons } from './BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { TextStyle } from 'react-native';
-import { ChevronLeft } from '@lifeomic/chromicons-native';
 
 export function AppNavHeader({
   back,
@@ -14,6 +13,7 @@ export function AppNavHeader({
   navigation,
 }: NativeStackHeaderProps) {
   const { styles } = useStyles(defaultStyles);
+  const { ChevronLeft } = useIcons();
   const title = options.title || route.name;
 
   return (

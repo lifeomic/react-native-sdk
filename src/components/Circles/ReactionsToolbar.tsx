@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Button, IconButton } from 'react-native-paper';
 import { useStyles, useUser } from '../../hooks';
 import type { Post } from '../../hooks';
-import { createStyles } from '../BrandConfigProvider';
+import { createStyles, useIcons } from '../BrandConfigProvider';
 import EmojiPicker from 'rn-emoji-keyboard';
 import {
   useCreateReactionMutation,
@@ -18,6 +18,7 @@ interface ReactionsToolbarProps {
 export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
   const createReaction = useCreateReactionMutation();
   const undoReaction = useUndoReactionMutation();
+  const { Smile } = useIcons();
   const { data } = useUser();
   const [showPicker, setShowPicker] = useState(false);
   const { styles } = useStyles(defaultStyles);
@@ -70,7 +71,7 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
       <IconButton
         testID={tID('select-emoji-button')}
         size={20}
-        icon="emoticon-happy-outline"
+        icon={Smile}
         iconColor={'rgba(0, 0, 0, .2)'}
         style={styles.addReactionButton}
         onPress={() => setShowPicker((currentVal) => !currentVal)}

@@ -3,9 +3,9 @@ import { StylesProp, useStyleOverrides, Text } from '../styles';
 import React, { Dispatch, FC, SetStateAction, useCallback } from 'react';
 import { t } from '../../../../lib/i18n';
 import { Tracker, UnitType } from '../services/TrackTileService';
-import { ChevronLeft, ChevronRight } from '@lifeomic/chromicons-native';
 import { addDays, format, isToday } from 'date-fns';
 import { unitDisplay } from './unit-display';
+import { useIcons } from '../../BrandConfigProvider';
 
 declare module './TrackerDetails' {
   interface Styles extends StylesProp<typeof defaultStyles> {}
@@ -30,6 +30,7 @@ export type DatePickerProps = {
 
 export const DatePicker: FC<DatePickerProps> = (props) => {
   const { tracker, dateRange, unit, target, color, onChange } = props;
+  const { ChevronLeft, ChevronRight } = useIcons();
   const styles = useStyleOverrides(defaultStyles);
 
   const shiftRangeByDays = useCallback(

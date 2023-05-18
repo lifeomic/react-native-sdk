@@ -5,17 +5,17 @@ import { SettingsStack } from './SettingsStack';
 import { HomeStack } from './HomeStack';
 import { NotificationsStack } from './NotificationsStack';
 import { useStyles } from '../hooks/useStyles';
-import { createStyles } from '../components/BrandConfigProvider';
+import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
 import { useDeveloperConfig } from '../hooks';
-import { Home, Bell, Settings } from '@lifeomic/chromicons-native';
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
 export function TabNavigator() {
+  const { Home, Bell, Settings } = useIcons();
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
 

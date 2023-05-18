@@ -2,8 +2,7 @@ import React from 'react';
 import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Text, shadow } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
-import { createStyles } from '../BrandConfigProvider';
-import TileSelectIcon from './icons/tile-select-chevron.svg';
+import { createStyles, useIcons } from '../BrandConfigProvider';
 import { SvgProps } from 'react-native-svg';
 import { tID } from '../../common/testID';
 
@@ -24,7 +23,9 @@ export const Tile = ({
   children,
   onPress,
 }: TileProps) => {
+  const { ChevronRight } = useIcons();
   const { styles } = useStyles(defaultStyles);
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -45,9 +46,9 @@ export const Tile = ({
                 style={styles.arrowIconView}
                 testID={tID('tile-chevron-icon-container')}
               >
-                <TileSelectIcon
+                <ChevronRight
                   height={styles.arrowImage?.height}
-                  color={styles.arrowImage?.overlayColor}
+                  stroke={styles.arrowImage?.overlayColor}
                 />
               </View>
             ) : (
@@ -97,11 +98,12 @@ const defaultStyles = createStyles('Tile', (theme) => ({
   arrowIconView: {
     height: '100%',
     aspectRatio: 1,
+    alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.primarySource,
   },
   arrowImage: {
-    height: '60%',
+    height: '100%',
     overlayColor: theme.colors.onPrimary,
   },
 }));

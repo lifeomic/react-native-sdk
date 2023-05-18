@@ -1,15 +1,16 @@
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
-import Chevron from '../icons/Chevron';
 import { StylesProp, useStyleOverrides } from '../styles';
+import { useIcons } from '../../BrandConfigProvider';
 
 export const IosPickerIcon = () => {
+  const { ChevronUp, ChevronDown } = useIcons();
   const styles = useStyleOverrides(defaultStyles);
 
   return (
     <View style={styles.iosPickerIcon}>
-      <Chevron direction="up" strokeWidth={2} />
-      <Chevron direction="down" strokeWidth={2} />
+      <ChevronUp />
+      <ChevronDown />
     </View>
   );
 };
