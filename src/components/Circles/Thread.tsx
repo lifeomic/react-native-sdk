@@ -4,9 +4,15 @@ import React, {
   useRef,
   useMemo,
   useEffect,
-  useLayoutEffect,
 } from 'react';
-import { FlatList, View, RefreshControl, TextInput } from 'react-native';
+import {
+  FlatList,
+  View,
+  RefreshControl,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { t } from 'i18next';
 import { Button } from 'react-native-paper';
 import { Post, useStyles, useTheme, ParentType } from '../../hooks';
@@ -17,9 +23,9 @@ import { PostUnavailable } from './PostUnavailable';
 import { EmptyComments } from './EmptyComments';
 import { createStyles } from '../BrandConfigProvider';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
-import { showCreateEditPostModal } from './CreateEditPostModal';
 import { PostItem as PostItem } from './PostItem';
 import { CreatePostToolbar } from './CreatePostToolbar';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 export interface ThreadProps {
   post: Post;
@@ -30,12 +36,12 @@ export interface ThreadProps {
 
 export const Thread = (props: ThreadProps) => {
   const { colors } = useTheme();
-  const { post: postIn, style, createComment = false, onPostDeleted } = props;
-  const [isCreateCommentOpen, setIsCreateCommentOpen] = useState(createComment);
+  const { post: postIn, style, onPostDeleted } = props;
   const [shouldScrollToEnd, setShouldScrollToEnd] = useState(false);
   const [commentPost, setCommentPost] = useState(postIn.id);
   const textInputRef = useRef<TextInput>();
   const listRef = useRef<FlatList>(null);
+  const height = useHeaderHeight();
   const { styles } = useStyles(defaultStyles, style);
   const {
     loadReplies,
@@ -47,10 +53,12 @@ export const Thread = (props: ThreadProps) => {
 
   const post = data?.post;
 
-  const handleCreatePostClosed = useCallback((createdNewPost?: boolean) => {
-    setIsCreateCommentOpen(false);
-    setShouldScrollToEnd(!!createdNewPost);
-  }, []);
+  const handleNewReply = useCallback(
+    ({ shouldScroll }: { shouldScroll: boolean }) => {
+      setShouldScrollToEnd(shouldScroll);
+    },
+    [],
+  );
 
   const entries = entriesForPost(
     post as Post,
@@ -82,16 +90,6 @@ export const Thread = (props: ThreadProps) => {
     [loadReplies],
   );
 
-  useLayoutEffect(() => {
-    if (isCreateCommentOpen && post?.id && !isLoading) {
-      showCreateEditPostModal({
-        parentType: ParentType.POST,
-        parentId: post.id,
-        onModalClose: handleCreatePostClosed,
-      });
-    }
-  }, [isCreateCommentOpen, handleCreatePostClosed, post?.id, isLoading]);
-
   useEffect(() => {
     if (!data?.post) {
       onPostDeleted();
@@ -99,7 +97,11 @@ export const Thread = (props: ThreadProps) => {
   });
 
   return (
-    <>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+      keyboardVerticalOffset={height}
+    >
       <FlatList
         testID="post-details-list"
         data={entries}
@@ -115,9 +117,17 @@ export const Thread = (props: ThreadProps) => {
         }
         onContentSizeChange={handleContentSizeChanged}
         initialNumToRender={35}
-        style={styles.container}
+        style={styles.threadContainer}
         ListHeaderComponent={
-          !error && post ? <PostItem post={post as Post} /> : null
+          !error && post ? (
+            <PostItem
+              post={post as Post}
+              onComment={() => {
+                setCommentPost(post.id);
+                textInputRef.current?.focus();
+              }}
+            />
+          ) : null
         }
         ListFooterComponent={
           !isFetched && (isLoading || isRefetching) ? (
@@ -140,10 +150,11 @@ export const Thread = (props: ThreadProps) => {
       <CreatePostToolbar
         parentId={commentPost}
         parentType={ParentType.POST}
-        onSubmit={handleCreatePostClosed}
+        rootPostId={postIn.id}
+        onSubmit={handleNewReply}
         textInputRef={textInputRef}
       />
-    </>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -273,58 +284,12 @@ const entriesForPost = (
 
 const defaultStyles = createStyles('Circles.Thread', (theme) => ({
   container: { flex: 1 },
+  threadContainer: { flex: 1 },
   emptyPostCommentsContainer: {
     marginTop: theme.spacing.extraLarge,
     flex: 1,
     padding: theme.spacing.large,
     alignItems: 'center',
-  },
-  addCommentBox: {
-    backgroundColor: theme.colors.inverseOnSurface,
-    padding: theme.spacing.medium,
-    flex: 0,
-  },
-  addCommentText: {
-    lineHeight: 16,
-    fontSize: 14,
-    width: '90%',
-    alignSelf: 'center',
-  },
-  createPostModalContainer: {
-    height: 0,
-  },
-  toolbarContainer: {
-    backgroundColor: theme.colors.card,
-    width: '100%',
-    height: 60,
-    flex: 1,
-    paddingBottom: 8,
-  },
-  rightToolbarContainer: {
-    paddingTop: theme.spacing.medium,
-    columnGap: theme.spacing.medium,
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'flex-end',
-  },
-  characterCountLabel: {
-    color: theme.colors.outline,
-    textAlign: 'center',
-  },
-  overLimitLabel: {
-    color: theme.colors.error,
-  },
-  postButton: {
-    marginRight: theme.spacing.medium,
-    height: 25,
-    width: 55,
-  },
-  postButtonLabel: {
-    color: theme.colors.text,
-    marginVertical: 0,
-    paddingTop: 4,
-    fontSize: 14,
-    lineHeight: 16,
   },
 }));
 

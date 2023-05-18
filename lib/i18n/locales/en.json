@@ -66,5 +66,6 @@
   "thread-load-comments_other": "Read {{count}} earlier comments...",
   "post-replies_zero": "REPLY",
   "post-replies_one": "1 REPLY",
-  "post-replies_other": "{{count}} REPLIES"
+  "post-replies_other": "{{count}} REPLIES",
+  "post-character-limit": "{{count}}/1200"
 }
