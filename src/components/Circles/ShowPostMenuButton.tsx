@@ -6,7 +6,7 @@ import { t } from 'i18next';
 import { showCreateEditPostModal } from './CreateEditPostModal';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { isNumber } from 'lodash';
-import { createStyles } from '../BrandConfigProvider';
+import { createStyles, useIcons } from '../BrandConfigProvider';
 
 interface PostProps {
   post: Post;
@@ -20,6 +20,7 @@ export const ShowPostMenuButton = ({
   styles: instanceStyles,
 }: PostProps) => {
   const { data } = useUser();
+  const { MoreHorizontal } = useIcons();
   const deletePost = useDeletePost();
   const { showActionSheetWithOptions } = useActionSheet();
   const { styles } = useStyles(defaultStyles, instanceStyles);
@@ -73,7 +74,7 @@ export const ShowPostMenuButton = ({
 
   return (
     <IconButton
-      icon="dots-horizontal"
+      icon={MoreHorizontal}
       onPress={onPress}
       style={styles.iconButton}
     />
@@ -81,7 +82,9 @@ export const ShowPostMenuButton = ({
 };
 
 const defaultStyles = createStyles('ShowPostMenuButton', () => ({
-  iconButton: {},
+  iconButton: {
+    width: 54,
+  },
 }));
 
 declare module '@styles' {

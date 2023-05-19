@@ -3,19 +3,16 @@ import {
   View,
   TouchableHighlight,
   TouchableHighlightProps,
-  StyleSheet,
   I18nManager,
 } from 'react-native';
 import { t } from '../../../../lib/i18n';
 import { Tracker } from '../services/TrackTileService';
 import Indicator from '../icons/indicator';
-import Chevron from '../icons/Chevron';
-import { StylesProp, useStyleOverrides } from '../styles';
-import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
-import Menu from '../icons/Menu';
 import { Text } from '../styles/Text';
 import { tID } from '../common/testID';
 import { SvgProps } from 'react-native-svg';
+import { useIcons, createStyles } from '../../BrandConfigProvider';
+import { useStyles } from '../../../hooks';
 
 type Props = TouchableHighlightProps & {
   tracker: Tracker;
@@ -28,53 +25,37 @@ type Props = TouchableHighlightProps & {
 export const ManageTrackerRow: FC<Props> = (props) => {
   const { tracker, endAdornment, icons, ...remainingProps } = props;
   const { isBeingDragged, isDraggable, ...highlightProps } = remainingProps;
-  const styles = useStyleOverrides(defaultStyles);
-  const flatStyles = useFlattenedStyles(styles, [
-    'manageTrackerRowChevronColor',
-  ]);
+  const { Menu, ChevronRight, ChevronLeft } = useIcons();
+  const { styles } = useStyles(defaultStyles);
   const inactive = !tracker.metricId;
   const id = tracker.metricId || tracker.id;
 
   return (
     <TouchableHighlight {...highlightProps}>
       <>
-        {isBeingDragged && <View style={styles.manageTrackerRowDivider} />}
+        {isBeingDragged && <View style={styles.divider} />}
         <View
-          style={[
-            styles.manageTrackerRowContainer,
-            isBeingDragged && styles.manageTrackerRowContainerActive,
-          ]}
+          style={[styles.container, isBeingDragged && styles.containerActive]}
         >
-          <View
-            style={[
-              styles.manageTrackerRowIcon,
-              inactive && styles.manageTrackerRowIconInactive,
-            ]}
-          >
+          <View style={[styles.icon, inactive && styles.iconInactive]}>
             <Indicator
               CustomIcon={icons?.[id]}
               name={tracker.icon}
               color={tracker.color}
             />
           </View>
-          <View style={styles.manageTrackerRowContent}>
+          <View style={styles.content}>
             <Text
               variant="semibold"
               testID={tID(`tracker-name-${id}`)}
-              style={[
-                styles.manageTrackerRowTrackerName,
-                inactive && styles.manageTrackerRowTrackerNameInactive,
-              ]}
+              style={[styles.nameText, inactive && styles.nameInactiveText]}
             >
               {tracker.name}
             </Text>
             <Text
               variant="semibold"
               testID={tID(`install-status-${id}`)}
-              style={[
-                styles.manageTrackerRowTrackerStatus,
-                inactive && styles.manageTrackerRowTrackerStatusInactive,
-              ]}
+              style={[styles.statusText, inactive && styles.statusInactiveText]}
             >
               {inactive
                 ? t('track-tile.inactive', 'Inactive')
@@ -82,7 +63,7 @@ export const ManageTrackerRow: FC<Props> = (props) => {
             </Text>
           </View>
           <View
-            style={styles.manageTrackerRowEndAdornment}
+            style={styles.endAdornment}
             testID={tID(
               isDraggable ? `reorder-tracker-${id}` : `go-to-tracker-${id}`,
             )}
@@ -99,71 +80,72 @@ export const ManageTrackerRow: FC<Props> = (props) => {
           >
             {endAdornment ||
               (isDraggable ? (
-                <Menu />
+                <Menu stroke={styles.menuImage?.overlayColor} />
+              ) : I18nManager.isRTL ? (
+                <ChevronLeft stroke={styles.chevronImage?.overlayColor} />
               ) : (
-                <Chevron
-                  direction={I18nManager.isRTL ? 'left' : 'right'}
-                  fill={flatStyles.manageTrackerRowChevronColor.color}
-                />
+                <ChevronRight stroke={styles.chevronImage?.overlayColor} />
               ))}
           </View>
         </View>
-        <View style={styles.manageTrackerRowDivider} />
+        <View style={styles.divider} />
       </>
     </TouchableHighlight>
   );
 };
 
-declare module './ManageTrackers' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  manageTrackerRowContainer: {
+const defaultStyles = createStyles('ManageTrackers', () => ({
+  container: {
     flexDirection: 'row',
     paddingHorizontal: 35,
     height: 63,
     alignItems: 'center',
   },
-  manageTrackerRowContainerActive: {
+  containerActive: {
     backgroundColor: 'white',
     height: 62,
   },
-  manageTrackerRowIcon: {
+  icon: {
     opacity: 1,
   },
-  manageTrackerRowIconInactive: {
+  iconInactive: {
     opacity: 0.5,
   },
-  manageTrackerRowContent: { flex: 1, paddingHorizontal: 18 },
-  manageTrackerRowTrackerName: {
+  content: { flex: 1, paddingHorizontal: 18 },
+  nameText: {
     color: '#242536',
     fontSize: 16,
     letterSpacing: 0.23,
   },
-  manageTrackerRowTrackerNameInactive: {
+  nameInactiveText: {
     color: '#7B8996',
   },
-  manageTrackerRowTrackerStatus: {
+  statusText: {
     fontSize: 12,
     letterSpacing: 0.05,
     color: '#6DBA2D',
   },
-  manageTrackerRowTrackerStatusInactive: {
+  statusInactiveText: {
     color: '#7B8996',
   },
-  manageTrackerRowEndAdornment: {
-    height: 12,
-    width: 30,
+  endAdornment: {
     marginRight: 7,
     alignItems: 'flex-end',
   },
-  manageTrackerRowChevronColor: {
-    color: '#B2B9C0',
+  menuImage: {
+    overlayColor: '#B2B9C0',
   },
-  manageTrackerRowDivider: {
+  chevronImage: {
+    overlayColor: '#B2B9C0',
+  },
+  divider: {
     height: 1,
     backgroundColor: '#242536',
     opacity: 0.15,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

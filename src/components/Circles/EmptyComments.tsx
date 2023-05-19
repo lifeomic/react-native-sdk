@@ -1,13 +1,13 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { t } from 'i18next';
-import { MessageSquare } from '@lifeomic/chromicons-native';
 import { useStyles } from '../../hooks';
-import { createStyles } from '../BrandConfigProvider';
+import { createStyles, useIcons } from '../BrandConfigProvider';
 
 type Props = { style?: CirclesEmptyCommentStyles };
 
 export const EmptyComments = ({ style }: Props) => {
+  const { MessageSquare } = useIcons();
   const { styles } = useStyles(defaultStyles, style);
 
   return (

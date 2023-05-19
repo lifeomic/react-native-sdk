@@ -17,6 +17,7 @@ import { PostItem } from './PostItem';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
 import { tID } from '../../common';
 import { showCreateEditPostModal } from './CreateEditPostModal';
+import { useIcons } from '../BrandConfigProvider';
 
 interface PostsListProps {
   circleTile?: CircleTile;
@@ -24,6 +25,7 @@ interface PostsListProps {
 }
 
 export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
+  const { Edit2 } = useIcons();
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfinitePosts({
       circleId: circleTile?.circleId,
@@ -98,7 +100,7 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
       </ScrollView>
       <FAB
         testID={tID('new-post-button')}
-        icon="pencil"
+        icon={Edit2}
         style={styles.fab}
         onPress={() => {
           showCreateEditPostModal({
