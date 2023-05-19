@@ -13,9 +13,9 @@ import {
   onNotificationReceived,
   registerDeviceToken,
   requestNotificationsPermissions,
-} from 'src/common/Notifications';
-import { useActiveAccount } from 'src/hooks/useActiveAccount';
-import { useHttpClient } from 'src/hooks/useHttpClient';
+} from '../../../../src/common/Notifications';
+import { useActiveAccount } from '../../../../src/hooks/useActiveAccount';
+import { useHttpClient } from '../../../../src/hooks/useHttpClient';
 
 type EventType = 'notificationReceived' | 'notificationOpened';
 
@@ -140,7 +140,7 @@ export const NotificationsScreen = () => {
         });
       }
     });
-  }, [account]);
+  }, [account, httpClient]);
 
   // Set the notification channel for Android
   useEffect(() => {
