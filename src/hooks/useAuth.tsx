@@ -16,7 +16,12 @@ export interface AuthStatus {
   storeAuthResult: (authResult: AuthResult) => Promise<void>;
   clearAuthResult: () => Promise<void>;
   initialize: (refreshHandler: RefreshHandler) => Promise<void>;
+
+  // We keep these methods explicitly named because we want it to feel wrong
+  // for hook consumers to refresh the auth token for any other reason than
+  // these named cases.  This also allows for each case to evolve on its own.
   refreshForAuthFailure: (error: Error) => Promise<void>;
+  refreshForInviteAccept: () => Promise<void>;
 }
 
 export type AuthResult = Omit<RefreshResult, 'additionalParameters'>;
@@ -29,6 +34,7 @@ const AuthContext = createContext<AuthStatus>({
   clearAuthResult: () => Promise.reject(),
   initialize: (_) => Promise.reject(),
   refreshForAuthFailure: (_) => Promise.reject(),
+  refreshForInviteAccept: () => Promise.reject(),
 });
 
 const secureStorage = new SecureStore<AuthResult>('auth-hook');
@@ -152,6 +158,11 @@ export const AuthContextProvider = ({
   }, [currentAppState, refreshIfNeeded]);
 
   const refreshForAuthFailure = useCallback(async () => {
+    // TODO: Add throttling, etc.
+    return refreshIfNeeded(true);
+  }, [refreshIfNeeded]);
+
+  const refreshForInviteAccept = useCallback(async () => {
     return refreshIfNeeded(true);
   }, [refreshIfNeeded]);
 
@@ -163,6 +174,7 @@ export const AuthContextProvider = ({
     clearAuthResult,
     initialize,
     refreshForAuthFailure,
+    refreshForInviteAccept,
   };
 
   return (

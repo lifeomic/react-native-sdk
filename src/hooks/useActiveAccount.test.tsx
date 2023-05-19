@@ -10,6 +10,7 @@ import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/asy
 import { QueryClient, QueryClientProvider, UseQueryResult } from 'react-query';
 import { mockDeep } from 'jest-mock-extended';
 import * as useAsyncStorage from './useAsyncStorage';
+import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 
 jest.mock('./useAccounts', () => ({
   useAccounts: jest.fn(),
@@ -204,5 +205,40 @@ test('setAccountAccountId writes selected account to async storage', async () =>
   expect(AsyncStorageMock.setItem).toBeCalledWith(
     'selectedAccountId',
     accountId2,
+  );
+});
+
+test('handles accepted invites by refetching and setting account', async () => {
+  useAccountsMock.mockReturnValue({
+    data: [],
+    refetch: refetchMock,
+  });
+  const { rerender } = await renderHookInContext();
+  const invitedAccountId = 'invite-account-id';
+  act(() => {
+    useAccountsMock.mockReturnValue({
+      data: [
+        {
+          id: invitedAccountId,
+          products: ['LR'],
+        },
+      ],
+      refetch: refetchMock,
+    });
+    inviteNotifier.emit('inviteAccepted', {
+      id: 'invite-id',
+      account: invitedAccountId,
+      accountName: 'Unit test acct',
+      email: 'invitee@email.com',
+      status: 'ACCEPTED',
+      expirationTimestamp: '2025',
+    });
+    rerender({});
+  });
+
+  expect(refetchMock).toHaveBeenCalled();
+  expect(AsyncStorageMock.setItem).toBeCalledWith(
+    'selectedAccountId',
+    invitedAccountId,
   );
 });
