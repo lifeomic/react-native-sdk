@@ -72,6 +72,10 @@ jest.mock('react-native-notifications', () => ({
   NotificationBackgroundFetchResult: { NEW_DATA: 'NEW_DATA' },
 }));
 
+jest.mock('@react-navigation/elements', () => ({
+  useHeaderHeight: jest.fn(),
+}));
+
 beforeAll(async () => {
   // Setup minimal i18next instance
   jest.useRealTimers(); // Required to deal with hook timeout bug
