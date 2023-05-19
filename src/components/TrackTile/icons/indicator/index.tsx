@@ -1,32 +1,7 @@
 import React from 'react';
 import { ColorValue, View } from 'react-native';
 import { SvgProps } from 'react-native-svg';
-import {
-  Alcohol,
-  Apple,
-  BookOpen,
-  Broccoli,
-  Burger,
-  Check,
-  Chroma,
-  ClockForward,
-  Droplet,
-  Floss,
-  Heart,
-  Helix,
-  Moon,
-  Music,
-  Plant,
-  PlayCircle,
-  PlusCircle,
-  Running,
-  Sitting,
-  Smile,
-  Soda,
-  Star,
-  Steps,
-  Target,
-} from '@lifeomic/chromicons-native';
+import { useIcons } from '../../../BrandConfigProvider';
 
 type IndicatorProps = {
   name: string;
@@ -43,6 +18,8 @@ const Indicator = ({
   CustomIcon,
   ...rest
 }: IndicatorProps) => {
+  const Icons = useIcons();
+
   const svgProps: SvgProps = {
     width: '100%',
     height: '100%',
@@ -58,31 +35,31 @@ const Indicator = ({
     >
       {(!!CustomIcon && <CustomIcon {...svgProps} />) ||
         ({
-          apple: <Apple {...svgProps} />,
-          broccoli: <Broccoli {...svgProps} />,
-          'book-open': <BookOpen {...svgProps} />,
-          check: <Check {...svgProps} />,
-          chroma: <Chroma {...svgProps} />,
-          'clock-forward': <ClockForward {...svgProps} />,
-          cocktail: <Alcohol {...svgProps} />,
-          droplet: <Droplet {...svgProps} />,
-          'fast-food': <Burger {...svgProps} />,
-          flossing: <Floss {...svgProps} />,
-          heart: <Heart {...svgProps} />,
-          moon: <Moon {...svgProps} />,
-          music: <Music {...svgProps} />,
-          plant: <Plant {...svgProps} />,
-          'play-circle': <PlayCircle {...svgProps} />,
-          'plus-circle': <PlusCircle {...svgProps} />,
-          running: <Running {...svgProps} />,
-          sitting: <Sitting {...svgProps} />,
-          smile: <Smile {...svgProps} />,
-          soda: <Soda {...svgProps} />,
-          star: <Star {...svgProps} />,
-          target: <Target {...svgProps} />,
-          walking: <Steps {...svgProps} />,
-          water: <Droplet {...svgProps} />,
-        }[name] ?? <Helix {...svgProps} />)}
+          apple: <Icons.Apple {...svgProps} />,
+          broccoli: <Icons.Broccoli {...svgProps} />,
+          'book-open': <Icons.BookOpen {...svgProps} />,
+          check: <Icons.Check {...svgProps} />,
+          chroma: <Icons.Chroma {...svgProps} />,
+          'clock-forward': <Icons.ClockForward {...svgProps} />,
+          cocktail: <Icons.Alcohol {...svgProps} />,
+          droplet: <Icons.Droplet {...svgProps} />,
+          'fast-food': <Icons.Burger {...svgProps} />,
+          flossing: <Icons.Floss {...svgProps} />,
+          heart: <Icons.Heart {...svgProps} />,
+          moon: <Icons.Moon {...svgProps} />,
+          music: <Icons.Music {...svgProps} />,
+          plant: <Icons.Plant {...svgProps} />,
+          'play-circle': <Icons.PlayCircle {...svgProps} />,
+          'plus-circle': <Icons.PlusCircle {...svgProps} />,
+          running: <Icons.Running {...svgProps} />,
+          sitting: <Icons.Sitting {...svgProps} />,
+          smile: <Icons.Smile {...svgProps} />,
+          soda: <Icons.Soda {...svgProps} />,
+          star: <Icons.Star {...svgProps} />,
+          target: <Icons.Target {...svgProps} />,
+          walking: <Icons.Steps {...svgProps} />,
+          water: <Icons.Droplet {...svgProps} />,
+        }[name] ?? <Icons.Helix {...svgProps} />)}
     </View>
   );
 };

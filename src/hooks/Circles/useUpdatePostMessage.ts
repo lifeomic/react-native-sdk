@@ -35,8 +35,8 @@ export function useUpdatePostMessage() {
 
       optimisticallyUpdatePosts({
         queryClient,
-        postId: updatedPost.id,
-        updatePost: (post) => {
+        id: updatedPost.id,
+        transformFn: (post) => {
           post.message = updatedPost.newMessage;
           return post;
         },

@@ -6,12 +6,10 @@ import { Tile, TileStyles } from './Tile';
 import { TrackTile } from '../TrackTile';
 import { useStyles, useDeveloperConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
-import { createStyles } from '../BrandConfigProvider';
+import { createStyles, useIcons } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
 import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
 import { HomeStackScreenProps } from '../../navigators/types';
-import DefaultCircleIcon from './icons/heart-circle.svg';
-import TodayIcon from './icons/today-tile.svg';
 
 interface Props extends HomeStackScreenProps<'Home'> {
   styles?: TilesListStyles;
@@ -105,7 +103,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             key={appTile.id}
             title={appTile.title}
             onPress={onAppTilePress(appTile)}
-            Icon={appTileIcon(appTile.icon, styles.iconImage)}
+            Icon={appTileIcon(appTile.id, appTile.icon, styles.iconImage)}
           />
         ))}
         {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
@@ -114,7 +112,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             key={circleTile.circleId}
             title={circleTile.buttonText ?? circleTile.circleName}
             onPress={onCircleTilePress(circleTile)}
-            Icon={DefaultCircleIcon}
+            Icon={circleIcon(circleTile.circleId)}
           />
         ))}
       </View>
@@ -122,9 +120,13 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   );
 }
 
-const appTileIcon = (uri?: string, styles?: ImageStyle) =>
+const appTileIcon = (id: string, uri?: string, styles?: ImageStyle) =>
   function AppTileIcon() {
-    if (uri) {
+    const { [id]: CustomCircleIcon } = useIcons();
+
+    if (CustomCircleIcon) {
+      return <CustomCircleIcon />;
+    } else if (uri) {
       if (uri.endsWith('svg')) {
         return <SvgUri uri={uri} />;
       } else {
@@ -133,6 +135,29 @@ const appTileIcon = (uri?: string, styles?: ImageStyle) =>
     }
     return null;
   };
+
+const circleIcon = (circleId: string) =>
+  function CircleIcon() {
+    const { HeartCircle, [circleId]: CustomCircleIcon } = useIcons();
+    const { styles } = useStyles(defaultStyles);
+
+    if (CustomCircleIcon) {
+      return <CustomCircleIcon />;
+    }
+
+    return <HeartCircle stroke={styles.circleIconImage?.overlayColor} />;
+  };
+
+const TodayIcon = () => {
+  const { HeartCheck, today: CustomTodayIcon } = useIcons();
+  const { styles } = useStyles(defaultStyles);
+
+  if (CustomTodayIcon) {
+    return <CustomTodayIcon />;
+  }
+
+  return <HeartCheck stroke={styles.todayIconImage?.overlayColor} />;
+};
 
 const defaultStyles = createStyles('TilesList', (theme) => ({
   view: {},
@@ -144,6 +169,12 @@ const defaultStyles = createStyles('TilesList', (theme) => ({
     width: 30,
     height: 30,
     marginRight: theme.spacing.small,
+  },
+  circleIconImage: {
+    overlayColor: theme.colors.primarySource,
+  },
+  todayIconImage: {
+    overlayColor: theme.colors.primarySource,
   },
 }));
 

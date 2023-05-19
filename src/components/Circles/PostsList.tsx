@@ -17,6 +17,8 @@ import { PostItem } from './PostItem';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
 import { tID } from '../../common';
 import { showCreateEditPostModal } from './CreateEditPostModal';
+import { ThreadComment } from './ThreadComment';
+import { useIcons } from '../BrandConfigProvider';
 
 interface PostsListProps {
   circleTile?: CircleTile;
@@ -24,6 +26,7 @@ interface PostsListProps {
 }
 
 export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
+  const { Edit2 } = useIcons();
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfinitePosts({
       circleId: circleTile?.circleId,
@@ -81,6 +84,15 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
                     post={edge.node}
                     onComment={handlePostTapped(edge.node, true)}
                   />
+                  <View style={styles.repliesContainer}>
+                    {edge.node.replies?.edges.map((replyEdge) => (
+                      <ThreadComment
+                        key={replyEdge.node.id}
+                        post={replyEdge.node}
+                        onReply={handlePostTapped(edge.node, false)}
+                      />
+                    ))}
+                  </View>
                   <Divider />
                 </TouchableOpacity>
               ))
@@ -98,7 +110,7 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
       </ScrollView>
       <FAB
         testID={tID('new-post-button')}
-        icon="pencil"
+        icon={Edit2}
         style={styles.fab}
         onPress={() => {
           showCreateEditPostModal({
@@ -126,6 +138,9 @@ const defaultStyles = createStyles('PostsList', (theme) => {
       right: 0,
       bottom: 0,
       borderRadius: 32,
+    },
+    repliesContainer: {
+      marginLeft: theme.spacing.medium,
     },
   };
 });

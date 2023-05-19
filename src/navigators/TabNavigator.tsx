@@ -5,7 +5,7 @@ import { SettingsStack } from './SettingsStack';
 import { HomeStack } from './HomeStack';
 import { NotificationsStack } from './NotificationsStack';
 import { useStyles } from '../hooks/useStyles';
-import { createStyles } from '../components/BrandConfigProvider';
+import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
@@ -15,6 +15,7 @@ import { useDeveloperConfig } from '../hooks';
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
 export function TabNavigator() {
+  const { Home, Bell, Settings } = useIcons();
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
 
@@ -34,7 +35,7 @@ export function TabNavigator() {
         key="HomeTab"
         options={{
           tabBarLabel: t('tabs-home', 'Home'),
-          tabBarIcon: 'home',
+          tabBarIcon: Home,
         }}
       />
       <Tab.Screen
@@ -43,7 +44,7 @@ export function TabNavigator() {
         key="NotificationsTab"
         options={{
           tabBarLabel: t('tabs-notifications', 'Notifications'),
-          tabBarIcon: 'bell',
+          tabBarIcon: Bell,
           tabBarBadge: false, //TODO: set dynamically for new notifications
         }}
       />
@@ -53,7 +54,7 @@ export function TabNavigator() {
         component={SettingsStack}
         options={{
           tabBarLabel: t('tabs-settings', 'Settings'),
-          tabBarIcon: 'cog',
+          tabBarIcon: Settings,
         }}
       />
       {additionalNavigationTabs?.map((tab) => (

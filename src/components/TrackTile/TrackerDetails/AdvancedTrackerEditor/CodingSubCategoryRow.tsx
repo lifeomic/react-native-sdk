@@ -11,8 +11,8 @@ import {
 import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
 import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
 import { Code } from '../../services/TrackTileService';
-import { ChevronRight, ChevronLeft } from '@lifeomic/chromicons-native';
 import { t } from '../../../../../lib/i18n';
+import { useIcons } from '../../../BrandConfigProvider';
 
 export type CodingSubCategoryRowProps = TouchableOpacityProps & {
   code: Code;
@@ -22,6 +22,7 @@ export type CodingSubCategoryRowProps = TouchableOpacityProps & {
 
 export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
   const { code, color, selected, ...touchableProps } = props;
+  const { ChevronLeft, ChevronRight } = useIcons();
   const styles = useStyleOverrides(defaultStyles);
   const fontWeights = useFontOverrides();
   const Chevron = I18nManager.isRTL ? ChevronLeft : ChevronRight;

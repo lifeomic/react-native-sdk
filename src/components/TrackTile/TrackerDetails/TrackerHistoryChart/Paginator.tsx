@@ -6,7 +6,7 @@ import { StylesProp, useStyleOverrides, Text } from '../../styles';
 import { t } from '../../../../../lib/i18n';
 import { tID } from '../../common/testID';
 import { dateFormatters } from '../../formatters';
-import { ChevronLeft, ChevronRight } from '@lifeomic/chromicons-native';
+import { useIcons } from '../../../BrandConfigProvider';
 
 type PaginatorProps = {
   color?: string;
@@ -28,6 +28,7 @@ const { shortMonthNumericDayWithYear } = dateFormatters;
 
 const Paginator: FC<PaginatorProps> = (props) => {
   const { range, onChangeRange, color } = props;
+  const { ChevronLeft, ChevronRight } = useIcons();
   const styles = useStyleOverrides(defaultStyles);
   const flatStyles = useFlattenedStyles(styles, [
     'trackerHistoryChartPaginatorActiveButtonColor',

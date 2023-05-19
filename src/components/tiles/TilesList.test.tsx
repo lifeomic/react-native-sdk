@@ -4,6 +4,7 @@ import { render } from '@testing-library/react-native';
 import { TilesList } from './TilesList';
 import { useNavigation } from '@react-navigation/native';
 import { useAppConfig } from '../../hooks/useAppConfig';
+import { useIcons } from '../BrandConfigProvider';
 
 jest.unmock('i18next');
 
@@ -15,11 +16,19 @@ jest.mock('../../hooks/useAppConfig', () => ({
   useAppConfig: jest.fn(),
 }));
 
+jest.mock('../BrandConfigProvider/icons/IconProvider', () => ({
+  useIcons: jest.fn(() => ({
+    HeartCheck: () => <></>,
+    HeartCircle: () => <></>,
+    ChevronRight: () => <></>,
+  })),
+}));
+
 beforeEach(() => {
   (useAppConfig as jest.Mock).mockReturnValue({
     data: {
       homeTab: {
-        tiles: ['trackTile', 'todayTile'],
+        tiles: ['trackTile', 'todayTile', 'circleTiles'],
         trackTileSettings: {
           title: 'TrackTile Title',
         },
@@ -40,6 +49,13 @@ beforeEach(() => {
           title: 'Today',
           source: { url: 'https://today-tile.com' },
         },
+        circleTiles: [
+          {
+            circleId: 'circle-id-1',
+            isMember: true,
+            circleName: 'My Circle',
+          },
+        ],
       },
     },
   });
@@ -92,4 +108,49 @@ test('does not render the today tile if not enabled', () => {
 
   expect(tileList.queryByText('Today')).toBe(null);
   expect(tileList.queryByTestId('tile-button-today-tile')).toBe(null);
+});
+
+test('renders custom today icon', () => {
+  (useIcons as jest.Mock).mockReturnValue({
+    HeartCheck: () => <></>,
+    HeartCircle: () => <></>,
+    ChevronRight: () => <></>,
+    today: () => <Text>Custom Today Icon</Text>,
+  });
+
+  const tileList = render(
+    <TilesList navigation={useNavigation()} route={{} as any} />,
+  );
+
+  expect(tileList.getByText('Custom Today Icon')).toBeDefined();
+});
+
+test('renders custom circle icon', () => {
+  (useIcons as jest.Mock).mockReturnValue({
+    HeartCheck: () => <></>,
+    HeartCircle: () => <></>,
+    ChevronRight: () => <></>,
+    'circle-id-1': () => <Text>Custom Circle Icon</Text>,
+  });
+
+  const tileList = render(
+    <TilesList navigation={useNavigation()} route={{} as any} />,
+  );
+
+  expect(tileList.getByText('Custom Circle Icon')).toBeDefined();
+});
+
+test('renders custom app tile icon', () => {
+  (useIcons as jest.Mock).mockReturnValue({
+    HeartCheck: () => <></>,
+    HeartCircle: () => <></>,
+    ChevronRight: () => <></>,
+    'tile-id-1': () => <Text>Custom App Tile Icon</Text>,
+  });
+
+  const tileList = render(
+    <TilesList navigation={useNavigation()} route={{} as any} />,
+  );
+
+  expect(tileList.getByText('Custom App Tile Icon')).toBeDefined();
 });

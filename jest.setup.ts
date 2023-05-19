@@ -72,6 +72,10 @@ jest.mock('react-native-notifications', () => ({
   NotificationBackgroundFetchResult: { NEW_DATA: 'NEW_DATA' },
 }));
 
+jest.mock('@react-navigation/elements', () => ({
+  useHeaderHeight: jest.fn(),
+}));
+
 beforeAll(async () => {
   // Setup minimal i18next instance
   jest.useRealTimers(); // Required to deal with hook timeout bug
@@ -95,6 +99,7 @@ beforeAll(async () => {
           'post-comments_zero': 'COMMENT',
           'post-comments_one': '1 COMMENT',
           'post-comments_other': '{{count}} COMMENTS',
+          'post-replies_zero': 'REPLY',
         },
       },
     },

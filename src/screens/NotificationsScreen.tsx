@@ -5,21 +5,22 @@ import { useNotifications } from '../hooks/useNotifications';
 import { Divider, List } from 'react-native-paper';
 import { SafeAreaView, View } from 'react-native';
 import formatRelative from 'date-fns/formatRelative';
-import { createStyles } from '../components/BrandConfigProvider';
+import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { tID } from '../common';
 
 export const NotificationsScreen = () => {
+  const { Bell, BellOff } = useIcons();
   const { isLoading, data } = useNotifications();
   const { styles } = useStyles(defaultStyles);
 
   const surveyIcon = useMemo(
-    () => <List.Icon style={styles.icon} icon="chat-question" />,
-    [styles.icon],
+    () => <List.Icon style={styles.icon} icon={Bell} />,
+    [styles.icon, Bell],
   );
   const noNotificationsIcon = useMemo(
-    () => <List.Icon style={styles.icon} icon="bell-check-outline" />,
-    [styles.icon],
+    () => <List.Icon style={styles.icon} icon={BellOff} />,
+    [styles.icon, BellOff],
   );
 
   if (isLoading) {

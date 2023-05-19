@@ -88,33 +88,15 @@ const postsV2QueryDocument = gql`
       }
       edges {
         node {
-          id
-          priority
-          ... on ActivePost {
-            authorId
-            author {
-              profile {
-                displayName
-                picture
-              }
+          ...PostDetails
+          replies(order: NEWEST, first: 2) {
+            pageInfo {
+              endCursor
+              hasNextPage
             }
-            createdAt
-            message
-            replyCount
-            reactionTotals {
-              count
-              type
-              userHasReacted
-            }
-            replies(order: NEWEST, first: 2) {
-              pageInfo {
-                endCursor
-                hasNextPage
-              }
-              edges {
-                node {
-                  ...PostDetails
-                }
+            edges {
+              node {
+                ...PostDetails
               }
             }
           }

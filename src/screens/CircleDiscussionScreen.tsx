@@ -15,7 +15,7 @@ export const CircleDiscussionScreen = ({
 
   const openPost = useCallback(
     (post: Post, createNewComment: boolean) => {
-      navigation.navigate('Home/Circle/Thread', { post, createNewComment });
+      navigation.navigate('Circle/Thread', { post, createNewComment });
     },
     [navigation],
   );

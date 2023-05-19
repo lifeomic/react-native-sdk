@@ -56,6 +56,7 @@ export type Post = {
 export const postDetailsFragment = gql`
   fragment PostDetails on Post {
     id
+    parentId
     createdAt
     priority
     ... on DeletedPost {

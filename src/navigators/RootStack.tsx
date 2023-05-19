@@ -8,6 +8,7 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { TabNavigator } from './TabNavigator';
 import { LoggedInRootParamList, NotLoggedInRootParamList } from './types';
 import { ConsentScreen } from '../screens/ConsentScreen';
+import { CircleThreadScreen } from '../screens/CircleThreadScreen';
 
 export function RootStack() {
   const { isLoggedIn, loading: loadingAuth } = useAuth();
@@ -44,6 +45,7 @@ export function RootStack() {
               title: t('consent', 'Consent'),
             }}
           />
+          <Stack.Screen name="Circle/Thread" component={CircleThreadScreen} />
         </Stack.Navigator>
       </LoggedInProviders>
     );

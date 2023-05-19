@@ -13,10 +13,11 @@
     "lint:fix": "yarn lint --fix",
     "test": "tsc --noEmit && yarn jest",
     "test:ci": "yarn lint && yarn jest --coverage --runInBand --silent --ci --logHeapUsage --forceExit",
-    "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist && yarn copyAdditionalFiles",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist && yarn copyAdditionalFiles && yarn buildDeclaredStyles",
     "precopyToStarter": "yarn build",
     "copyToStarter": "cp -r ./dist/ ../react-native-starter/node_modules/@lifeomic/react-native-sdk",
-    "copyAdditionalFiles": "./bin/scripts/copyAdditionalFiles"
+    "copyAdditionalFiles": "./bin/scripts/copyAdditionalFiles",
+    "buildDeclaredStyles": "node ./bin/scripts/buildDeclaredStyles.js"
   },
   "author": "LifeOmic <development@lifeomic.com>",
   "license": "MIT",

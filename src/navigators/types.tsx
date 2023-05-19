@@ -15,9 +15,16 @@ export type RootStackParamList = LoggedInRootParamList;
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
   StackScreenProps<RootStackParamList, T>;
 
+export type LoggedInScreenProps<T extends keyof LoggedInRootParamList> =
+  CompositeScreenProps<
+    StackScreenProps<LoggedInRootParamList, T>,
+    RootStackScreenProps<keyof RootStackParamList>
+  >;
+
 export type LoggedInRootParamList = {
   app: NavigatorScreenParams<TabParamList> | undefined;
   'screens/ConsentScreen': undefined;
+  'Circle/Thread': { post: Post; createNewComment?: boolean };
 };
 
 export type LoggedInRootScreenProps<T extends keyof LoggedInRootParamList> =
@@ -50,7 +57,6 @@ export type HomeStackParamList = {
   };
   'Home/CustomAppTile': { appTile: AppTile };
   'Home/Circle/Discussion': { circleTile: CircleTile };
-  'Home/Circle/Thread': { post: Post; createNewComment?: boolean };
   'Home/TrackTile': {
     tracker: Tracker;
     valuesContext: TrackerValuesContext;
