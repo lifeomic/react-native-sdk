@@ -17,7 +17,11 @@ export type RootStackScreenProps<T extends keyof RootStackParamList> =
 
 export type LoggedInRootParamList = {
   app: NavigatorScreenParams<TabParamList> | undefined;
+  'screens/ConsentScreen': undefined;
 };
+
+export type LoggedInRootScreenProps<T extends keyof LoggedInRootParamList> =
+  StackScreenProps<LoggedInRootParamList, T>;
 
 export type NotLoggedInRootParamList = {
   'screens/LoginScreen': { username?: string };
