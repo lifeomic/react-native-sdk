@@ -2,6 +2,7 @@ import './BrandConfigProvider/BrandConfigProvider.stories';
 import './CustomAppTileScreen.stories';
 import './ExampleApp.stories';
 import './NoInternetToastProvider.stories';
+import './Notifications/NotificationScreen.stories';
 import './OAuth.stories';
 import './ActivityIndicatorView.stories';
 import './TrackTile/AdvancedTrackerDetails.stories';
