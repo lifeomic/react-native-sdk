@@ -176,7 +176,6 @@ export const NotificationsScreen = () => {
 
     const getInitial = async () => {
       // Get the notification that opened the application
-      // Note: this needs to the be on first screen during app startup to work
       const notification = await getInitialNotification();
       if (notification) {
         setEvents((events) => [
