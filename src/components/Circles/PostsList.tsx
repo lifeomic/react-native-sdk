@@ -17,6 +17,7 @@ import { PostItem } from './PostItem';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
 import { tID } from '../../common';
 import { showCreateEditPostModal } from './CreateEditPostModal';
+import { ThreadComment } from './ThreadComment';
 import { useIcons } from '../BrandConfigProvider';
 
 interface PostsListProps {
@@ -83,6 +84,15 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
                     post={edge.node}
                     onComment={handlePostTapped(edge.node, true)}
                   />
+                  <View style={styles.repliesContainer}>
+                    {edge.node.replies?.edges.map((replyEdge) => (
+                      <ThreadComment
+                        key={replyEdge.node.id}
+                        post={replyEdge.node}
+                        onReply={handlePostTapped(edge.node, false)}
+                      />
+                    ))}
+                  </View>
                   <Divider />
                 </TouchableOpacity>
               ))
@@ -128,6 +138,9 @@ const defaultStyles = createStyles('PostsList', (theme) => {
       right: 0,
       bottom: 0,
       borderRadius: 32,
+    },
+    repliesContainer: {
+      marginLeft: theme.spacing.medium,
     },
   };
 });
