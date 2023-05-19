@@ -22,6 +22,7 @@ module.exports = {
           '@react-navigation/bottom-tabs': path.resolve(__dirname, './node_modules/@react-navigation/bottom-tabs'),
           'react-native-safe-area-context': path.resolve(__dirname, './node_modules/react-native-safe-area-context'),
           'react-native-screens': path.resolve(__dirname, './node_modules/react-native-screens'),
+          'react-native-svg': path.resolve(__dirname, './node_modules/react-native-svg'),
           'react-native-toast-message': path.resolve(__dirname, './node_modules/react-native-toast-message'),
           '@react-native-community/netinfo': path.resolve(__dirname, './node_modules/@react-native-community/netinfo'),
           '@react-native-async-storage/async-storage': path.resolve(__dirname, './node_modules/@react-native-async-storage/async-storage'),

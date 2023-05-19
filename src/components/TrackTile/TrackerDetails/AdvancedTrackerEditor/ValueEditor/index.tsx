@@ -8,9 +8,9 @@ import {
 } from 'react-native';
 import { StylesProp, useStyleOverrides } from '../../../styles';
 import { Tracker } from '../../../services/TrackTileService';
-import { MinusCircle, PlusCircle } from '@lifeomic/chromicons-native';
 import { ValueDisplay } from './ValueDisplay';
 import { tID } from '../../../common/testID';
+import { useIcons } from '../../../../BrandConfigProvider';
 
 export type ValueEditorProps = Pick<Tracker, 'resourceType' | 'color'> & {
   /** @description this should be represented in the stored unit type. For Procedure resources that is always seconds */
@@ -26,6 +26,7 @@ const HOUR_IN_SECONDS = 60 * 60;
 export const ValueEditor = (props: ValueEditorProps) => {
   const { observationUnit, style } = props;
   const { resourceType, onValueChange, value, stepAmount, color } = props;
+  const { MinusCircle, PlusCircle } = useIcons();
   const styles = useStyleOverrides(defaultStyles);
   const [editUnitType, setEditUnitType] = useState<'min' | 'hour'>('min');
 

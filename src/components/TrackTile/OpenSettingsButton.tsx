@@ -1,16 +1,13 @@
 import React, { FC } from 'react';
 import { t } from '../../../lib/i18n';
-import {
-  TouchableOpacity,
-  TouchableOpacityProps,
-  StyleSheet,
-} from 'react-native';
-import Gear from './icons/Gear';
-import { StylesProp, useStyleOverrides } from './styles';
+import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import { tID } from './common/testID';
+import { createStyles, useIcons } from '../BrandConfigProvider';
+import { useStyles } from '../../hooks';
 
 const OpenSettingsButton: FC<TouchableOpacityProps> = (props) => {
-  const styles = useStyleOverrides(defaultStyles);
+  const { Settings } = useIcons();
+  const { styles } = useStyles(defaultStyles);
 
   return (
     <TouchableOpacity
@@ -20,21 +17,23 @@ const OpenSettingsButton: FC<TouchableOpacityProps> = (props) => {
         'track-tile.open-tracker-settings',
         'Open Tracker Settings',
       )}
-      style={styles.trackTileSettingsButton}
+      style={styles.container}
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       {...props}
     >
-      <Gear />
+      <Settings stroke={styles.iconImage?.overlayColor} />
     </TouchableOpacity>
   );
 };
 
-declare module './TrackTile' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
+const defaultStyles = createStyles('TrackTileSettingsButton', () => ({
+  container: { width: 24, height: 24 },
+  iconImage: { overlayColor: '#02BFF1' },
+}));
 
-const defaultStyles = StyleSheet.create({
-  trackTileSettingsButton: { width: 24, height: 24 },
-});
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
 
 export default OpenSettingsButton;

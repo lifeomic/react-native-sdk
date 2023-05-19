@@ -9,8 +9,8 @@ import {
   View,
 } from 'react-native';
 import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
-import { Edit } from '@lifeomic/chromicons-native';
 import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
+import { useIcons } from '../../../BrandConfigProvider';
 
 export type TrackerValueRowProps = {
   hasBorderTop?: boolean;
@@ -23,6 +23,7 @@ export type TrackerValueRowProps = {
 export const TrackerValueRow = (props: TrackerValueRowProps) => {
   const { image, color, hasBorderTop, title, subTitle, ...rest } = props;
 
+  const { Edit } = useIcons();
   const styles = useStyleOverrides(defaultStyles);
   const fontWeights = useFontOverrides();
   const flatStyles = useFlattenedStyles(styles, ['trackerValueRowContainer']);

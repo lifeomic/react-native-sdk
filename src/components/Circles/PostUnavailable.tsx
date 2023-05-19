@@ -1,13 +1,13 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { t } from 'i18next';
-import { LinkBroken } from '@lifeomic/chromicons-native';
-import { createStyles } from '../BrandConfigProvider';
+import { createStyles, useIcons } from '../BrandConfigProvider';
 import { useStyles } from '../../hooks';
 
 type Props = { style?: CirclesPostUnavailableStyles };
 
 export const PostUnavailable = ({ style }: Props) => {
+  const { LinkBroken } = useIcons();
   const { styles } = useStyles(defaultStyles, style);
   return (
     <View style={styles.container}>
