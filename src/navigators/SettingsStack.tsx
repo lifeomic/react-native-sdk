@@ -7,16 +7,16 @@ import { AccountSelectionScreen } from '../screens/AccountSelectionScreen';
 import { AppNavHeader } from '../components/AppNavHeader';
 import WearablesScreen from '../screens/WearablesScreen';
 import { SettingsStackParamList } from './types';
+import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
 export function SettingsStack() {
+  const { AppNavHeader: CustomAppNavHeader } = useDeveloperConfig();
+  const header = CustomAppNavHeader || AppNavHeader;
+
   return (
-    <Stack.Navigator
-      screenOptions={{
-        header: AppNavHeader,
-      }}
-    >
+    <Stack.Navigator screenOptions={{ header }}>
       <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen
         name="Settings/Profile"
