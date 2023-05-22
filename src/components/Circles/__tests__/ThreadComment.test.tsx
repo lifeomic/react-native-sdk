@@ -38,7 +38,7 @@ const mockPost: Post = {
 describe('ThreadComment', () => {
   test('renders the component', () => {
     const { getByText } = render(
-      <ThreadComment post={mockPost} onComment={jest.fn()} />,
+      <ThreadComment post={mockPost} onReply={jest.fn()} />,
     );
 
     expect(getByText('Shaggy')).toBeDefined();
@@ -46,15 +46,14 @@ describe('ThreadComment', () => {
     expect(getByText('Zoinks!')).toBeDefined();
   });
 
-  test('clicking comments calls onComment', () => {
-    const onComment = jest.fn();
+  test('clicking replies calls onReply', () => {
+    const onReply = jest.fn();
 
     const { getByText } = render(
-      <ThreadComment post={mockPost} onComment={onComment} />,
+      <ThreadComment post={mockPost} onReply={onReply} />,
     );
 
-    fireEvent.press(getByText('COMMENT'));
-
-    expect(onComment).toHaveBeenCalled();
+    fireEvent.press(getByText('REPLY'));
+    expect(onReply).toHaveBeenCalled();
   });
 });

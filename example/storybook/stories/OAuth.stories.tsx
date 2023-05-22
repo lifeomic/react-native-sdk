@@ -20,8 +20,11 @@ export const authConfig: AuthConfiguration = {
     tokenEndpoint: oauthConfig.tokenEndpoint,
     revocationEndpoint: oauthConfig.revokeEndpoint,
   },
-  scopes: ['openid'],
   usePKCE: true,
+  scopes: ['openid', 'offline_access'],
+  additionalParameters: {
+    prompt: 'consent',
+  },
 };
 
 export const baseURL = apiBaseUrl;

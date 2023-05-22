@@ -186,7 +186,7 @@ storiesOf('AdvancedTrackerEditor', module)
                   ? displayOne.replace('{{count}} ', '')
                   : pillarType
               }`,
-              // eslint-disable-next-line react/display-name
+
               headerRight: () => (
                 <HeaderButtons
                   HeaderButtonComponent={(props) => (
@@ -205,7 +205,7 @@ storiesOf('AdvancedTrackerEditor', module)
                   />
                 </HeaderButtons>
               ),
-              // eslint-disable-next-line react/display-name
+
               headerLeft: () => (
                 <HeaderButtons
                   HeaderButtonComponent={(props) => (

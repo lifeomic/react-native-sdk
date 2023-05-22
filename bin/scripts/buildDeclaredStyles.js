@@ -6,8 +6,9 @@ function getFilesRecursively(dir) {
     return fs.readdirSync(dir).flatMap((file) => {
       const absolute = path.join(dir, file);
 
-      if (fs.statSync(absolute).isDirectory())
+      if (fs.statSync(absolute).isDirectory()) {
         return getFilesRecursively(absolute);
+      }
 
       return absolute;
     });

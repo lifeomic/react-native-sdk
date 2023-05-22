@@ -10,6 +10,7 @@ import { useStyles } from '../hooks/useStyles';
 import { Theme, createStyles } from '../components/BrandConfigProvider';
 import { Text, Divider } from 'react-native-paper';
 import { SettingsStackScreenProps } from '../navigators/types';
+import { useWearables } from '../hooks/useWearables';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -20,6 +21,8 @@ export const SettingsScreen = ({
 }: SettingsStackScreenProps<'Settings'>) => {
   const { account } = useActiveAccount();
   const { styles } = useStyles(defaultStyles);
+  const { useWearableIntegrationsQuery } = useWearables();
+  const { data } = useWearableIntegrationsQuery();
 
   return (
     <View style={styles.container}>
@@ -35,11 +38,12 @@ export const SettingsScreen = ({
             action={() => navigation.navigate('Settings/AccountSelection')}
           />
           <Divider />
-          <MainMenuItem
-            title={t('settings-sync-data', 'Sync Data')}
-            action={() => navigation.navigate('Settings/Wearables')}
-          />
-          <Divider />
+          {!!data?.items?.length && (
+            <MainMenuItem
+              title={t('settings-sync-data', 'Sync Data')}
+              action={() => navigation.navigate('Settings/Wearables')}
+            />
+          )}
         </ScrollView>
         <View style={styles.subMenuContainer}>
           <OAuthLogoutButton

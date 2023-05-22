@@ -122,7 +122,11 @@ export const CreateEditPostModal = () => {
                       ? [styles.characterCountLabel, styles.overLimitLabel]
                       : styles.characterCountLabel
                   }
-                >{`${characterCount}/1200`}</Text>
+                >
+                  {t('post-character-limit', '{{count}}/1200', {
+                    count: characterCount,
+                  })}
+                </Text>
                 <Button
                   testID={tID('create-post-button')}
                   compact={true}

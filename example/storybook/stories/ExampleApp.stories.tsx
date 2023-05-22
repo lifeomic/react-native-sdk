@@ -8,6 +8,8 @@ import {
 } from '../../../src';
 import { withKnobs, color } from '@storybook/addon-knobs';
 import Color from 'color';
+import { Appbar } from 'react-native-paper';
+import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 
 storiesOf('Example App', module)
   .addDecorator(withKnobs)
@@ -28,4 +30,25 @@ storiesOf('Example App', module)
         </RootProviders>
       </DeveloperConfigProvider>
     );
+  })
+  .add('Custom AppNavHeader', () => {
+    return (
+      <DeveloperConfigProvider
+        developerConfig={{
+          AppNavHeader,
+        }}
+      >
+        <RootProviders authConfig={authConfig}>
+          <RootStack />
+        </RootProviders>
+      </DeveloperConfigProvider>
+    );
   });
+
+const AppNavHeader = (({ route }: NativeStackHeaderProps) => {
+  return (
+    <Appbar.Header elevated>
+      <Appbar.Content title={`Custom ${route.name}`} />
+    </Appbar.Header>
+  );
+}) as () => JSX.Element;

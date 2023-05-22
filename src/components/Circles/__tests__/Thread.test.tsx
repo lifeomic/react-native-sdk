@@ -107,11 +107,7 @@ describe('Thread', () => {
     mockUsePost.mockReturnValue({ data: { post: mockPost } });
 
     const { getByText } = render(
-      <Thread
-        post={mockPost}
-        onOpenThread={jest.fn()}
-        onPostDeleted={jest.fn()}
-      />,
+      <Thread post={mockPost} onPostDeleted={jest.fn()} />,
     );
 
     expect(mockUsePost).toHaveBeenCalledWith(mockPost);
@@ -135,7 +131,7 @@ describe('Thread', () => {
     });
 
     const { getByText } = render(
-      <Thread post={post} onOpenThread={jest.fn()} onPostDeleted={jest.fn()} />,
+      <Thread post={post} onPostDeleted={jest.fn()} />,
     );
 
     expect(getByText('Shaggy')).toBeDefined();
@@ -149,41 +145,11 @@ describe('Thread', () => {
     });
 
     const { getByText, queryByText } = render(
-      <Thread
-        post={mockPost}
-        onOpenThread={jest.fn()}
-        onPostDeleted={jest.fn()}
-      />,
+      <Thread post={mockPost} onPostDeleted={jest.fn()} />,
     );
 
     expect(getByText('Oh No!')).toBeDefined();
     expect(queryByText('Shaggy')).toBeNull();
-  });
-
-  test('calls onOpenThread when post/comments are pressed', () => {
-    const post = Object.assign({}, mockPost);
-    const firstComment = post.replies.edges[0].node;
-    firstComment.replies = undefined as any;
-    firstComment.replyCount = 0;
-
-    mockUsePost.mockReturnValue({
-      data: { post },
-    });
-
-    const onOpenThread = jest.fn();
-    const { getByText } = render(
-      <Thread
-        post={post}
-        onOpenThread={onOpenThread}
-        onPostDeleted={jest.fn()}
-      />,
-    );
-
-    fireEvent.press(getByText('Jinkies!'));
-    expect(onOpenThread).toHaveBeenLastCalledWith(firstComment, false);
-
-    fireEvent.press(getByText('COMMENT'));
-    expect(onOpenThread).toHaveBeenLastCalledWith(firstComment, true);
   });
 
   test('loads more replies when clicking Read X earlier comments', async () => {
@@ -203,7 +169,7 @@ describe('Thread', () => {
     });
 
     const { getByText } = render(
-      <Thread post={post} onOpenThread={jest.fn()} onPostDeleted={jest.fn()} />,
+      <Thread post={post} onPostDeleted={jest.fn()} />,
     );
 
     fireEvent.press(getByText('Read 1 earlier comments...'));
