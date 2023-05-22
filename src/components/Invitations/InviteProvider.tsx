@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { t } from 'lib/i18n';
+import { t } from '../../../lib/i18n';
 import { inviteNotifier } from './InviteNotifier';
 import { useAuth } from '../../hooks/useAuth';
 import { useAcceptInviteMutation } from '../../hooks/useAcceptInviteMutation';
