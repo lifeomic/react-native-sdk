@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     paddingTop: '20%',
   },
   buttonContainer: {
+    paddingTop: '20%',
     display: 'flex',
     flexDirection: 'row',
   },
@@ -69,7 +70,6 @@ const styles = StyleSheet.create({
 });
 
 export const NotificationsScreen = () => {
-  const [deviceToken, setDeviceToken] = useState<string | undefined>();
   const [events, setEvents] = useState<Event[]>([]);
   const { httpClient } = useHttpClient();
   const { account } = useActiveAccount();
@@ -87,7 +87,7 @@ export const NotificationsScreen = () => {
         link: 'localNotificationLink',
       },
       //@ts-ignore
-      android_channel_id: 'bma-example-channel',
+      android_channel_id: 'sdk-example-channel',
     });
   };
 
@@ -128,12 +128,9 @@ export const NotificationsScreen = () => {
   useEffect(() => {
     requestNotificationsPermissions(({ deviceToken }) => {
       if (deviceToken && account) {
-        setDeviceToken(deviceToken);
-
         // Register the device with the LifeOmic platform to start receiving push notifications
         registerDeviceToken({
           deviceToken,
-          // TODO: update the application when the background allows BMAs
           application: 'lifeResearch', // The application name will be provided by LifeOmic upon onboarding
           httpClient,
           accountId: account.id,
@@ -146,10 +143,10 @@ export const NotificationsScreen = () => {
   useEffect(() => {
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannel({
-        channelId: 'starter-example-channel',
-        name: 'Starter Example',
+        channelId: 'sdk-example-channel',
+        name: 'SDK Example',
         importance: 5,
-        description: 'Channel for the Starter App',
+        description: 'Channel for the SDK',
         enableLights: true,
         enableVibration: true,
         showBadge: true,
@@ -190,10 +187,6 @@ export const NotificationsScreen = () => {
 
   return (
     <View>
-      <Text style={styles.deviceToken}>
-        Device Token: {deviceToken ? deviceToken : 'undefined'}
-      </Text>
-
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.sendButton}
