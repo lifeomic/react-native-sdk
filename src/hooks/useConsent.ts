@@ -88,15 +88,15 @@ export const useConsent = () => {
 
     const didAcceptConsent =
       !loadingDirectives &&
-      directivesData &&
-      directivesData.items.length > 0 &&
+      !!directivesData?.items?.length &&
       directivesData.items[0].status === 'active';
 
-    const hasConsent = !loadingDefaultConsents && !!defaultConsentData;
+    const defaultConsentExists =
+      !loadingDefaultConsents && !!defaultConsentData;
 
     return {
       isLoading: loadingDirectives || loadingDefaultConsents,
-      shouldRenderConsentScreen: hasConsent && !didAcceptConsent,
+      shouldRenderConsentScreen: defaultConsentExists && !didAcceptConsent,
     };
   };
 

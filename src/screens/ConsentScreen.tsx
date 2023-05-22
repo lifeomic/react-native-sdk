@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, ScrollView, Text, Alert } from 'react-native';
 import { t } from 'i18next';
 import Markdown from 'react-native-markdown-display';
@@ -17,15 +17,17 @@ export const ConsentScreen = ({
   const updateConsentDirectiveMutation = useUpdateProjectConsentDirective();
   const { logout } = useOAuthFlow();
 
-  const updateConsentDirective = (accept: boolean) =>
-    updateConsentDirectiveMutation.mutateAsync(accept);
+  const updateConsentDirective = useCallback(
+    (accept: boolean) => updateConsentDirectiveMutation.mutateAsync(accept),
+    [updateConsentDirectiveMutation],
+  );
 
-  const acceptConsent = async () => {
+  const acceptConsent = useCallback(async () => {
     await updateConsentDirective(true);
     navigation.replace('app');
-  };
+  }, [updateConsentDirective, navigation]);
 
-  const declineConsent = () => {
+  const declineConsent = useCallback(() => {
     Alert.alert(
       t('consent-decline-alert-title', 'Please confirm'),
       t(
@@ -48,7 +50,7 @@ export const ConsentScreen = ({
         },
       ],
     );
-  };
+  }, [logout, updateConsentDirective]);
 
   const consentText = defaultConsentData?.item?.[0].text;
   if (loadingDefaultConsent || !consentText) {
