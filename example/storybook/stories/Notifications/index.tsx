@@ -39,10 +39,6 @@ const styles = StyleSheet.create({
   recievedNotificationText: {
     fontWeight: 'bold',
   },
-  deviceToken: {
-    margin: 10,
-    paddingTop: '20%',
-  },
   buttonContainer: {
     paddingTop: '20%',
     display: 'flex',
