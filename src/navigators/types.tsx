@@ -23,8 +23,12 @@ export type LoggedInScreenProps<T extends keyof LoggedInRootParamList> =
 
 export type LoggedInRootParamList = {
   app: NavigatorScreenParams<TabParamList> | undefined;
+  'screens/ConsentScreen': undefined;
   'Circle/Thread': { post: Post; createNewComment?: boolean };
 };
+
+export type LoggedInRootScreenProps<T extends keyof LoggedInRootParamList> =
+  StackScreenProps<LoggedInRootParamList, T>;
 
 export type NotLoggedInRootParamList = {
   'screens/LoginScreen': { username?: string };
