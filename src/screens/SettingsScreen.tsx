@@ -38,7 +38,7 @@ export const SettingsScreen = ({
             action={() => navigation.navigate('Settings/AccountSelection')}
           />
           <Divider />
-          {data?.items?.length && (
+          {!!data?.items?.length && (
             <MainMenuItem
               title={t('settings-sync-data', 'Sync Data')}
               action={() => navigation.navigate('Settings/Wearables')}
