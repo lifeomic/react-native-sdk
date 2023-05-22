@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react-native';
 import {
   WearableLifecycleProvider,
   useWearableLifecycleHooks,
-  registerWearableLifecycleHook,
+  registerWearableLifecycleProvider,
   registerWearableLifecycleHandlers,
   deregisterWearableLifecycleHandlers,
 } from './WearableLifecycleProvider';
@@ -232,24 +232,12 @@ describe('WearableLifecycleProvider', () => {
     });
   });
 
-  it('should allow registering a custom lifecycle hook', () => {
-    const customHook = jest.fn();
-    registerWearableLifecycleHook(customHook);
+  it('should allow registering a custom lifecycle provider', () => {
+    const customProvider = jest.fn(({ children }) => <>{children}</>);
+    registerWearableLifecycleProvider(customProvider);
 
     renderHookInContext();
 
-    expect(customHook).toHaveBeenCalled();
-  });
-
-  it('should throw an error if registering a new hook between renders', () => {
-    registerWearableLifecycleHook(jest.fn());
-
-    const { rerender } = renderHookInContext();
-
-    registerWearableLifecycleHook(jest.fn()); // should cause an error on next render
-
-    expect(() => rerender({})).toThrowError(
-      "[WearableLifecycleProvider]: Lifecycle hooks changed between renders. Call 'registerWearableLifecycleHook' as early as possible to prevent this error.",
-    );
+    expect(customProvider).toHaveBeenCalled();
   });
 });

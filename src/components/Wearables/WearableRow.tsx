@@ -73,7 +73,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
   } = props;
 
   const { styles } = useStyles(defaultStyles, instanceStyles);
-  const { onPreToggle } = useWearableLifecycleHooks();
+  const { onPreToggle, renderWearableControls } = useWearableLifecycleHooks();
 
   const _onShowLearnMore = useCallback(
     (link: string) => () => {
@@ -478,6 +478,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
           wearable.syncTypes?.length === 0 &&
           renderSyncError(false)}
         {wearable.enabled && renderBackgroundSync(wearable)}
+        {wearable.enabled && renderWearableControls(wearable)}
         {renderToggle(wearable)}
       </View>
     </View>
@@ -507,6 +508,7 @@ const defaultStyles = createStyles('WearableRow', (theme) => ({
     minHeight: 52,
     borderRadius: 10,
     flexDirection: 'column',
+    overflow: 'hidden',
   },
   details: {
     flexDirection: 'column',

@@ -21,17 +21,20 @@ export const WearableLifecycleContext = React.createContext<{
     ehrs: WearableIntegration[],
     legacySort?: boolean,
   ) => Promise<WearableIntegration[]>;
+  renderWearableControls: (wearable: WearableIntegration) => React.ReactNode;
 }>({
   onPreToggle: async () => {},
   onPostToggle: async () => {},
   sanitizeEHRs: async (ehrs) => ehrs,
+  renderWearableControls: () => null,
 });
 
 const handlers: NativeWearableLifecycleHandler[] = [];
-const hooks: Function[] = [];
+const providers: React.ComponentType<{ children: React.ReactNode }>[] = [];
 
 export const registerWearableLifecycleHandlers = handlers.push.bind(handlers);
-export const registerWearableLifecycleHook = hooks.push.bind(hooks);
+export const registerWearableLifecycleProvider =
+  providers.unshift.bind(providers);
 export const deregisterWearableLifecycleHandlers = (
   ...handlersToRemove: NativeWearableLifecycleHandler[]
 ) => {
@@ -43,22 +46,6 @@ export const deregisterWearableLifecycleHandlers = (
   });
 };
 export const WearableLifecycleProvider = ({ children }: Props) => {
-  if (__DEV__) {
-    // eslint-disable-next-line
-    const [initialHookLength] = React.useState(hooks.length);
-
-    if (initialHookLength !== hooks.length) {
-      throw new Error(
-        "[WearableLifecycleProvider]: Lifecycle hooks changed between renders. Call 'registerWearableLifecycleHook' as early as possible to prevent this error.",
-      );
-    }
-  }
-
-  for (const useCustomWearableLifeCycleHook of hooks) {
-    // eslint-disable-next-line
-    useCustomWearableLifeCycleHook();
-  }
-
   const onPreToggle = useCallback(
     async (wearable: WearableIntegration, enabled: boolean) => {
       await Promise.all(
@@ -105,12 +92,31 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
     [],
   );
 
-  return (
+  const renderWearableControls = useCallback(
+    (wearable: WearableIntegration) => (
+      <>
+        {handlers.map(
+          (handler) => handler.renderWearableControl?.(wearable) ?? null,
+        )}
+      </>
+    ),
+    [],
+  );
+
+  return providers.reduce(
+    (agg, Provider, index) => (
+      <Provider key={`wearable-provider-${index}`}>{agg}</Provider>
+    ),
     <WearableLifecycleContext.Provider
-      value={{ onPostToggle, onPreToggle, sanitizeEHRs }}
+      value={{
+        onPostToggle,
+        onPreToggle,
+        sanitizeEHRs,
+        renderWearableControls,
+      }}
     >
       {children}
-    </WearableLifecycleContext.Provider>
+    </WearableLifecycleContext.Provider>,
   );
 };
 
