@@ -12,6 +12,7 @@ import {
   revoke,
 } from 'react-native-app-auth';
 import { AuthResult, useAuth } from './useAuth';
+import { usePendingInvite } from './usePendingInvite';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
@@ -48,6 +49,9 @@ export const OAuthContextProvider = ({
     storeAuthResult,
     clearAuthResult,
   } = useAuth();
+  const {
+    inviteParams: { inviteId, evc },
+  } = usePendingInvite();
 
   // PKCE is required
   if (!authConfig.usePKCE) {
@@ -55,6 +59,15 @@ export const OAuthContextProvider = ({
       console.warn('NOTE: LifeOmic requires PKCE. Overriding to usePKCE=true');
     }
     authConfig.usePKCE = true;
+  }
+
+  if (inviteId && evc) {
+    authConfig.additionalParameters = {
+      ...authConfig.additionalParameters,
+      inviteId,
+      evc,
+    };
+    console.warn({ inviteId }, 'Added invite params to authConfig');
   }
 
   const logout = useCallback(

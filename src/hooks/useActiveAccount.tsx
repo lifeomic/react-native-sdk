@@ -8,6 +8,8 @@ import React, {
 import { Account, useAccounts } from './useAccounts';
 import { QueryObserverResult } from 'react-query';
 import { useAsyncStorage } from './useAsyncStorage';
+import { inviteNotifier } from '../components/Invitations/InviteNotifier';
+import { ProjectInvite } from '../types';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -132,6 +134,18 @@ export const ActiveAccountContextProvider = ({
   const refetch = useCallback(async () => {
     return accountsResult.refetch();
   }, [accountsResult]);
+
+  // Handle invite accept
+  useEffect(() => {
+    const listener = async (acceptedInvite: ProjectInvite) => {
+      await refetch();
+      setActiveAccountId(acceptedInvite.account);
+    };
+    inviteNotifier.addListener('inviteAccepted', listener);
+    return () => {
+      inviteNotifier.removeListener('inviteAccepted', listener);
+    };
+  }, [refetch, setActiveAccountId]);
 
   return (
     <ActiveAccountContext.Provider

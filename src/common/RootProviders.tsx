@@ -17,6 +17,7 @@ import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { WearableLifecycleProvider } from '../components/Wearables/WearableLifecycleProvider';
 import { CreateEditPostModal } from '../components/Circles/CreateEditPostModal';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { InviteProvider } from '../components/Invitations/InviteProvider';
 
 const queryClient = new QueryClient();
 
@@ -34,29 +35,31 @@ export function RootProviders({
       <AuthContextProvider>
         <HttpClientContextProvider baseURL={apiBaseURL}>
           <GraphQLClientContextProvider baseURL={apiBaseURL}>
-            <OAuthContextProvider authConfig={authConfig}>
-              <ActiveAccountContextProvider>
-                <ActiveProjectContextProvider>
-                  <TrackTileProvider>
-                    <WearableLifecycleProvider>
-                      <BrandConfigProvider theme={theme}>
-                        <NoInternetToastProvider>
-                          <ActionSheetProvider>
-                            <SafeAreaProvider>
-                              <ThemedNavigationContainer>
-                                {children}
-                              </ThemedNavigationContainer>
-                              <CreateEditPostModal />
-                              <Toast />
-                            </SafeAreaProvider>
-                          </ActionSheetProvider>
-                        </NoInternetToastProvider>
-                      </BrandConfigProvider>
-                    </WearableLifecycleProvider>
-                  </TrackTileProvider>
-                </ActiveProjectContextProvider>
-              </ActiveAccountContextProvider>
-            </OAuthContextProvider>
+            <InviteProvider>
+              <OAuthContextProvider authConfig={authConfig}>
+                <ActiveAccountContextProvider>
+                  <ActiveProjectContextProvider>
+                    <TrackTileProvider>
+                      <WearableLifecycleProvider>
+                        <BrandConfigProvider theme={theme}>
+                          <NoInternetToastProvider>
+                            <ActionSheetProvider>
+                              <SafeAreaProvider>
+                                <ThemedNavigationContainer>
+                                  {children}
+                                </ThemedNavigationContainer>
+                                <CreateEditPostModal />
+                                <Toast />
+                              </SafeAreaProvider>
+                            </ActionSheetProvider>
+                          </NoInternetToastProvider>
+                        </BrandConfigProvider>
+                      </WearableLifecycleProvider>
+                    </TrackTileProvider>
+                  </ActiveProjectContextProvider>
+                </ActiveAccountContextProvider>
+              </OAuthContextProvider>
+            </InviteProvider>
           </GraphQLClientContextProvider>
         </HttpClientContextProvider>
       </AuthContextProvider>
