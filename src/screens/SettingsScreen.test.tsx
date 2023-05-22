@@ -3,13 +3,18 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { useNavigation } from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import { useActiveAccount } from '../hooks/useActiveAccount';
+import { useWearables } from '../hooks/useWearables';
 import { SettingsScreen } from './SettingsScreen';
 
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));
+jest.mock('../hooks/useWearables', () => ({
+  useWearables: jest.fn(),
+}));
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
+const useWearablesMock = useWearables as jest.Mock;
 const useNavigationMock = useNavigation as jest.Mock;
 const getVersionMock = DeviceInfo.getVersion as jest.Mock;
 
@@ -19,6 +24,11 @@ beforeEach(() => {
   getVersionMock.mockReturnValue('1.0');
   useActiveAccountMock.mockReturnValue({
     account: { name: 'Account Name' },
+  });
+  useWearablesMock.mockReturnValue({
+    useWearableIntegrationsQuery: jest.fn().mockReturnValue({
+      data: undefined,
+    }),
   });
   useNavigationMock.mockReturnValue({
     navigate: navigateMock,
