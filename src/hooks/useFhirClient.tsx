@@ -12,9 +12,15 @@ type ResourceTypes = {
 };
 type ResourceType = Observation;
 
+type FhirCodes = {
+  system: string;
+  code: string;
+};
+
 type QueryParams = {
   resourceType: keyof ResourceTypes;
   pageSize?: number;
+  coding?: FhirCodes[];
 };
 
 type DeleteParams = {
@@ -30,14 +36,27 @@ export function useFhirClient() {
   const useSearchResourcesQuery = (queryParams: QueryParams) => {
     const [next, setNext] = useState(0);
     const [hasMoreData, setHasMoreData] = useState(false);
+
+    const toFhirCodeFilter = () => {
+      if (queryParams.coding) {
+        return queryParams.coding
+          .map(({ system, code }) => `${system}|${code}`)
+          .join(',');
+      }
+    };
+
     const params = merge(
       {
         // Defaults:
         _tag: `http://lifeomic.com/fhir/dataset|${activeProject?.id}`,
         patient: activeSubjectId,
         next: next.toString(),
+        code: toFhirCodeFilter(),
       },
-      queryParams,
+      {
+        resourceType: queryParams.resourceType,
+        pageSize: queryParams.pageSize,
+      },
     );
     const resourceType = queryParams.resourceType;
 
