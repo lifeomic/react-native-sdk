@@ -27,11 +27,5 @@ module.exports = {
       patterns: ['example/storybook/*'],
     }
     ],
-    'react/no-unstable-nested-components': [
-      'off',
-    { 
-      patterns: ['src/components/TrackTile/*'],
-    }
-    ]
   },
 };

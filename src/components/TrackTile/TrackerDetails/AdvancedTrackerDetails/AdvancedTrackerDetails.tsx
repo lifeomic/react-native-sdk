@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -207,6 +207,48 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
     ],
   );
 
+  const trackerValue = useCallback(
+    (valueText?: string) => (
+      <Text
+        accessibilityLabel={t('track-tile.tracker-value-value', {
+          defaultValue: 'Tracker value, {{value}}',
+          value: currentValue,
+        })}
+        style={[fontWeights.regular, styles.advancedDetailsTrackerValue]}
+      >
+        {valueText}
+      </Text>
+    ),
+    [currentValue, fontWeights.regular, styles.advancedDetailsTrackerValue],
+  );
+
+  const trackerDivider = useCallback(
+    (dividerText?: string) => (
+      <Text
+        accessibilityElementsHidden
+        style={[fontWeights.regular, styles.advancedDetailsTrackerValueDivider]}
+      >
+        {dividerText}
+      </Text>
+    ),
+    [fontWeights.regular, styles.advancedDetailsTrackerValueDivider],
+  );
+
+  const trackerTarget = useCallback(
+    (targetText?: string) => (
+      <Text
+        accessibilityLabel={t('track-tile.tracker-value-value', {
+          defaultValue: 'Tracker target, {{value}}',
+          value: target,
+        })}
+        style={[fontWeights.semibold, styles.advancedDetailsTrackerTarget]}
+      >
+        {targetText}
+      </Text>
+    ),
+    [fontWeights.semibold, styles.advancedDetailsTrackerTarget, target],
+  );
+
   return (
     <ScrollView>
       <DatePicker
@@ -230,42 +272,9 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
           target,
         }}
         components={{
-          value: ((valueText?: string) => (
-            <Text
-              accessibilityLabel={t('track-tile.tracker-value-value', {
-                defaultValue: 'Tracker value, {{value}}',
-                value: currentValue,
-              })}
-              style={[fontWeights.regular, styles.advancedDetailsTrackerValue]}
-            >
-              {valueText}
-            </Text>
-          ))(),
-          divider: ((dividerText?: string) => (
-            <Text
-              accessibilityElementsHidden
-              style={[
-                fontWeights.regular,
-                styles.advancedDetailsTrackerValueDivider,
-              ]}
-            >
-              {dividerText}
-            </Text>
-          ))(),
-          target: ((targetText?: string) => (
-            <Text
-              accessibilityLabel={t('track-tile.tracker-value-value', {
-                defaultValue: 'Tracker target, {{value}}',
-                value: target,
-              })}
-              style={[
-                fontWeights.semibold,
-                styles.advancedDetailsTrackerTarget,
-              ]}
-            >
-              {targetText}
-            </Text>
-          ))(),
+          value: ((valueText?: string) => trackerValue(valueText))(),
+          divider: ((dividerText?: string) => trackerDivider(dividerText))(),
+          target: ((targetText?: string) => trackerTarget(targetText))(),
         }}
       />
 

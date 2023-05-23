@@ -168,6 +168,13 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
     [],
   );
 
+  const boldText = useCallback(
+    (categoryName?: string) => (
+      <Text style={fontWeights.bold}>{categoryName}</Text>
+    ),
+    [fontWeights.bold],
+  );
+
   return (
     <FlatList
       ListHeaderComponent={
@@ -217,9 +224,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
                     categoryTypes.baseCode.display,
                 }}
                 components={{
-                  bold: ((categoryName?: string) => (
-                    <Text style={fontWeights.bold}>{categoryName}</Text>
-                  ))(),
+                  bold: ((categoryName?: string) => boldText(categoryName))(),
                 }}
               />
             </View>
