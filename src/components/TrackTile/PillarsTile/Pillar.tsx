@@ -1,4 +1,11 @@
-import React, { FC, useRef, useEffect, useCallback, useState } from 'react';
+import React, {
+  FC,
+  useRef,
+  useEffect,
+  useCallback,
+  useState,
+  useMemo,
+} from 'react';
 import {
   View,
   Animated,
@@ -74,7 +81,7 @@ export const Pillar: FC<PillarProps> = (props) => {
   const { current: rotateAnimation } = useRef(new Animated.Value(0));
   const { current: opacityAnimation } = useRef(new Animated.Value(0));
   const value = convertToPreferredUnit(
-    trackerValues?.reduce((total, { value }) => total + value, 0) ?? 0,
+    trackerValues?.reduce((total, { value: v }) => total + v, 0) ?? 0,
     tracker,
   );
   const [currentValue, setCurrentValue] = useState(value);
@@ -89,40 +96,49 @@ export const Pillar: FC<PillarProps> = (props) => {
     setCurrentValue(value);
   }, [value]);
 
-  const saveNewValue = useCallback(
-    debounce(async (newValue: number) => {
-      try {
-        // Find a default value to modify or a new one will be created
-        const trackerValue = trackerValues?.find((value) =>
-          isCodeEqual(value.code.coding[0], {
-            system: tracker.system,
-            code: metricId,
-          }),
-        );
-        const res = await svc.upsertTrackerResource(
-          valuesContext,
-          toFhirResource(props.tracker.resourceType, {
-            ...svc,
-            createDate: trackerValue?.createdDate || new Date(),
-            id: trackerValue?.id,
-            value: newValue,
-            tracker,
-          }),
-        );
-        notifier.emit('valuesChanged', [
-          { valuesContext, metricId, tracker: res },
-        ]);
-      } catch (e) {
-        onError?.(e);
-        setCurrentValue(
-          convertToPreferredUnit(
-            trackerValues?.reduce((total, { value }) => total + value, 0) ?? 0,
-            tracker,
-          ),
-        );
-      }
-    }, 800),
-    [svc, tracker, metricId, trackerValues, onError],
+  const saveNewValue = useMemo(
+    () =>
+      debounce(async (newValue: number) => {
+        try {
+          // Find a default value to modify or a new one will be created
+          const trackerValue = trackerValues?.find((v) =>
+            isCodeEqual(v.code.coding[0], {
+              system: tracker.system,
+              code: metricId,
+            }),
+          );
+          const res = await svc.upsertTrackerResource(
+            valuesContext,
+            toFhirResource(props.tracker.resourceType, {
+              ...svc,
+              createDate: trackerValue?.createdDate || new Date(),
+              id: trackerValue?.id,
+              value: newValue,
+              tracker,
+            }),
+          );
+          notifier.emit('valuesChanged', [
+            { valuesContext, metricId, tracker: res },
+          ]);
+        } catch (e) {
+          onError?.(e);
+          setCurrentValue(
+            convertToPreferredUnit(
+              trackerValues?.reduce((total, { value: v }) => total + v, 0) ?? 0,
+              tracker,
+            ),
+          );
+        }
+      }, 800),
+    [
+      trackerValues,
+      svc,
+      valuesContext,
+      props.tracker.resourceType,
+      tracker,
+      metricId,
+      onError,
+    ],
   );
 
   const onAddData = useCallback(
@@ -133,13 +149,13 @@ export const Pillar: FC<PillarProps> = (props) => {
 
       setCurrentValue((displayedValue) => {
         const storedValue = convertToPreferredUnit(
-          trackerValues?.reduce((total, { value }) => total + value, 0) ?? 0,
+          trackerValues?.reduce((total, { value: v }) => total + v, 0) ?? 0,
           tracker,
         );
 
         const defaultCodingValue = convertToPreferredUnit(
-          trackerValues?.find((value) =>
-            isCodeEqual(value.code.coding[0], {
+          trackerValues?.find((v) =>
+            isCodeEqual(v.code.coding[0], {
               system: tracker.system,
               code: metricId,
             }),
@@ -156,13 +172,13 @@ export const Pillar: FC<PillarProps> = (props) => {
         return displayedValue + increaseBy;
       });
     },
-    [saveNewValue, metricId, tracker, trackerValues, value],
+    [onSaveNewValueOverride, trackerValues, tracker, saveNewValue, metricId],
   );
 
   useEffect(() => {
     progressHeight.setValue(100);
     opacityAnimation.setValue(0);
-  }, []);
+  }, [opacityAnimation, progressHeight]);
 
   useEffect(() => {
     rotateAnimation.setValue(1);

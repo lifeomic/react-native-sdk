@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -130,13 +130,13 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
          * layer of codes under the metric (Custom C/S) and merge the
          * underlying Code Trees.
          */
-        const relationships = flattenDepth(
+        const newRelationships = flattenDepth(
           res?.map((code) => code.specializedBy) ?? [],
         );
 
         setRelationships(
-          relationships.length
-            ? relationships
+          newRelationships.length
+            ? newRelationships
             : [
                 {
                   ...tracker,
@@ -147,7 +147,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         );
         setCodings(
           flattenDepth(
-            relationships?.map((code) => [
+            newRelationships?.map((code) => [
               code,
               ...(code.specializedBy?.map((code2) => [
                 code2,
@@ -159,42 +159,52 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         );
       })
       .catch(() => setRelationships([]));
-  }, [tracker.code, svc.fetchOntology]);
+  }, [tracker.code, svc.fetchOntology, svc, tracker]);
 
-  const addTrackerResource = useCallback(
+  const addTrackerResource = useMemo(
     // This makes it so the user doesn't add too many records at once
-    throttle(async (code: Code, value = quickAddAmount) => {
-      if (editsDisabled) {
-        return;
-      }
+    () =>
+      throttle(async (code: Code, value = quickAddAmount) => {
+        if (editsDisabled) {
+          return;
+        }
 
-      try {
-        const res = await svc.upsertTrackerResource(
-          valuesContext,
-          toFhirResource(
-            tracker.resourceType,
-            {
-              ...svc,
-              createDate: dateRange.start,
-              value,
-              tracker,
-            },
-            code,
-          ),
-        );
-        notifier.emit('valuesChanged', [
-          {
+        try {
+          const res = await svc.upsertTrackerResource(
             valuesContext,
-            metricId,
-            tracker: res,
-            saveToRecent: false, // don't add to recent items. It is already there or is a root option. LX has this functionality
-          },
-        ]);
-      } catch (e) {
-        onError?.(e);
-      }
-    }, 800),
-    [tracker, svc, dateRange.start, editsDisabled, quickAddAmount],
+            toFhirResource(
+              tracker.resourceType,
+              {
+                ...svc,
+                createDate: dateRange.start,
+                value,
+                tracker,
+              },
+              code,
+            ),
+          );
+          notifier.emit('valuesChanged', [
+            {
+              valuesContext,
+              metricId,
+              tracker: res,
+              saveToRecent: false, // don't add to recent items. It is already there or is a root option. LX has this functionality
+            },
+          ]);
+        } catch (e) {
+          onError?.(e);
+        }
+      }, 800),
+    [
+      quickAddAmount,
+      editsDisabled,
+      svc,
+      valuesContext,
+      tracker,
+      dateRange.start,
+      metricId,
+      onError,
+    ],
   );
 
   return (

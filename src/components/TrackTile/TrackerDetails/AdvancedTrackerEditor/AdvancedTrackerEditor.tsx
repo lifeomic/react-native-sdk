@@ -141,7 +141,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
     };
 
     fetchOntology();
-  }, [trackerValue.code, svc.fetchOntology, tracker]);
+  }, [trackerValue.code, svc.fetchOntology, tracker, svc, trackerValue]);
 
   useEffect(() => {
     setValue(trackerValue.value);

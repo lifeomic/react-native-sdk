@@ -3,8 +3,8 @@ export const darkenHexColor = (color: string, darkenBy: number): string => {
     return color;
   }
 
-  return `#${color.replace(/^#/, '').replace(/../g, (color) =>
-    Math.min(255, Math.max(0, parseInt(color, 16) + darkenBy))
+  return `#${color.replace(/^#/, '').replace(/../g, (c) =>
+    Math.min(255, Math.max(0, parseInt(c, 16) + darkenBy))
       .toString(16)
       .padStart(2, '0'),
   )}`;

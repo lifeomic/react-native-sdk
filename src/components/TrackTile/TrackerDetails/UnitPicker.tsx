@@ -42,17 +42,17 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
     'unitPickerUnselectedColorAndroid',
   ]);
 
+  const openInput = useCallback(() => {
+    setIsOpen(true);
+    setTempValue(value);
+  }, [value]);
+
+  const commitNewValue = useCallback(() => {
+    setIsOpen(false);
+    onChange(tempValue);
+  }, [onChange, tempValue]);
+
   if (Platform.OS === 'ios') {
-    const openInput = useCallback(() => {
-      setIsOpen(true);
-      setTempValue(value);
-    }, [value]);
-
-    const commitNewValue = useCallback(() => {
-      setIsOpen(false);
-      onChange(tempValue);
-    }, [tempValue]);
-
     return (
       <View>
         <TouchableOpacity

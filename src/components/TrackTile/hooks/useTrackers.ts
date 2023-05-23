@@ -17,16 +17,16 @@ export const useTrackers = () => {
   const fetched = !!error || !!trackers;
 
   useEffect(() => {
-    const onChange = (...trackers: Tracker[]) => {
-      const installedMetrics = trackers.filter(isInstalledMetric);
+    const onChange = (...newTrackers: Tracker[]) => {
+      const installedMetrics = newTrackers.filter(isInstalledMetric);
 
       if (!installedMetrics.length) {
         return;
       }
 
-      setTrackers((trackers) =>
+      setTrackers((currentTrackers) =>
         sortTrackers(
-          trackers
+          currentTrackers
             ?.filter(
               (t) =>
                 !installedMetrics.find(
@@ -40,9 +40,9 @@ export const useTrackers = () => {
 
     const onRemoved = (tracker: Tracker) => {
       if (isInstalledMetric(tracker)) {
-        setTrackers((trackers) =>
+        setTrackers((currentTrackers) =>
           sortTrackers(
-            trackers?.map((t) => {
+            currentTrackers?.map((t) => {
               if (t.id === tracker.id) {
                 return {
                   ...omit(t, ['target', 'unit', 'metricId']),
@@ -82,8 +82,8 @@ export const useTrackers = () => {
           setTrackers(sortTrackers(trackTileTrackers));
           setPillarTrackers(sortTrackers(pillarTileTrackers));
           setLoading(false);
-        } catch (error) {
-          const e = error as { error: unknown };
+        } catch (fetchError) {
+          const e = fetchError as { error: unknown };
           setError(e?.error || e);
           setLoading(false);
 
@@ -95,7 +95,7 @@ export const useTrackers = () => {
     };
 
     fetchData();
-  }, [svc.fetchTrackers, fetched, loading]);
+  }, [svc.fetchTrackers, fetched, loading, svc]);
 
   return {
     trackers: trackers ?? [],

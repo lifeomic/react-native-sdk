@@ -12,9 +12,9 @@ storiesOf('Switch Row', module)
 const DefaultView: FC<{ disabled?: boolean }> = ({ disabled }) => {
   const [value, setValue] = useState(false);
 
-  const onValueChange = (value: boolean) => {
+  const onValueChange = (v: boolean) => {
     action('onValueChange');
-    setValue(value);
+    setValue(v);
   };
 
   const props = {

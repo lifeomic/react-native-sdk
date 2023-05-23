@@ -45,10 +45,9 @@ export const deregisterWearableLifecycleHandlers = (
   });
 };
 export const WearableLifecycleProvider = ({ children }: Props) => {
-  if (__DEV__) {
-    // eslint-disable-next-line
-    const [initialHookLength] = React.useState(hooks.length);
+  const [initialHookLength] = React.useState(hooks.length);
 
+  if (__DEV__) {
     if (initialHookLength !== hooks.length) {
       throw new Error(
         "[WearableLifecycleProvider]: Lifecycle hooks changed between renders. Call 'registerWearableLifecycleHook' as early as possible to prevent this error.",
@@ -56,9 +55,8 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
     }
   }
 
-  for (const useCustomWearableLifeCycleHook of hooks) {
-    // eslint-disable-next-line
-    useCustomWearableLifeCycleHook();
+  for (const customWearableLifeCycleHook of hooks) {
+    customWearableLifeCycleHook();
   }
 
   const onPreToggle = useCallback(

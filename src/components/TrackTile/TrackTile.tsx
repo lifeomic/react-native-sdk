@@ -42,7 +42,9 @@ export function TrackTile({
     useTrackerValues(valuesContext);
 
   const settingsButton = (props: { size: number }) => {
-    if (hideSettingsButton) return null;
+    if (hideSettingsButton) {
+      return null;
+    }
     return (
       <OpenSettingsButton
         {...props}

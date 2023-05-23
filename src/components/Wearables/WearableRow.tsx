@@ -74,8 +74,8 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
     onToggleBackgroundSync,
     onBackfillWearable,
     switchProps,
-    wearable,
     isBackfillEnabled,
+    wearable: wearableProp,
     styles: instanceStyles,
   } = props;
 
@@ -319,12 +319,12 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
           <WearableRowDetailSection icon={<Info />}>
             <Text
               style={styles.moreInfoDescription}
-              testID={`desc-${wearable.ehrId}`}
+              testID={`desc-${wearableProp.ehrId}`}
             >
               {description}
             </Text>
             <TouchableOpacity
-              testID={`info-link-${wearable.ehrId}`}
+              testID={`info-link-${wearableProp.ehrId}`}
               onPress={_onShowLearnMore(link)}
             >
               <Text style={styles.learnMoreButton}>
@@ -339,7 +339,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
       _onShowLearnMore,
       styles.learnMoreButton,
       styles.moreInfoDescription,
-      wearable.ehrId,
+      wearableProp.ehrId,
     ],
   );
 
@@ -357,12 +357,12 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
           }}
         >
           <SwitchRow
-            onValueChange={toggleBackgroundSync(wearable)}
+            onValueChange={toggleBackgroundSync(wearableProp)}
             accessibilityLabel={t('toggle-wearable', {
               wearableName: t('background-sync', 'Background Sync'),
             })}
             disabled={disabled}
-            testID={`toggle-${wearable.ehrId}-background-sync`}
+            testID={`toggle-${wearableProp.ehrId}-background-sync`}
             value={backgroundSyncEnabled}
             styles={{
               headerText: {
@@ -375,7 +375,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
           {backgroundSyncEnabled && (
             <Text
               style={styles.backgroundSyncDescription}
-              testID={`background-desc-${wearable.ehrId}`}
+              testID={`background-desc-${wearableProp.ehrId}`}
             >
               {t(
                 'background-sync-message',
@@ -392,7 +392,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
       styles.backgroundSyncDescription,
       switchProps,
       toggleBackgroundSync,
-      wearable,
+      wearableProp,
     ],
   );
 
@@ -524,9 +524,9 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
 
       return (
         <>
-          <View style={styles.divider}></View>
+          <View style={styles.divider} />
           {Content}
-          <View style={styles.divider}></View>
+          <View style={styles.divider} />
         </>
       );
     },
@@ -570,23 +570,27 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
   return (
     <View style={styles.container}>
       <WearableRowHeader
-        testID={`header-${wearable.ehrId}`}
-        title={wearable.name}
-        icon={getIcon(wearable.ehrType)}
+        testID={`header-${wearableProp.ehrId}`}
+        title={wearableProp.name}
+        icon={getIcon(wearableProp.ehrType)}
       />
       <View style={styles.details}>
-        {!wearable.enabled && renderIntro(wearable)}
-        {wearable.enabled && renderLearnMore(wearable)}
-        {wearable.enabled &&
-          wearable.status === WearableIntegrationStatus.NeedsAuthorization &&
+        {!wearableProp.enabled && renderIntro(wearableProp)}
+        {wearableProp.enabled && renderLearnMore(wearableProp)}
+        {wearableProp.enabled &&
+          wearableProp.status ===
+            WearableIntegrationStatus.NeedsAuthorization &&
           renderSyncError()}
-        {wearable.enabled &&
-          wearable.status !== WearableIntegrationStatus.NeedsAuthorization &&
-          wearable.syncTypes?.length === 0 &&
+        {wearableProp.enabled &&
+          wearableProp.status !==
+            WearableIntegrationStatus.NeedsAuthorization &&
+          wearableProp.syncTypes?.length === 0 &&
           renderSyncError(false)}
-        {wearable.enabled && renderBackgroundSync(wearable)}
-        {wearable.enabled && isBackfillEnabled && renderBackfill(wearable)}
-        {renderToggle(wearable)}
+        {wearableProp.enabled && renderBackgroundSync(wearableProp)}
+        {wearableProp.enabled &&
+          isBackfillEnabled &&
+          renderBackfill(wearableProp)}
+        {renderToggle(wearableProp)}
       </View>
     </View>
   );

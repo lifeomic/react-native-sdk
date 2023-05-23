@@ -22,7 +22,8 @@ export type ManageTrackersProps = {
 };
 
 export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
-  const { onOpenTracker, trackerRequestMeta = useTrackers(), icons } = props;
+  const trackerRequestMetaHook = useTrackers();
+  const { onOpenTracker, trackerRequestMeta, icons } = props;
   const styles = useStyleOverrides(defaultStyles);
   const [isReordering, setIsReordering] = useState(false);
   const flatStyles = useFlattenedStyles(styles, [
@@ -32,7 +33,8 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
     'manageTrackersReorderSwitchFalseTrackColor',
   ]);
 
-  const { loading, trackers, error } = trackerRequestMeta;
+  const { loading, trackers, error } =
+    trackerRequestMeta ?? trackerRequestMetaHook;
 
   const [orderState, setOrderState] = useState<Tracker[] | undefined>();
 
@@ -51,7 +53,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
       } else {
         await syncTrackerOrder();
         setOrderState((ts) =>
-          ts?.concat(trackers.filter((t) => !isInstalledMetric(t))),
+          ts?.concat(trackers.filter((tracker) => !isInstalledMetric(tracker))),
         );
       }
     },
@@ -208,7 +210,14 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
               />
             );
           },
-          [isReordering, reorderSaving],
+          [
+            flatStyles.manageTrackersTrackerRowHighlightColor.color,
+            icons,
+            isReordering,
+            onOpenTracker,
+            reorderSaving,
+            styles.trackerRowLoading,
+          ],
         )}
       />
     </View>

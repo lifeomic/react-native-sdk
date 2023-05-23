@@ -47,9 +47,9 @@ export const RadialProgress: FC<Props> = (props) => {
 
   const moveProgressTo = useCallback(
     (position: 'start' | 'end') => {
-      const value = position === 'start' ? circumference : 0;
-      ref.current.setValue(value);
-      setAnimationValue(value);
+      const newValue = position === 'start' ? circumference : 0;
+      ref.current.setValue(newValue);
+      setAnimationValue(newValue);
     },
     [circumference],
   );

@@ -84,8 +84,7 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
         hasError={!!error}
         values={trackerValues.map((value) =>
           convertToPreferredUnit(
-            value[metricId]?.reduce((total, { value }) => total + value, 0) ??
-              0,
+            value[metricId]?.reduce((total, { value: v }) => total + v, 0) ?? 0,
             tracker,
           ),
         )}

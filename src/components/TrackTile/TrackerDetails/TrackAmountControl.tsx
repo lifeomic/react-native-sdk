@@ -33,7 +33,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
     );
     onChange(newValue);
     setCurrentValue(numberFormat(newValue));
-  }, [currentValue, value]);
+  }, [currentValue, onChange, value]);
 
   let { fontSize } = fonts.trackAmountControlValueFontSizeLarge;
 

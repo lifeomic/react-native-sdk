@@ -19,7 +19,6 @@ export type CodingCategoryPickerProps<T extends Code> = {
   onCodePressed: (code?: T) => () => void;
 };
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function CodingCategoryPicker<T extends Code>(
   props: CodingCategoryPickerProps<T>,
 ) {
