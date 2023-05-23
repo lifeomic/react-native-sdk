@@ -46,7 +46,8 @@ export function useFhirClient() {
 
     const fetchNextPage = () => {
       if (hasMoreData) {
-        setNext((prev) => prev + 10);
+        const pageSize = queryParams.pageSize || 10;
+        setNext((prev) => prev + pageSize);
       }
     };
 
