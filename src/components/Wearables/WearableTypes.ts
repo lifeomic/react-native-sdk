@@ -1,5 +1,3 @@
-import React from 'react';
-
 export enum EHRType {
   Dexcom = 'dexcom',
   Fitbit = 'fitbit',
@@ -96,5 +94,5 @@ export interface NativeWearableLifecycleHandler {
   preToggle?(wearable: WearableIntegration, enabled: boolean): Promise<void>;
   postToggle?(wearable: WearableIntegration): Promise<void>;
   sanitizeEHRs?(ehrs: WearableIntegration[]): Promise<WearableIntegration[]>;
-  renderWearableControl?(wearable: WearableIntegration): React.ReactNode;
+  onBackfill?(wearable: WearableIntegration): Promise<boolean>;
 }

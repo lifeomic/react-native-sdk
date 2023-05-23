@@ -21,20 +21,19 @@ export const WearableLifecycleContext = React.createContext<{
     ehrs: WearableIntegration[],
     legacySort?: boolean,
   ) => Promise<WearableIntegration[]>;
-  renderWearableControls: (wearable: WearableIntegration) => React.ReactNode;
+  onBackfill: (wearable: WearableIntegration) => Promise<boolean>;
 }>({
   onPreToggle: async () => {},
   onPostToggle: async () => {},
   sanitizeEHRs: async (ehrs) => ehrs,
-  renderWearableControls: () => null,
+  onBackfill: async () => false,
 });
 
 const handlers: NativeWearableLifecycleHandler[] = [];
-const providers: React.ComponentType<{ children: React.ReactNode }>[] = [];
+const hooks: Function[] = [];
 
 export const registerWearableLifecycleHandlers = handlers.push.bind(handlers);
-export const registerWearableLifecycleProvider =
-  providers.unshift.bind(providers);
+export const registerWearableLifecycleHook = hooks.push.bind(hooks);
 export const deregisterWearableLifecycleHandlers = (
   ...handlersToRemove: NativeWearableLifecycleHandler[]
 ) => {
@@ -46,6 +45,22 @@ export const deregisterWearableLifecycleHandlers = (
   });
 };
 export const WearableLifecycleProvider = ({ children }: Props) => {
+  if (__DEV__) {
+    // eslint-disable-next-line
+    const [initialHookLength] = React.useState(hooks.length);
+
+    if (initialHookLength !== hooks.length) {
+      throw new Error(
+        "[WearableLifecycleProvider]: Lifecycle hooks changed between renders. Call 'registerWearableLifecycleHook' as early as possible to prevent this error.",
+      );
+    }
+  }
+
+  for (const useCustomWearableLifeCycleHook of hooks) {
+    // eslint-disable-next-line
+    useCustomWearableLifeCycleHook();
+  }
+
   const onPreToggle = useCallback(
     async (wearable: WearableIntegration, enabled: boolean) => {
       await Promise.all(
@@ -59,6 +74,14 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
     await Promise.all(
       handlers.map((strategy) => strategy.postToggle?.(wearable)),
     );
+  }, []);
+
+  const onBackfill = useCallback(async (wearable: WearableIntegration) => {
+    const res = await Promise.all(
+      handlers.map((strategy) => strategy.onBackfill?.(wearable)),
+    );
+
+    return res.some((didBackfill) => didBackfill);
   }, []);
 
   const sanitizeEHRs = useCallback(
@@ -92,31 +115,12 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
     [],
   );
 
-  const renderWearableControls = useCallback(
-    (wearable: WearableIntegration) => (
-      <>
-        {handlers.map(
-          (handler) => handler.renderWearableControl?.(wearable) ?? null,
-        )}
-      </>
-    ),
-    [],
-  );
-
-  return providers.reduce(
-    (agg, Provider, index) => (
-      <Provider key={`wearable-provider-${index}`}>{agg}</Provider>
-    ),
+  return (
     <WearableLifecycleContext.Provider
-      value={{
-        onPostToggle,
-        onPreToggle,
-        sanitizeEHRs,
-        renderWearableControls,
-      }}
+      value={{ onPostToggle, onPreToggle, sanitizeEHRs, onBackfill }}
     >
       {children}
-    </WearableLifecycleContext.Provider>,
+    </WearableLifecycleContext.Provider>
   );
 };
 
