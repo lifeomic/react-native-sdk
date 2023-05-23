@@ -5,6 +5,7 @@ import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import merge from 'deepmerge';
+import { useState } from 'react';
 
 type ResourceTypes = {
   Observation: Observation;
@@ -27,11 +28,14 @@ export function useFhirClient() {
   const { activeProject, activeSubjectId } = useActiveProject();
 
   const useSearchResourcesQuery = (queryParams: QueryParams) => {
+    const [next, setNext] = useState(0);
+    const [hasMoreData, setHasMoreData] = useState(false);
     const params = merge(
       {
         // Defaults:
         _tag: `http://lifeomic.com/fhir/dataset|${activeProject?.id}`,
         patient: activeSubjectId,
+        next: next.toString(),
       },
       queryParams,
     );
@@ -40,8 +44,14 @@ export function useFhirClient() {
     // TODO: add code, date, & other query param capabilities
     // TODO: consider using fhir-search across the board (documenting delay)
 
-    return useQuery(
-      [`search-${resourceType}`, params],
+    const fetchNextPage = () => {
+      if (hasMoreData) {
+        setNext((prev) => prev + 10);
+      }
+    };
+
+    const queryResult = useQuery(
+      [`${resourceType}/_search`, params],
       () => {
         return httpClient
           .post<Bundle<ResourceTypes[typeof resourceType]>>(
@@ -51,12 +61,24 @@ export function useFhirClient() {
               headers: accountHeaders,
             },
           )
-          .then((res) => res.data);
+          .then((res) => {
+            const { data } = res;
+            const hasMore = data.link?.[1]?.relation === 'next';
+            setHasMoreData(hasMore);
+            return data;
+          });
       },
       {
         enabled: !!accountHeaders && !!activeProject?.id && !!activeSubjectId,
+        keepPreviousData: true,
       },
     );
+
+    return {
+      ...queryResult,
+      fetchNextPage,
+      hasMoreData,
+    };
   };
 
   const useCreateResourceMutation = () => {

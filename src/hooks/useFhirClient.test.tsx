@@ -93,11 +93,113 @@ describe('useSearchResourcesQuery', () => {
       JSON.stringify({
         _tag: 'http://lifeomic.com/fhir/dataset|projectId',
         patient: 'subjectId',
+        next: '0',
         resourceType: 'Observation',
       }),
     );
     await waitFor(() => {
       expect(result.current.data).toEqual(resultBundle);
+    });
+  });
+
+  test('fetches the next page', async () => {
+    const url = '/v1/fhir/dstu3/Observation/_search';
+    const resultBundle1 = {
+      entry: [
+        {
+          resource: {
+            id: 'o1',
+          },
+        },
+        {
+          resource: {
+            id: 'o2',
+          },
+        },
+      ],
+      link: [
+        {
+          relation: 'self',
+          url,
+        },
+        {
+          relation: 'next',
+          url: `${url}?next=10`,
+        },
+      ],
+    };
+    const resultBundle2 = {
+      entry: [
+        {
+          resource: {
+            id: 'o3',
+          },
+        },
+        {
+          resource: {
+            id: 'o4',
+          },
+        },
+      ],
+      link: [
+        {
+          relation: 'self',
+          url: `${url}?next=10`,
+        },
+      ],
+    };
+    axiosMock
+      .onPost('/v1/fhir/dstu3/Observation/_search')
+      .replyOnce(200, resultBundle1);
+    axiosMock
+      .onPost('/v1/fhir/dstu3/Observation/_search')
+      .replyOnce(200, resultBundle2);
+
+    function useTestHook() {
+      const { useSearchResourcesQuery } = useFhirClient();
+      const searchResult = useSearchResourcesQuery({
+        resourceType: 'Observation',
+      });
+      return searchResult;
+    }
+    const { result } = renderHookInContext(useTestHook);
+
+    expect(axiosMock.history.post[0].url).toBe(
+      '/v1/fhir/dstu3/Observation/_search',
+    );
+
+    // NOTE: implicitly testing these default search params:
+    expect(axiosMock.history.post[0].data).toEqual(
+      JSON.stringify({
+        _tag: 'http://lifeomic.com/fhir/dataset|projectId',
+        patient: 'subjectId',
+        next: '0',
+        resourceType: 'Observation',
+      }),
+    );
+    await waitFor(() => {
+      expect(result.current.data).toEqual(resultBundle1);
+      expect(result.current.hasMoreData).toEqual(true);
+    });
+
+    // fetch the next page
+    act(() => result.current.fetchNextPage());
+
+    expect(axiosMock.history.post[1].url).toBe(
+      '/v1/fhir/dstu3/Observation/_search',
+    );
+    expect(axiosMock.history.post[1].data).toEqual(
+      JSON.stringify({
+        _tag: 'http://lifeomic.com/fhir/dataset|projectId',
+        patient: 'subjectId',
+        next: '10',
+        resourceType: 'Observation',
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.data).toEqual(resultBundle2);
+      expect(result.current.hasMoreData).toEqual(false);
     });
   });
 });
