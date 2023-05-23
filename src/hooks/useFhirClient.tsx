@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from 'react-query';
-import { Bundle, Observation } from 'fhir/r3';
+import { Bundle, Observation, Coding } from 'fhir/r3';
 import formatISO from 'date-fns/formatISO';
 import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
@@ -12,15 +12,10 @@ type ResourceTypes = {
 };
 type ResourceType = Observation;
 
-type FhirCodes = {
-  system: string;
-  code: string;
-};
-
 type QueryParams = {
   resourceType: keyof ResourceTypes;
   pageSize?: number;
-  coding?: FhirCodes[];
+  coding?: Coding[];
 };
 
 type DeleteParams = {
