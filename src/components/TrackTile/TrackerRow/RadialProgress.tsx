@@ -111,7 +111,6 @@ export const RadialProgress: FC<Props> = (props) => {
   }, [
     animationValue,
     circumference,
-    ref.current,
     value,
     target,
     lastValue,
