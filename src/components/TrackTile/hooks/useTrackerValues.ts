@@ -58,7 +58,7 @@ export const useTrackerValues = (
         return;
       }
 
-      setTrackerValues((trackerValues = {}) => {
+      setTrackerValues((currentTrackerValues = {}) => {
         return relevantUpdates.reduce((values, { metricId, tracker, drop }) => {
           const dateKey = startOfDay(
             tracker.createdDate || startOfToday(),
@@ -78,7 +78,7 @@ export const useTrackerValues = (
               ),
             },
           };
-        }, trackerValues);
+        }, currentTrackerValues);
       });
     };
 
@@ -95,8 +95,8 @@ export const useTrackerValues = (
 
       svc
         .fetchTrackerValues(valuesContext, dateRange)
-        .then((trackerValues) => {
-          setTrackerValues(trackerValues);
+        .then((fetchedTrackerValues) => {
+          setTrackerValues(fetchedTrackerValues);
           setLoading(false);
         })
         .catch((e) => {
@@ -108,7 +108,14 @@ export const useTrackerValues = (
           }
         });
     }
-  }, [svc.fetchTrackerValues, loading, dateRange, prevDateRange]);
+  }, [
+    svc.fetchTrackerValues,
+    loading,
+    dateRange,
+    prevDateRange,
+    svc,
+    valuesContext,
+  ]);
 
   return {
     trackerValues: eachDayOfInterval(dateRange).map(

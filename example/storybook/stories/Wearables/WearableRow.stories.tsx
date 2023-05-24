@@ -142,18 +142,21 @@ interface Props {
 const DefaultView: FC<Props> = (props) => {
   const [enabled, setEnabled] = useState(false);
 
-  const onToggleWearable = async (ehrId: string, enabled: boolean) => {
-    const result = rowActions.onToggleWearable(ehrId, enabled);
-    setEnabled(enabled);
+  const onToggleWearable = async (ehrId: string, newEnabledStatus: boolean) => {
+    const result = rowActions.onToggleWearable(ehrId, newEnabledStatus);
+    setEnabled(newEnabledStatus);
     return result;
   };
 
   const onToggleBackgroundSync = async (
     enabledWearable: WearableIntegration,
-    enabled: boolean,
+    newEnabledStatus: boolean,
   ) => {
-    const result = rowActions.onToggleBackgroundSync(enabledWearable, enabled);
-    setEnabled(enabled);
+    const result = rowActions.onToggleBackgroundSync(
+      enabledWearable,
+      newEnabledStatus,
+    );
+    setEnabled(newEnabledStatus);
     return result;
   };
 

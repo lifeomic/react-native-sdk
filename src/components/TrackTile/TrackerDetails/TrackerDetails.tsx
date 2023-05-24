@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import { t } from '../../../../lib/i18n';
 import {
@@ -85,13 +85,13 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   }, [incomingValue, tracker, selectedUnit, fetchingTrackerValues]);
 
   const updateTarget = useCallback(() => {
-    setTarget((target: string) => {
-      const newTarget = coerceToNonnegativeValue(
-        convertToISONumber(target),
+    setTarget((newTarget: string) => {
+      const formattedTarget = coerceToNonnegativeValue(
+        convertToISONumber(newTarget),
         currentTarget,
       );
-      setCurrentTarget(newTarget);
-      return numberFormat(newTarget);
+      setCurrentTarget(formattedTarget);
+      return numberFormat(formattedTarget);
     });
   }, [currentTarget]);
 
@@ -109,62 +109,67 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     [defaultUnit, tracker.units],
   );
 
-  const saveNewValue = useCallback(
-    debounce(async (newValue: number) => {
-      try {
-        const values = todaysValues[metricId] ?? [];
-        const currentValue = values.reduce(
-          (total, { value }) => total + value,
-          0,
-        );
-        const updates: TrackerValue[] = [];
-        const deletes: TrackerValue[] = [];
-        let trackerValueIndex = 0;
-        let delta = convertToStoreUnit(newValue, tracker) - currentValue;
-        while (delta !== 0) {
-          const trackerValue = values[trackerValueIndex];
-          const resourceValue = (trackerValue?.value ?? 0) + delta;
+  const saveNewValue = useMemo(
+    () =>
+      debounce(async (newValue: number) => {
+        try {
+          const values = todaysValues[metricId] ?? [];
+          const cValue = values.reduce((total, { value }) => total + value, 0);
+          const updates: TrackerValue[] = [];
+          const deletes: TrackerValue[] = [];
+          let trackerValueIndex = 0;
+          let delta = convertToStoreUnit(newValue, tracker) - cValue;
+          while (delta !== 0) {
+            const trackerValue = values[trackerValueIndex];
+            const resourceValue = (trackerValue?.value ?? 0) + delta;
 
-          if (resourceValue > 0) {
-            delta = 0;
-            const res = await svc.upsertTrackerResource(
-              valuesContext,
-              toFhirResource(tracker.resourceType, {
-                ...svc,
-                createDate: isToday(dateRange.start)
-                  ? new Date()
-                  : dateRange.start,
-                ...todaysValues[metricId]?.[0],
-                value: convertToPreferredUnit(resourceValue, tracker),
-                tracker,
-              }),
-            );
-            updates.push(res);
-          } else {
-            trackerValueIndex++;
-            delta = resourceValue;
+            if (resourceValue > 0) {
+              delta = 0;
+              const res = await svc.upsertTrackerResource(
+                valuesContext,
+                toFhirResource(tracker.resourceType, {
+                  ...svc,
+                  createDate: isToday(dateRange.start)
+                    ? new Date()
+                    : dateRange.start,
+                  ...todaysValues[metricId]?.[0],
+                  value: convertToPreferredUnit(resourceValue, tracker),
+                  tracker,
+                }),
+              );
+              updates.push(res);
+            } else {
+              trackerValueIndex++;
+              delta = resourceValue;
 
-            const removed = await svc.deleteTrackerResource(
-              valuesContext,
-              tracker.resourceType,
-              trackerValue.id,
-            );
+              const removed = await svc.deleteTrackerResource(
+                valuesContext,
+                tracker.resourceType,
+                trackerValue.id,
+              );
 
-            if (removed) {
-              deletes.push(trackerValue);
+              if (removed) {
+                deletes.push(trackerValue);
+              }
             }
           }
-        }
 
-        const batchMeta = { valuesContext, metricId };
-        notifier.emit('valuesChanged', [
-          ...updates.map((tracker) => ({ ...batchMeta, tracker })),
-          ...deletes.map((tracker) => ({ ...batchMeta, tracker, drop: true })),
-        ]);
-      } catch (e) {
-        onError?.(e);
-      }
-    }, 800),
+          const batchMeta = { valuesContext, metricId };
+          notifier.emit('valuesChanged', [
+            ...updates.map((newTracker) => ({
+              ...batchMeta,
+              tracker: newTracker,
+            })),
+            ...deletes.map((newTracker) => ({
+              ...batchMeta,
+              tracker: newTracker,
+              drop: true,
+            })),
+          ]);
+        } catch (e) {
+          onError?.(e);
+        }
+      }, 800),
     [todaysValues, tracker, metricId, svc, valuesContext, dateRange, onError],
   );
 
@@ -173,7 +178,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
       setCurrentValue(newValue);
       saveNewValue(newValue);
     },
-    [saveNewValue, metricId],
+    [saveNewValue],
   );
 
   return (

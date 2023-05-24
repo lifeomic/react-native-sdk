@@ -33,7 +33,7 @@ const Bar: FC<BarProps> = (props) => {
       easing: Easing.inOut(Easing.exp),
       duration: 500,
     }).start();
-  }, [percentComplete]);
+  }, [animated, percentComplete]);
 
   return (
     <Animated.View

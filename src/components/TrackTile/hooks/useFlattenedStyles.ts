@@ -9,6 +9,6 @@ export const useFlattenedStyles = <T extends NamedStyles, K extends keyof T>(
 ) => {
   return useMemo(
     () => mapValues(pick(styles, styleNames), StyleSheet.flatten) as Pick<T, K>,
-    [styles, ...styleNames],
+    [styleNames, styles],
   );
 };

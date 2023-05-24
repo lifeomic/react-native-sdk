@@ -13,5 +13,25 @@ module.exports = {
         patterns: ['src/*'],
       },
     ],
+    'no-alert': [
+      'off',
+      { 
+        paths: ['example/storybook'],
+        patterns: ['example/storybook/*'],
+      },
+    ],
+    'react-native/no-inline-styles': [
+    'off',
+    { 
+      paths: ['example/storybook'],
+      patterns: ['example/storybook/*'],
+    }
+    ],
+    'react/no-unstable-nested-components': [
+      'off',
+    { 
+      patterns: ['src/components/TrackTile/*'],
+    }
+    ]
   },
 };
