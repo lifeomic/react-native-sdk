@@ -46,6 +46,7 @@ const Indicator = ({
           'fast-food': <Icons.Burger {...svgProps} />,
           flossing: <Icons.Floss {...svgProps} />,
           heart: <Icons.Heart {...svgProps} />,
+          'heart-hand': <Icons.HeartHand {...svgProps} />,
           moon: <Icons.Moon {...svgProps} />,
           music: <Icons.Music {...svgProps} />,
           plant: <Icons.Plant {...svgProps} />,
@@ -59,6 +60,7 @@ const Indicator = ({
           target: <Icons.Target {...svgProps} />,
           walking: <Icons.Steps {...svgProps} />,
           water: <Icons.Droplet {...svgProps} />,
+          wind: <Icons.Wind {...svgProps} />,
         }[name] ?? <Icons.Helix {...svgProps} />)}
     </View>
   );
