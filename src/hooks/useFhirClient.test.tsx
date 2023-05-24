@@ -124,7 +124,7 @@ describe('useSearchResourcesQuery', () => {
         },
         {
           relation: 'next',
-          url: `${url}?next=10`,
+          url: `${url}?patient=PATIENT_ID&next=10`,
         },
       ],
     };
@@ -144,7 +144,7 @@ describe('useSearchResourcesQuery', () => {
       link: [
         {
           relation: 'self',
-          url: `${url}?next=10`,
+          url: `${url}?patient=PATIENT_ID&next=10`,
         },
       ],
     };
@@ -180,10 +180,11 @@ describe('useSearchResourcesQuery', () => {
     await waitFor(() => {
       expect(result.current.data).toEqual(resultBundle1);
       expect(result.current.hasMoreData).toEqual(true);
+      expect(result.current.next).toEqual(10);
     });
 
     // fetch the next page
-    act(() => result.current.fetchNextPage());
+    act(() => result.current.fetchNext(10));
 
     expect(axiosMock.history.post[1].url).toBe(
       '/v1/fhir/dstu3/Observation/_search',

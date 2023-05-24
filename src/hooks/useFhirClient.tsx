@@ -5,7 +5,8 @@ import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import merge from 'deepmerge';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import queryString from 'query-string';
 
 type ResourceTypes = {
   Observation: Observation;
@@ -29,6 +30,8 @@ export function useFhirClient() {
 
   const useSearchResourcesQuery = (queryParams: QueryParams) => {
     const [next, setNext] = useState(0);
+    const [nextFromData, setNextFromData] = useState<number | undefined>();
+    const [responseData, setResponseData] = useState<Bundle<Observation>>();
     const [hasMoreData, setHasMoreData] = useState(false);
     const params = merge(
       {
@@ -44,10 +47,9 @@ export function useFhirClient() {
     // TODO: add code, date, & other query param capabilities
     // TODO: consider using fhir-search across the board (documenting delay)
 
-    const fetchNextPage = () => {
+    const fetchNext = (next: number) => {
       if (hasMoreData) {
-        const pageSize = queryParams.pageSize || 10;
-        setNext((prev) => prev + pageSize);
+        setNext(next);
       }
     };
 
@@ -64,8 +66,7 @@ export function useFhirClient() {
           )
           .then((res) => {
             const { data } = res;
-            const hasMore = data.link?.[1]?.relation === 'next';
-            setHasMoreData(hasMore);
+            setResponseData(data);
             return data;
           });
       },
@@ -75,9 +76,20 @@ export function useFhirClient() {
       },
     );
 
+    useEffect(() => {
+      const hasMore = responseData?.link?.[1]?.relation === 'next';
+      const nextStr = responseData?.link?.[1]?.url
+        ? queryString.parse(responseData.link[1].url).next?.toString()
+        : undefined;
+      const nextInt = nextStr ? parseInt(nextStr, 10) : undefined;
+      setHasMoreData(hasMore);
+      setNextFromData(nextInt);
+    }, [responseData]);
+
     return {
       ...queryResult,
-      fetchNextPage,
+      next: nextFromData,
+      fetchNext,
       hasMoreData,
     };
   };
