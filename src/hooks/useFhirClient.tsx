@@ -77,9 +77,11 @@ export function useFhirClient() {
     );
 
     useEffect(() => {
-      const hasMore = responseData?.link?.[1]?.relation === 'next';
-      const nextStr = responseData?.link?.[1]?.url
-        ? queryString.parse(responseData.link[1].url).next?.toString()
+      const nextLink = responseData?.link?.find((_) => _.relation === 'next');
+      const hasMore = !!nextLink;
+      // const hasMore = responseData?.link?.[1]?.relation === 'next';
+      const nextStr = nextLink?.url
+        ? queryString.parse(nextLink.url).next?.toString()
         : undefined;
       const nextInt = nextStr ? parseInt(nextStr, 10) : undefined;
       setHasMoreData(hasMore);
