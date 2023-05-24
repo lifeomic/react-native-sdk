@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { createStyles } from '../BrandConfigProvider';
 import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 
@@ -11,6 +11,7 @@ export interface ToggleButtonProps {
   enabled: boolean;
   icon?: React.ReactNode;
   disabled?: boolean;
+  loading?: boolean;
   styles?: ToggleButtonStyles;
 }
 
@@ -23,6 +24,7 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
     testID,
     title,
     enabled,
+    loading = false,
     styles: instanceStyles,
   } = props;
 
@@ -40,6 +42,14 @@ export const ToggleButton: FC<ToggleButtonProps> = (props) => {
           enabled ? styles.toggleOffButton : undefined,
         ]}
       >
+        <View style={styles.loadingWrapper}>
+          <ActivityIndicator
+            size="small"
+            animating={loading}
+            hidesWhenStopped
+            testID={`${testID}-loader`}
+          />
+        </View>
         {icon && <View style={styles.iconWrapper}>{icon}</View>}
         <Text
           style={[
@@ -77,6 +87,12 @@ const defaultStyles = createStyles('ToggleButton', (theme) => ({
   },
   toggleOffText: {
     color: 'white',
+  },
+  loadingWrapper: {
+    width: 0,
+    alignItems: 'flex-end',
+    transform: [{ translateX: -theme.spacing.extraSmall }],
+    opacity: 1,
   },
   iconWrapper: {
     marginRight: theme.spacing.medium,

@@ -115,6 +115,19 @@ describe('WearableLifecycleProvider', () => {
     expect(handler.postToggle).toHaveBeenCalledWith(fitbit);
   });
 
+  it("should call the handler's onBackfill method when calling onBackfill", async () => {
+    const handler: NativeWearableLifecycleHandler = {
+      onBackfill: jest.fn(),
+    };
+
+    const { result } = renderHookInContext(handler);
+
+    await result.current.onBackfill(fitbit);
+
+    expect(handler.onBackfill).toHaveBeenCalledTimes(1);
+    expect(handler.onBackfill).toHaveBeenCalledWith(fitbit);
+  });
+
   describe('sanitizeWearables', () => {
     it("should call the handler's sanitizeEHRs method when calling sanitizeEHRs", async () => {
       const handler: NativeWearableLifecycleHandler = {

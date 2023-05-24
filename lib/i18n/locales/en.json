@@ -48,7 +48,7 @@
   "track-tile.todays-units": "Today's {{unit}}",
   "track-tile.total-daily-units": "Total Daily {{unit}}",
   "track-tile.weekly-metrics-prefix": "Weekly Metrics",
-  "fitbit-learnmore":"Fitbit records will be ingested once they are available from Fitbit''s cloud. You may need to sync with the Fitbit app if records appear to be missing.",
+  "fitbit-learnmore":"Fitbit records will be ingested once they are available from Fitbit's cloud. You may need to sync with the Fitbit app if records appear to be missing.",
   "dexcom-learnmore":"Dexcom records will be ingested periodically in the cloud. You will need to sync with the Dexcom app, which will then impose a 3 hour delay when syncing your records.",
   "garmin-learnmore":"Garmin records will sync once they are available in the Garmin Connect app.",
   "google-fit-learnmore":"Google Fit records will be ingested periodically in the cloud. You may need to sync with the Google Fit app if records appear to be missing.",

@@ -4,9 +4,10 @@ import {
   WearableIntegrationStatus,
   EHRType,
 } from './WearableTypes';
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import {
   LayoutAnimation,
+  StyleSheet,
   SwitchProps,
   Text,
   TouchableOpacity,
@@ -47,8 +48,12 @@ export interface WearableRowProps {
     enabledWearable: WearableIntegration,
     enabled: boolean,
   ) => Promise<WearableIntegration>;
+  onBackfillWearable?: (
+    enabledWearable: WearableIntegration,
+  ) => Promise<boolean>;
   styles?: any;
   wearable: WearableIntegration;
+  isBackfillEnabled?: boolean;
 }
 
 /**
@@ -67,13 +72,18 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
     onShowLearnMore,
     onToggleWearable,
     onToggleBackgroundSync,
+    onBackfillWearable,
     switchProps,
     wearable,
+    isBackfillEnabled,
     styles: instanceStyles,
   } = props;
 
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { onPreToggle } = useWearableLifecycleHooks();
+  const [backfillLoading, setBackfillLoading] = useState(false);
+  const [wasBackfillRequested, setWasBackfillRequested] = useState(false);
+  const [didBackfillFail, setDidBackfillFail] = useState<boolean>();
 
   const _onShowLearnMore = useCallback(
     (link: string) => () => {
@@ -437,6 +447,103 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
     [styles.errorText],
   );
 
+  const renderBackfill = useCallback(
+    (wearable: WearableIntegration) => {
+      const isDisabled = (wearable.syncTypes?.length ?? 0) === 0;
+      const Content = wasBackfillRequested ? (
+        <Text
+          style={styles.backfillDescription}
+          testID={`backfill-desc-${wearable.ehrId}`}
+        >
+          {t(
+            'wearable-backfill-success',
+            'Your request was successfully submitted. It can take several hours for the data to be transferred completely.',
+          )}
+        </Text>
+      ) : (
+        <>
+          <Text
+            style={styles.backfillDescription}
+            testID={`backfill-desc-${wearable.ehrId}`}
+          >
+            {t(
+              'wearable-backfill-instructions',
+              'This request pulls in the last 30 days of data from {{name}} and can only be performed once; configure all desired data sources before proceeding. Would you like to add this data now?',
+              wearable,
+            )}
+          </Text>
+          {didBackfillFail && (
+            <Text
+              style={[styles.backfillDescription, styles.backfillErrorText]}
+              testID={`backfill-error-${wearable.ehrId}`}
+            >
+              {t(
+                'wearable-backfill-failure',
+                'We are unable to process your request at this time.',
+                wearable,
+              )}
+            </Text>
+          )}
+          <ToggleButton
+            testID={`backfill-${wearable.ehrId}`}
+            accessibilityLabel={t(
+              'wearable-backfill-button-a11y',
+              'Add historical data for {{name}}',
+              wearable,
+            )}
+            title={t('wearable-backfill-button', 'Add Historical Data')}
+            enabled={false}
+            disabled={isDisabled}
+            loading={backfillLoading}
+            onPress={async () => {
+              setDidBackfillFail(false);
+              setBackfillLoading(true);
+              try {
+                const succeeded = await onBackfillWearable?.(wearable);
+                setWasBackfillRequested(succeeded ?? false);
+                setDidBackfillFail(!succeeded);
+              } catch (e) {
+                console.warn('Failed to invoke backfill', e);
+                setWasBackfillRequested(false);
+                setDidBackfillFail(true);
+              } finally {
+                setBackfillLoading(false);
+              }
+            }}
+            styles={{
+              toggleButton: {
+                ...styles.backfillButton,
+                ...(backfillLoading && styles.backfillButtonLoading),
+                ...(isDisabled && styles.backfillButtonLoading),
+              },
+              toggleText: styles.backfillButtonText,
+            }}
+          />
+        </>
+      );
+
+      return (
+        <>
+          <View style={styles.divider}></View>
+          {Content}
+          <View style={styles.divider}></View>
+        </>
+      );
+    },
+    [
+      onBackfillWearable,
+      backfillLoading,
+      wasBackfillRequested,
+      didBackfillFail,
+      styles.backfillButton,
+      styles.backfillButtonLoading,
+      styles.backfillButtonText,
+      styles.backfillDescription,
+      styles.backfillErrorText,
+      styles.divider,
+    ],
+  );
+
   const getIcon = useCallback((ehrType: string) => {
     switch (ehrType) {
       case EHRType.HealthKit:
@@ -478,6 +585,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
           wearable.syncTypes?.length === 0 &&
           renderSyncError(false)}
         {wearable.enabled && renderBackgroundSync(wearable)}
+        {wearable.enabled && isBackfillEnabled && renderBackfill(wearable)}
         {renderToggle(wearable)}
       </View>
     </View>
@@ -507,9 +615,36 @@ const defaultStyles = createStyles('WearableRow', (theme) => ({
     minHeight: 52,
     borderRadius: 10,
     flexDirection: 'column',
+    overflow: 'hidden',
   },
   details: {
     flexDirection: 'column',
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    width: '200%',
+    marginLeft: -theme.spacing.large,
+    marginTop: theme.spacing.extraSmall,
+    backgroundColor: '#d7d7d7',
+  },
+  backfillDescription: {
+    marginTop: theme.spacing.extraSmall,
+  },
+  backfillButton: {
+    backgroundColor: 'rgb(54, 141, 24)',
+    borderWidth: 0,
+  },
+  backfillButtonLoading: {
+    backgroundColor: 'rgba(54, 141, 24, 0.2)',
+  },
+  backfillButtonDisabled: {
+    backgroundColor: 'rgba(54, 141, 24, 0.2)',
+  },
+  backfillButtonText: {
+    color: 'white',
+  },
+  backfillErrorText: {
+    color: theme.colors.error,
   },
 }));
 

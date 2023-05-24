@@ -1,7 +1,11 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor, act } from '@testing-library/react-native';
 import { WearableRow, WearableRowProps } from './WearableRow';
-import { EHRType, WearableIntegrationStatus } from './WearableTypes';
+import {
+  EHRType,
+  WearableIntegrationStatus,
+  WearableStateSyncType,
+} from './WearableTypes';
 
 const rowActions = {
   onError: jest.fn(),
@@ -10,6 +14,7 @@ const rowActions = {
   onShowLearnMore: jest.fn(),
   onToggleWearable: jest.fn(),
   onToggleBackgroundSync: jest.fn(),
+  onBackfillWearable: jest.fn(),
 };
 
 const exampleWearable = {
@@ -187,5 +192,91 @@ describe('WearableRow', () => {
 
     expect(rowActions.onError.mock.calls[0]).toEqual([error, 'fitbit', true]);
     expect(rowActions.onRefreshNeeded).toHaveBeenCalledTimes(1);
+  });
+
+  it('should allow triggering a backfill', async () => {
+    let onBackfillWearablePromiseResolver: Function = jest.fn();
+    const onBackfillWearablePromise = new Promise((r) => {
+      onBackfillWearablePromiseResolver = r;
+    });
+    rowActions.onBackfillWearable.mockImplementation(
+      () => onBackfillWearablePromise,
+    );
+    const mockWearable = {
+      ...exampleWearable,
+      syncTypes: [WearableStateSyncType.BodyMass],
+      enabled: true,
+    };
+
+    const { getByTestId, getByText, queryByText } = render(
+      <WearableRow {...baseProps} isBackfillEnabled wearable={mockWearable} />,
+    );
+
+    expect(
+      getByText(/This request pulls in the last 30 days of data from Fitbit/),
+    ).toBeDefined();
+
+    const toggle = getByTestId('backfill-fitbit');
+    expect(toggle).toBeDefined();
+
+    await act(async () => {
+      fireEvent.press(toggle);
+    });
+
+    const loader = getByTestId('backfill-fitbit-loader');
+    expect(loader).toBeDefined();
+
+    await act(async () => {
+      onBackfillWearablePromiseResolver(true);
+    });
+
+    expect(getByText(/Your request was successfully submitted/)).toBeDefined();
+    expect(queryByText(/Add Historical Data/)).toBeNull();
+
+    expect(rowActions.onBackfillWearable).toHaveBeenCalledTimes(1);
+    expect(rowActions.onBackfillWearable).toHaveBeenCalledWith(mockWearable);
+  });
+
+  it('should handle backfill failure', async () => {
+    const error = new Error('uh oh');
+    rowActions.onBackfillWearable.mockRejectedValue(error);
+    const mockWearable = {
+      ...exampleWearable,
+      syncTypes: [WearableStateSyncType.BodyMass],
+      enabled: true,
+    };
+
+    const { getByTestId, getByText, queryByText } = render(
+      <WearableRow {...baseProps} isBackfillEnabled wearable={mockWearable} />,
+    );
+
+    expect(
+      getByText(/This request pulls in the last 30 days of data from Fitbit/),
+    ).toBeDefined();
+
+    const button = getByTestId('backfill-fitbit');
+    expect(button).toBeDefined();
+
+    await act(async () => {
+      fireEvent.press(button);
+    });
+
+    expect(queryByText(/Your request was successfully submitted/)).toBeNull();
+    expect(getByText(/Add Historical Data/)).toBeDefined();
+    expect(
+      getByText(/We are unable to process your request at this time./),
+    ).toBeDefined();
+
+    expect(rowActions.onBackfillWearable).toHaveBeenCalledTimes(1);
+    expect(rowActions.onBackfillWearable).toHaveBeenCalledWith(mockWearable);
+  });
+
+  it('does not render the toggle if the wearable is not enabled', async () => {
+    const { queryByTestId } = render(
+      <WearableRow {...baseProps} isBackfillEnabled={false} />,
+    );
+
+    const toggle = queryByTestId('backfill-fitbit');
+    expect(toggle).toBeNull();
   });
 });

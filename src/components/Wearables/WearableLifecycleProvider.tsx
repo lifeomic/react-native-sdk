@@ -21,10 +21,12 @@ export const WearableLifecycleContext = React.createContext<{
     ehrs: WearableIntegration[],
     legacySort?: boolean,
   ) => Promise<WearableIntegration[]>;
+  onBackfill: (wearable: WearableIntegration) => Promise<boolean>;
 }>({
   onPreToggle: async () => {},
   onPostToggle: async () => {},
   sanitizeEHRs: async (ehrs) => ehrs,
+  onBackfill: async () => false,
 });
 
 const handlers: NativeWearableLifecycleHandler[] = [];
@@ -74,6 +76,14 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
     );
   }, []);
 
+  const onBackfill = useCallback(async (wearable: WearableIntegration) => {
+    const res = await Promise.all(
+      handlers.map((strategy) => strategy.onBackfill?.(wearable)),
+    );
+
+    return res.some((didBackfill) => didBackfill);
+  }, []);
+
   const sanitizeEHRs = useCallback(
     async (ehrs: WearableIntegration[], legacySort = false) => {
       let sanitizedEhrs = await handlers.reduce(
@@ -107,7 +117,7 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
 
   return (
     <WearableLifecycleContext.Provider
-      value={{ onPostToggle, onPreToggle, sanitizeEHRs }}
+      value={{ onPostToggle, onPreToggle, sanitizeEHRs, onBackfill }}
     >
       {children}
     </WearableLifecycleContext.Provider>
