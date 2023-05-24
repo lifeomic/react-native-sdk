@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { SvgProps } from 'react-native-svg';
 import { tID } from '../common/testID';
 import { useTrackers } from '../hooks/useTrackers';
 import { useTrackerValues } from '../hooks/useTrackerValues';
@@ -30,14 +29,12 @@ export type PillarsTileProps = {
     originalTrackerValues?: TrackerValue[],
   ) => void;
   background?: ReactNode;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
   styles?: PillarsTileStyles;
 };
 
 export const PillarsTile = ({
   onOpenDetails,
   onSaveNewValueOverride,
-  icons,
   styles: instanceStyles,
 }: PillarsTileProps) => {
   const { styles } = useStyles(defaultStyles, instanceStyles);
@@ -73,7 +70,6 @@ export const PillarsTile = ({
                 trackerValues={trackerDayValues}
                 tracker={tracker}
                 valuesContext={valuesContext}
-                icons={icons}
                 onOpenDetails={() => onOpenDetails(tracker, valuesContext)}
                 onSaveNewValueOverride={
                   onSaveNewValueOverride

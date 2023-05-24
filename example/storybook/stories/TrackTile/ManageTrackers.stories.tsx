@@ -13,6 +13,7 @@ import {
   Planet,
   Aperture,
 } from '@lifeomic/chromicons-native';
+import { IconProvider } from '../../../../src';
 
 const defaultMetricTypes: Partial<Tracker>[] = [
   {
@@ -58,16 +59,11 @@ const defaultMetricTypes: Partial<Tracker>[] = [
 ];
 
 storiesOf('ManageTrackers', module)
-  .addDecorator(MockEnvironmentDecorator())
+  .addDecorator((storyFn, context) =>
+    MockEnvironmentDecorator()(storyFn, context),
+  )
   .add('default', () => (
-    <ManageTrackers
-      onOpenTracker={action('onOpenTracker')}
-      trackerRequestMeta={{
-        loading: false,
-        error: undefined,
-        trackers: defaultMetricTypes as Tracker[],
-        pillarTrackers: [],
-      }}
+    <IconProvider
       icons={
         boolean('Use Custom Icons', false)
           ? {
@@ -80,7 +76,17 @@ storiesOf('ManageTrackers', module)
             }
           : {}
       }
-    />
+    >
+      <ManageTrackers
+        onOpenTracker={action('onOpenTracker')}
+        trackerRequestMeta={{
+          loading: false,
+          error: undefined,
+          trackers: defaultMetricTypes as Tracker[],
+          pillarTrackers: [],
+        }}
+      />
+    </IconProvider>
   ))
   .add('loading', () => (
     <ManageTrackers

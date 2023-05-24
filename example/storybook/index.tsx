@@ -1,4 +1,4 @@
-// if you use expo remove this line
+import React from 'react';
 import { AppRegistry } from 'react-native';
 import { init } from '../../src/common/init';
 
@@ -8,6 +8,7 @@ import {
   addDecorator,
 } from '@storybook/react-native';
 import { withKnobs } from '@storybook/addon-knobs';
+import { BrandConfigProvider } from '../../src';
 
 import './rn-addons';
 
@@ -16,6 +17,11 @@ init();
 
 // enables knobs for all stories
 addDecorator(withKnobs);
+
+// enables default brand for all stories
+addDecorator((storyFn: any, context) => (
+  <BrandConfigProvider>{storyFn(context)}</BrandConfigProvider>
+));
 
 // import stories
 configure(() => {

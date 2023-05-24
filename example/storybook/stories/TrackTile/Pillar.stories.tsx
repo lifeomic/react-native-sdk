@@ -12,7 +12,8 @@ import {
 } from '../../../../src/components/TrackTile/services/TrackTileService';
 import { boolean } from '@storybook/addon-knobs';
 import { Anchor, CheckCircle, PlusSquare } from '@lifeomic/chromicons-native';
-import { StyleOverridesProvider } from '../../../../src/components/TrackTile/styles';
+import { IconProvider } from '../../../../src';
+import { StylesProvider } from '../../../../src/components/BrandConfigProvider/styles/StylesProvider';
 
 const nutritionTracker: Tracker = {
   id: 'nutrition',
@@ -48,29 +49,23 @@ const InteractivePillar = () => {
   return (
     <View style={defaultStyles.pillarsTile}>
       <View style={defaultStyles.pillarsTileBackgroundContainer}>
-        <StyleOverridesProvider
-          value={{
-            pillarIconGoalMet: {
-              ...(boolean('Goal Met Icon Custom Color', false)
-                ? { color: 'red' }
-                : {}),
-            },
-            pillarIconGoalNotMet: {
-              ...(boolean('Goal Not Met Icon Custom Color', false)
-                ? { color: 'currentColor' }
-                : {}),
+        <StylesProvider
+          styles={{
+            Pillar: {
+              pillarIconGoalMetText: {
+                ...(boolean('Goal Met Icon Custom Color', false)
+                  ? { color: 'red' }
+                  : {}),
+              },
+              pillarIconGoalNotMetText: {
+                ...(boolean('Goal Not Met Icon Custom Color', false)
+                  ? { color: 'currentColor' }
+                  : {}),
+              },
             },
           }}
         >
-          <Pillar
-            trackerValues={[
-              {
-                id: 'trackerid',
-                createdDate: new Date(),
-                value: isBarFilled ? 5 : 0,
-                code: { coding: [] },
-              },
-            ]}
+          <IconProvider
             icons={
               useCustomIcons
                 ? {
@@ -80,13 +75,24 @@ const InteractivePillar = () => {
                   }
                 : {}
             }
-            tracker={nutritionTracker}
-            onOpenDetails={action('onOpenDetails')}
-            onError={action('onError')}
-            onSaveNewValueOverride={action('onSaveNewValueOverride')}
-            valuesContext={valuesContext}
-          />
-        </StyleOverridesProvider>
+          >
+            <Pillar
+              trackerValues={[
+                {
+                  id: 'trackerid',
+                  createdDate: new Date(),
+                  value: isBarFilled ? 5 : 0,
+                  code: { coding: [] },
+                },
+              ]}
+              tracker={nutritionTracker}
+              onOpenDetails={action('onOpenDetails')}
+              onError={action('onError')}
+              onSaveNewValueOverride={action('onSaveNewValueOverride')}
+              valuesContext={valuesContext}
+            />
+          </IconProvider>
+        </StylesProvider>
       </View>
     </View>
   );
@@ -159,6 +165,6 @@ const defaultStyles = StyleSheet.create({
     height: 342,
     padding: 8,
     paddingVertical: 16,
-    backgroundColor: '#222222',
+    backgroundColor: 'seagreen',
   },
 });

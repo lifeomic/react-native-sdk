@@ -11,14 +11,12 @@ import {
   getPreferredUnitType,
 } from '../util/convert-value';
 import { numberFormatters } from '../formatters';
-import { SvgProps } from 'react-native-svg';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks/useStyles';
 import { useTheme } from '../../../hooks';
 
 type TrackerProps = TrackerType & {
   value?: number;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
   styles?: TrackerStyles;
 };
 const { numberFormat } = numberFormatters;
@@ -52,9 +50,9 @@ export function Tracker(tracker: TrackerProps) {
         </View>
         <View style={[disabled && styles.trackerIconDisabled]}>
           <Indicator
-            name={tracker.icon}
+            name={id}
+            fallbackName={tracker.icon}
             color={(styles.trackerIconColorText?.color ?? tracker.color) as any}
-            CustomIcon={tracker.icons?.[id]}
             scale={(scale as number) / INDICATOR_HEIGHT}
           />
         </View>

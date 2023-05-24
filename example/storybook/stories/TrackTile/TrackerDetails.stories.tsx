@@ -16,10 +16,11 @@ import {
   UnitPicker,
   UnitPickerProps,
 } from '../../../../src/components/TrackTile/TrackerDetails/UnitPicker';
+import { IconProvider } from '../../../../src';
 
 storiesOf('TrackerDetails', module)
   .addDecorator(withKnobs)
-  .addDecorator(
+  .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator({
       trackers: [
         {
@@ -29,46 +30,11 @@ storiesOf('TrackerDetails', module)
           system: TRACKER_CODE_SYSTEM,
         },
       ],
-    }),
+    })(storyFn, context),
   )
   .add('default', () => {
     return (
-      <TrackerDetails
-        tracker={
-          {
-            id: 'id',
-            name: 'Example',
-            color: 'cadetblue',
-            resourceType: 'Observation',
-            description: t(
-              'track-tile.example-description',
-              'This is an example description for the track tile that is to be added',
-            ),
-            units: [
-              {
-                unit: 'unit-1',
-                display: 'steps',
-                target: 100,
-                default: true,
-              },
-              {
-                unit: 'unit-2',
-                display: 'skips',
-                target: 75,
-              },
-              {
-                unit: 'unit-3',
-                display: 'jumps',
-                target: 50,
-              },
-            ],
-            system: TRACKER_CODE_SYSTEM,
-          } as Partial<MetricType> as any
-        }
-        valuesContext={{
-          system: TRACKER_CODE_SYSTEM,
-          codeBelow: TRACKER_CODE,
-        }}
+      <IconProvider
         icons={
           boolean('Use Custom Icons', false)
             ? {
@@ -76,7 +42,45 @@ storiesOf('TrackerDetails', module)
               }
             : {}
         }
-      />
+      >
+        <TrackerDetails
+          tracker={
+            {
+              id: 'id',
+              name: 'Example',
+              color: '#5F9EA0',
+              resourceType: 'Observation',
+              description: t(
+                'track-tile.example-description',
+                'This is an example description for the track tile that is to be added',
+              ),
+              units: [
+                {
+                  unit: 'unit-1',
+                  display: 'steps',
+                  target: 100,
+                  default: true,
+                },
+                {
+                  unit: 'unit-2',
+                  display: 'skips',
+                  target: 75,
+                },
+                {
+                  unit: 'unit-3',
+                  display: 'jumps',
+                  target: 50,
+                },
+              ],
+              system: TRACKER_CODE_SYSTEM,
+            } as Partial<MetricType> as any
+          }
+          valuesContext={{
+            system: TRACKER_CODE_SYSTEM,
+            codeBelow: TRACKER_CODE,
+          }}
+        />
+      </IconProvider>
     );
   })
   .add('UnitPicker', () => {

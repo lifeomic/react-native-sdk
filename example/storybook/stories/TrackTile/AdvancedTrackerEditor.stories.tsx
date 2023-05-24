@@ -27,10 +27,10 @@ const Stack = createNativeStackNavigator();
 
 storiesOf('AdvancedTrackerEditor', module)
   .addDecorator(withKnobs)
-  .addDecorator(
+  .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator({
       ontology,
-    }),
+    })(storyFn, context),
   )
   .add('default', () => {
     const pillarType = select(

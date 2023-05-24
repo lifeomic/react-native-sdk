@@ -6,6 +6,7 @@ import './Notifications/NotificationScreen.stories';
 import './OAuth.stories';
 import './ActivityIndicatorView.stories';
 import './TrackTile/AdvancedTrackerDetails.stories';
+import './TrackTile/Indicator.stories';
 import './TrackTile/AdvancedTrackerEditor.stories';
 import './TrackTile/ManageTrackers.stories';
 import './TrackTile/Pillar.stories';
