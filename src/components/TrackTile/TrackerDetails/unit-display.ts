@@ -1,12 +1,12 @@
 import { Tracker, UnitType } from '../services/TrackTileService';
-import { convertToPreferredUnit } from '../util/convert-value';
-import { t } from '../../../../lib/i18n';
+import i18n, { t } from '../../../../lib/i18n';
 
 type UnitDisplayConfig = {
   value: number;
   unit: UnitType;
   tracker: Tracker;
   skipInterpolation?: boolean;
+  preserveCasing?: boolean;
 };
 
 export const unitDisplay = ({
@@ -15,22 +15,28 @@ export const unitDisplay = ({
   tracker,
   skipInterpolation = false,
 }: UnitDisplayConfig) => {
-  // This should never happen. If it does it means we are missing translations.
-  const defaultDisplay = `{{count}} ${unit.display.replace(/^(.)/, (match) =>
+  const defaultOne = `{{count}} ${unit.unit.replace(/^(.)/, (match) =>
     match.toUpperCase(),
   )}`;
+  const defaultOther = `{{count}} ${unit.display.replace(/^(.)/, (match) =>
+    match.toUpperCase(),
+  )}`;
+  const defaultDisplay = value === 1 ? defaultOne : defaultOther;
 
-  return t(tracker.id, {
-    count: convertToPreferredUnit(value, tracker),
-    defaultValue_zero: unit.displayZero ?? defaultDisplay,
-    defaultValue_one: unit.displayOne ?? defaultDisplay,
-    defaultValue_two: unit.displayTwo ?? defaultDisplay,
-    defaultValue_few: unit.displayFew ?? defaultDisplay,
-    defaultValue_many: unit.displayMany ?? defaultDisplay,
-    defaultValue_other: unit.displayOther ?? defaultDisplay,
+  const normalizedId = tracker.id.replace(/:/g, '&');
+  i18n.addResources('en', 'tracker', {
+    ...(unit.displayZero && { [`${normalizedId}_zero`]: unit.displayZero }),
+    ...(unit.displayOne && { [`${normalizedId}_one`]: unit.displayOne }),
+    ...(unit.displayTwo && { [`${normalizedId}_two`]: unit.displayTwo }),
+    ...(unit.displayFew && { [`${normalizedId}_few`]: unit.displayFew }),
+    ...(unit.displayOther && { [`${normalizedId}_other`]: unit.displayOther }),
+  });
+
+  const displayUnit = t(`tracker:${normalizedId}`, {
+    count: value,
     skipInterpolation,
-  })
-    .replace('{{count}}', '')
-    .replace(/\s+/g, ' ')
-    .trim();
+    defaultValue: defaultDisplay,
+  });
+
+  return displayUnit.replace('{{count}}', '').replace(/\s+/g, ' ').trim();
 };

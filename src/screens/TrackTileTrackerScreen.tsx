@@ -18,7 +18,7 @@ export const TrackTileTrackerScreen = ({
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: t('Track {name}', { name: tracker?.name }),
+      title: t('Track {{name}}', { name: tracker?.name }),
     });
   });
 
