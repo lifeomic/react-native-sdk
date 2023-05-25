@@ -8,19 +8,32 @@ import { convertToISONumber } from '../util/convert-value';
 import { numberFormatters } from '../formatters';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
+import { debounce } from 'lodash';
 
 type Props = {
   color: string;
   value: number;
   onChange: (value: number) => void;
+  saveInProgress: boolean;
 };
 const { numberFormat } = numberFormatters;
-const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
+const TrackAmountControl: FC<Props> = ({
+  color,
+  value,
+  onChange,
+  saveInProgress,
+}) => {
   const { styles } = useStyles(defaultStyles);
 
   const [currentValue, setCurrentValue] = useState(numberFormat(value));
 
-  useEffect(() => setCurrentValue(numberFormat(value)), [value]);
+  useEffect(() => {
+    if (!saveInProgress) {
+      debounce(() => {
+        setCurrentValue(numberFormat(value));
+      }, 800);
+    }
+  }, [value, saveInProgress]);
 
   const submitChange = useCallback(() => {
     const newValue = coerceToNonnegativeValue(
@@ -48,7 +61,14 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
           'Decrement tracker value',
         )}
         accessibilityRole="button"
-        onPress={() => value > 0 && onChange(value - 1)}
+        onPress={() => {
+          const asString = addToNumberString(currentValue, -1, false) as string;
+          const asNumber = addToNumberString(currentValue, -1, true) as number;
+          if (asNumber > -1) {
+            setCurrentValue(asString);
+            onChange(asNumber);
+          }
+        }}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
         style={styles.unaryButton}
       >
@@ -78,7 +98,12 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
           'Increment tracker value',
         )}
         accessibilityRole="button"
-        onPress={() => onChange(value + 1)}
+        onPress={() => {
+          const asString = addToNumberString(currentValue, 1, false) as string;
+          const asNumber = addToNumberString(currentValue, 1, true) as number;
+          setCurrentValue(asString);
+          onChange(asNumber);
+        }}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
         style={styles.unaryButton}
       >
@@ -88,6 +113,16 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
       </TouchableOpacity>
     </View>
   );
+};
+
+const addToNumberString = (
+  numberString: string,
+  numberToAdd: number,
+  returnNumber: boolean,
+) => {
+  const number = Number(convertToISONumber(numberString));
+  const result = number + numberToAdd;
+  return returnNumber ? result : numberFormat(result);
 };
 
 const defaultStyles = createStyles('TrackAmountControl', () => ({

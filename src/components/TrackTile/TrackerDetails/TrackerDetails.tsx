@@ -47,6 +47,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   const defaultUnit = getStoredUnitType(tracker);
   const { styles } = useStyles(defaultStyles);
   const svc = useTrackTileService();
+  const [saveInProgress, setSaveInProgress] = useState(false);
   const [dateRange, setDateRange] = useState({
     start: startOfToday(),
     end: endOfToday(),
@@ -103,6 +104,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   const saveNewValue = useMemo(
     () =>
       debounce(async (newValue: number) => {
+        setSaveInProgress(true);
         try {
           const values = todaysValues[metricId] ?? [];
           const cValue = values.reduce((total, { value }) => total + value, 0);
@@ -160,6 +162,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
         } catch (e) {
           onError?.(e);
         }
+        setSaveInProgress(false);
       }, 800),
     [todaysValues, tracker, metricId, svc, valuesContext, dateRange, onError],
   );
@@ -187,6 +190,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           value={currentValue}
           onChange={onValueChange}
           color={tracker.color}
+          saveInProgress={saveInProgress}
         />
         <View style={styles.targetContainer}>
           <Text
