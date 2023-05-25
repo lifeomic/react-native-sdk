@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { View, Image } from 'react-native';
 import { Divider, Text } from 'react-native-paper';
 import { t } from '../../../../lib/i18n';
 import { UnitPicker } from './UnitPicker';
@@ -186,6 +186,11 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           tracker={tracker}
           unit={selectedUnit}
         />
+        {tracker.image && (
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: tracker.image }} style={styles.image} />
+          </View>
+        )}
         <TrackAmountControl
           value={currentValue}
           onChange={onValueChange}
@@ -262,6 +267,14 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
 };
 
 const defaultStyles = createStyles('TrackerDetails', () => ({
+  imageContainer: {
+    width: 326,
+    height: 210,
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'contain',
+  },
   container: {
     backgroundColor: 'white',
     alignItems: 'center',
