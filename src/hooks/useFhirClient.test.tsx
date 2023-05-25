@@ -203,6 +203,63 @@ describe('useSearchResourcesQuery', () => {
       expect(result.current.hasMoreData).toEqual(false);
     });
   });
+
+  test('supports FHIR code filters', async () => {
+    const resultBundle = {
+      entry: [
+        {
+          resource: {
+            id: 'o1',
+          },
+        },
+        {
+          resource: {
+            id: 'o2',
+          },
+        },
+      ],
+    };
+    axiosMock
+      .onPost('/v1/fhir/dstu3/Observation/_search')
+      .reply(200, resultBundle);
+
+    function useTestHook() {
+      const { useSearchResourcesQuery } = useFhirClient();
+      const searchResult = useSearchResourcesQuery({
+        resourceType: 'Observation',
+        coding: [
+          {
+            system: 'http://loinc.org',
+            code: '8480-6',
+          },
+          {
+            system: 'http://loinc.org',
+            code: '12345',
+          },
+        ],
+      });
+      return searchResult;
+    }
+    const { result } = renderHookInContext(useTestHook);
+
+    expect(axiosMock.history.post[0].url).toBe(
+      '/v1/fhir/dstu3/Observation/_search',
+    );
+
+    // NOTE: implicitly testing these default search params:
+    expect(axiosMock.history.post[0].data).toEqual(
+      JSON.stringify({
+        _tag: 'http://lifeomic.com/fhir/dataset|projectId',
+        patient: 'subjectId',
+        next: '0',
+        code: 'http://loinc.org|8480-6,http://loinc.org|12345',
+        resourceType: 'Observation',
+      }),
+    );
+    await waitFor(() => {
+      expect(result.current.data).toEqual(resultBundle);
+    });
+  });
 });
 
 describe('useCreateResourceMutation', () => {
