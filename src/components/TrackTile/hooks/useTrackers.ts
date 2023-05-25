@@ -24,13 +24,13 @@ type Trackers = {
  */
 export const useTrackers = (trackersToUse?: Trackers) => {
   const svc = useTrackTileService();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any | undefined>();
+  const [loading, setLoading] = useState(trackersToUse?.loading ?? false);
+  const [error, setError] = useState<any | undefined>(trackersToUse?.error);
   const [trackers, setTrackers] = useState<Tracker[] | undefined>(
     trackersToUse?.trackers,
   );
   const [pillarTrackers, setPillarTrackers] = useState<Tracker[] | undefined>(
-    trackersToUse?.trackers,
+    trackersToUse?.pillarTrackers,
   );
   const fetched = !!error || !!trackers;
 
