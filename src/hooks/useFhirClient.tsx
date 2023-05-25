@@ -5,7 +5,7 @@ import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import merge from 'deepmerge';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import queryString from 'query-string';
 
 type ResourceTypes = {
@@ -47,11 +47,14 @@ export function useFhirClient() {
     // TODO: add code, date, & other query param capabilities
     // TODO: consider using fhir-search across the board (documenting delay)
 
-    const fetchNext = (next: number) => {
-      if (hasMoreData) {
-        setNext(next);
-      }
-    };
+    const fetchNext = useCallback(
+      (next: number) => {
+        if (hasMoreData) {
+          setNext(next);
+        }
+      },
+      [hasMoreData],
+    );
 
     const queryResult = useQuery(
       [`${resourceType}/_search`, params],
