@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from 'react-query';
-import { Bundle, Observation } from 'fhir/r3';
+import { Bundle, Observation, Coding } from 'fhir/r3';
 import formatISO from 'date-fns/formatISO';
 import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
@@ -16,6 +16,7 @@ type ResourceType = Observation;
 type QueryParams = {
   resourceType: keyof ResourceTypes;
   pageSize?: number;
+  coding?: Coding[];
 };
 
 type DeleteParams = {
@@ -33,14 +34,27 @@ export function useFhirClient() {
     const [nextFromData, setNextFromData] = useState<number | undefined>();
     const [responseData, setResponseData] = useState<Bundle<Observation>>();
     const [hasMoreData, setHasMoreData] = useState(false);
+
+    const toFhirCodeFilter = () => {
+      if (queryParams.coding) {
+        return queryParams.coding
+          .map(({ system, code }) => `${system}|${code}`)
+          .join(',');
+      }
+    };
+
     const params = merge(
       {
         // Defaults:
         _tag: `http://lifeomic.com/fhir/dataset|${activeProject?.id}`,
         patient: activeSubjectId,
         next: next.toString(),
+        code: toFhirCodeFilter(),
       },
-      queryParams,
+      {
+        resourceType: queryParams.resourceType,
+        pageSize: queryParams.pageSize,
+      },
     );
     const resourceType = queryParams.resourceType;
 
