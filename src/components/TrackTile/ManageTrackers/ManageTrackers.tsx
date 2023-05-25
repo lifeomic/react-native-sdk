@@ -11,19 +11,17 @@ import DraggableFlatList, {
 import { ManageTrackerRow } from './ManageTrackerRow';
 import { useSyncTrackerOrder } from './useSyncTrackerOrder';
 import { tID } from '../common/testID';
-import { SvgProps } from 'react-native-svg';
 
 export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 export type ManageTrackersProps = {
   trackerRequestMeta?: ReturnType<typeof useTrackers>;
   onOpenTracker: (metric: Tracker) => void;
   hasReorderError?: boolean;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
 };
 
 export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
   const trackerRequestMetaHook = useTrackers();
-  const { onOpenTracker, trackerRequestMeta, icons } = props;
+  const { onOpenTracker, trackerRequestMeta } = props;
   const styles = useStyleOverrides(defaultStyles);
   const [isReordering, setIsReordering] = useState(false);
   const flatStyles = useFlattenedStyles(styles, [
@@ -136,7 +134,6 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                 tracker={tracker}
                 isDraggable={isReordering}
                 isBeingDragged={isActive}
-                icons={icons}
                 endAdornment={
                   reorderSaving && (
                     <ActivityIndicator
@@ -212,7 +209,6 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
           },
           [
             flatStyles.manageTrackersTrackerRowHighlightColor.color,
-            icons,
             isReordering,
             onOpenTracker,
             reorderSaving,

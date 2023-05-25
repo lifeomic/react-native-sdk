@@ -14,7 +14,7 @@ import {
   ColorValue,
 } from 'react-native';
 import { Text } from '../styles';
-import Svg, { Rect, Pattern, Defs, Path, SvgProps } from 'react-native-svg';
+import Svg, { Rect, Pattern, Defs, Path } from 'react-native-svg';
 import Indicator from '../icons/indicator';
 import {
   Tracker,
@@ -40,7 +40,6 @@ type PillarProps = {
   tracker: Tracker;
   valuesContext: TrackerValuesContext;
   loading?: boolean;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
   onOpenDetails: () => void;
   onError?: (e: any) => void;
   onSaveNewValueOverride?: (newValue: number) => void;
@@ -59,7 +58,6 @@ export const Pillar: FC<PillarProps> = (props) => {
     onError,
     tracker,
     valuesContext,
-    icons,
     styles: instanceStyles,
   } = props;
   const { color, icon, target: installTarget } = tracker;
@@ -232,8 +230,8 @@ export const Pillar: FC<PillarProps> = (props) => {
           style={{ alignItems: 'center' }}
         >
           <Indicator
-            CustomIcon={icons?.[metricId]}
-            name={icon}
+            name={metricId}
+            fallbackName={icon}
             color={hasMetGoal ? metGoalColor : notMetGoalColor}
             scale={1.8}
           />
@@ -307,8 +305,8 @@ export const Pillar: FC<PillarProps> = (props) => {
                       }}
                     >
                       <Indicator
-                        CustomIcon={icons?.['pillars-goal-met-icon']}
-                        name="star"
+                        name="pillars-goal-met-icon"
+                        fallbackName="star"
                         color={onColor}
                         scale={1.1}
                       />
@@ -335,8 +333,8 @@ export const Pillar: FC<PillarProps> = (props) => {
         onPress={() => onAddData(increment)}
       >
         <Indicator
-          CustomIcon={icons?.['pillars-add-data-button-icon']}
-          name="plus-circle"
+          name="pillars-add-data-button-icon"
+          fallbackName="plus-circle"
           color={color}
           scale={2.1}
         />

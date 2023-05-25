@@ -14,7 +14,9 @@ const ontology = {} as any;
 
 storiesOf('AdvancedTrackerDetails', module)
   .addDecorator(withKnobs)
-  .addDecorator(MockEnvironmentDecorator({ ontology }))
+  .addDecorator((storyFn, context) =>
+    MockEnvironmentDecorator({ ontology })(storyFn, context),
+  )
   .add('default', () => {
     const pillarType = select(
       'Pillar Type',

@@ -34,7 +34,6 @@ import {
 } from '../util/convert-value';
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
 import { numberFormatters } from '../formatters';
-import { SvgProps } from 'react-native-svg';
 import { endOfToday, isToday, startOfToday } from 'date-fns';
 import { DatePicker } from './DatePicker';
 import { useDynamicColorGroup } from '../../../hooks/useDynamicColorGroup';
@@ -45,13 +44,12 @@ export type TrackerDetailsProps = {
   valuesContext: TrackerValuesContext;
   onError?: (e: any) => void;
   canEditUnit?: boolean;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
 };
 
 const { numberFormat } = numberFormatters;
 
 export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
-  const { tracker, valuesContext, onError, canEditUnit, icons } = props;
+  const { tracker, valuesContext, onError, canEditUnit } = props;
   const { colorContainer } = useDynamicColorGroup(tracker.color);
   const defaultUnit = getStoredUnitType(tracker);
   const styles = useStyleOverrides(defaultStyles);
@@ -199,8 +197,8 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           ]}
         >
           <Indicator
-            CustomIcon={icons?.[metricId]}
-            name={tracker.icon}
+            name={metricId}
+            fallbackName={tracker.icon}
             color={tracker.color}
             scale={2.6}
           />

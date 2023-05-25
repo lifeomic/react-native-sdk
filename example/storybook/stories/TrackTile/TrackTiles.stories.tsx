@@ -6,7 +6,7 @@ import { action } from '@storybook/addon-actions';
 import { TrackTile } from '../../../../src/components/TrackTile';
 
 storiesOf('TrackTile', module)
-  .addDecorator(
+  .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator({
       trackers: [
         {
@@ -27,7 +27,7 @@ storiesOf('TrackTile', module)
           ],
         },
       ],
-    }),
+    })(storyFn, context),
   )
   .add('default', () => (
     <TrackTile
