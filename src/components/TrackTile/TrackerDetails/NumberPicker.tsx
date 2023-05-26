@@ -41,9 +41,10 @@ export const NumberPicker = (props: NumberPickerProps) => {
   }, [onChange, tempValue]);
 
   const numbers = [];
-  const stepAmount = selectedUnit.stepAmount ?? 1;
-  const minValue = stepAmount * 1;
-  const maxValue = stepAmount * 50;
+  const stepAmount =
+    selectedUnit.targetStepAmount ?? selectedUnit.stepAmount ?? 1;
+  const minValue = selectedUnit.targetMin ?? 0;
+  const maxValue = selectedUnit.targetStepAmount ?? stepAmount * 50;
 
   for (let i = minValue; i <= maxValue; i += stepAmount) {
     numbers.push(i);
