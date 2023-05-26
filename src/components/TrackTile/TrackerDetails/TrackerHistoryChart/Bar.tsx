@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef } from 'react';
-import { Animated, Easing, ViewStyle } from 'react-native';
+import { Animated, Easing, View, ViewStyle } from 'react-native';
 import { createStyles } from '../../../BrandConfigProvider';
 import { useStyles } from '../../../../hooks';
 
@@ -17,8 +17,9 @@ const Bar: FC<BarProps> = (props) => {
   const ref = useRef(new Animated.Value(animated ? 0 : percentComplete));
   const { styles } = useStyles(defaultStyles);
 
-  const barStyle =
-    variant === 'flat' ? styles.flatVariantStyle : styles.defaultVariantStyle;
+  const barStyle = variant === 'flat' ? styles.barFlat : styles.barDefault;
+  const containerStyle =
+    variant === 'flat' ? styles.containerFlat : styles.containerDefault;
 
   useEffect(() => {
     if (!animated) {
@@ -35,34 +36,38 @@ const Bar: FC<BarProps> = (props) => {
   }, [animated, percentComplete]);
 
   return (
-    <Animated.View
-      testID={testID}
-      style={[
-        {
-          height: ref.current.interpolate({
-            inputRange: [0, 1],
-            outputRange: ['-0.1%', '100%'],
-          }),
-        },
-        barStyle,
-        style,
-        {
-          backgroundColor: color || styles.backgroundColor?.backgroundColor,
-        },
-      ]}
-    />
+    <View style={containerStyle}>
+      <Animated.View
+        testID={testID}
+        style={[
+          {
+            width: ref.current.interpolate({
+              inputRange: [0, 1],
+              outputRange: ['0%', '100%'],
+            }),
+          },
+          barStyle,
+          style,
+          {
+            backgroundColor: color || styles.backgroundColor?.backgroundColor,
+          },
+        ]}
+      />
+    </View>
   );
 };
 
 const defaultStyles = createStyles('ChartBar', () => ({
+  containerFlat: { borderWidth: 1, height: 25.33 },
+  containerDefault: { borderRadius: 30, borderWidth: 1, height: 20 },
   backgroundColor: {
     backgroundColor: '#EEF0F2',
   },
-  defaultVariantStyle: {
+  barDefault: {
     borderRadius: 30,
-    width: 14,
+    height: 18,
   },
-  flatVariantStyle: {
+  barFlat: {
     width: 23.33,
   },
 }));

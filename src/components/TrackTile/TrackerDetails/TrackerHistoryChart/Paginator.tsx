@@ -24,7 +24,7 @@ const hitSlop = {
   right: 15,
 };
 
-const { shortMonthNumericDayWithYear } = dateFormatters;
+const { shortMonthNumericDay } = dateFormatters;
 
 const Paginator: FC<PaginatorProps> = (props) => {
   const { range, onChangeRange, color } = props;
@@ -57,12 +57,12 @@ const Paginator: FC<PaginatorProps> = (props) => {
         style={styles.titleText}
       >
         {t('track-tile.date-range', {
-          defaultValue: '{{start}} - {{end}}',
-          start: shortMonthNumericDayWithYear(range.start),
-          end: shortMonthNumericDayWithYear(range.end),
+          defaultValue: '{{start}}-{{end}}',
+          start: shortMonthNumericDay(range.start),
+          end: shortMonthNumericDay(range.end),
           formatParams: {
-            start: shortMonthNumericDayWithYear,
-            end: shortMonthNumericDayWithYear,
+            start: shortMonthNumericDay,
+            end: shortMonthNumericDay,
           },
         })}
       </Text>
@@ -92,16 +92,20 @@ const defaultStyles = createStyles('TrackTileChartPaginator', () => ({
     justifyContent: 'center',
     width: '100%',
     paddingHorizontal: 16,
-    marginVertical: 24,
+    marginTop: 24,
     alignItems: 'center',
     flexDirection: 'row',
+    marginBottom: 24,
   },
   titleText: {
     flex: 1,
     textAlign: 'center',
+    fontSize: 20,
+    fontWeight: '700',
   },
   stepperButton: {
     height: 13,
+    marginTop: -8,
   },
   activeButtonColorText: {
     color: '#02BFF1',

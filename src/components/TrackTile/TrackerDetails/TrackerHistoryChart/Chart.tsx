@@ -6,7 +6,7 @@ import { eachDayOfInterval, format, isToday } from 'date-fns';
 import { t } from '../../../../../lib/i18n';
 import Bar from './Bar';
 import { tID } from '../../common/testID';
-import { numberFormatters, dateFormatters } from '../../formatters';
+import { dateFormatters } from '../../formatters';
 import { darkenHexColor } from '../../util/darken-hex-color';
 import { createStyles } from '../../../BrandConfigProvider';
 import { useStyles } from '../../../../hooks';
@@ -25,7 +25,6 @@ export type ChartProps = {
   };
 };
 
-const { numberFormat } = numberFormatters;
 const { shortWeekday } = dateFormatters;
 
 export const Chart: FC<ChartProps> = (props) => {
@@ -46,62 +45,40 @@ export const Chart: FC<ChartProps> = (props) => {
 
   const variantStyles = isDefault
     ? {
-        chartValueBar: styles.defaultBarVariant,
-        chartXTitle: styles.defaultXTitleVariant,
+        chartValueBar: styles.barDefault,
+        chartYTitle: styles.defaultYAxisLabel,
       }
     : isFlat
     ? {
-        chartValueBar: styles.flatBarVariant,
-        chartXTitle: styles.flatXTitleVariant,
+        chartValueBar: styles.barFlat,
+        chartYTitle: styles.flatYAxisLabel,
       }
     : undefined;
 
   return (
     <View style={styles.container}>
-      {/* Background */}
-      {isDefault && (
-        <View style={styles.xAxisContainer}>
-          {ticks.map((tick) => (
-            <View
-              key={tick}
-              style={[
-                {
-                  bottom: `${(tick / ticksMax) * 100}%`,
-                },
-                styles.tickContainer,
-              ]}
-            >
-              {tick > 0 && (
-                <>
-                  <Text
-                    testID={tID(`history-chart-y-axis-label-${tick}`)}
-                    accessible={false}
-                    style={styles.yTitle}
-                  >
-                    {numberFormat(tick)}
-                  </Text>
-                  {tick < ticksMax && <View style={styles.tick} />}
-                </>
-              )}
-            </View>
-          ))}
-        </View>
-      )}
-
       {/* Foreground */}
       <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
         {days.map((day, index) => (
           <View key={index} style={styles.dataContainer}>
+            <View style={styles.labelContainer}>
+              <Text
+                testID={tID(`history-chart-y-axis-label-${index}`)}
+                style={variantStyles?.chartYTitle}
+                accessibilityLabel={t('track-tile.day-value-unit-display', {
+                  defaultValue: '{{day}}: {{value}} {{unit}}',
+                  day: format(day, 'iiii, MMMM do'),
+                  value: values[index],
+                  unit,
+                })}
+              >
+                {shortWeekday(day)
+                  .toUpperCase()
+                  .slice(0, isFlat ? 1 : undefined)}
+              </Text>
+            </View>
             <View style={styles.barContainer}>
-              {/* Background Bar */}
-              {isDefault && <Bar percentComplete={1} />}
-
               <View style={variantStyles?.chartValueBar}>
-                {/* Floating Value above Bar */}
-                {isFlat && values[index] > 0 && (
-                  <Text style={styles.aboveBarValueText}>{values[index]}</Text>
-                )}
-
                 {/* Active Bar */}
                 {!loading && !hasError && (
                   <Bar
@@ -118,20 +95,6 @@ export const Chart: FC<ChartProps> = (props) => {
                 )}
               </View>
             </View>
-            <Text
-              testID={tID(`history-chart-x-axis-label-${index}`)}
-              style={variantStyles?.chartXTitle}
-              accessibilityLabel={t('track-tile.day-value-unit-display', {
-                defaultValue: '{{day}}: {{value}} {{unit}}',
-                day: format(day, 'iiii, MMMM do'),
-                value: values[index],
-                unit,
-              })}
-            >
-              {shortWeekday(day)
-                .toUpperCase()
-                .slice(0, isFlat ? 1 : undefined)}
-            </Text>
           </View>
         ))}
       </ChartContent>
@@ -160,40 +123,24 @@ export const Chart: FC<ChartProps> = (props) => {
   );
 };
 
-const ChartContent: FC<any> = ({ children, maxTick, hasXAxis }) => {
+const ChartContent: FC<any> = ({ children }) => {
   const { styles } = useStyles(defaultStyles);
 
   return (
     <View style={styles.contentWrapper}>
-      {/* Use Max Tick Value as a spacer so the chart doesn't overlap the axis text */}
-      {hasXAxis && (
-        <Text
-          style={[{ opacity: 0 }, styles.yTitle]}
-          accessibilityElementsHidden={true}
-          importantForAccessibility="no-hide-descendants"
-        >
-          {maxTick}
-        </Text>
-      )}
       <View style={[styles.content]}>{children}</View>
     </View>
   );
 };
 
-const defaultStyles = createStyles('TrackTileChart', () => ({
-  defaultBarVariant: {
-    alignItems: 'center',
-    marginLeft: -7,
-  },
-  flatBarVariant: {
-    alignItems: 'center',
-    marginLeft: 3.5,
-  },
+const defaultStyles = createStyles('Chart', () => ({
+  barDefault: {},
+  barFlat: {},
   barContainer: {
-    alignItems: 'flex-end',
     flex: 1,
-    flexDirection: 'row',
-    minWidth: 21,
+    flexDirection: 'column',
+    minHeight: 21,
+    justifyContent: 'center',
   },
   aboveBarValueText: {
     fontSize: 14,
@@ -202,24 +149,26 @@ const defaultStyles = createStyles('TrackTileChart', () => ({
   container: {
     flex: 1,
     position: 'relative',
-    height: 250,
+    height: 280,
   },
   content: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-around',
     position: 'relative',
   },
   contentWrapper: {
     bottom: 0,
-    flexDirection: 'row',
+    flexDirection: 'column',
     left: 0,
     position: 'absolute',
     right: 0,
     top: 0,
   },
   dataContainer: {
-    marginVertical: 7,
+    marginHorizontal: 7,
+    flex: 1,
+    flexDirection: 'row',
   },
   errorText: {
     alignSelf: 'center',
@@ -232,41 +181,31 @@ const defaultStyles = createStyles('TrackTileChart', () => ({
   tick: {
     backgroundColor: '#EEF0F2',
     flex: 1,
-    height: 1,
+    width: 1,
   },
   tickContainer: {
     alignItems: 'center',
-    flexDirection: 'row',
+    flexDirection: 'column',
     position: 'absolute',
   },
-  xAxisContainer: {
+  YAxisContainer: {
     flex: 1,
-    marginTop: 16,
-    marginBottom: 26,
+    marginLeft: 16,
+    marginRight: 26,
     position: 'relative',
   },
-  defaultXTitleVariant: {
+  defaultYAxisLabel: {
     color: '#7B8996',
-    fontSize: 10,
+    fontSize: 12,
     letterSpacing: 0.5,
-    lineHeight: 18,
-    paddingTop: 11,
-    textAlign: 'center',
+    textAlign: 'left',
   },
-  flatXTitleVariant: {
+  flatYAxisLabel: {
     color: '#242536',
     fontSize: 12,
-    paddingTop: 12,
-    textAlign: 'center',
+    textAlign: 'left',
   },
-  yTitle: {
-    color: '#7B8996',
-    fontSize: 10,
-    letterSpacing: 0.5,
-    lineHeight: 18,
-    paddingRight: 7,
-    textAlign: 'center',
-  },
+  labelContainer: { width: 40, justifyContent: 'center' },
 }));
 
 declare module '@styles' {
