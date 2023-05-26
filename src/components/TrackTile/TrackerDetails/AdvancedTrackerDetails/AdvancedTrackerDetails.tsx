@@ -25,7 +25,13 @@ import {
   getStoredUnitType,
 } from '../../util/convert-value';
 import { numberFormatters } from '../../formatters';
-import { addDays, endOfToday, startOfToday, isBefore } from 'date-fns';
+import {
+  addDays,
+  startOfToday,
+  isBefore,
+  startOfDay,
+  endOfDay,
+} from 'date-fns';
 import { toFhirResource } from '../to-fhir-resource';
 import { throttle, flattenDepth } from 'lodash';
 import { notifier } from '../../services/EmitterService';
@@ -48,6 +54,7 @@ export type AdvancedTrackerDetailsProps = {
   onEditValue: (value: TrackerValue) => void;
   children?: React.ReactNode;
   editsDisabledAfterNumberOfDays?: number;
+  referenceDate?: Date;
 };
 
 const { numberFormat } = numberFormatters;
@@ -68,14 +75,24 @@ const extractCodeImage = (
 
 export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
   const { children, editsDisabledAfterNumberOfDays = 7 } = props;
-  const { tracker, icons = {}, valuesContext, onEditValue, onError } = props;
+  const {
+    tracker,
+    icons = {},
+    valuesContext,
+    onEditValue,
+    onError,
+    referenceDate: incomingReferenceDate,
+  } = props;
   const defaultUnit = getStoredUnitType(tracker);
   const { styles } = useStyles(defaultStyles);
   const fontWeights = useFontOverrides();
   const svc = useTrackTileService();
-  const [dateRange, setDateRange] = useState({
-    start: startOfToday(),
-    end: endOfToday(),
+  const [dateRange, setDateRange] = useState(() => {
+    const referenceDate = incomingReferenceDate ?? Date.now();
+    return {
+      start: startOfDay(referenceDate),
+      end: endOfDay(referenceDate),
+    };
   });
   const {
     trackerValues: [activeValues],
@@ -403,6 +420,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
             tracker={tracker}
             valuesContext={valuesContext}
             dateRangeType="calendarWeek"
+            referenceDate={dateRange.start}
           />
         </View>
       </View>

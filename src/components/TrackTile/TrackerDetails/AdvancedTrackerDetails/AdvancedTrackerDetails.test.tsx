@@ -294,6 +294,39 @@ describe('Tracker Advanced Details', () => {
     ).toBeDefined();
   });
 
+  it('should render from referenceDate when provided', async () => {
+    mockUseTrackerValues.mockReturnValue({
+      loading: false,
+      trackerValues: [{}],
+    } as any);
+
+    const upsertTrackerResource = jest.fn();
+    const fetchOntology = jest.fn().mockResolvedValue([]);
+    const onError = jest.fn();
+    const referenceDate = new Date('2023-03-17T03:24:00');
+
+    const { findByText } = render(
+      <AdvancedTrackerDetailsProvider
+        trackTileService={{ upsertTrackerResource, fetchOntology } as any}
+        tracker={
+          {
+            id: 'tracker-id',
+            metricId: 'metric-id',
+            resourceType: 'Observation',
+            units: [{ display: 'Servings', target: 5, unit: 'unit' }],
+          } as any
+        }
+        valuesContext={valuesContext}
+        onEditValue={jest.fn()}
+        onError={onError}
+        referenceDate={referenceDate}
+      />,
+    );
+
+    await findByText('Friday, March 17');
+    await findByText('Mar 11, 2023 - Mar 17, 2023 ');
+  });
+
   it('calls onEditValue when tapping on a value row', async () => {
     const trackerValue = {
       id: 'first-value',

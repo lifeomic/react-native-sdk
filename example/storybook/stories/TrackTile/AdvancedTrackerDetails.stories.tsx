@@ -7,7 +7,7 @@ import {
   TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
 } from '../../../../src/components/TrackTile/services/TrackTileService';
-import { select, withKnobs } from '@storybook/addon-knobs';
+import { date, select, withKnobs } from '@storybook/addon-knobs';
 import { activity, mindful, nutrition, sleep } from './util/ontologies';
 
 const ontology = {} as any;
@@ -23,6 +23,7 @@ storiesOf('AdvancedTrackerDetails', module)
       ['Healthy Plants', 'Activity', 'Mindfulness', 'Sleep'],
       'Healthy Plants',
     );
+    const referenceDate = date('Reference Date', undefined);
 
     Object.assign(ontology, nutrition);
     let color = '#33C317';
@@ -141,6 +142,10 @@ storiesOf('AdvancedTrackerDetails', module)
           system: TRACKER_PILLAR_CODE_SYSTEM,
           codeBelow: TRACKER_PILLAR_CODE,
         }}
+        referenceDate={new Date(referenceDate)}
+        // NOTE: This should not be necessary in production apps where the referenceDate prop does not change on the fly.
+        // https://react.dev/learn/you-might-not-need-an-effect#resetting-all-state-when-a-prop-changes
+        key={referenceDate}
       />
     );
   });

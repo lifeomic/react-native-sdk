@@ -68,6 +68,7 @@ export type HomeStackParamList = {
   'Home/AdvancedTrackerDetails': {
     tracker: Tracker;
     valuesContext: TrackerValuesContext;
+    referenceDate?: Date;
   };
   'Home/AdvancedTrackerEditor': {
     tracker: Tracker;
