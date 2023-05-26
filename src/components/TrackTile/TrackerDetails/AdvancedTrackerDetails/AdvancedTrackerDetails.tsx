@@ -88,7 +88,11 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
   const fontWeights = useFontOverrides();
   const svc = useTrackTileService();
   const [dateRange, setDateRange] = useState(() => {
-    const referenceDate = incomingReferenceDate ?? Date.now();
+    const referenceDate =
+      incomingReferenceDate && isBefore(incomingReferenceDate, new Date())
+        ? incomingReferenceDate
+        : new Date();
+
     return {
       start: startOfDay(referenceDate),
       end: endOfDay(referenceDate),

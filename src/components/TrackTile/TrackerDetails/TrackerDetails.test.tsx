@@ -8,7 +8,7 @@ import {
   TRACKER_CODE_SYSTEM,
 } from '../services/TrackTileService';
 import { notifier } from '../services/EmitterService';
-import { startOfYesterday, format } from 'date-fns';
+import { startOfYesterday, format, add } from 'date-fns';
 import * as fhirHelperModule from './to-fhir-resource';
 
 jest.unmock('i18next');
@@ -311,8 +311,48 @@ describe('Tracker Details', () => {
       />,
     );
 
-    await findByText('Friday, March 17');
+    await findByText(format(referenceDate, 'iiii, MMMM d'));
     await findByText('Mar 11, 2023 - Mar 17, 2023 ');
+  });
+
+  it('should NOT render from referenceDate in the future', async () => {
+    mockUseTrackerValues.mockReturnValue({
+      loading: false,
+      trackerValues: [{}],
+    } as any);
+
+    const upsertTrackerResource = jest.fn();
+    const now = new Date();
+    const referenceDate = add(now, { months: 2 });
+
+    const { findByText } = render(
+      <TrackerDetailsProvider
+        trackTileService={
+          {
+            datastoreSettings: {},
+            upsertTrackerResource,
+            upsertTracker: jest.fn(),
+          } as any
+        }
+        tracker={
+          {
+            id: 'metric-id',
+            resourceType: 'Observation',
+            units: [{ display: 'widgets', target: 5, unit: 'unit' }],
+          } as any
+        }
+        valuesContext={valuesContext}
+        referenceDate={referenceDate}
+      />,
+    );
+
+    await findByText("Today's Widgets");
+    await findByText(
+      `${format(add(now, { days: -6 }), 'MMM d, Y')} - ${format(
+        now,
+        'MMM d, Y',
+      )}`,
+    );
   });
 
   it('should allow decrementing across multiple observations', async () => {

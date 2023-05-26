@@ -26,7 +26,7 @@ import {
 } from '../util/convert-value';
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
 import { numberFormatters } from '../formatters';
-import { endOfDay, isToday, startOfDay } from 'date-fns';
+import { endOfDay, isBefore, isToday, startOfDay } from 'date-fns';
 import { DatePicker } from './DatePicker';
 import { NumberPicker } from './NumberPicker';
 import { createStyles } from '../../../components/BrandConfigProvider';
@@ -56,7 +56,11 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   const svc = useTrackTileService();
   const [saveInProgress, setSaveInProgress] = useState(false);
   const [dateRange, setDateRange] = useState(() => {
-    const referenceDate = incomingReferenceDate ?? Date.now();
+    const referenceDate =
+      incomingReferenceDate && isBefore(incomingReferenceDate, new Date())
+        ? incomingReferenceDate
+        : new Date();
+
     return {
       start: startOfDay(referenceDate),
       end: endOfDay(referenceDate),
