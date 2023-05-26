@@ -50,8 +50,9 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         accessibilityRole="button"
         onPress={() => value > 0 && onChange(value - 1)}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
+        style={styles.unaryButton}
       >
-        <Text variant="light" style={styles.unaryButton}>
+        <Text variant="light" style={styles.unaryButtonText}>
           {t('track-tile.dash-symbol', '-')}
         </Text>
       </TouchableOpacity>
@@ -79,8 +80,9 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         accessibilityRole="button"
         onPress={() => onChange(value + 1)}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
+        style={styles.unaryButton}
       >
-        <Text variant="light" style={styles.unaryButton}>
+        <Text variant="light" style={styles.unaryButtonText}>
           {t('track-tile.plus-symbol', '+')}
         </Text>
       </TouchableOpacity>
@@ -90,32 +92,28 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
 
 const defaultStyles = createStyles('TrackAmountControl', () => ({
   container: {
-    marginTop: -37.5,
-    borderRadius: 50,
-    width: '55%',
-    maxWidth: 220,
-    borderColor: '#D4DCE3',
-    borderWidth: 1,
-    height: 75,
-    overflow: 'hidden',
-    elevation: 1,
-    shadowColor: '#000000',
-    shadowOpacity: 0.1,
-    shadowOffset: { height: 4, width: 0 },
-    shadowRadius: 34,
+    marginTop: 30,
+    width: '80%',
     backgroundColor: 'white',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignContent: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 24,
   },
   unaryButton: {
+    borderRadius: 32,
+    height: 60,
+    width: 60,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  unaryButtonText: {
     color: 'black',
     textAlign: 'center',
-    fontSize: 34,
-    letterSpacing: 0.23,
-    minWidth: 22,
-    height: 44,
+    textAlignVertical: 'center',
+    aspectRatio: 1,
+    fontSize: 30,
+    fontWeight: 'bold',
   },
   valueInput: {
     flex: 1,
