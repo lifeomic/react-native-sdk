@@ -1,13 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import i18n, { t } from '../../../../../lib/i18n';
 import { Trans } from 'react-i18next';
-import {
-  StylesProp,
-  NamedStyles,
-  useFontOverrides,
-  useStyleOverrides,
-} from '../../styles';
+import { useFontOverrides } from '../../styles';
 import {
   Tracker,
   TrackerValue,
@@ -27,8 +22,8 @@ import { tID } from '../../common/testID';
 import { ValueEditor } from './ValueEditor';
 import { EventTypeHandler, notifier } from '../../services/EmitterService';
 import { toFhirResource } from '../to-fhir-resource';
-
-export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
+import { createStyles } from '../../../BrandConfigProvider';
+import { useStyles } from '../../../../hooks';
 
 export type AdvancedTrackerEditorProps = {
   tracker: Tracker;
@@ -40,7 +35,7 @@ export type AdvancedTrackerEditorProps = {
 export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
   const { tracker, trackerValue } = props;
   const { valuesContext } = props;
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const fontWeights = useFontOverrides();
   const svc = useTrackTileService();
   const [categoryTypes, setCategoryTypes] = useState<CategoryTypes>();
@@ -189,14 +184,11 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
             onValueChange={setValue}
             value={value}
             stepAmount={stepAmountInStoreUnits}
-            style={[
-              styles.advancedEditorSection,
-              styles.advancedEditorHorizontalLayout,
-            ]}
+            style={[styles.section, styles.horizontalLayout]}
           />
 
           {categoryTypes?.categories && (
-            <View style={styles.advancedEditorSection}>
+            <View style={styles.section}>
               <CodingCategoryPicker
                 categoryHeader={t('track-tile.editor-selection-header', {
                   defaultValue: 'Select {{code}}',
@@ -211,7 +203,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
           )}
 
           {categoryTypes?.subCategories && (
-            <View style={styles.advancedEditorSelectedContainer}>
+            <View style={styles.selectedContainer}>
               <Trans
                 i18n={i18n}
                 parent={Text}
@@ -249,22 +241,27 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
   );
 };
 
-const defaultStyles = StyleSheet.create({
-  advancedEditorSection: {
+const defaultStyles = createStyles('AdvancedTrackerEditor', () => ({
+  section: {
     padding: 35,
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
     borderBottomWidth: 1,
   },
-  advancedEditorHorizontalLayout: {
+  horizontalLayout: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
   },
-  advancedEditorSelectedContainer: {
+  selectedContainer: {
     paddingHorizontal: 35,
     paddingVertical: 8,
     backgroundColor: '#F2F2F2',
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
     borderBottomWidth: 1,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

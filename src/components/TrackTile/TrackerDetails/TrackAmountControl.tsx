@@ -1,12 +1,13 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { StylesProp, useStyleOverrides, Text, fontWeights } from '../styles';
+import { View, TouchableOpacity, TextInput } from 'react-native';
+import { Text, fontWeights } from '../styles';
 import { t } from '../../../../lib/i18n';
 import { tID } from '../common/testID';
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
-import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { convertToISONumber } from '../util/convert-value';
 import { numberFormatters } from '../formatters';
+import { createStyles } from '../../BrandConfigProvider';
+import { useStyles } from '../../../hooks';
 
 type Props = {
   color: string;
@@ -15,12 +16,7 @@ type Props = {
 };
 const { numberFormat } = numberFormatters;
 const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
-  const styles = useStyleOverrides(defaultStyles);
-  const fonts = useFlattenedStyles(styles, [
-    'trackAmountControlValueFontSizeLarge',
-    'trackAmountControlValueFontSizeMedium',
-    'trackAmountControlValueFontSizeSmall',
-  ]);
+  const { styles } = useStyles(defaultStyles);
 
   const [currentValue, setCurrentValue] = useState(numberFormat(value));
 
@@ -35,16 +31,16 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
     setCurrentValue(numberFormat(newValue));
   }, [currentValue, onChange, value]);
 
-  let { fontSize } = fonts.trackAmountControlValueFontSizeLarge;
+  let { fontSize } = styles.valueLargeSizeText ?? {};
 
   if (value.toString().length === 5) {
-    ({ fontSize } = fonts.trackAmountControlValueFontSizeMedium);
+    ({ fontSize } = styles.valueMediumSizeText ?? {});
   } else if (value.toString().length > 5) {
-    ({ fontSize } = fonts.trackAmountControlValueFontSizeSmall);
+    ({ fontSize } = styles.valueSmallSizeText ?? {});
   }
 
   return (
-    <View style={styles.trackAmountControlContainer}>
+    <View style={styles.container}>
       <TouchableOpacity
         testID={tID('decrement-tracker-value-button')}
         accessibilityLabel={t(
@@ -55,7 +51,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         onPress={() => value > 0 && onChange(value - 1)}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
       >
-        <Text variant="light" style={styles.trackAmountControlUnaryButton}>
+        <Text variant="light" style={styles.unaryButton}>
           {t('track-tile.dash-symbol', '-')}
         </Text>
       </TouchableOpacity>
@@ -65,12 +61,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
           defaultValue: 'Tracker value, {{value}}',
           value,
         })}
-        style={[
-          { color },
-          styles.trackAmountControlValue,
-          fontWeights.bold,
-          { fontSize },
-        ]}
+        style={[{ color }, styles.valueInput, fontWeights.bold, { fontSize }]}
         keyboardType="numeric"
         value={currentValue}
         returnKeyType="done"
@@ -89,7 +80,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
         onPress={() => onChange(value + 1)}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
       >
-        <Text variant="light" style={styles.trackAmountControlUnaryButton}>
+        <Text variant="light" style={styles.unaryButton}>
           {t('track-tile.plus-symbol', '+')}
         </Text>
       </TouchableOpacity>
@@ -97,12 +88,8 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
   );
 };
 
-declare module './TrackerDetails' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  trackAmountControlContainer: {
+const defaultStyles = createStyles('TrackAmountControl', () => ({
+  container: {
     marginTop: -37.5,
     borderRadius: 50,
     width: '55%',
@@ -122,7 +109,7 @@ const defaultStyles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 24,
   },
-  trackAmountControlUnaryButton: {
+  unaryButton: {
     color: 'black',
     textAlign: 'center',
     fontSize: 34,
@@ -130,19 +117,24 @@ const defaultStyles = StyleSheet.create({
     minWidth: 22,
     height: 44,
   },
-  trackAmountControlValue: {
+  valueInput: {
     flex: 1,
     textAlign: 'center',
   },
-  trackAmountControlValueFontSizeLarge: {
+  valueLargeSizeText: {
     fontSize: 40,
   },
-  trackAmountControlValueFontSizeMedium: {
+  valueMediumSizeText: {
     fontSize: 35,
   },
-  trackAmountControlValueFontSizeSmall: {
+  valueSmallSizeText: {
     fontSize: 26,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
 
 export default TrackAmountControl;

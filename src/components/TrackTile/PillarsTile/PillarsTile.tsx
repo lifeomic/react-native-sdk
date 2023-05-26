@@ -10,13 +10,10 @@ import {
   TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
 } from '../services/TrackTileService';
-import { NamedStyles, StylesProp } from '../styles';
 import { Pillar } from './Pillar';
 import { Card } from 'react-native-paper';
 import { useStyles } from '../../../hooks/useStyles';
 import { createStyles } from '../../BrandConfigProvider';
-
-export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 
 export type PillarsTileProps = {
   onOpenDetails: (

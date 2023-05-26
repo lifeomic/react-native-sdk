@@ -1,13 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, TextInput } from 'react-native';
 import { t } from '../../../../lib/i18n';
-import {
-  NamedStyles,
-  StylesProp,
-  useStyleOverrides,
-  Text,
-  useFontOverrides,
-} from '../styles';
+import { Text, useFontOverrides } from '../styles';
 import { UnitPicker } from './UnitPicker';
 import {
   Tracker,
@@ -37,8 +31,9 @@ import { numberFormatters } from '../formatters';
 import { endOfToday, isToday, startOfToday } from 'date-fns';
 import { DatePicker } from './DatePicker';
 import { useDynamicColorGroup } from '../../../hooks/useDynamicColorGroup';
+import { createStyles } from '../../BrandConfigProvider';
+import { useStyles } from '../../../hooks';
 
-export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 export type TrackerDetailsProps = {
   tracker: Tracker;
   valuesContext: TrackerValuesContext;
@@ -52,7 +47,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   const { tracker, valuesContext, onError, canEditUnit } = props;
   const { colorContainer } = useDynamicColorGroup(tracker.color);
   const defaultUnit = getStoredUnitType(tracker);
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const fontWeights = useFontOverrides();
   const svc = useTrackTileService();
   const [dateRange, setDateRange] = useState({
@@ -181,7 +176,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
 
   return (
     <ScrollView>
-      <View style={styles.trackerDetailsContainer}>
+      <View style={styles.container}>
         <DatePicker
           color="#02BFF1"
           dateRange={dateRange}
@@ -191,10 +186,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           unit={selectedUnit}
         />
         <View
-          style={[
-            { backgroundColor: colorContainer },
-            styles.trackerDetailsHeaderContainer,
-          ]}
+          style={[{ backgroundColor: colorContainer }, styles.headerContainer]}
         >
           <Indicator
             name={metricId}
@@ -208,13 +200,11 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           onChange={onValueChange}
           color={tracker.color}
         />
-        <Text style={styles.trackerDetailsDescription}>
-          {tracker.description}
-        </Text>
-        <View style={styles.trackerDetailsTargetContainer}>
+        <Text style={styles.descriptionText}>{tracker.description}</Text>
+        <View style={styles.targetContainer}>
           <Text
             accessible={false}
-            style={styles.trackerDetailsMyTarget}
+            style={styles.myTargetText}
             numberOfLines={1}
           >
             {t('track-tile.my-target', 'My Target')}
@@ -223,7 +213,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
             testID={tID('tracker-target-input')}
             accessibilityLabel={t('track-tile.target-input', 'Target Input')}
             value={target}
-            style={[fontWeights.semibold, styles.trackerDetailsTargetInput]}
+            style={[fontWeights.semibold, styles.targetInput]}
             onChangeText={setTarget}
             onBlur={updateTarget}
             onSubmitEditing={updateTarget}
@@ -243,13 +233,13 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
             <Text
               accessible={false}
               variant="semibold"
-              style={styles.trackerDetailsSingleUnit}
+              style={styles.singleUnitText}
             >
               {selectedUnit.display.toLocaleLowerCase()}
             </Text>
           )}
         </View>
-        <View style={styles.trackerDetailsHistoryChartContainer}>
+        <View style={styles.historyChartContainer}>
           <TrackerHistoryChart
             metricId={metricId}
             target={currentTarget}
@@ -263,15 +253,15 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   );
 };
 
-const defaultStyles = StyleSheet.create({
-  trackerDetailsContainer: {
+const defaultStyles = createStyles('TrackerDetails', () => ({
+  container: {
     backgroundColor: 'white',
     alignItems: 'center',
     flex: 1,
     minHeight: '100%',
     paddingBottom: 24,
   },
-  trackerDetailsHeaderContainer: {
+  headerContainer: {
     width: '100%',
     flex: 1,
     maxHeight: 153,
@@ -280,7 +270,7 @@ const defaultStyles = StyleSheet.create({
     paddingBottom: 37.5,
     minHeight: 120,
   },
-  trackerDetailsDescription: {
+  descriptionText: {
     textAlign: 'center',
     color: '#000000',
     marginTop: 30,
@@ -289,7 +279,7 @@ const defaultStyles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
   },
-  trackerDetailsTargetContainer: {
+  targetContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-end',
@@ -299,19 +289,19 @@ const defaultStyles = StyleSheet.create({
     borderBottomColor: '#E6E6E6',
     borderBottomWidth: 1,
   },
-  trackerDetailsMyTarget: {
+  myTargetText: {
     color: '#333333',
     letterSpacing: 0.23,
     fontSize: 16,
     lineHeight: 16,
   },
-  trackerDetailsSingleUnit: {
+  singleUnitText: {
     color: '#262C32',
     letterSpacing: 0.23,
     fontSize: 16,
     lineHeight: 16,
   },
-  trackerDetailsTargetInput: {
+  targetInput: {
     flex: 1,
     color: '#262C32',
     fontSize: 24,
@@ -322,10 +312,15 @@ const defaultStyles = StyleSheet.create({
     marginBottom: -2,
     paddingTop: 14,
   },
-  trackerDetailsHistoryChartContainer: {
+  historyChartContainer: {
     width: '100%',
     paddingHorizontal: 34,
     marginTop: 10,
     flex: 1,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

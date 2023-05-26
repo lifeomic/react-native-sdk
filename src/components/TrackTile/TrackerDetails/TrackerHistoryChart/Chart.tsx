@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
-import { StylesProp, useStyleOverrides, Text } from '../../styles';
+import { View, ActivityIndicator } from 'react-native';
+import { Text } from '../../styles';
 import { scaleLinear } from 'd3-scale';
 import { eachDayOfInterval, format, isToday } from 'date-fns';
 import { t } from '../../../../../lib/i18n';
@@ -8,6 +8,8 @@ import Bar from './Bar';
 import { tID } from '../../common/testID';
 import { numberFormatters, dateFormatters } from '../../formatters';
 import { darkenHexColor } from '../../util/darken-hex-color';
+import { createStyles } from '../../../BrandConfigProvider';
+import { useStyles } from '../../../../hooks';
 
 export type ChartProps = {
   color?: string;
@@ -29,7 +31,7 @@ const { shortWeekday } = dateFormatters;
 export const Chart: FC<ChartProps> = (props) => {
   const { variant = 'default', color = '#02BFF1' } = props;
   const { loading, range, target, values, hasError, unit = '' } = props;
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
 
   const days = eachDayOfInterval(range);
 
@@ -44,21 +46,21 @@ export const Chart: FC<ChartProps> = (props) => {
 
   const variantStyles = isDefault
     ? {
-        chartValueBar: styles.chartValueBarDefault,
-        chartXTitle: styles.chartXTitleDefault,
+        chartValueBar: styles.defaultBarVariant,
+        chartXTitle: styles.defaultXTitleVariant,
       }
     : isFlat
     ? {
-        chartValueBar: styles.chartValueBarFlat,
-        chartXTitle: styles.chartXTitleFlat,
+        chartValueBar: styles.flatBarVariant,
+        chartXTitle: styles.flatXTitleVariant,
       }
     : undefined;
 
   return (
-    <View style={styles.chartContainer}>
+    <View style={styles.container}>
       {/* Background */}
       {isDefault && (
-        <View style={styles.chartXAxisContainer}>
+        <View style={styles.xAxisContainer}>
           {ticks.map((tick) => (
             <View
               key={tick}
@@ -66,7 +68,7 @@ export const Chart: FC<ChartProps> = (props) => {
                 {
                   bottom: `${(tick / ticksMax) * 100}%`,
                 },
-                styles.chartTickContainer,
+                styles.tickContainer,
               ]}
             >
               {tick > 0 && (
@@ -78,7 +80,7 @@ export const Chart: FC<ChartProps> = (props) => {
                   >
                     {numberFormat(tick)}
                   </Text>
-                  {tick < ticksMax && <View style={styles.chartTick} />}
+                  {tick < ticksMax && <View style={styles.tick} />}
                 </>
               )}
             </View>
@@ -89,17 +91,15 @@ export const Chart: FC<ChartProps> = (props) => {
       {/* Foreground */}
       <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
         {days.map((day, index) => (
-          <View key={index} style={styles.chartDataContainer}>
-            <View style={styles.chartBarContainer}>
+          <View key={index} style={styles.dataContainer}>
+            <View style={styles.barContainer}>
               {/* Background Bar */}
               {isDefault && <Bar percentComplete={1} />}
 
               <View style={variantStyles?.chartValueBar}>
                 {/* Floating Value above Bar */}
                 {isFlat && values[index] > 0 && (
-                  <Text style={styles.chartBarFloatingValue}>
-                    {values[index]}
-                  </Text>
+                  <Text style={styles.aboveBarValueText}>{values[index]}</Text>
                 )}
 
                 {/* Active Bar */}
@@ -148,7 +148,7 @@ export const Chart: FC<ChartProps> = (props) => {
 
       {hasError && (
         <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
-          <Text variant="semibold" style={styles.chartError}>
+          <Text variant="semibold" style={styles.errorText}>
             {t(
               'track-tile.could-not-load-your-data',
               'Could not load your data\nPlease try again later',
@@ -161,10 +161,10 @@ export const Chart: FC<ChartProps> = (props) => {
 };
 
 const ChartContent: FC<any> = ({ children, maxTick, hasXAxis }) => {
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
 
   return (
-    <View style={styles.chartContentWrapper}>
+    <View style={styles.contentWrapper}>
       {/* Use Max Tick Value as a spacer so the chart doesn't overlap the axis text */}
       {hasXAxis && (
         <Text
@@ -175,46 +175,42 @@ const ChartContent: FC<any> = ({ children, maxTick, hasXAxis }) => {
           {maxTick}
         </Text>
       )}
-      <View style={[styles.chartContentContainer]}>{children}</View>
+      <View style={[styles.content]}>{children}</View>
     </View>
   );
 };
 
-declare module '../TrackerDetails' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  chartValueBarDefault: {
+const defaultStyles = createStyles('TrackTileChart', () => ({
+  defaultBarVariant: {
     alignItems: 'center',
     marginLeft: -7,
   },
-  chartValueBarFlat: {
+  flatBarVariant: {
     alignItems: 'center',
     marginLeft: 3.5,
   },
-  chartBarContainer: {
+  barContainer: {
     alignItems: 'flex-end',
     flex: 1,
     flexDirection: 'row',
     minWidth: 21,
   },
-  chartBarFloatingValue: {
+  aboveBarValueText: {
     fontSize: 14,
     color: '#242536',
   },
-  chartContainer: {
+  container: {
     flex: 1,
     position: 'relative',
     height: 250,
   },
-  chartContentContainer: {
+  content: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',
     position: 'relative',
   },
-  chartContentWrapper: {
+  contentWrapper: {
     bottom: 0,
     flexDirection: 'row',
     left: 0,
@@ -222,10 +218,10 @@ const defaultStyles = StyleSheet.create({
     right: 0,
     top: 0,
   },
-  chartDataContainer: {
+  dataContainer: {
     marginVertical: 7,
   },
-  chartError: {
+  errorText: {
     alignSelf: 'center',
     color: '#7B8996',
     fontSize: 16,
@@ -233,23 +229,23 @@ const defaultStyles = StyleSheet.create({
     padding: 8,
     textAlign: 'center',
   },
-  chartTick: {
+  tick: {
     backgroundColor: '#EEF0F2',
     flex: 1,
     height: 1,
   },
-  chartTickContainer: {
+  tickContainer: {
     alignItems: 'center',
     flexDirection: 'row',
     position: 'absolute',
   },
-  chartXAxisContainer: {
+  xAxisContainer: {
     flex: 1,
     marginTop: 16,
     marginBottom: 26,
     position: 'relative',
   },
-  chartXTitleDefault: {
+  defaultXTitleVariant: {
     color: '#7B8996',
     fontSize: 10,
     letterSpacing: 0.5,
@@ -257,7 +253,7 @@ const defaultStyles = StyleSheet.create({
     paddingTop: 11,
     textAlign: 'center',
   },
-  chartXTitleFlat: {
+  flatXTitleVariant: {
     color: '#242536',
     fontSize: 12,
     paddingTop: 12,
@@ -271,4 +267,9 @@ const defaultStyles = StyleSheet.create({
     paddingRight: 7,
     textAlign: 'center',
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

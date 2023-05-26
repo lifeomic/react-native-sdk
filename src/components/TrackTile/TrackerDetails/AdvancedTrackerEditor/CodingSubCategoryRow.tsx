@@ -4,15 +4,14 @@ import {
   TouchableOpacityProps,
   Text,
   View,
-  StyleSheet,
   Linking,
   I18nManager,
 } from 'react-native';
-import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
-import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
+import { useFontOverrides } from '../../styles';
 import { Code } from '../../services/TrackTileService';
 import { t } from '../../../../../lib/i18n';
-import { useIcons } from '../../../BrandConfigProvider';
+import { createStyles, useIcons } from '../../../BrandConfigProvider';
+import { useStyles } from '../../../../hooks';
 
 export type CodingSubCategoryRowProps = TouchableOpacityProps & {
   code: Code;
@@ -23,33 +22,24 @@ export type CodingSubCategoryRowProps = TouchableOpacityProps & {
 export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
   const { code, color, selected, ...touchableProps } = props;
   const { ChevronLeft, ChevronRight } = useIcons();
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const fontWeights = useFontOverrides();
   const Chevron = I18nManager.isRTL ? ChevronLeft : ChevronRight;
-  const flatStyles = useFlattenedStyles(styles, [
-    'codingSubCategoryRowContentLink',
-  ]);
 
   return (
     <>
-      <TouchableOpacity
-        style={styles.codingSubCategoryRowContainer}
-        {...touchableProps}
-      >
+      <TouchableOpacity style={styles.container} {...touchableProps}>
         <Text
           style={[
             fontWeights.semibold,
-            styles.codingSubCategoryRowTitle,
+            styles.titleText,
             selected && { color },
           ]}
         >
           {code.display}
         </Text>
         <View
-          style={[
-            styles.codingSubCategoryRowRadioCircle,
-            selected && { borderColor: color },
-          ]}
+          style={[styles.radioContainer, selected && { borderColor: color }]}
         >
           {selected && (
             <View
@@ -57,7 +47,7 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
                 {
                   backgroundColor: color,
                 },
-                styles.codingSubCategoryRowRadioDot,
+                styles.radioDot,
               ]}
             />
           )}
@@ -65,8 +55,8 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
       </TouchableOpacity>
 
       {selected && code.educationContent && (
-        <View style={styles.codingSubCategoryRowContentContainer}>
-          <Text style={styles.codingSubCategoryRowContentText}>
+        <View style={styles.contentContainer}>
+          <Text style={styles.contentText}>
             {code.educationContent.description}
           </Text>
           {code.educationContent?.url && (
@@ -75,23 +65,14 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
                 code.educationContent?.url &&
                 Linking.openURL(code.educationContent.url)
               }
-              style={styles.codingSubCategoryRowContentLinkContainer}
+              style={styles.linkContainer}
             >
-              <Text
-                style={[
-                  fontWeights.semibold,
-                  styles.codingSubCategoryRowContentLink,
-                ]}
-              >
+              <Text style={[fontWeights.semibold, styles.linkText]}>
                 {t('track-tile.learn-more', {
                   defaultValue: 'Learn More',
                 })}
               </Text>
-              <Chevron
-                height={21}
-                width={21}
-                color={flatStyles.codingSubCategoryRowContentLink.color}
-              />
+              <Chevron height={21} width={21} color={styles.linkText?.color} />
             </TouchableOpacity>
           )}
         </View>
@@ -100,12 +81,8 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
   );
 };
 
-declare module './AdvancedTrackerEditor' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  codingSubCategoryRowContainer: {
+const defaultStyles = createStyles('CodingSubCategoryRow', () => ({
+  container: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -114,14 +91,14 @@ const defaultStyles = StyleSheet.create({
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
     borderBottomWidth: 1,
   },
-  codingSubCategoryRowTitle: {
+  titleText: {
     fontSize: 16,
     color: '#35383D',
     marginBottom: 6,
     paddingTop: 6,
     lineHeight: 19.2,
   },
-  codingSubCategoryRowRadioCircle: {
+  radioContainer: {
     width: 24,
     height: 24,
     borderWidth: 2,
@@ -131,30 +108,35 @@ const defaultStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  codingSubCategoryRowRadioDot: {
+  radioDot: {
     width: '65%',
     height: '65%',
     borderRadius: 12,
   },
-  codingSubCategoryRowContentContainer: {
+  contentContainer: {
     paddingHorizontal: 35,
     paddingVertical: 12,
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
     borderBottomWidth: 1,
     backgroundColor: '#F2F2F2',
   },
-  codingSubCategoryRowContentText: {
+  contentText: {
     fontSize: 14,
     color: '#35383D',
     lineHeight: 21,
   },
-  codingSubCategoryRowContentLinkContainer: {
+  linkContainer: {
     flexDirection: 'row',
     marginTop: 12,
   },
-  codingSubCategoryRowContentLink: {
+  linkText: {
     fontSize: 16,
     color: '#02BFF1',
     lineHeight: 19.2,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

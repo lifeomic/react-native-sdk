@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef } from 'react';
-import { Animated, Easing, ViewStyle, StyleSheet } from 'react-native';
-import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
-import { StylesProp, useStyleOverrides } from '../../styles';
+import { Animated, Easing, ViewStyle } from 'react-native';
+import { createStyles } from '../../../BrandConfigProvider';
+import { useStyles } from '../../../../hooks';
 
 type BarProps = {
   percentComplete: number;
@@ -15,11 +15,10 @@ type BarProps = {
 const Bar: FC<BarProps> = (props) => {
   const { percentComplete, animated, style, testID, color, variant } = props;
   const ref = useRef(new Animated.Value(animated ? 0 : percentComplete));
-  const styles = useStyleOverrides(defaultStyles);
-  const flatStyles = useFlattenedStyles(styles, ['chartBarBackgroundColor']);
+  const { styles } = useStyles(defaultStyles);
 
   const barStyle =
-    variant === 'flat' ? styles.chartBarFlat : styles.chartBarDefault;
+    variant === 'flat' ? styles.flatVariantStyle : styles.defaultVariantStyle;
 
   useEffect(() => {
     if (!animated) {
@@ -48,29 +47,29 @@ const Bar: FC<BarProps> = (props) => {
         barStyle,
         style,
         {
-          backgroundColor:
-            color || flatStyles.chartBarBackgroundColor.backgroundColor,
+          backgroundColor: color || styles.backgroundColor?.backgroundColor,
         },
       ]}
     />
   );
 };
 
-declare module '../TrackerDetails' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  chartBarBackgroundColor: {
+const defaultStyles = createStyles('ChartBar', () => ({
+  backgroundColor: {
     backgroundColor: '#EEF0F2',
   },
-  chartBarDefault: {
+  defaultVariantStyle: {
     borderRadius: 30,
     width: 14,
   },
-  chartBarFlat: {
+  flatVariantStyle: {
     width: 23.33,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
 
 export default Bar;

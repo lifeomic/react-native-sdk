@@ -1,11 +1,6 @@
 import React, { FC } from 'react';
+import { FontOverridesProvider, FontWeights } from '../../styles';
 import {
-  FontOverridesProvider,
-  FontWeights,
-  StyleOverridesProvider,
-} from '../../styles';
-import {
-  Styles,
   AdvancedTrackerEditor,
   AdvancedTrackerEditorProps,
 } from './AdvancedTrackerEditor';
@@ -15,7 +10,6 @@ import {
 } from '../../services/TrackTileService';
 
 export type AdvancedTrackerEditorProviderProps = AdvancedTrackerEditorProps & {
-  styles?: Styles;
   trackTileService: TrackTileService;
   fonts?: FontWeights;
 };
@@ -23,15 +17,13 @@ export type AdvancedTrackerEditorProviderProps = AdvancedTrackerEditorProps & {
 export const AdvancedTrackerEditorProvider: FC<
   AdvancedTrackerEditorProviderProps
 > = (props) => {
-  const { trackTileService, styles, fonts, ...trackerEditorProps } = props;
+  const { trackTileService, fonts, ...trackerEditorProps } = props;
 
   return (
     <TrackTileServiceProvider value={trackTileService}>
-      <StyleOverridesProvider value={styles ?? {}}>
-        <FontOverridesProvider value={fonts ?? {}}>
-          <AdvancedTrackerEditor {...trackerEditorProps} />
-        </FontOverridesProvider>
-      </StyleOverridesProvider>
+      <FontOverridesProvider value={fonts ?? {}}>
+        <AdvancedTrackerEditor {...trackerEditorProps} />
+      </FontOverridesProvider>
     </TrackTileServiceProvider>
   );
 };
