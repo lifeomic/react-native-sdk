@@ -25,7 +25,7 @@
   "track-tile.unit-type": "Tipo de Unidade",
   "track-tile.problem-loading-track-it-items": "Houve um problema ao carregar os itens da Track-It",
   "track-tile.tracker-value-value": "Valor do rastreador, {{value}}",
-  "track-tile.date-range": "{{start}} - {{end}}",
+  "track-tile.date-range": "{{start}}-{{end}}",
   "track-tile.reorder-trackers": "Reorganizar rastreadores",
   "track-tile.day-value-unit-display": "{{day}}: {{value}} {{unit}}",
   "track-tile.editor-selected-category-header": "Selected: <bold>{{categoryName}}</bold>",

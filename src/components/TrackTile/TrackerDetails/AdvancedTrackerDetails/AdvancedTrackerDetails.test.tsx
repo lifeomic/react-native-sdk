@@ -99,7 +99,7 @@ describe('Tracker Advanced Details', () => {
     );
 
     expect(await findByText("Today's Servings")).toBeDefined();
-    expect(await findAllByText('1.5')).toHaveLength(2); // Total Value & Chart Value
+    expect(await findAllByText('1.5')).toHaveLength(1); // Chart Value
     expect(await findByText('42.5')).toBeDefined(); // Target Value
     expect(await findByText('The science of')).toBeDefined();
     expect(await findByText('Test Name')).toBeDefined();

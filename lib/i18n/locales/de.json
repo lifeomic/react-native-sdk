@@ -25,7 +25,7 @@
   "track-tile.unit-type": "Art der Einheit",
   "track-tile.problem-loading-track-it-items": "Beim Laden der Tracking-Elemente ist ein Fehler aufgetreten",
   "track-tile.tracker-value-value": "Tracker-Wert, {{value}}",
-  "track-tile.date-range": "{{start}} - {{end}}",
+  "track-tile.date-range": "{{start}}-{{end}}",
   "track-tile.reorder-trackers": "Tracker neu ordnen",
   "track-tile.day-value-unit-display": "{{day}}: {{value}} {{unit}}",
   "track-tile.editor-selected-category-header": "Selected: <bold>{{categoryName}}</bold>",
