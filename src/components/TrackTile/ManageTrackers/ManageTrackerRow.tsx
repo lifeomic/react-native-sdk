@@ -92,7 +92,7 @@ export const ManageTrackerRow: FC<Props> = (props) => {
   );
 };
 
-const defaultStyles = createStyles('ManageTrackers', () => ({
+const defaultStyles = createStyles('ManageTrackersRow', () => ({
   container: {
     flexDirection: 'row',
     paddingHorizontal: 35,

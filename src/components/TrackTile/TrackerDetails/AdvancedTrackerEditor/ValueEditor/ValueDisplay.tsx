@@ -1,12 +1,10 @@
 import React from 'react';
-import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
-import {
-  StylesProp,
-  useFontOverrides,
-  useStyleOverrides,
-} from '../../../styles';
+import { TouchableOpacity, Text, View } from 'react-native';
+import { useFontOverrides } from '../../../styles';
 import { t } from '../../../../../../lib/i18n';
 import { Tracker } from '../../../services/TrackTileService';
+import { createStyles } from '../../../../BrandConfigProvider';
+import { useStyles } from '../../../../../hooks';
 
 type ValueDisplayProps = {
   resourceType: Tracker['resourceType'];
@@ -25,16 +23,14 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
     onSelectUnitType,
     editUnitType,
   } = props;
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const fontWeights = useFontOverrides();
 
   if (resourceType === 'Observation') {
     return (
       <>
-        <Text style={[fontWeights.bold, styles.advancedEditorTrackerValue]}>
-          {value}
-        </Text>
-        <Text style={[fontWeights.bold, styles.advancedEditorTrackerUnit]}>
+        <Text style={[fontWeights.bold, styles.valueText]}>{value}</Text>
+        <Text style={[fontWeights.bold, styles.unitText]}>
           {observationUnit}
         </Text>
       </>
@@ -42,12 +38,12 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
   }
 
   return (
-    <View style={styles.advancedEditorTrackerValueContainer}>
+    <View style={styles.container}>
       <TouchableOpacity
         onPress={() => onSelectUnitType('hour')}
-        style={styles.advancedEditorProcedureTimePartContainer}
+        style={styles.procedureTimePartContainer}
       >
-        <Text style={[fontWeights.bold, styles.advancedEditorTrackerValue]}>
+        <Text style={[fontWeights.bold, styles.valueText]}>
           {`${Math.floor(value / (60 * 60))
             .toString()
             .padStart(2, '0')}`}
@@ -55,30 +51,28 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
         <Text
           style={[
             fontWeights.light,
-            styles.advancedEditorProcedureUnit,
-            editUnitType === 'hour' &&
-              styles.advancedEditorProcedureUnitSelected,
+            styles.procedureUnitText,
+            editUnitType === 'hour' && styles.procedureUnitSelectedText,
           ]}
         >
           {t('track-tile.time-value-hours', 'hrs')}
         </Text>
       </TouchableOpacity>
-      <Text style={[fontWeights.bold, styles.advancedEditorTrackerValue]}>
+      <Text style={[fontWeights.bold, styles.valueText]}>
         {t('track-tile.time-value-separator', ':')}
       </Text>
       <TouchableOpacity
         onPress={() => onSelectUnitType('min')}
-        style={styles.advancedEditorProcedureTimePartContainer}
+        style={styles.procedureTimePartContainer}
       >
-        <Text style={[fontWeights.bold, styles.advancedEditorTrackerValue]}>
+        <Text style={[fontWeights.bold, styles.valueText]}>
           {`${((value / 60) % 60).toString().padStart(2, '0')}`}
         </Text>
         <Text
           style={[
             fontWeights.light,
-            styles.advancedEditorProcedureUnit,
-            editUnitType === 'min' &&
-              styles.advancedEditorProcedureUnitSelected,
+            styles.procedureUnitText,
+            editUnitType === 'min' && styles.procedureUnitSelectedText,
           ]}
         >
           {t('track-tile.time-value-minutes', 'min')}
@@ -88,36 +82,37 @@ export const ValueDisplay = (props: ValueDisplayProps) => {
   );
 };
 
-declare module '../AdvancedTrackerEditor' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  advancedEditorTrackerValueContainer: {
+const defaultStyles = createStyles('AdvancedTrackerEditorValueDisplay', () => ({
+  container: {
     flexDirection: 'row',
   },
-  advancedEditorTrackerValue: {
+  valueText: {
     fontSize: 34,
     lineHeight: 40.8,
     color: '#35383D',
   },
-  advancedEditorTrackerUnit: {
+  unitText: {
     fontSize: 12,
     lineHeight: 14.4,
     color: '#35383D',
     textTransform: 'uppercase',
   },
-  advancedEditorProcedureUnit: {
+  procedureUnitText: {
     fontSize: 14,
     lineHeight: 21,
     textTransform: 'uppercase',
   },
-  advancedEditorProcedureTimePartContainer: {
+  procedureTimePartContainer: {
     alignItems: 'center',
   },
-  advancedEditorProcedureUnitSelected: {
+  procedureUnitSelectedText: {
     height: 3,
     backgroundColor: '#C8CCD0',
     width: '100%',
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

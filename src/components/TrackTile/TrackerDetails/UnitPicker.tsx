@@ -1,22 +1,13 @@
-import {
-  Modal,
-  Platform,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-} from 'react-native';
-import { StylesProp, useStyleOverrides, Text } from '../styles';
+import { Modal, Platform, View, TouchableOpacity } from 'react-native';
+import { Text } from '../styles';
 import React, { FC, useCallback, useState } from 'react';
 import { Picker, PickerIOS } from '@react-native-picker/picker';
 import { t } from '../../../../lib/i18n';
 import { MetricType } from '../services/TrackTileService';
-import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { IosPickerIcon } from './IosPickerIcon';
 import { tID } from '../common/testID';
-
-declare module './TrackerDetails' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
+import { createStyles } from '../../BrandConfigProvider';
+import { useStyles } from '../../../hooks';
 
 export type UnitPickerProps = {
   placeholder?: string;
@@ -32,15 +23,10 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
     onChange,
     placeholder = t('track-tile.choose-a-unit', 'Choose a Unit'),
   } = props;
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const [width, setWidth] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [tempValue, setTempValue] = useState(value);
-  const flatStyles = useFlattenedStyles(styles, [
-    'unitPickerLabelAndroid',
-    'unitPickerSelectedColorAndroid',
-    'unitPickerUnselectedColorAndroid',
-  ]);
 
   const openInput = useCallback(() => {
     setIsOpen(true);
@@ -61,25 +47,25 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
           accessibilityRole="menu"
           testID={tID('open-unit-picker-button')}
         >
-          <View style={styles.unitPickerContainer}>
-            <Text variant="semibold" style={styles.unitPickerLabel}>
+          <View style={styles.container}>
+            <Text variant="semibold" style={styles.label}>
               {units.find((u) => u.unit === value)?.display}
             </Text>
-            <View style={styles.unitPickerIconIOS}>
+            <View style={styles.iosIcon}>
               <IosPickerIcon />
             </View>
           </View>
         </TouchableOpacity>
         <Modal visible={isOpen} transparent animationType="slide">
-          <View style={styles.unitPickerPopupContainerIOS}>
-            <View style={styles.unitPickerPopupAccessoryContainerIOS}>
+          <View style={styles.iosPopupContainer}>
+            <View style={styles.iosAccessoryContainer}>
               <TouchableOpacity
                 testID={tID('confirm-unit-selection-button')}
                 onPress={commitNewValue}
               >
                 <Text
                   variant="semibold"
-                  style={styles.unitPickerPopupAccessoryDoneTextIOS}
+                  style={styles.iosPopupAccessoryDoneText}
                 >
                   {t('track-tile-done', 'Done')}
                 </Text>
@@ -106,12 +92,12 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
   }
 
   return (
-    <View style={styles.unitPickerContainer}>
+    <View style={styles.container}>
       <Text
         accessible={false}
         variant="semibold"
         numberOfLines={1}
-        style={[{ marginRight: -width }, styles.unitPickerLabel]}
+        style={[{ marginRight: -width }, styles.label]}
         onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
       >
         {units.find((u) => u.unit === value)?.display}
@@ -127,10 +113,10 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
             {
               width:
                 width +
-                flatStyles.unitPickerLabelAndroid.paddingLeft +
-                flatStyles.unitPickerLabelAndroid.paddingRight,
+                Number(styles.androidLabel?.paddingLeft ?? 0) +
+                Number(styles.androidLabel?.paddingRight ?? 0),
             },
-            styles.unitPickerLabelAndroid,
+            styles.androidLabel,
           ],
         })}
       >
@@ -141,9 +127,9 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
             value={unit}
             label={display.toLowerCase()}
             color={
-              unit === value
-                ? flatStyles.unitPickerSelectedColorAndroid.color
-                : flatStyles.unitPickerUnselectedColorAndroid.color
+              (unit === value
+                ? styles.androidSelectedColorText?.color
+                : styles.androidUnselectedColorText?.color) as string
             }
           />
         ))}
@@ -152,19 +138,19 @@ export const UnitPicker: FC<UnitPickerProps> = (props) => {
   );
 };
 
-const defaultStyles = StyleSheet.create({
-  unitPickerContainer: {
+const defaultStyles = createStyles('UnitPicker', () => ({
+  container: {
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
-  unitPickerLabel: {
+  label: {
     letterSpacing: 0.23,
     color: '#262C32',
     fontSize: 16,
     lineHeight: 18,
     justifyContent: 'flex-end',
   },
-  unitPickerIconIOS: {
+  iosIcon: {
     marginLeft: 4,
     height: 7,
     width: 7,
@@ -174,13 +160,13 @@ const defaultStyles = StyleSheet.create({
       },
     ],
   },
-  unitPickerPopupContainerIOS: {
+  iosPopupContainer: {
     marginTop: 'auto',
     height: 215,
     justifyContent: 'center',
     backgroundColor: '#D0D4DA',
   },
-  unitPickerPopupAccessoryContainerIOS: {
+  iosAccessoryContainer: {
     height: 45,
     flexDirection: 'row',
     justifyContent: 'flex-end',
@@ -191,23 +177,28 @@ const defaultStyles = StyleSheet.create({
     borderTopColor: '#DEDEDE',
     zIndex: 2,
   },
-  unitPickerPopupAccessoryDoneTextIOS: {
+  iosPopupAccessoryDoneText: {
     color: '#007AFF',
     fontSize: 17,
     paddingTop: 1,
     paddingRight: 11,
   },
-  unitPickerLabelAndroid: {
+  androidLabel: {
     color: 'transparent',
     height: 16,
     paddingRight: 28,
     paddingLeft: 5,
     marginRight: -15,
   },
-  unitPickerSelectedColorAndroid: {
+  androidSelectedColorText: {
     color: '#30D4FF',
   },
-  unitPickerUnselectedColorAndroid: {
+  androidUnselectedColorText: {
     color: undefined,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

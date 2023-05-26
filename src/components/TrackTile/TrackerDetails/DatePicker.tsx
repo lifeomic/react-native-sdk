@@ -1,15 +1,12 @@
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { StylesProp, useStyleOverrides, Text } from '../styles';
+import { View, TouchableOpacity } from 'react-native';
+import { Text } from '../styles';
 import React, { Dispatch, FC, SetStateAction, useCallback } from 'react';
 import { t } from '../../../../lib/i18n';
 import { Tracker, UnitType } from '../services/TrackTileService';
 import { addDays, format, isToday } from 'date-fns';
 import { unitDisplay } from './unit-display';
-import { useIcons } from '../../BrandConfigProvider';
-
-declare module './TrackerDetails' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
+import { createStyles, useIcons } from '../../BrandConfigProvider';
+import { useStyles } from '../../../hooks';
 
 export type DatePickerProps = {
   dateRange: {
@@ -31,7 +28,7 @@ export type DatePickerProps = {
 export const DatePicker: FC<DatePickerProps> = (props) => {
   const { tracker, dateRange, unit, target, color, onChange } = props;
   const { ChevronLeft, ChevronRight } = useIcons();
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
 
   const shiftRangeByDays = useCallback(
     (step: number) => () => {
@@ -46,7 +43,7 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
   return (
     <View
       style={[
-        styles.datePickerContainer,
+        styles.container,
         { justifyContent: 'space-between', paddingHorizontal: 35 },
       ]}
     >
@@ -83,12 +80,17 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
   );
 };
 
-const defaultStyles = StyleSheet.create({
-  datePickerContainer: {
+const defaultStyles = createStyles('TrackTile.DatePicker', () => ({
+  container: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginVertical: 16,
     alignItems: 'center',
     width: '100%',
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

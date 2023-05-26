@@ -1,18 +1,18 @@
 import React, { FC, useCallback, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator, Switch } from 'react-native';
+import { View, ActivityIndicator, Switch } from 'react-native';
 import { t } from '../../../../lib/i18n';
-import { useStyleOverrides, StylesProp, NamedStyles, Text } from '../styles';
+import { Text } from '../styles';
 import { Tracker, isInstalledMetric } from '../services/TrackTileService';
 import { useTrackers } from '../hooks/useTrackers';
-import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import DraggableFlatList, {
   RenderItemParams,
 } from 'react-native-draggable-flatlist';
 import { ManageTrackerRow } from './ManageTrackerRow';
 import { useSyncTrackerOrder } from './useSyncTrackerOrder';
 import { tID } from '../common/testID';
+import { createStyles } from '../../BrandConfigProvider';
+import { useStyles } from '../../../hooks';
 
-export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 export type ManageTrackersProps = {
   trackerRequestMeta?: ReturnType<typeof useTrackers>;
   onOpenTracker: (metric: Tracker) => void;
@@ -22,14 +22,8 @@ export type ManageTrackersProps = {
 export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
   const trackerRequestMetaHook = useTrackers();
   const { onOpenTracker, trackerRequestMeta } = props;
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const [isReordering, setIsReordering] = useState(false);
-  const flatStyles = useFlattenedStyles(styles, [
-    'manageTrackersTrackerRowHighlightColor',
-    'manageTrackersReorderSwitchThumbColor',
-    'manageTrackersReorderSwitchTrueTrackColor',
-    'manageTrackersReorderSwitchFalseTrackColor',
-  ]);
 
   const { loading, trackers, error } =
     trackerRequestMeta ?? trackerRequestMetaHook;
@@ -61,16 +55,16 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
   const trackerList = orderState ?? trackers;
 
   return (
-    <View style={styles.manageTrackersContainer}>
-      <View style={styles.manageTrackersHeader}>
-        <Text variant="semibold" style={styles.manageTrackersHeaderTitle}>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text variant="semibold" style={styles.headerText}>
           {t('track-tile.your-active-items', 'Your active items')}
         </Text>
-        <View style={styles.manageTrackersHeaderReorderContainer}>
+        <View style={styles.headerReorderContainer}>
           <Text
             accessible={false}
             variant="semibold"
-            style={styles.manageTrackersHeaderReorderText}
+            style={styles.headerReorderText}
           >
             {t('track-tile.reorder', 'Reorder')}
           </Text>
@@ -83,18 +77,17 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
             }
             value={isReordering}
             onValueChange={setOrderingState}
-            style={styles.manageTrackersHeaderReorderSwitch}
-            thumbColor={flatStyles.manageTrackersReorderSwitchThumbColor.color}
+            style={styles.headerReorderSwitch}
+            thumbColor={styles.reorderSwitchThumbColor?.backgroundColor}
             trackColor={{
-              true: flatStyles.manageTrackersReorderSwitchTrueTrackColor.color,
-              false:
-                flatStyles.manageTrackersReorderSwitchFalseTrackColor.color,
+              true: styles.reorderSwitchTrueTrackColor?.backgroundColor,
+              false: styles.reorderSwitchFalseTrackColor?.backgroundColor,
             }}
           />
         </View>
       </View>
       {error && (
-        <Text variant="semibold" style={styles.manageTrackersError}>
+        <Text variant="semibold" style={styles.errorText}>
           {t(
             'track-tile.problem-loading-track-it-items',
             'There was a problem loading the Track-It Items',
@@ -102,7 +95,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
         </Text>
       )}
       {hasReorderError && (
-        <Text variant="semibold" style={styles.manageTrackersError}>
+        <Text variant="semibold" style={styles.errorText}>
           {t(
             'track-tile.problem-occurred-while-reordering-items',
             'A problem occurred while reordering the items',
@@ -113,7 +106,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
         <ActivityIndicator
           testID={tID('tracker-settings-loading')}
           accessibilityRole="progressbar"
-          style={styles.manageTrackersLoading}
+          style={styles.loading}
           size="large"
         />
       )}
@@ -145,7 +138,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                 }
                 underlayColor={
                   !reorderSaving
-                    ? flatStyles.manageTrackersTrackerRowHighlightColor.color
+                    ? styles.trackerRowHighlightColor?.backgroundColor
                     : 'rgba(0, 0, 0, 0)'
                 }
                 onPress={() =>
@@ -208,7 +201,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
             );
           },
           [
-            flatStyles.manageTrackersTrackerRowHighlightColor.color,
+            styles.trackerRowHighlightColor?.backgroundColor,
             isReordering,
             onOpenTracker,
             reorderSaving,
@@ -220,12 +213,12 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
   );
 };
 
-const defaultStyles = StyleSheet.create({
-  manageTrackersContainer: {
+const defaultStyles = createStyles('ManageTrackers', () => ({
+  container: {
     backgroundColor: '#FFFFFF',
     flex: 1,
   },
-  manageTrackersHeader: {
+  header: {
     justifyContent: 'space-between',
     paddingHorizontal: 35,
     backgroundColor: '#EEF0F2',
@@ -233,29 +226,29 @@ const defaultStyles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
-  manageTrackersHeaderTitle: {
+  headerText: {
     color: '#262C32',
     fontSize: 14,
     letterSpacing: 0.23,
   },
-  manageTrackersHeaderReorderContainer: {
+  headerReorderContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  manageTrackersHeaderReorderText: {
+  headerReorderText: {
     paddingRight: 8,
     color: '#7B8996',
     fontSize: 16,
     letterSpacing: 0.23,
   },
-  manageTrackersHeaderReorderSwitch: {
+  headerReorderSwitch: {
     transform: [{ scaleX: 0.78 }, { scaleY: 0.78 }],
   },
-  manageTrackersTrackerRowHighlightColor: { color: '#F1F8EA' },
-  manageTrackersReorderSwitchThumbColor: { color: '#FFFFFF' },
-  manageTrackersReorderSwitchTrueTrackColor: { color: '#8CC654' },
-  manageTrackersReorderSwitchFalseTrackColor: { color: '#B2B9C0' },
-  manageTrackersError: {
+  trackerRowHighlightColor: { backgroundColor: '#F1F8EA' },
+  reorderSwitchThumbColor: { backgroundColor: '#FFFFFF' },
+  reorderSwitchTrueTrackColor: { backgroundColor: '#8CC654' },
+  reorderSwitchFalseTrackColor: { backgroundColor: '#B2B9C0' },
+  errorText: {
     textAlign: 'center',
     padding: 8,
     paddingVertical: 24,
@@ -263,9 +256,14 @@ const defaultStyles = StyleSheet.create({
     fontSize: 16,
     letterSpacing: 0.23,
   },
-  manageTrackersLoading: {
+  loading: {
     padding: 16,
   },
   trackerRowLoading: {},
   draggableFlatListContainer: { flex: 1 },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

@@ -5,14 +5,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Animated, Easing, View, StyleSheet, ViewStyle } from 'react-native';
+import { Animated, Easing, View, ViewStyle } from 'react-native';
 import { Svg, Circle } from 'react-native-svg';
-import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
-import { StylesProp, useStyleOverrides } from '../styles';
 import { usePrevious } from '../hooks/usePrevious';
 import { darkenHexColor } from '../util/darken-hex-color';
 import { useTheme } from '../../../hooks/useTheme';
 import { shadow } from 'react-native-paper';
+import { createStyles } from '../../BrandConfigProvider';
+import { useStyles } from '../../../hooks';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -38,11 +38,7 @@ export const RadialProgress: FC<Props> = (props) => {
   const hasChanged = lastValue !== value || lastTarget !== target;
   const [backgroundVisible, setBackgroundVisible] = useState(value > target);
   const [animationValue, setAnimationValue] = useState(circumference);
-  const styles = useStyleOverrides(defaultStyles);
-  const flatStyles = useFlattenedStyles(styles, [
-    'trackerCircleBorder',
-    'trackerCircleBorderDisabled',
-  ]);
+  const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
 
   const moveProgressTo = useCallback(
@@ -122,15 +118,13 @@ export const RadialProgress: FC<Props> = (props) => {
     <View style={[{ position: 'relative' }, shadow(3) as ViewStyle]}>
       <Svg viewBox={`0 0 ${size} ${size}`}>
         <Circle
-          stroke={flatStyles.trackerCircleBorder.borderColor}
-          strokeWidth={flatStyles.trackerCircleBorder.borderWidth}
+          stroke={styles.border?.borderColor}
+          strokeWidth={styles.border?.borderWidth}
           strokeOpacity={
-            disabled
-              ? flatStyles.trackerCircleBorderDisabled.opacity
-              : flatStyles.trackerCircleBorder.opacity
+            disabled ? styles.disabledBorder?.opacity : styles.border?.opacity
           }
           r={radius}
-          fill={flatStyles.trackerCircleBorder.backgroundColor}
+          fill={styles.border?.backgroundColor}
           cx={size / 2}
           cy={size / 2}
         />
@@ -151,8 +145,8 @@ export const RadialProgress: FC<Props> = (props) => {
         <Svg
           viewBox={`0 0 ${size} ${size}`}
           style={[
-            styles.trackerOverflowProgress,
-            backgroundVisible && styles.trackerOverflowProgressShadow,
+            styles.overflowContainer,
+            backgroundVisible && styles.overflowShadow,
           ]}
         >
           <AnimatedCircle
@@ -174,28 +168,29 @@ export const RadialProgress: FC<Props> = (props) => {
   );
 };
 
-declare module '../TrackTile' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  trackerCircleBorderDisabled: {
+const defaultStyles = createStyles('TrackerRadialProgress', () => ({
+  disabledBorder: {
     opacity: 0.3,
   },
-  trackerCircleBorder: {
+  border: {
     borderWidth: 2,
     opacity: 0.4,
     borderColor: '#B2B9C0',
     backgroundColor: undefined,
   },
-  trackerOverflowProgress: {
+  overflowContainer: {
     position: 'absolute',
   },
-  trackerOverflowProgressShadow: {
+  overflowShadow: {
     elevation: 1,
     shadowOpacity: 0.65,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 3,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

@@ -2,15 +2,14 @@ import React from 'react';
 import {
   TouchableOpacity,
   TouchableOpacityProps,
-  StyleSheet,
   Image,
   Text,
   ImageSourcePropType,
   View,
 } from 'react-native';
-import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
-import { useFlattenedStyles } from '../../hooks/useFlattenedStyles';
-import { useIcons } from '../../../BrandConfigProvider';
+import { useFontOverrides } from '../../styles';
+import { createStyles, useIcons } from '../../../BrandConfigProvider';
+import { useStyles } from '../../../../hooks';
 
 export type TrackerValueRowProps = {
   hasBorderTop?: boolean;
@@ -24,38 +23,33 @@ export const TrackerValueRow = (props: TrackerValueRowProps) => {
   const { image, color, hasBorderTop, title, subTitle, ...rest } = props;
 
   const { Edit } = useIcons();
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const fontWeights = useFontOverrides();
-  const flatStyles = useFlattenedStyles(styles, ['trackerValueRowContainer']);
 
   return (
     <TouchableOpacity
       {...rest}
       style={[
         hasBorderTop && {
-          borderTopWidth: flatStyles.trackerValueRowContainer.borderBottomWidth,
-          borderTopColor: flatStyles.trackerValueRowContainer.borderBottomColor,
+          borderTopWidth: styles.container?.borderBottomWidth,
+          borderTopColor: styles.container?.borderBottomColor,
         },
-        styles.trackerValueRowContainer,
+        styles.container,
       ]}
     >
       <View>
-        <Text style={[fontWeights.semibold, styles.trackerValueRowTitle]}>
-          {title}
-        </Text>
-        <Text style={[fontWeights.light, styles.trackerValueRowSubTitle]}>
-          {subTitle}
-        </Text>
+        <Text style={[fontWeights.semibold, styles.titleText]}>{title}</Text>
+        <Text style={[fontWeights.light, styles.subTitleText]}>{subTitle}</Text>
       </View>
       {image ? (
-        <Image style={styles.trackerValueRowImage} source={image} />
+        <Image style={styles.image} source={image} />
       ) : (
         <View
           style={[
             {
               backgroundColor: color,
             },
-            styles.trackerValueRowImage,
+            styles.image,
           ]}
         >
           <Edit color={'white'} />
@@ -65,12 +59,8 @@ export const TrackerValueRow = (props: TrackerValueRowProps) => {
   );
 };
 
-declare module './AdvancedTrackerDetails' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  trackerValueRowContainer: {
+const defaultStyles = createStyles('TrackerValueRow', () => ({
+  container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -79,33 +69,18 @@ const defaultStyles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
   },
-  trackerValueRowTitle: { fontSize: 16, marginBottom: 6, lineHeight: 19.2 },
-  trackerValueRowSubTitle: { fontSize: 12, lineHeight: 14.4 },
-  trackerValueRowImage: {
+  titleText: { fontSize: 16, marginBottom: 6, lineHeight: 19.2 },
+  subTitleText: { fontSize: 12, lineHeight: 14.4 },
+  image: {
     width: 50,
     height: 50,
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },
+}));
 
-  quickAddItemContainer: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  quickAddItemDisabled: {
-    opacity: 0.3,
-  },
-  quickAddItemImage: {
-    width: '100%',
-    height: 80,
-    overflow: 'hidden',
-    resizeMode: 'cover',
-  },
-  quickAddItemText: {
-    marginHorizontal: 12,
-    marginVertical: 6,
-    lineHeight: 18,
-    fontSize: 12,
-  },
-});
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

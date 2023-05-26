@@ -43,6 +43,7 @@ storiesOf('AdvancedTrackerEditor', module)
 
     Object.assign(ontology, nutrition);
     let color = '#33C317';
+    let unitCode = "[U'arb]";
     let displayOne = '{{count}} Serving';
     let stepAmount = 0.5;
     let resourceType: Tracker['resourceType'] = 'Observation';
@@ -91,6 +92,7 @@ storiesOf('AdvancedTrackerEditor', module)
         displayOne = '{{count}} Minute';
         stepAmount = 5;
         resourceType = 'Procedure';
+        unitCode = 'min';
         Object.assign(ontology, activity);
         if (fullDetails) {
           codes.push(
@@ -114,6 +116,7 @@ storiesOf('AdvancedTrackerEditor', module)
         displayOne = '{{count}} Minute';
         stepAmount = 5;
         resourceType = 'Procedure';
+        unitCode = 'min';
         Object.assign(ontology, mindful);
         codes.push({
           code: '007',
@@ -125,8 +128,9 @@ storiesOf('AdvancedTrackerEditor', module)
       case 'Sleep': {
         color = '#6956D0';
         displayOne = '{{count}} Hour';
-        stepAmount = 15;
+        stepAmount = 0.25;
         resourceType = 'Procedure';
+        unitCode = 'h';
         Object.assign(ontology, sleep);
         break;
       }
@@ -147,7 +151,10 @@ storiesOf('AdvancedTrackerEditor', module)
             },
             createdDate: new Date(),
             id: 'some-id',
-            value: resourceType === 'Procedure' ? stepAmount * 60 : 1,
+            value:
+              resourceType === 'Procedure'
+                ? stepAmount * (unitCode === 'h' ? 3600 : 60)
+                : 1,
           }}
           valuesContext={{
             codeBelow: TRACKER_PILLAR_CODE,
@@ -167,6 +174,7 @@ storiesOf('AdvancedTrackerEditor', module)
                   default: true,
                   displayOne,
                   stepAmount,
+                  code: unitCode,
                 },
               ],
             } as Partial<Tracker> as any
