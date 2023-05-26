@@ -17,6 +17,9 @@ export type UnitType = {
   displayFew?: string;
   displayMany?: string;
   displayOther?: string;
+  targetMin?: number;
+  targetMax?: number;
+  targetStepAmount?: number;
 };
 
 export type MetricType = {

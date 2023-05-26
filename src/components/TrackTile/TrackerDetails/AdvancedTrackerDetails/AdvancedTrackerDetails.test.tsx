@@ -359,7 +359,13 @@ describe('Tracker Advanced Details', () => {
             id: 'tracker-id',
             metricId: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: 'Serving of Fruit', target: 5, unit: 'unit' }],
+            units: [
+              {
+                display: 'Servings of Fruit',
+                target: 5,
+                unit: 'Serving of Fruit',
+              },
+            ],
           } as any
         }
         valuesContext={valuesContext}

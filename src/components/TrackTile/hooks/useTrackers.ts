@@ -8,12 +8,30 @@ import {
 } from '../services/TrackTileService';
 import omit from 'lodash/omit';
 
-export const useTrackers = () => {
+type Trackers = {
+  trackers: Tracker[];
+  pillarTrackers: Tracker[];
+  loading: boolean;
+  error?: any;
+};
+
+/**
+ * Hook to fetch available trackers
+ *
+ * @param {Trackers} trackersToUse - Short-circuit the hooks to prevent
+ * fetching trackers and return the inputted trackers
+ *
+ */
+export const useTrackers = (trackersToUse?: Trackers) => {
   const svc = useTrackTileService();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any | undefined>();
-  const [trackers, setTrackers] = useState<Tracker[]>();
-  const [pillarTrackers, setPillarTrackers] = useState<Tracker[]>();
+  const [loading, setLoading] = useState(trackersToUse?.loading ?? false);
+  const [error, setError] = useState<any | undefined>(trackersToUse?.error);
+  const [trackers, setTrackers] = useState<Tracker[] | undefined>(
+    trackersToUse?.trackers,
+  );
+  const [pillarTrackers, setPillarTrackers] = useState<Tracker[] | undefined>(
+    trackersToUse?.pillarTrackers,
+  );
   const fetched = !!error || !!trackers;
 
   useEffect(() => {
@@ -55,15 +73,16 @@ export const useTrackers = () => {
         );
       }
     };
+    if (!trackersToUse) {
+      notifier.addListener('trackerChanged', onChange);
+      notifier.addListener('trackerRemoved', onRemoved);
 
-    notifier.addListener('trackerChanged', onChange);
-    notifier.addListener('trackerRemoved', onRemoved);
-
-    return () => {
-      notifier.removeListener('trackerChanged', onChange);
-      notifier.removeListener('trackerRemoved', onRemoved);
-    };
-  }, []);
+      return () => {
+        notifier.removeListener('trackerChanged', onChange);
+        notifier.removeListener('trackerRemoved', onRemoved);
+      };
+    }
+  }, [trackersToUse]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,9 +112,10 @@ export const useTrackers = () => {
         }
       }
     };
-
-    fetchData();
-  }, [svc.fetchTrackers, fetched, loading, svc]);
+    if (!trackersToUse) {
+      fetchData();
+    }
+  }, [svc.fetchTrackers, fetched, loading, svc, trackersToUse]);
 
   return {
     trackers: trackers ?? [],

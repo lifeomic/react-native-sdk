@@ -20,14 +20,11 @@ export type ManageTrackersProps = {
 };
 
 export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
-  const trackerRequestMetaHook = useTrackers();
   const { onOpenTracker, trackerRequestMeta } = props;
   const { styles } = useStyles(defaultStyles);
   const [isReordering, setIsReordering] = useState(false);
 
-  const { loading, trackers, error } =
-    trackerRequestMeta ?? trackerRequestMetaHook;
-
+  const { loading, trackers, error } = useTrackers(trackerRequestMeta);
   const [orderState, setOrderState] = useState<Tracker[] | undefined>();
 
   const {

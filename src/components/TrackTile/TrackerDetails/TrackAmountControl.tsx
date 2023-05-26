@@ -8,19 +8,32 @@ import { convertToISONumber } from '../util/convert-value';
 import { numberFormatters } from '../formatters';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
+import { debounce } from 'lodash';
 
 type Props = {
   color: string;
   value: number;
   onChange: (value: number) => void;
+  saveInProgress: boolean;
 };
 const { numberFormat } = numberFormatters;
-const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
+const TrackAmountControl: FC<Props> = ({
+  color,
+  value,
+  onChange,
+  saveInProgress,
+}) => {
   const { styles } = useStyles(defaultStyles);
 
   const [currentValue, setCurrentValue] = useState(numberFormat(value));
 
-  useEffect(() => setCurrentValue(numberFormat(value)), [value]);
+  useEffect(() => {
+    if (!saveInProgress) {
+      debounce(() => {
+        setCurrentValue(numberFormat(value));
+      }, 800);
+    }
+  }, [value, saveInProgress]);
 
   const submitChange = useCallback(() => {
     const newValue = coerceToNonnegativeValue(
@@ -48,10 +61,18 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
           'Decrement tracker value',
         )}
         accessibilityRole="button"
-        onPress={() => value > 0 && onChange(value - 1)}
+        onPress={() => {
+          const asString = addToNumberString(currentValue, -1, false) as string;
+          const asNumber = addToNumberString(currentValue, -1, true) as number;
+          if (asNumber > -1) {
+            setCurrentValue(asString);
+            onChange(asNumber);
+          }
+        }}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
+        style={styles.unaryButton}
       >
-        <Text variant="light" style={styles.unaryButton}>
+        <Text variant="light" style={styles.unaryButtonText}>
           {t('track-tile.dash-symbol', '-')}
         </Text>
       </TouchableOpacity>
@@ -77,10 +98,16 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
           'Increment tracker value',
         )}
         accessibilityRole="button"
-        onPress={() => onChange(value + 1)}
+        onPress={() => {
+          const asString = addToNumberString(currentValue, 1, false) as string;
+          const asNumber = addToNumberString(currentValue, 1, true) as number;
+          setCurrentValue(asString);
+          onChange(asNumber);
+        }}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
+        style={styles.unaryButton}
       >
-        <Text variant="light" style={styles.unaryButton}>
+        <Text variant="light" style={styles.unaryButtonText}>
           {t('track-tile.plus-symbol', '+')}
         </Text>
       </TouchableOpacity>
@@ -88,34 +115,40 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
   );
 };
 
+const addToNumberString = (
+  numberString: string,
+  numberToAdd: number,
+  returnNumber: boolean,
+) => {
+  const number = Number(convertToISONumber(numberString));
+  const result = number + numberToAdd;
+  return returnNumber ? result : numberFormat(result);
+};
+
 const defaultStyles = createStyles('TrackAmountControl', () => ({
   container: {
-    marginTop: -37.5,
-    borderRadius: 50,
-    width: '55%',
-    maxWidth: 220,
-    borderColor: '#D4DCE3',
-    borderWidth: 1,
-    height: 75,
-    overflow: 'hidden',
-    elevation: 1,
-    shadowColor: '#000000',
-    shadowOpacity: 0.1,
-    shadowOffset: { height: 4, width: 0 },
-    shadowRadius: 34,
+    marginTop: 30,
+    width: '80%',
     backgroundColor: 'white',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignContent: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 24,
   },
   unaryButton: {
+    borderRadius: 32,
+    height: 60,
+    width: 60,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  unaryButtonText: {
     color: 'black',
     textAlign: 'center',
-    fontSize: 34,
-    letterSpacing: 0.23,
-    minWidth: 22,
-    height: 44,
+    textAlignVertical: 'center',
+    aspectRatio: 1,
+    fontSize: 30,
+    fontWeight: 'bold',
   },
   valueInput: {
     flex: 1,
