@@ -1,6 +1,6 @@
 import './BrandConfigProvider/BrandConfigProvider.stories';
 import './CustomAppTileScreen.stories';
-import './ExampleApp.stories';
+import './ExampleApp/ExampleApp.stories';
 import './NoInternetToastProvider.stories';
 import './Notifications/NotificationScreen.stories';
 import './OAuth.stories';
