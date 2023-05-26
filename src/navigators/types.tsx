@@ -60,6 +60,7 @@ export type HomeStackParamList = {
   'Home/TrackTile': {
     tracker: Tracker;
     valuesContext: TrackerValuesContext;
+    referenceDate?: Date;
   };
   'Home/TrackTileSettings': {
     valuesContext: TrackerValuesContext;

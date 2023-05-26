@@ -13,7 +13,7 @@ export const TrackTileTrackerScreen = ({
   navigation,
   route: { params },
 }: Props) => {
-  const { tracker, valuesContext } = params;
+  const { tracker, valuesContext, referenceDate } = params;
   const { styles } = useStyles(defaultStyles);
 
   React.useLayoutEffect(() => {
@@ -27,6 +27,7 @@ export const TrackTileTrackerScreen = ({
       <TrackerDetails
         tracker={tracker}
         valuesContext={valuesContext}
+        referenceDate={referenceDate}
         canEditUnit={true}
       />
     </View>

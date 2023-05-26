@@ -270,6 +270,40 @@ describe('Tracker Details', () => {
     );
   });
 
+  it('should render from referenceDate when provided', async () => {
+    mockUseTrackerValues.mockReturnValue({
+      loading: false,
+      trackerValues: [{}],
+    } as any);
+
+    const upsertTrackerResource = jest.fn();
+    const referenceDate = new Date('2023-03-17T03:24:00');
+
+    const { findByText } = render(
+      <TrackerDetailsProvider
+        trackTileService={
+          {
+            datastoreSettings: {},
+            upsertTrackerResource,
+            upsertTracker: jest.fn(),
+          } as any
+        }
+        tracker={
+          {
+            id: 'metric-id',
+            resourceType: 'Observation',
+            units: [{ display: '', target: 5, unit: 'unit' }],
+          } as any
+        }
+        valuesContext={valuesContext}
+        referenceDate={referenceDate}
+      />,
+    );
+
+    await findByText('Friday, March 17');
+    await findByText('Mar 11, 2023 - Mar 17, 2023 ');
+  });
+
   it('should allow decrementing across multiple observations', async () => {
     const notifierSpy = jest.spyOn(notifier, 'emit');
     mockUseTrackerValues.mockReturnValue({
