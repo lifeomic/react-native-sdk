@@ -1,19 +1,27 @@
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Linking } from 'react-native';
 import type {
   WebViewMessageEvent,
   WebViewNavigation,
 } from 'react-native-webview';
-import { CircleTile, useAppConfig } from './useAppConfig';
-import { useNavigation } from '@react-navigation/native';
+import { useTrackers } from '../components/TrackTile/hooks/useTrackers';
+import {
+  TRACKER_PILLAR_CODE,
+  TRACKER_PILLAR_CODE_SYSTEM,
+} from '../components/TrackTile/services/TrackTileService';
 import { HomeStackParamList } from '../navigators/types';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { CircleTile, useAppConfig } from './useAppConfig';
 
 type NavigationParams = {
   [x: string]: unknown | undefined;
   referenceDate?: string | number | Date;
 };
 
-type DeepLinkRouteName = 'tiles/Today/Survey' | 'social/PostDetails';
+type DeepLinkRouteName =
+  | 'tiles/Today/Survey'
+  | 'tiles/TrackTile'
+  | 'social/PostDetails';
 
 export enum AppTileMessageType {
   deepLink = 'deepLink',
@@ -46,7 +54,8 @@ export type AppTileMessage = DeepLinkAppletMessage | OpenUrlAppletMessage;
 
 export const useHandleAppTileEvents = () => {
   const { data } = useAppConfig();
-  const todayTileSettings = data?.homeTab?.todayTileSettings;
+  const { pillarTrackers } = useTrackers();
+  const { todayTileSettings, tiles } = data?.homeTab || {};
   const navigation = useNavigation<StackNavigationProp<HomeStackParamList>>();
 
   const openSurveyAppTile = (responseId: string | undefined) => {
@@ -69,6 +78,24 @@ export const useHandleAppTileEvents = () => {
     navigation.push('Home/Circle/Discussion', { circleTile });
   };
 
+  const openPillarTracker = (params: NavigationParams) => {
+    const tracker = pillarTrackers.find((t) => t.metricId === params.metricId);
+    if (!tiles?.includes('pillarsTile') || !tracker) {
+      return;
+    }
+
+    navigation.push('Home/TrackTile', {
+      tracker,
+      ...(params.referenceDate
+        ? { referenceDate: new Date(params.referenceDate) }
+        : {}),
+      valuesContext: {
+        system: TRACKER_PILLAR_CODE_SYSTEM,
+        codeBelow: TRACKER_PILLAR_CODE,
+      },
+    });
+  };
+
   const handleDeepLinkMessage = (appletMessage: DeepLinkAppletMessage) => {
     const { routeName, params = {} } = appletMessage.data;
     switch (routeName) {
@@ -81,6 +108,10 @@ export const useHandleAppTileEvents = () => {
         if (circleId && circleName) {
           openCircleDiscussionScreen(circleId as string, circleName as string);
         }
+        break;
+
+      case 'tiles/TrackTile':
+        openPillarTracker(params);
         break;
 
       default:

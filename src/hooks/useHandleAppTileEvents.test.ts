@@ -1,15 +1,25 @@
-import { Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { renderHook } from '@testing-library/react-native';
+import { Linking } from 'react-native';
+import { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
+import { useTrackers } from '../components/TrackTile/hooks/useTrackers';
+import {
+  TRACKER_PILLAR_CODE,
+  TRACKER_PILLAR_CODE_SYSTEM,
+  Tracker,
+} from '../components/TrackTile/services/TrackTileService';
 import { useAppConfig } from './useAppConfig';
 import {
   AppTileMessageType,
   useHandleAppTileEvents,
 } from './useHandleAppTileEvents';
-import { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 
 jest.mock('./useAppConfig', () => ({
   useAppConfig: jest.fn(),
+}));
+
+jest.mock('../components/TrackTile/hooks/useTrackers', () => ({
+  useTrackers: jest.fn(),
 }));
 
 jest.mock('react-native', () => ({
@@ -20,6 +30,8 @@ jest.mock('react-native', () => ({
 
 const useNavigationMock = useNavigation as jest.Mock;
 const useAppConfigMock = useAppConfig as jest.Mock;
+const useTrackersMock: jest.Mock<ReturnType<typeof useTrackers>> =
+  useTrackers as jest.Mock;
 const openURLMock = Linking.openURL as jest.Mock;
 
 const popMock = jest.fn();
@@ -27,6 +39,10 @@ const canGoBack = jest.fn();
 const pushMock = jest.fn();
 
 const surveysAppTile = { id: 'surveys', url: 'surveys.com' };
+
+const pillarTracker = {
+  metricId: 'test-tile-metric-id',
+} as Tracker;
 
 beforeEach(() => {
   canGoBack.mockReturnValue(true);
@@ -43,8 +59,16 @@ beforeEach(() => {
         todayTileSettings: {
           surveysTile: surveysAppTile,
         },
+        tiles: ['pillarsTile'],
       },
     },
+  });
+
+  useTrackersMock.mockReturnValue({
+    pillarTrackers: [pillarTracker],
+    trackers: [],
+    error: false,
+    loading: false,
   });
 });
 
@@ -108,6 +132,64 @@ describe('handleAppTileMessage', () => {
         isMember: true,
       },
     });
+  });
+
+  it('should handle deep link message and call openPillarTracker', () => {
+    const metricId = 'test-tile-metric-id';
+    const referenceDate = new Date();
+    const appTileMessage = {
+      type: AppTileMessageType.deepLink,
+      data: {
+        routeName: 'tiles/TrackTile',
+        params: { metricId, referenceDate },
+      },
+    };
+    const { result } = renderHook(() => useHandleAppTileEvents());
+    const event = {
+      nativeEvent: {
+        data: JSON.stringify(appTileMessage),
+        canGoBack: true,
+        canGoForward: false,
+        loading: false,
+        title: 'Track FooBar',
+        url: 'foobar.com',
+        lockIdentifier: 1234442,
+      },
+    };
+    result.current.handleAppTileMessage(event as WebViewMessageEvent);
+    expect(pushMock).toBeCalledWith('Home/TrackTile', {
+      tracker: pillarTracker,
+      referenceDate,
+      valuesContext: {
+        system: TRACKER_PILLAR_CODE_SYSTEM,
+        codeBelow: TRACKER_PILLAR_CODE,
+      },
+    });
+  });
+
+  it('should no-op if the tracker cannot be found', () => {
+    const metricId = 'random-id';
+    const appTileMessage = {
+      type: AppTileMessageType.deepLink,
+      data: {
+        routeName: 'tiles/TrackTile',
+        params: { metricId },
+      },
+    };
+    const { result } = renderHook(() => useHandleAppTileEvents());
+    const event = {
+      nativeEvent: {
+        data: JSON.stringify(appTileMessage),
+        canGoBack: true,
+        canGoForward: false,
+        loading: false,
+        title: 'Track FooBar',
+        url: 'foobar.com',
+        lockIdentifier: 1234442,
+      },
+    };
+    result.current.handleAppTileMessage(event as WebViewMessageEvent);
+    expect(pushMock).not.toBeCalled();
   });
 
   it('should no-op if the routeName is not supported', () => {
