@@ -2,6 +2,7 @@ import { ComponentType } from 'react';
 import { getBundleId } from 'react-native-device-info';
 import { AppTile } from '../hooks/useAppConfig';
 import { SvgProps } from 'react-native-svg';
+import { Theme } from '../components/BrandConfigProvider';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -23,12 +24,20 @@ import { SvgProps } from 'react-native-svg';
  * @param additionalNavigationTab Allows for configuring a custom additional material
  * bottom navigation tab (in addition to Home, Notifications, and Settings.
  */
+export interface RouteColor {
+  route: string;
+  color: (theme: Theme) => string;
+}
+
 export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
   additionalNavigationTabs?: AdditionalNavigationTab[];
-  AppNavHeader?: () => JSX.Element;
+  AppNavHeader?: {
+    headerColors?: RouteColor[];
+    onHeaderColors?: RouteColor[];
+  };
 };
 
 export type AppTileScreens = {

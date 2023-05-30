@@ -4,7 +4,9 @@ import { Appbar, Text } from 'react-native-paper';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { createStyles, useIcons } from './BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
-import { TextStyle } from 'react-native';
+import { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { useDeveloperConfig, useTheme } from '../hooks';
+import { RouteColor } from '../common/DeveloperConfig';
 
 export function AppNavHeader({
   back,
@@ -15,25 +17,63 @@ export function AppNavHeader({
   const { styles } = useStyles(defaultStyles);
   const { ChevronLeft } = useIcons();
   const title = options.title || route.name;
+  const config = useDeveloperConfig();
+  const headerStyles = useColorMapping(
+    'backgroundColor',
+    config.AppNavHeader?.headerColors,
+    route,
+    styles.style,
+  );
+  const titleStyles = useColorMapping(
+    'color',
+    config.AppNavHeader?.onHeaderColors,
+    route,
+    styles.titleText,
+  );
 
   return (
-    <Appbar.Header style={styles.style} elevated>
+    <Appbar.Header statusBarHeight={0} style={headerStyles}>
       {back ? (
         <Appbar.Action
           icon={ChevronLeft}
+          color={styles.backActionIconAny?.color}
           onPress={navigation.goBack}
           style={styles.backAction}
         />
       ) : null}
       <Appbar.Content
-        title={<Title text={title} style={styles.titleText} />}
+        title={<Title text={title} style={titleStyles} />}
         style={styles.content}
       />
     </Appbar.Header>
   );
 }
 
-const Title = ({ text, style }: { text: string; style?: TextStyle }) => (
+const useColorMapping = (
+  property: keyof ViewStyle | keyof TextStyle,
+  routeColors: RouteColor[] | undefined,
+  route: Record<string, any>,
+  style: StyleProp<ViewStyle | TextStyle>,
+) => {
+  const theme = useTheme();
+  const title = route.params?.appTile?.title;
+  const routeColor = routeColors?.find(
+    (item) => item.route === route.name || item.route === title,
+  );
+  if (routeColor) {
+    return [style, { [property]: routeColor.color(theme) }];
+  }
+
+  return style;
+};
+
+const Title = ({
+  text,
+  style,
+}: {
+  text: string;
+  style?: StyleProp<TextStyle>;
+}) => (
   <Text variant="titleMedium" style={style}>
     {text}
   </Text>
@@ -48,6 +88,7 @@ const defaultStyles = createStyles('AppNavHeader', (theme) => ({
     color: theme.colors.onSurfaceVariant,
   },
   backAction: {},
+  backActionIconAny: {},
 }));
 
 declare module '@styles' {
