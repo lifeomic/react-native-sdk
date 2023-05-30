@@ -62,12 +62,12 @@ export function useFhirClient() {
     // TODO: consider using fhir-search across the board (documenting delay)
 
     const fetchNext = useCallback(
-      (next: number) => {
+      (nextParam: number = next) => {
         if (hasMoreData) {
-          setNext(next);
+          setNext(nextParam);
         }
       },
-      [hasMoreData],
+      [hasMoreData, next],
     );
 
     const queryResult = useQuery(
