@@ -4,7 +4,7 @@ import { Linking } from 'react-native';
 import { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import { useTrackers } from '../components/TrackTile/hooks/useTrackers';
 import {
-  TRACKER_CODE,
+  TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
   Tracker,
 } from '../components/TrackTile/services/TrackTileService';
@@ -129,7 +129,7 @@ describe('handleAppTileMessage', () => {
       referenceDate,
       valuesContext: {
         system: TRACKER_PILLAR_CODE_SYSTEM,
-        codeBelow: TRACKER_CODE,
+        codeBelow: TRACKER_PILLAR_CODE,
       },
     });
   });

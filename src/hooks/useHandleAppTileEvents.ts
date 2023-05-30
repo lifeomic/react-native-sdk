@@ -7,7 +7,7 @@ import type {
 } from 'react-native-webview';
 import { useTrackers } from '../components/TrackTile/hooks/useTrackers';
 import {
-  TRACKER_CODE,
+  TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
 } from '../components/TrackTile/services/TrackTileService';
 import { HomeStackParamList } from '../navigators/types';
@@ -78,7 +78,7 @@ export const useHandleAppTileEvents = () => {
         : {}),
       valuesContext: {
         system: TRACKER_PILLAR_CODE_SYSTEM,
-        codeBelow: TRACKER_CODE,
+        codeBelow: TRACKER_PILLAR_CODE,
       },
     });
   };
