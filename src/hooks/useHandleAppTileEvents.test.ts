@@ -77,6 +77,39 @@ describe('handleAppTileMessage', () => {
     });
   });
 
+  it('should handle deep link message and call openCircleDiscussionScreen', () => {
+    const circleId = 'CIRCLE_ID';
+    const circleName = 'CIRCLE_NAME';
+    const appTileMessage = {
+      type: AppTileMessageType.deepLink,
+      data: {
+        routeName: 'social/PostDetails',
+        params: { circleId, circleName },
+      },
+    };
+    const { result } = renderHook(() => useHandleAppTileEvents());
+    const event = {
+      nativeEvent: {
+        data: JSON.stringify(appTileMessage),
+        canGoBack: true,
+        canGoForward: false,
+        loading: false,
+        title: 'Circles',
+        url: 'circles.com',
+        lockIdentifier: 1234442,
+      },
+    };
+    result.current.handleAppTileMessage(event as WebViewMessageEvent);
+    expect(pushMock).toBeCalledWith('Home/Circle/Discussion', {
+      circleTile: {
+        circleId,
+        circleName,
+        buttonText: circleName,
+        isMember: true,
+      },
+    });
+  });
+
   it('should no-op if the routeName is not supported', () => {
     const appTileMessage = {
       type: AppTileMessageType.deepLink,

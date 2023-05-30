@@ -3,7 +3,7 @@ import type {
   WebViewMessageEvent,
   WebViewNavigation,
 } from 'react-native-webview';
-import { useAppConfig } from './useAppConfig';
+import { CircleTile, useAppConfig } from './useAppConfig';
 import { useNavigation } from '@react-navigation/native';
 import { HomeStackParamList } from '../navigators/types';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -13,7 +13,7 @@ type NavigationParams = {
   referenceDate?: string | number | Date;
 };
 
-type DeepLinkRouteName = 'tiles/Today/Survey';
+type DeepLinkRouteName = 'tiles/Today/Survey' | 'social/PostDetails';
 
 export enum AppTileMessageType {
   deepLink = 'deepLink',
@@ -59,12 +59,32 @@ export const useHandleAppTileEvents = () => {
     });
   };
 
+  const openCircleDiscussionScreen = (circleId: string, circleName: string) => {
+    const circleTile: CircleTile = {
+      circleId,
+      circleName,
+      buttonText: circleName,
+      isMember: true,
+    };
+    navigation.push('Home/Circle/Discussion', { circleTile });
+  };
+
   const handleDeepLinkMessage = (appletMessage: DeepLinkAppletMessage) => {
     const { routeName, params = {} } = appletMessage.data;
-    if (routeName === 'tiles/Today/Survey') {
-      openSurveyAppTile(params.questionnaire as string | undefined);
-    } else {
-      console.warn('Unsupported route name. Ignoring...', { routeName });
+    switch (routeName) {
+      case 'tiles/Today/Survey':
+        openSurveyAppTile(params.questionnaire as string | undefined);
+        break;
+
+      case 'social/PostDetails':
+        const { circleId, circleName } = params;
+        if (circleId && circleName) {
+          openCircleDiscussionScreen(circleId as string, circleName as string);
+        }
+        break;
+
+      default:
+        console.warn('Unsupported route name. Ignoring...', { routeName });
     }
   };
 
