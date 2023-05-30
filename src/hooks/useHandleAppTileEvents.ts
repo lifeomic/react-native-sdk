@@ -11,14 +11,17 @@ import {
   TRACKER_PILLAR_CODE_SYSTEM,
 } from '../components/TrackTile/services/TrackTileService';
 import { HomeStackParamList } from '../navigators/types';
-import { useAppConfig } from './useAppConfig';
+import { CircleTile, useAppConfig } from './useAppConfig';
 
 type NavigationParams = {
   [x: string]: unknown | undefined;
   referenceDate?: string | number | Date;
 };
 
-type DeepLinkRouteName = 'tiles/Today/Survey' | 'tiles/TrackTile';
+type DeepLinkRouteName =
+  | 'tiles/Today/Survey'
+  | 'tiles/TrackTile'
+  | 'social/PostDetails';
 
 export enum AppTileMessageType {
   deepLink = 'deepLink',
@@ -65,6 +68,16 @@ export const useHandleAppTileEvents = () => {
     });
   };
 
+  const openCircleDiscussionScreen = (circleId: string, circleName: string) => {
+    const circleTile: CircleTile = {
+      circleId,
+      circleName,
+      buttonText: circleName,
+      isMember: true,
+    };
+    navigation.push('Home/Circle/Discussion', { circleTile });
+  };
+
   const openPillarTracker = (params: NavigationParams) => {
     const tracker = pillarTrackers.find((t) => t.metricId === params.metricId);
     if (!tiles?.includes('pillarsTile') || !tracker) {
@@ -89,9 +102,18 @@ export const useHandleAppTileEvents = () => {
       case 'tiles/Today/Survey':
         openSurveyAppTile(params.questionnaire as string | undefined);
         break;
+
+      case 'social/PostDetails':
+        const { circleId, circleName } = params;
+        if (circleId && circleName) {
+          openCircleDiscussionScreen(circleId as string, circleName as string);
+        }
+        break;
+
       case 'tiles/TrackTile':
         openPillarTracker(params);
         break;
+
       default:
         console.warn('Unsupported route name. Ignoring...', { routeName });
     }
