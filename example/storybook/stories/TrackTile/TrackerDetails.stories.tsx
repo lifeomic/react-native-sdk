@@ -10,7 +10,7 @@ import {
   TRACKER_CODE_SYSTEM,
 } from '../../../../src/components/TrackTile/services/TrackTileService';
 import { t } from '../../../../lib/i18n';
-import { boolean, withKnobs, object } from '@storybook/addon-knobs';
+import { boolean, withKnobs, object, date } from '@storybook/addon-knobs';
 import { Anchor } from '@lifeomic/chromicons-native';
 import {
   UnitPicker,
@@ -33,6 +33,7 @@ storiesOf('TrackerDetails', module)
     })(storyFn, context),
   )
   .add('default', () => {
+    const referenceDate = date('Reference Date', undefined);
     return (
       <IconProvider
         icons={
@@ -79,6 +80,10 @@ storiesOf('TrackerDetails', module)
             system: TRACKER_CODE_SYSTEM,
             codeBelow: TRACKER_CODE,
           }}
+          referenceDate={new Date(referenceDate)}
+          // NOTE: This should not be necessary in production apps where the referenceDate prop does not change on the fly.
+          // https://react.dev/learn/you-might-not-need-an-effect#resetting-all-state-when-a-prop-changes
+          key={referenceDate}
         />
       </IconProvider>
     );

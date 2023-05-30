@@ -26,7 +26,7 @@ import {
 } from '../util/convert-value';
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
 import { numberFormatters } from '../formatters';
-import { endOfToday, isToday, startOfToday } from 'date-fns';
+import { endOfDay, isBefore, isToday, startOfDay } from 'date-fns';
 import { DatePicker } from './DatePicker';
 import { NumberPicker } from './NumberPicker';
 import { createStyles } from '../../../components/BrandConfigProvider';
@@ -36,6 +36,7 @@ import { unitDisplay } from './unit-display';
 export type TrackerDetailsProps = {
   tracker: Tracker;
   valuesContext: TrackerValuesContext;
+  referenceDate?: Date;
   onError?: (e: any) => void;
   canEditUnit?: boolean;
 };
@@ -43,21 +44,34 @@ export type TrackerDetailsProps = {
 const { numberFormat } = numberFormatters;
 
 export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
-  const { tracker, valuesContext, onError, canEditUnit } = props;
+  const {
+    tracker,
+    valuesContext,
+    referenceDate: incomingReferenceDate,
+    onError,
+    canEditUnit,
+  } = props;
   const defaultUnit = getStoredUnitType(tracker);
   const { styles } = useStyles(defaultStyles);
   const svc = useTrackTileService();
   const [saveInProgress, setSaveInProgress] = useState(false);
-  const [dateRange, setDateRange] = useState({
-    start: startOfToday(),
-    end: endOfToday(),
+  const [dateRange, setDateRange] = useState(() => {
+    const referenceDate =
+      incomingReferenceDate && isBefore(incomingReferenceDate, new Date())
+        ? incomingReferenceDate
+        : new Date();
+
+    return {
+      start: startOfDay(referenceDate),
+      end: endOfDay(referenceDate),
+    };
   });
   const {
-    trackerValues: [todaysValues],
+    trackerValues: [activeValues],
     loading: fetchingTrackerValues,
   } = useTrackerValues(valuesContext, dateRange);
   const metricId = tracker.metricId ?? tracker.id;
-  const incomingValue = (todaysValues[metricId] ?? []).reduce(
+  const incomingValue = (activeValues[metricId] ?? []).reduce(
     (total, { value }) => total + value,
     0,
   );
@@ -106,7 +120,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
       debounce(async (newValue: number) => {
         setSaveInProgress(true);
         try {
-          const values = todaysValues[metricId] ?? [];
+          const values = activeValues[metricId] ?? [];
           const cValue = values.reduce((total, { value }) => total + value, 0);
           const updates: TrackerValue[] = [];
           const deletes: TrackerValue[] = [];
@@ -125,7 +139,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
                   createDate: isToday(dateRange.start)
                     ? new Date()
                     : dateRange.start,
-                  ...todaysValues[metricId]?.[0],
+                  ...activeValues[metricId]?.[0],
                   value: convertToPreferredUnit(resourceValue, tracker),
                   tracker,
                 }),
@@ -164,7 +178,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
         }
         setSaveInProgress(false);
       }, 800),
-    [todaysValues, tracker, metricId, svc, valuesContext, dateRange, onError],
+    [activeValues, tracker, metricId, svc, valuesContext, dateRange, onError],
   );
 
   const onValueChange = useCallback(
@@ -254,6 +268,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
             unit={selectedUnit.display}
             tracker={tracker}
             valuesContext={valuesContext}
+            referenceDate={dateRange.start}
           />
         </View>
       </View>
