@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { I18nManager, View } from 'react-native';
 import React, { Dispatch, FC, SetStateAction, useCallback } from 'react';
 import { t } from '../../../../lib/i18n';
 import { Tracker, UnitType } from '../services/TrackTileService';
@@ -6,7 +6,7 @@ import { addDays, format, isToday } from 'date-fns';
 import { unitDisplay } from './unit-display';
 import { createStyles, useIcons } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
-import { IconButton, Text } from 'react-native-paper';
+import { IconButton, Text, useTheme } from 'react-native-paper';
 
 export type DatePickerProps = {
   dateRange: {
@@ -29,20 +29,39 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
   const { tracker, dateRange, unit, target, onChange, color } = props;
   const { styles } = useStyles(defaultStyles);
   const { TriangleFilled } = useIcons();
-
-  const TriangleLeft = useCallback(
-    () => <TriangleFilled direction="ltr" color={'white'} w={10} />,
-    [TriangleFilled],
+  const { isRTL } = I18nManager.getConstants();
+  const theme = useTheme();
+  const TriangleBack = useCallback(
+    () => (
+      <TriangleFilled
+        direction={isRTL ? 'rtl' : 'ltr'}
+        color={theme.colors.background}
+        w={10}
+      />
+    ),
+    [TriangleFilled, isRTL, theme],
   );
 
-  const TriangleDisabled = useCallback(
-    () => <TriangleFilled direction="ltr" color={'grey'} w={10} />,
-    [TriangleFilled],
+  const TriangleForwardDisabled = useCallback(
+    () => (
+      <TriangleFilled
+        direction={isRTL ? 'ltr' : 'rtl'}
+        color={theme.colors.shadow}
+        w={10}
+      />
+    ),
+    [TriangleFilled, isRTL, theme],
   );
 
-  const TriangleRight = useCallback(
-    () => <TriangleFilled direction="rtl" color={'white'} w={10} />,
-    [TriangleFilled],
+  const TriangleForward = useCallback(
+    () => (
+      <TriangleFilled
+        direction={isRTL ? 'ltr' : 'rtl'}
+        color={theme.colors.background}
+        w={10}
+      />
+    ),
+    [TriangleFilled, isRTL, theme],
   );
 
   const shiftRangeByDays = useCallback(
@@ -65,20 +84,21 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
       >
         <IconButton
           style={styles.iconButton}
-          icon={isToday(dateRange.start) ? TriangleDisabled : TriangleLeft}
-          accessibilityLabel={t('track-tile.go-to-next-day', 'Go to next day')}
-          disabled={isToday(dateRange.start)}
-          onPress={shiftRangeByDays(1)}
-        />
-        <IconButton
-          style={styles.iconButton}
-          iconColor={'white'}
+          icon={TriangleBack}
           accessibilityLabel={t(
             'track-tile.go-to-previous-day',
             'Go to previous day',
           )}
-          icon={TriangleRight}
           onPress={shiftRangeByDays(-1)}
+        />
+        <IconButton
+          style={styles.iconButton}
+          icon={
+            isToday(dateRange.start) ? TriangleForwardDisabled : TriangleForward
+          }
+          disabled={isToday(dateRange.start)}
+          accessibilityLabel={t('track-tile.go-to-next-day', 'Go to next day')}
+          onPress={shiftRangeByDays(1)}
         />
       </View>
       <View style={styles.textContainer}>

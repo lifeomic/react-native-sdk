@@ -25,7 +25,7 @@
   "track-tile.unit-type": "نوع الوحدة",
   "track-tile.problem-loading-track-it-items": "حدثت مشكلة في تحميل عناصر Track-It",
   "track-tile.tracker-value-value": "قيمة المتعقب، {{value}}",
-  "track-tile.date-range": "{{end}}-{{start}}",
+  "track-tile.date-range": "{{start}}-{{end}}",
   "track-tile.reorder-trackers": "إعادة ترتيب المتعقبات",
   "track-tile.day-value-unit-display": "{{day}}: {{value}} {{unit}}",
   "track-tile.editor-selected-category-header": "Selected: <bold>{{categoryName}}</bold>",

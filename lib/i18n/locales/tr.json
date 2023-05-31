@@ -25,7 +25,7 @@
   "track-tile.unit-type": "Birim türü",
   "track-tile.problem-loading-track-it-items": "Takip Et öğeleri yüklenirken bir sorun oluştu",
   "track-tile.tracker-value-value": "Takipçi değeri, {{value}}",
-  "track-tile.date-range": "{{end}}-{{start}}",
+  "track-tile.date-range": "{{start}}-{{end}}",
   "track-tile.reorder-trackers": "Takipçileri yeniden sırala",
   "track-tile.day-value-unit-display": "{{day}}: {{value}} {{unit}}",
   "track-tile.editor-selected-category-header": "Selected: <bold>{{categoryName}}</bold>",
