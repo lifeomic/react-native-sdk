@@ -19,6 +19,8 @@ import {
   PlusSquare,
 } from '@lifeomic/chromicons-native';
 import { IconProvider } from '../../../../src';
+import { CenterView } from '../../helpers/CenterView';
+
 const baseTracker = {
   account: 'accountid',
   description: 'desc',
@@ -149,6 +151,7 @@ storiesOf('PillarsTile', module)
       ],
     })(storyFn, context),
   )
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => (
     <IconProvider
       icons={

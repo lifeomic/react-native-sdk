@@ -3,6 +3,7 @@ import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
 import { SelectorRow } from '../../../../src/components/Wearables/SelectorRow';
+import { CenterView } from '../../helpers/CenterView';
 
 export const exampleProps = {
   id: 'rowId',
@@ -12,6 +13,7 @@ export const exampleProps = {
 
 storiesOf('Selector Row', module)
   .addDecorator(withKnobs)
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => (
     <SelectorRow
       disabled={boolean('disabled', false)}

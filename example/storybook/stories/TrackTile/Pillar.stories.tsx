@@ -14,6 +14,7 @@ import { boolean } from '@storybook/addon-knobs';
 import { Anchor, CheckCircle, PlusSquare } from '@lifeomic/chromicons-native';
 import { IconProvider } from '../../../../src';
 import { StylesProvider } from '../../../../src/components/BrandConfigProvider/styles/StylesProvider';
+import { CenterView } from '../../helpers/CenterView';
 
 const nutritionTracker: Tracker = {
   id: 'nutrition',
@@ -107,6 +108,7 @@ const initialValue: TrackerValue = {
 
 storiesOf('Pillar', module)
   .addDecorator(MockEnvironmentDecorator())
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => <InteractivePillar />)
   .add('loading', () => (
     <View style={defaultStyles.pillarsTile}>

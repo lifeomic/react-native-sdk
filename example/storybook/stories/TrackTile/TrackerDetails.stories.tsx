@@ -17,6 +17,7 @@ import {
   UnitPickerProps,
 } from '../../../../src/components/TrackTile/TrackerDetails/UnitPicker';
 import { IconProvider } from '../../../../src';
+import { SafeView } from '../../helpers/SafeView';
 
 storiesOf('TrackerDetails', module)
   .addDecorator(withKnobs)
@@ -32,6 +33,7 @@ storiesOf('TrackerDetails', module)
       ],
     })(storyFn, context),
   )
+  .addDecorator((story) => <SafeView>{story()}</SafeView>)
   .add('default', () => {
     const referenceDate = date('Reference Date', undefined);
     return (

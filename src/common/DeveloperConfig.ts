@@ -37,6 +37,7 @@ export type DeveloperConfig = {
   AppNavHeader?: {
     headerColors?: RouteColor[];
     onHeaderColors?: RouteColor[];
+    statusBarHeight?: number;
   };
 };
 

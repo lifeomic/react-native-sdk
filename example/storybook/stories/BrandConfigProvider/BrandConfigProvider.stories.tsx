@@ -7,7 +7,7 @@ import { ThemeExampleScreen } from './ThemeExampleScreen';
 import * as baseTheme from '../../../../src/components/BrandConfigProvider/theme/base';
 import { ExampleBox, ExampleBoxStyles } from './ExampleBox';
 import { BrandConfigProviderStyles } from '../../../../src/components/BrandConfigProvider/styles/types';
-import { CenterView } from 'example/storybook/helpers/CenterView';
+import { CenterView } from '../../helpers/CenterView';
 import Svg, { Path } from 'react-native-svg';
 import { List } from 'react-native-paper';
 import { Apple } from '@lifeomic/chromicons-native';

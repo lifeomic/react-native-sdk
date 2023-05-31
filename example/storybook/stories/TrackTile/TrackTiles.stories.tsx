@@ -4,6 +4,7 @@ import { storiesOf } from '@storybook/react-native';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import { action } from '@storybook/addon-actions';
 import { TrackTile } from '../../../../src/components/TrackTile';
+import { CenterView } from '../../helpers/CenterView';
 
 storiesOf('TrackTile', module)
   .addDecorator((storyFn, context) =>
@@ -29,6 +30,7 @@ storiesOf('TrackTile', module)
       ],
     })(storyFn, context),
   )
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => (
     <TrackTile
       onOpenSettings={action('onOpenSettings')}
