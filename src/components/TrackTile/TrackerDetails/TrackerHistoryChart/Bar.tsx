@@ -17,7 +17,8 @@ const Bar: FC<BarProps> = (props) => {
   const ref = useRef(new Animated.Value(animated ? 0 : percentComplete));
   const { styles } = useStyles(defaultStyles, style);
 
-  const barStyle = variant === 'flat' ? styles.barFlatView : styles.barDefaultView;
+  const barStyle =
+    variant === 'flat' ? styles.barFlatView : styles.barDefaultView;
   const containerStyle =
     variant === 'flat' ? styles.containerFlat : styles.containerDefault;
 
