@@ -312,7 +312,7 @@ describe('Tracker Details', () => {
     );
 
     await findByText(format(referenceDate, 'iiii, MMMM d'));
-    await findByText('Mar 11, 2023 - Mar 17, 2023 ');
+    await findByText('Mar 11-Mar 17');
   });
 
   it('should NOT render from referenceDate in the future', async () => {
@@ -348,10 +348,7 @@ describe('Tracker Details', () => {
 
     await findByText("Today's Widgets");
     await findByText(
-      `${format(add(now, { days: -6 }), 'MMM d, Y')} - ${format(
-        now,
-        'MMM d, Y',
-      )}`,
+      `${format(add(now, { days: -6 }), 'MMM d')}-${format(now, 'MMM d')}`,
     );
   });
 

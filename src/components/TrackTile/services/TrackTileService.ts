@@ -26,6 +26,7 @@ export type MetricType = {
   account: string;
   color: string;
   description: string;
+  image?: string;
   icon: string;
   id: string;
   lifePoints: number;

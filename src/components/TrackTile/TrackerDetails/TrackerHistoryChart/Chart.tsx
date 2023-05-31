@@ -6,10 +6,11 @@ import { eachDayOfInterval, format, isToday } from 'date-fns';
 import { t } from '../../../../../lib/i18n';
 import Bar from './Bar';
 import { tID } from '../../common/testID';
-import { numberFormatters, dateFormatters } from '../../formatters';
+import { dateFormatters } from '../../formatters';
 import { darkenHexColor } from '../../util/darken-hex-color';
 import { createStyles } from '../../../BrandConfigProvider';
 import { useStyles } from '../../../../hooks';
+import { numberFormatters } from '../../formatters';
 
 export type ChartProps = {
   color?: string;
@@ -25,17 +26,16 @@ export type ChartProps = {
   };
 };
 
-const { numberFormat } = numberFormatters;
 const { shortWeekday } = dateFormatters;
 
 export const Chart: FC<ChartProps> = (props) => {
   const { variant = 'default', color = '#02BFF1' } = props;
   const { loading, range, target, values, hasError, unit = '' } = props;
   const { styles } = useStyles(defaultStyles);
+  const { numberFormatCompact } = numberFormatters;
+  const days = eachDayOfInterval(range).reverse();
 
-  const days = eachDayOfInterval(range);
-
-  const max = Math.max(...values, target ?? 0);
+  const max = target ?? 0;
   const desiredTicks = Math.min(max, 10);
   const scale = scaleLinear().domain([0, max]).range([0, desiredTicks]).nice();
 
@@ -46,81 +46,24 @@ export const Chart: FC<ChartProps> = (props) => {
 
   const variantStyles = isDefault
     ? {
-        chartValueBar: styles.defaultBarVariant,
-        chartXTitle: styles.defaultXTitleVariant,
+        chartValueBar: styles.barDefault,
+        chartYTitle: styles.defaultYAxisLabel,
       }
     : isFlat
     ? {
-        chartValueBar: styles.flatBarVariant,
-        chartXTitle: styles.flatXTitleVariant,
+        chartValueBar: styles.barFlat,
+        chartYTitle: styles.flatYAxisLabel,
       }
     : undefined;
 
   return (
     <View style={styles.container}>
-      {/* Background */}
-      {isDefault && (
-        <View style={styles.xAxisContainer}>
-          {ticks.map((tick) => (
-            <View
-              key={tick}
-              style={[
-                {
-                  bottom: `${(tick / ticksMax) * 100}%`,
-                },
-                styles.tickContainer,
-              ]}
-            >
-              {tick > 0 && (
-                <>
-                  <Text
-                    testID={tID(`history-chart-y-axis-label-${tick}`)}
-                    accessible={false}
-                    style={styles.yTitle}
-                  >
-                    {numberFormat(tick)}
-                  </Text>
-                  {tick < ticksMax && <View style={styles.tick} />}
-                </>
-              )}
-            </View>
-          ))}
-        </View>
-      )}
-
-      {/* Foreground */}
-      <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
+      <View style={styles.labelsContainer}>
         {days.map((day, index) => (
-          <View key={index} style={styles.dataContainer}>
-            <View style={styles.barContainer}>
-              {/* Background Bar */}
-              {isDefault && <Bar percentComplete={1} />}
-
-              <View style={variantStyles?.chartValueBar}>
-                {/* Floating Value above Bar */}
-                {isFlat && values[index] > 0 && (
-                  <Text style={styles.aboveBarValueText}>{values[index]}</Text>
-                )}
-
-                {/* Active Bar */}
-                {!loading && !hasError && (
-                  <Bar
-                    variant={variant}
-                    style={!isToday(day) && isFlat ? { opacity: 0.35 } : {}}
-                    color={darkenHexColor(
-                      color,
-                      isToday(day) || isDefault ? 0 : 45,
-                    )}
-                    testID={tID(`history-chart-value-bar-${index}`)}
-                    percentComplete={values[index] / ticksMax}
-                    animated
-                  />
-                )}
-              </View>
-            </View>
+          <View style={styles.labelContainer} key={`${day}-day-container`}>
             <Text
-              testID={tID(`history-chart-x-axis-label-${index}`)}
-              style={variantStyles?.chartXTitle}
+              testID={tID(`history-chart-y-axis-label-${index}`)}
+              style={variantStyles?.chartYTitle}
               accessibilityLabel={t('track-tile.day-value-unit-display', {
                 defaultValue: '{{day}}: {{value}} {{unit}}',
                 day: format(day, 'iiii, MMMM do'),
@@ -134,76 +77,108 @@ export const Chart: FC<ChartProps> = (props) => {
             </Text>
           </View>
         ))}
-      </ChartContent>
+      </View>
+      <View style={styles.barsContainer}>
+        {days.map((day, index) => (
+          <View
+            style={variantStyles?.chartValueBar}
+            key={`${day}-bar-container`}
+          >
+            {/* Active Bar */}
+            {!loading && !hasError && (
+              <Bar
+                variant={variant}
+                style={!isToday(day) ? { barFlat: { opacity: 0.35 } } : {}}
+                color={darkenHexColor(
+                  color,
+                  isToday(day) || isDefault ? 0 : 45,
+                )}
+                testID={tID(`history-chart-value-bar-${index}`)}
+                percentComplete={
+                  values[index] / ticksMax >= 1 ? 1 : values[index] / ticksMax
+                }
+                animated
+              />
+            )}
+          </View>
+        ))}
+      </View>
+      <View style={styles.valuesContainer}>
+        {days.map((day, index) => (
+          <View
+            style={{ alignSelf: 'flex-end' }}
+            key={`${day}-value-container`}
+          >
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.valueText,
+                { ...(values[index] >= ticksMax && { color: color }) },
+              ]}
+            >
+              {numberFormatCompact(values[index])}
+            </Text>
+          </View>
+        ))}
+      </View>
 
       {loading && (
-        <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
-          <ActivityIndicator
-            testID={tID('history-chart-data-loading')}
-            size="large"
-            color={color}
-          />
-        </ChartContent>
+        <View style={styles.contentWrapper}>
+          <View style={styles.content}>
+            <ActivityIndicator
+              testID={tID('history-chart-data-loading')}
+              size="large"
+              color={color}
+            />
+          </View>
+        </View>
       )}
 
       {hasError && (
-        <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
-          <Text variant="semibold" style={styles.errorText}>
-            {t(
-              'track-tile.could-not-load-your-data',
-              'Could not load your data\nPlease try again later',
-            )}
-          </Text>
-        </ChartContent>
+        <View style={styles.contentWrapper}>
+          <View style={styles.content}>
+            <Text variant="semibold" style={styles.errorText}>
+              {t(
+                'track-tile.could-not-load-your-data',
+                'Could not load your data\nPlease try again later',
+              )}
+            </Text>
+          </View>
+        </View>
       )}
     </View>
   );
 };
 
-const ChartContent: FC<any> = ({ children, maxTick, hasXAxis }) => {
-  const { styles } = useStyles(defaultStyles);
-
-  return (
-    <View style={styles.contentWrapper}>
-      {/* Use Max Tick Value as a spacer so the chart doesn't overlap the axis text */}
-      {hasXAxis && (
-        <Text
-          style={[{ opacity: 0 }, styles.yTitle]}
-          accessibilityElementsHidden={true}
-          importantForAccessibility="no-hide-descendants"
-        >
-          {maxTick}
-        </Text>
-      )}
-      <View style={[styles.content]}>{children}</View>
-    </View>
-  );
-};
-
-const defaultStyles = createStyles('TrackTileChart', () => ({
-  defaultBarVariant: {
-    alignItems: 'center',
-    marginLeft: -7,
-  },
-  flatBarVariant: {
-    alignItems: 'center',
-    marginLeft: 3.5,
-  },
-  barContainer: {
-    alignItems: 'flex-end',
-    flex: 1,
-    flexDirection: 'row',
-    minWidth: 21,
-  },
-  aboveBarValueText: {
-    fontSize: 14,
-    color: '#242536',
-  },
+const defaultStyles = createStyles('Chart', (theme) => ({
   container: {
     flex: 1,
     position: 'relative',
-    height: 250,
+    height: 280,
+    flexDirection: 'row',
+    marginLeft: theme.spacing.medium,
+    marginTop: theme.spacing.medium,
   },
+  labelsContainer: {
+    justifyContent: 'space-around',
+    flexBasis: 40,
+    paddingRight: 4,
+  },
+  valuesContainer: {
+    justifyContent: 'space-around',
+    flexGrow: 1,
+    flexShrink: 0,
+    paddingLeft: 10,
+  },
+  barsContainer: {
+    flexBasis: '85%',
+    justifyContent: 'space-around',
+    flexShrink: 0.1,
+    flexGrow: 1,
+  },
+  valueText: { textAlign: 'left', width: 30 },
+  barDefault: {},
+  barFlat: {},
   content: {
     flex: 1,
     flexDirection: 'row',
@@ -211,15 +186,13 @@ const defaultStyles = createStyles('TrackTileChart', () => ({
     position: 'relative',
   },
   contentWrapper: {
+    flex: 1,
     bottom: 0,
-    flexDirection: 'row',
+    flexDirection: 'column',
     left: 0,
     position: 'absolute',
     right: 0,
     top: 0,
-  },
-  dataContainer: {
-    marginVertical: 7,
   },
   errorText: {
     alignSelf: 'center',
@@ -229,44 +202,18 @@ const defaultStyles = createStyles('TrackTileChart', () => ({
     padding: 8,
     textAlign: 'center',
   },
-  tick: {
-    backgroundColor: '#EEF0F2',
-    flex: 1,
-    height: 1,
-  },
-  tickContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    position: 'absolute',
-  },
-  xAxisContainer: {
-    flex: 1,
-    marginTop: 16,
-    marginBottom: 26,
-    position: 'relative',
-  },
-  defaultXTitleVariant: {
+  defaultYAxisLabel: {
     color: '#7B8996',
-    fontSize: 10,
+    fontSize: 12,
     letterSpacing: 0.5,
-    lineHeight: 18,
-    paddingTop: 11,
-    textAlign: 'center',
+    textAlign: 'left',
   },
-  flatXTitleVariant: {
+  flatYAxisLabel: {
     color: '#242536',
     fontSize: 12,
-    paddingTop: 12,
-    textAlign: 'center',
+    textAlign: 'left',
   },
-  yTitle: {
-    color: '#7B8996',
-    fontSize: 10,
-    letterSpacing: 0.5,
-    lineHeight: 18,
-    paddingRight: 7,
-    textAlign: 'center',
-  },
+  labelContainer: {},
 }));
 
 declare module '@styles' {

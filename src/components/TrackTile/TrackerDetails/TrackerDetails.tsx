@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { View, Image } from 'react-native';
 import { Divider, Text } from 'react-native-paper';
 import { t } from '../../../../lib/i18n';
 import { UnitPicker } from './UnitPicker';
@@ -193,13 +193,18 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     <ScrollView>
       <View style={styles.container}>
         <DatePicker
-          color="#02BFF1"
           dateRange={dateRange}
           onChange={setDateRange}
           target={currentTarget}
           tracker={tracker}
           unit={selectedUnit}
+          color={tracker.color}
         />
+        {tracker.image && (
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: tracker.image }} style={styles.image} />
+          </View>
+        )}
         <TrackAmountControl
           value={currentValue}
           onChange={onValueChange}
@@ -214,21 +219,8 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           >
             {t('track-tile.my-target', 'My Target')}
           </Text>
-          <View
-            style={{
-              paddingTop: 4,
-              flexDirection: 'row',
-              alignSelf: 'center',
-            }}
-          >
-            <Text
-              style={{
-                color: tracker.color,
-                letterSpacing: 3,
-                fontSize: 16,
-                lineHeight: 19.5,
-              }}
-            >
+          <View style={styles.targetTextContainer}>
+            <Text style={[styles.targetText, { color: tracker.color }]}>
               [{target}]
             </Text>
             {tracker.units.length > 1 && canEditUnit ? (
@@ -254,13 +246,9 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           onChange={updateTarget}
           value={target}
         />
-        <Divider
-          style={{ width: 326, backgroundColor: 'black', marginVertical: 24 }}
-        />
+        <Divider style={styles.firstDivider} />
         <Text style={styles.descriptionText}>{tracker.description}</Text>
-        <Divider
-          style={{ width: 326, backgroundColor: 'black', marginTop: 24 }}
-        />
+        <Divider style={styles.secondDivider} />
         <View style={styles.historyChartContainer}>
           <TrackerHistoryChart
             metricId={metricId}
@@ -276,9 +264,17 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   );
 };
 
-const defaultStyles = createStyles('TrackerDetails', () => ({
+const defaultStyles = createStyles('TrackerDetails', (theme) => ({
+  imageContainer: {
+    width: 326,
+    height: 210,
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'contain',
+  },
   container: {
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.elevation.level1,
     alignItems: 'center',
     flex: 1,
     minHeight: '100%',
@@ -299,6 +295,16 @@ const defaultStyles = createStyles('TrackerDetails', () => ({
     minHeight: 30,
     paddingBottom: 10,
   },
+  targetTextContainer: {
+    paddingTop: 4,
+    flexDirection: 'row',
+    alignSelf: 'center',
+  },
+  targetText: {
+    letterSpacing: 3,
+    fontSize: 16,
+    lineHeight: 19.5,
+  },
   myTargetText: {
     color: '#333333',
     fontSize: 20,
@@ -307,16 +313,17 @@ const defaultStyles = createStyles('TrackerDetails', () => ({
     paddingTop: 16,
   },
   singleUnitText: {
-    color: '#262C32',
     letterSpacing: 0.23,
     fontSize: 16,
     lineHeight: 19.5,
   },
   historyChartContainer: {
     width: '100%',
-    paddingHorizontal: 34,
+    paddingHorizontal: 8,
     flex: 1,
   },
+  firstDivider: { width: 326, backgroundColor: 'black', marginVertical: 24 },
+  secondDivider: { width: 326, backgroundColor: 'black', marginTop: 24 },
 }));
 
 declare module '@styles' {
@@ -324,4 +331,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
-export type TrackTileDetails = NamedStylesProp<typeof defaultStyles>;
+export type TrackTileDetailsStyles = NamedStylesProp<typeof defaultStyles>;

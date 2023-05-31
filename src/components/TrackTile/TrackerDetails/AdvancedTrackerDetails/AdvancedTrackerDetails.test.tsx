@@ -99,7 +99,7 @@ describe('Tracker Advanced Details', () => {
     );
 
     expect(await findByText("Today's Servings")).toBeDefined();
-    expect(await findAllByText('1.5')).toHaveLength(2); // Total Value & Chart Value
+    expect(await findAllByText('1.5')).toHaveLength(2); // Chart Value
     expect(await findByText('42.5')).toBeDefined(); // Target Value
     expect(await findByText('The science of')).toBeDefined();
     expect(await findByText('Test Name')).toBeDefined();
@@ -324,7 +324,7 @@ describe('Tracker Advanced Details', () => {
     );
 
     await findByText('Friday, March 17');
-    await findByText('Mar 13, 2023 - Mar 19, 2023');
+    await findByText('Mar 13-Mar 19');
   });
 
   it('should NOT render from referenceDate in the future', async () => {
@@ -359,9 +359,9 @@ describe('Tracker Advanced Details', () => {
 
     await findByText("Today's Servings");
     await findByText(
-      `${format(startOfWeek(now, { weekStartsOn: 1 }), 'MMM d, Y')} - ${format(
+      `${format(startOfWeek(now, { weekStartsOn: 1 }), 'MMM d')}-${format(
         endOfWeek(now, { weekStartsOn: 1 }),
-        'MMM d, Y',
+        'MMM d',
       )}`,
     );
   });

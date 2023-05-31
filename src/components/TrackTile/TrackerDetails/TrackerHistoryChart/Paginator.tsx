@@ -24,7 +24,7 @@ const hitSlop = {
   right: 15,
 };
 
-const { shortMonthNumericDayWithYear } = dateFormatters;
+const { shortMonthNumericDay } = dateFormatters;
 
 const Paginator: FC<PaginatorProps> = (props) => {
   const { range, onChangeRange, color } = props;
@@ -40,11 +40,11 @@ const Paginator: FC<PaginatorProps> = (props) => {
     <View style={styles.container}>
       <TouchableOpacity
         testID={tID('history-chart-view-previous-week')}
-        style={styles.stepperButton}
         accessibilityLabel={t(
           'track-tile.previous-weeks-data',
           "Previous week's data",
         )}
+        style={styles.stepperButton}
         accessibilityRole="button"
         onPress={() => onChangeRange(-7)}
         hitSlop={hitSlop}
@@ -57,12 +57,12 @@ const Paginator: FC<PaginatorProps> = (props) => {
         style={styles.titleText}
       >
         {t('track-tile.date-range', {
-          defaultValue: '{{start}} - {{end}}',
-          start: shortMonthNumericDayWithYear(range.start),
-          end: shortMonthNumericDayWithYear(range.end),
+          defaultValue: '{{start}}-{{end}}',
+          start: shortMonthNumericDay(range.start),
+          end: shortMonthNumericDay(range.end),
           formatParams: {
-            start: shortMonthNumericDayWithYear,
-            end: shortMonthNumericDayWithYear,
+            start: shortMonthNumericDay,
+            end: shortMonthNumericDay,
           },
         })}
       </Text>
@@ -92,16 +92,19 @@ const defaultStyles = createStyles('TrackTileChartPaginator', () => ({
     justifyContent: 'center',
     width: '100%',
     paddingHorizontal: 16,
-    marginVertical: 24,
+    marginTop: 24,
     alignItems: 'center',
     flexDirection: 'row',
   },
   titleText: {
     flex: 1,
     textAlign: 'center',
+    fontSize: 20,
+    fontWeight: '700',
   },
   stepperButton: {
     height: 13,
+    marginTop: -8,
   },
   activeButtonColorText: {
     color: '#02BFF1',

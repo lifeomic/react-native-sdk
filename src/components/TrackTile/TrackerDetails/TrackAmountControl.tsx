@@ -8,7 +8,6 @@ import { convertToISONumber } from '../util/convert-value';
 import { numberFormatters } from '../formatters';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
-import { debounce } from 'lodash';
 
 type Props = {
   color: string;
@@ -29,9 +28,7 @@ const TrackAmountControl: FC<Props> = ({
 
   useEffect(() => {
     if (!saveInProgress) {
-      debounce(() => {
-        setCurrentValue(numberFormat(value));
-      }, 800);
+      setCurrentValue(numberFormat(value));
     }
   }, [value, saveInProgress]);
 
@@ -125,16 +122,17 @@ const addToNumberString = (
   return returnNumber ? result : numberFormat(result);
 };
 
-const defaultStyles = createStyles('TrackAmountControl', () => ({
+const defaultStyles = createStyles('TrackAmountControl', (theme) => ({
   container: {
     marginTop: 30,
     width: '80%',
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.elevation.level1,
     justifyContent: 'space-between',
     alignContent: 'center',
     flexDirection: 'row',
   },
   unaryButton: {
+    backgroundColor: theme.colors.background,
     borderRadius: 32,
     height: 60,
     width: 60,
