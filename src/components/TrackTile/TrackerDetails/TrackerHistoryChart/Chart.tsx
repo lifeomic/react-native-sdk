@@ -151,6 +151,14 @@ export const Chart: FC<ChartProps> = (props) => {
 };
 
 const defaultStyles = createStyles('Chart', (theme) => ({
+  container: {
+    flex: 1,
+    position: 'relative',
+    height: 280,
+    flexDirection: 'row',
+    marginLeft: theme.spacing.medium,
+    marginTop: theme.spacing.medium,
+  },
   labelsContainer: {
     justifyContent: 'space-around',
     flexBasis: 40,
@@ -171,13 +179,6 @@ const defaultStyles = createStyles('Chart', (theme) => ({
   valueText: { textAlign: 'left', width: 30 },
   barDefault: {},
   barFlat: {},
-  container: {
-    flex: 1,
-    position: 'relative',
-    height: 280,
-    flexDirection: 'row',
-    marginLeft: theme.spacing.medium,
-  },
   content: {
     flex: 1,
     flexDirection: 'row',

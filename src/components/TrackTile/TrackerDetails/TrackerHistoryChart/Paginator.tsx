@@ -95,7 +95,6 @@ const defaultStyles = createStyles('TrackTileChartPaginator', () => ({
     marginTop: 24,
     alignItems: 'center',
     flexDirection: 'row',
-    marginBottom: 24,
   },
   titleText: {
     flex: 1,

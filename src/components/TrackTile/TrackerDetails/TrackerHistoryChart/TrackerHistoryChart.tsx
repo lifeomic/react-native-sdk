@@ -41,7 +41,12 @@ const getInitialRange = (dateRangeType: DateRangeType, referenceDate: Date) => {
 };
 
 export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
-  const { metricId, stepperPosition = 'top', tracker, valuesContext } = props;
+  const {
+    metricId,
+    stepperPosition = 'bottom',
+    tracker,
+    valuesContext,
+  } = props;
   const {
     variant,
     target,
