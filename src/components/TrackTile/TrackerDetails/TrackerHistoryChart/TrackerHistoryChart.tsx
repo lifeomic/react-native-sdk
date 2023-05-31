@@ -8,9 +8,9 @@ import {
   endOfWeek,
   endOfDay,
 } from 'date-fns';
-import Paginator from './Paginator';
 import { convertToPreferredUnit } from '../../util/convert-value';
 import { Tracker, TrackerValuesContext } from '../../services/TrackTileService';
+import { DateRangePicker } from '../DateRangePicker';
 
 type DateRangeType = 'past7Days' | 'calendarWeek';
 
@@ -18,7 +18,7 @@ type TrackerHistoryChartProps = {
   metricId: string;
   tracker: Tracker;
   valuesContext: TrackerValuesContext;
-  target?: number;
+  target: number;
   unit?: string;
   stepperPosition?: 'top' | 'bottom';
   dateRangeType?: DateRangeType;
@@ -72,7 +72,7 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
   );
 
   const Stepper = (
-    <Paginator
+    <DateRangePicker
       color={tracker.color}
       range={dateRange}
       onChangeRange={advanceDays}

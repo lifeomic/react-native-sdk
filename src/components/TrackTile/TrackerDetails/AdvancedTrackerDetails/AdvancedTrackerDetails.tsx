@@ -41,10 +41,10 @@ import { tID } from '../../common/testID';
 import { TransTextParent } from '../../common/TransTextParent';
 import { isCodeEqual } from '../../util/is-code-equal';
 import { useRecentCodedValues } from '../../hooks/useRecentCodedValues';
-import { DatePicker } from '../DatePicker';
 import { unitDisplay as baseUnitDisplay } from '../unit-display';
 import { createStyles } from '../../../BrandConfigProvider';
 import { useStyles } from '../../../../hooks';
+import { DayPicker } from '../DayPicker';
 
 export type AdvancedTrackerDetailsProps = {
   tracker: Tracker;
@@ -265,7 +265,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
   return (
     <ScrollView>
-      <DatePicker
+      <DayPicker
         dateRange={dateRange}
         tracker={tracker}
         color={tracker.color}

@@ -17,6 +17,7 @@ export type NumberPickerProps = {
   selectedUnit: UnitType;
   placeholder?: string;
   value?: string;
+  chevronColor: string;
 };
 
 export const NumberPicker = (props: NumberPickerProps) => {
@@ -24,6 +25,7 @@ export const NumberPicker = (props: NumberPickerProps) => {
     value = '0',
     selectedUnit,
     onChange,
+    chevronColor,
     placeholder = t('track-tile.set-your-target', 'Set Your Target'),
   } = props;
   const { styles } = useStyles(defaultStyles);
@@ -91,7 +93,7 @@ export const NumberPicker = (props: NumberPickerProps) => {
       >
         <Text style={styles.iosPlaceholderLabel}>{placeholder}</Text>
         <View style={{ paddingLeft: 100 }}>
-          <ChevronDown />
+          <ChevronDown color={chevronColor} />
         </View>
       </Button>
       <Modal visible={isOpen} transparent animationType="slide">

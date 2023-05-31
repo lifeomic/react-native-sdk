@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { Text } from '../../styles';
-import { scaleLinear } from 'd3-scale';
 import { eachDayOfInterval, format, isToday } from 'date-fns';
 import { t } from '../../../../../lib/i18n';
 import Bar from './Bar';
@@ -17,7 +16,7 @@ export type ChartProps = {
   variant?: 'default' | 'flat';
   hasError?: boolean;
   loading?: boolean;
-  target?: number;
+  target: number;
   values: number[];
   unit?: string;
   range: {
@@ -34,13 +33,6 @@ export const Chart: FC<ChartProps> = (props) => {
   const { styles } = useStyles(defaultStyles);
   const { numberFormatCompact } = numberFormatters;
   const days = eachDayOfInterval(range).reverse();
-
-  const max = target ?? 0;
-  const desiredTicks = Math.min(max, 10);
-  const scale = scaleLinear().domain([0, max]).range([0, desiredTicks]).nice();
-
-  const ticks = scale.ticks(desiredTicks);
-  const ticksMax = ticks[ticks.length - 1];
   const isDefault = variant === 'default';
   const isFlat = variant === 'flat';
 
@@ -95,7 +87,7 @@ export const Chart: FC<ChartProps> = (props) => {
                 )}
                 testID={tID(`history-chart-value-bar-${index}`)}
                 percentComplete={
-                  values[index] / ticksMax >= 1 ? 1 : values[index] / ticksMax
+                  values[index] / target >= 1 ? 1 : values[index] / target
                 }
                 animated
               />
@@ -113,7 +105,7 @@ export const Chart: FC<ChartProps> = (props) => {
               numberOfLines={1}
               style={[
                 styles.valueText,
-                { ...(values[index] >= ticksMax && { color: color }) },
+                { ...(values[index] >= target && { color: color }) },
               ]}
             >
               {numberFormatCompact(values[index])}
