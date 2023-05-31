@@ -10,6 +10,7 @@ import {
   WearableIntegration,
   WearableStateSyncType,
 } from '../../../../src/components/Wearables/WearableTypes';
+import { SafeView } from '../../helpers/SafeView';
 
 export const exampleProps: SyncTypeSelectionViewProps = {
   wearables: [
@@ -43,6 +44,7 @@ export const exampleProps: SyncTypeSelectionViewProps = {
 
 storiesOf('SyncType Selection View', module)
   .addDecorator(withKnobs)
+  .addDecorator((story) => <SafeView>{story()}</SafeView>)
   .add('default', () => (
     <SyncTypeSelectionView
       disabled={boolean('disabled', false)}

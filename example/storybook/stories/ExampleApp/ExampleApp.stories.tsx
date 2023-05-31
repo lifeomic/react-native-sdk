@@ -11,6 +11,9 @@ import {
 import { withKnobs, color } from '@storybook/addon-knobs';
 import Color from 'color';
 import logo from './header-logo.png';
+import { t } from 'i18next';
+import { Menu } from '@lifeomic/chromicons-native';
+import { HelloWorldScreen } from '../../../src/screens/HelloWorldScreen';
 
 storiesOf('Example App', module)
   .addDecorator(withKnobs)
@@ -24,6 +27,34 @@ storiesOf('Example App', module)
           simpleTheme: {
             primaryColor,
           },
+        }}
+      >
+        <RootProviders authConfig={authConfig}>
+          <RootStack />
+        </RootProviders>
+      </DeveloperConfigProvider>
+    );
+  })
+  .add('With additional navigation tab', () => {
+    const rgbColorString = color('Primary Color', '#0477BF');
+    const primaryColor = Color(rgbColorString).hex();
+
+    return (
+      <DeveloperConfigProvider
+        developerConfig={{
+          simpleTheme: {
+            primaryColor,
+          },
+          additionalNavigationTabs: [
+            {
+              name: 'AdditionalTab',
+              component: HelloWorldScreen,
+              options: {
+                tabBarLabel: t('tabs-settings', 'Settings'),
+                tabBarIcon: Menu,
+              },
+            },
+          ],
         }}
       >
         <RootProviders authConfig={authConfig}>
@@ -86,6 +117,7 @@ storiesOf('Example App', module)
                 color: (theme) => theme.colors.onTertiary,
               },
             ],
+            statusBarHeight: 0,
           },
         }}
       >

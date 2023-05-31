@@ -30,9 +30,10 @@ export function AppNavHeader({
     route,
     styles.titleText,
   );
+  const statusBarHeight = config.AppNavHeader?.statusBarHeight;
 
   return (
-    <Appbar.Header statusBarHeight={0} style={headerStyles}>
+    <Appbar.Header statusBarHeight={statusBarHeight} style={headerStyles}>
       {back ? (
         <Appbar.Action
           icon={ChevronLeft}

@@ -15,7 +15,9 @@ const defaultProps = {
 
 storiesOf('Tracker History Chart', module)
   .addDecorator((Story) => (
-    <View style={{ margin: 34, height: 250 }}>{Story()}</View>
+    <View style={{ marginHorizontal: 34, marginVertical: 128, height: 250 }}>
+      {Story()}
+    </View>
   ))
   .add('default', () => <Chart {...defaultProps} />)
   .add('loading', () => <Chart {...defaultProps} loading />)

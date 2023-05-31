@@ -14,6 +14,7 @@ import {
   Aperture,
 } from '@lifeomic/chromicons-native';
 import { IconProvider } from '../../../../src';
+import { CenterView } from '../../helpers/CenterView';
 
 const defaultMetricTypes: Partial<Tracker>[] = [
   {
@@ -62,6 +63,7 @@ storiesOf('ManageTrackers', module)
   .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator()(storyFn, context),
   )
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => (
     <IconProvider
       icons={

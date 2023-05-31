@@ -9,6 +9,7 @@ import {
 } from '../../../../src/components/TrackTile/services/TrackTileService';
 import { date, select, withKnobs } from '@storybook/addon-knobs';
 import { activity, mindful, nutrition, sleep } from './util/ontologies';
+import { CenterView } from '../../helpers/CenterView';
 
 const ontology = {} as any;
 
@@ -17,6 +18,7 @@ storiesOf('AdvancedTrackerDetails', module)
   .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator({ ontology })(storyFn, context),
   )
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => {
     const pillarType = select(
       'Pillar Type',
