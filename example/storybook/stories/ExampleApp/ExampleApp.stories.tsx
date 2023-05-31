@@ -8,11 +8,11 @@ import {
   LogoHeader,
   BrandConfigProvider,
 } from '../../../../src';
-import { withKnobs, color } from '@storybook/addon-knobs';
+import { withKnobs, color, boolean } from '@storybook/addon-knobs';
 import Color from 'color';
 import logo from './header-logo.png';
 import { t } from 'i18next';
-import { Menu } from '@lifeomic/chromicons-native';
+import { Home, Bell, Settings, Menu } from '@lifeomic/chromicons-native';
 import { HelloWorldScreen } from '../../../src/screens/HelloWorldScreen';
 
 storiesOf('Example App', module)
@@ -55,6 +55,70 @@ storiesOf('Example App', module)
               },
             },
           ],
+        }}
+      >
+        <RootProviders authConfig={authConfig}>
+          <RootStack />
+        </RootProviders>
+      </DeveloperConfigProvider>
+    );
+  })
+  .add('Customized TabBar', () => {
+    return (
+      <DeveloperConfigProvider
+        developerConfig={{
+          componentProps: {
+            TabNavigator: {
+              useTabBar: true,
+            },
+            TabBar: {
+              showLabels: boolean('Show Labels', false),
+              tabs: [
+                {
+                  icon: Home,
+                  svgProps: () => ({
+                    width: 42,
+                    height: 42,
+                    strokeWidth: 3,
+                  }),
+                  svgPropsActive: (theme) => ({
+                    stroke: theme.colors.onPrimaryContainer,
+                  }),
+                  svgPropsInactive: (theme) => ({
+                    stroke: theme.colors.onSurfaceDisabled,
+                  }),
+                },
+                {
+                  icon: Bell,
+                  svgProps: () => ({
+                    width: 42,
+                    height: 42,
+                    strokeWidth: 3,
+                  }),
+                  svgPropsActive: (theme) => ({
+                    stroke: theme.colors.onSecondaryContainer,
+                  }),
+                  svgPropsInactive: (theme) => ({
+                    stroke: theme.colors.onSurfaceDisabled,
+                  }),
+                },
+                {
+                  icon: Settings,
+                  svgProps: () => ({
+                    width: 42,
+                    height: 42,
+                    strokeWidth: 3,
+                  }),
+                  svgPropsActive: (theme) => ({
+                    stroke: theme.colors.onTertiaryContainer,
+                  }),
+                  svgPropsInactive: (theme) => ({
+                    stroke: theme.colors.onSurfaceDisabled,
+                  }),
+                },
+              ],
+            },
+          },
         }}
       >
         <RootProviders authConfig={authConfig}>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { t } from 'i18next';
 import { SettingsStack } from './SettingsStack';
@@ -11,18 +12,26 @@ import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
 import { useDeveloperConfig } from '../hooks';
-
-const Tab = createMaterialBottomTabNavigator<TabParamList>();
+import { TabBar } from './TabBar';
 
 export function TabNavigator() {
   const { Home, Bell, Settings } = useIcons();
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
+  const { additionalNavigationTabs, componentProps } = useDeveloperConfig();
+  const { useTabBar } = componentProps?.TabNavigator || {};
 
-  const { additionalNavigationTabs } = useDeveloperConfig();
+  const Tab = useTabBar
+    ? createBottomTabNavigator<TabParamList>()
+    : createMaterialBottomTabNavigator<TabParamList>();
+
+  const tabBar = (props: any) => {
+    return useTabBar ? <TabBar {...props} /> : null;
+  };
 
   return (
     <Tab.Navigator
+      tabBar={tabBar}
       shifting={true}
       barStyle={styles.barStyle}
       activeColor={theme.colors.onSurface}
@@ -36,6 +45,8 @@ export function TabNavigator() {
         options={{
           tabBarLabel: t('tabs-home', 'Home'),
           tabBarIcon: Home,
+          tabBarColor: 'red',
+          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -45,7 +56,7 @@ export function TabNavigator() {
         options={{
           tabBarLabel: t('tabs-notifications', 'Notifications'),
           tabBarIcon: Bell,
-          tabBarBadge: false, //TODO: set dynamically for new notifications
+          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -55,19 +66,22 @@ export function TabNavigator() {
         options={{
           tabBarLabel: t('tabs-settings', 'Settings'),
           tabBarIcon: Settings,
+          headerShown: false,
         }}
       />
-      {additionalNavigationTabs?.map((tab) => (
-        <Tab.Screen
-          name={tab.name}
-          component={tab.component}
-          key={tab.name}
-          options={{
-            tabBarLabel: tab.options.tabBarLabel,
-            tabBarIcon: tab.options.tabBarIcon,
-          }}
-        />
-      ))}
+      {!useTabBar &&
+        additionalNavigationTabs?.map((tab) => (
+          <Tab.Screen
+            name={tab.name}
+            component={tab.component}
+            key={tab.name}
+            options={{
+              tabBarLabel: tab.options.tabBarLabel,
+              tabBarIcon: tab.options.tabBarIcon,
+              headerShown: false,
+            }}
+          />
+        ))}
     </Tab.Navigator>
   );
 }
