@@ -10,6 +10,7 @@ import { dateFormatters } from '../../formatters';
 import { darkenHexColor } from '../../util/darken-hex-color';
 import { createStyles } from '../../../BrandConfigProvider';
 import { useStyles } from '../../../../hooks';
+import { numberFormatters } from '../../formatters';
 
 export type ChartProps = {
   color?: string;
@@ -31,10 +32,10 @@ export const Chart: FC<ChartProps> = (props) => {
   const { variant = 'default', color = '#02BFF1' } = props;
   const { loading, range, target, values, hasError, unit = '' } = props;
   const { styles } = useStyles(defaultStyles);
+  const { numberFormatCompact } = numberFormatters;
+  const days = eachDayOfInterval(range).reverse();
 
-  const days = eachDayOfInterval(range);
-
-  const max = Math.max(...values, target ?? 0);
+  const max = target ?? 0;
   const desiredTicks = Math.min(max, 10);
   const scale = scaleLinear().domain([0, max]).range([0, desiredTicks]).nice();
 
@@ -57,118 +58,140 @@ export const Chart: FC<ChartProps> = (props) => {
 
   return (
     <View style={styles.container}>
-      {/* Foreground */}
-      <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
+      <View style={styles.labelsContainer}>
         {days.map((day, index) => (
-          <View key={index} style={styles.dataContainer}>
-            <View style={styles.labelContainer}>
-              <Text
-                testID={tID(`history-chart-y-axis-label-${index}`)}
-                style={variantStyles?.chartYTitle}
-                accessibilityLabel={t('track-tile.day-value-unit-display', {
-                  defaultValue: '{{day}}: {{value}} {{unit}}',
-                  day: format(day, 'iiii, MMMM do'),
-                  value: values[index],
-                  unit,
-                })}
-              >
-                {shortWeekday(day)
-                  .toUpperCase()
-                  .slice(0, isFlat ? 1 : undefined)}
-              </Text>
-            </View>
-            <View style={styles.barContainer}>
-              <View style={variantStyles?.chartValueBar}>
-                {/* Active Bar */}
-                {!loading && !hasError && (
-                  <Bar
-                    variant={variant}
-                    style={!isToday(day) && isFlat ? { opacity: 0.35 } : {}}
-                    color={darkenHexColor(
-                      color,
-                      isToday(day) || isDefault ? 0 : 45,
-                    )}
-                    testID={tID(`history-chart-value-bar-${index}`)}
-                    percentComplete={values[index] / ticksMax}
-                    animated
-                  />
-                )}
-              </View>
-            </View>
+          <View style={styles.labelContainer} key={`${day}-day-container`}>
+            <Text
+              testID={tID(`history-chart-y-axis-label-${index}`)}
+              style={variantStyles?.chartYTitle}
+              accessibilityLabel={t('track-tile.day-value-unit-display', {
+                defaultValue: '{{day}}: {{value}} {{unit}}',
+                day: format(day, 'iiii, MMMM do'),
+                value: values[index],
+                unit,
+              })}
+            >
+              {shortWeekday(day)
+                .toUpperCase()
+                .slice(0, isFlat ? 1 : undefined)}
+            </Text>
           </View>
         ))}
-      </ChartContent>
+      </View>
+      <View style={styles.barsContainer}>
+        {days.map((day, index) => (
+          <View
+            style={variantStyles?.chartValueBar}
+            key={`${day}-bar-container`}
+          >
+            {/* Active Bar */}
+            {!loading && !hasError && (
+              <Bar
+                variant={variant}
+                style={!isToday(day) ? { barFlat: { opacity: 0.35 } } : {}}
+                color={darkenHexColor(
+                  color,
+                  isToday(day) || isDefault ? 0 : 45,
+                )}
+                testID={tID(`history-chart-value-bar-${index}`)}
+                percentComplete={
+                  values[index] / ticksMax >= 1 ? 1 : values[index] / ticksMax
+                }
+                animated
+              />
+            )}
+          </View>
+        ))}
+      </View>
+      <View style={styles.valuesContainer}>
+        {days.map((day, index) => (
+          <View
+            style={{ alignSelf: 'flex-end' }}
+            key={`${day}-value-container`}
+          >
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.valueText,
+                { ...(values[index] >= ticksMax && { color: color }) },
+              ]}
+            >
+              {numberFormatCompact(values[index])}
+            </Text>
+          </View>
+        ))}
+      </View>
 
       {loading && (
-        <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
-          <ActivityIndicator
-            testID={tID('history-chart-data-loading')}
-            size="large"
-            color={color}
-          />
-        </ChartContent>
+        <View style={styles.contentWrapper}>
+          <View style={styles.content}>
+            <ActivityIndicator
+              testID={tID('history-chart-data-loading')}
+              size="large"
+              color={color}
+            />
+          </View>
+        </View>
       )}
 
       {hasError && (
-        <ChartContent maxTick={ticksMax} hasXAxis={isDefault}>
-          <Text variant="semibold" style={styles.errorText}>
-            {t(
-              'track-tile.could-not-load-your-data',
-              'Could not load your data\nPlease try again later',
-            )}
-          </Text>
-        </ChartContent>
+        <View style={styles.contentWrapper}>
+          <View style={styles.content}>
+            <Text variant="semibold" style={styles.errorText}>
+              {t(
+                'track-tile.could-not-load-your-data',
+                'Could not load your data\nPlease try again later',
+              )}
+            </Text>
+          </View>
+        </View>
       )}
     </View>
   );
 };
 
-const ChartContent: FC<any> = ({ children }) => {
-  const { styles } = useStyles(defaultStyles);
-
-  return (
-    <View style={styles.contentWrapper}>
-      <View style={[styles.content]}>{children}</View>
-    </View>
-  );
-};
-
-const defaultStyles = createStyles('Chart', () => ({
+const defaultStyles = createStyles('Chart', (theme) => ({
+  labelsContainer: {
+    justifyContent: 'space-around',
+    flexBasis: 40,
+    paddingRight: 4,
+  },
+  valuesContainer: {
+    justifyContent: 'space-around',
+    flexGrow: 1,
+    flexShrink: 0,
+    paddingLeft: 10,
+  },
+  barsContainer: {
+    flexBasis: '85%',
+    justifyContent: 'space-around',
+    flexShrink: 0.1,
+    flexGrow: 1,
+  },
+  valueText: { textAlign: 'left', width: 30 },
   barDefault: {},
   barFlat: {},
-  barContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    minHeight: 21,
-    justifyContent: 'center',
-  },
-  aboveBarValueText: {
-    fontSize: 14,
-    color: '#242536',
-  },
   container: {
     flex: 1,
     position: 'relative',
     height: 280,
+    flexDirection: 'row',
+    marginLeft: theme.spacing.medium,
   },
   content: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: 'row',
     justifyContent: 'space-around',
     position: 'relative',
   },
   contentWrapper: {
+    flex: 1,
     bottom: 0,
     flexDirection: 'column',
     left: 0,
     position: 'absolute',
     right: 0,
     top: 0,
-  },
-  dataContainer: {
-    marginHorizontal: 7,
-    flex: 1,
-    flexDirection: 'row',
   },
   errorText: {
     alignSelf: 'center',
@@ -177,22 +200,6 @@ const defaultStyles = createStyles('Chart', () => ({
     letterSpacing: 0.23,
     padding: 8,
     textAlign: 'center',
-  },
-  tick: {
-    backgroundColor: '#EEF0F2',
-    flex: 1,
-    width: 1,
-  },
-  tickContainer: {
-    alignItems: 'center',
-    flexDirection: 'column',
-    position: 'absolute',
-  },
-  YAxisContainer: {
-    flex: 1,
-    marginLeft: 16,
-    marginRight: 26,
-    position: 'relative',
   },
   defaultYAxisLabel: {
     color: '#7B8996',
@@ -205,7 +212,7 @@ const defaultStyles = createStyles('Chart', () => ({
     fontSize: 12,
     textAlign: 'left',
   },
-  labelContainer: { width: 40, justifyContent: 'center' },
+  labelContainer: {},
 }));
 
 declare module '@styles' {

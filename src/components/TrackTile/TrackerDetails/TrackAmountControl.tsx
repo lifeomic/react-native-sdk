@@ -122,16 +122,17 @@ const addToNumberString = (
   return returnNumber ? result : numberFormat(result);
 };
 
-const defaultStyles = createStyles('TrackAmountControl', () => ({
+const defaultStyles = createStyles('TrackAmountControl', (theme) => ({
   container: {
     marginTop: 30,
     width: '80%',
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.elevation.level1,
     justifyContent: 'space-between',
     alignContent: 'center',
     flexDirection: 'row',
   },
   unaryButton: {
+    backgroundColor: theme.colors.background,
     borderRadius: 32,
     height: 60,
     width: 60,

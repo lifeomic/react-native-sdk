@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef } from 'react';
-import { Animated, Easing, View, ViewStyle } from 'react-native';
+import { Animated, Easing, View } from 'react-native';
 import { createStyles } from '../../../BrandConfigProvider';
 import { useStyles } from '../../../../hooks';
 
@@ -7,13 +7,13 @@ type BarProps = {
   percentComplete: number;
   animated?: boolean;
   color?: string;
-  style?: ViewStyle;
+  style?: BarStyles;
   testID?: string;
   variant?: 'default' | 'flat';
 };
 
 const Bar: FC<BarProps> = (props) => {
-  const { percentComplete, animated, style, testID, color, variant } = props;
+  const { animated, testID, variant, color, percentComplete } = props;
   const ref = useRef(new Animated.Value(animated ? 0 : percentComplete));
   const { styles } = useStyles(defaultStyles);
 
@@ -47,21 +47,23 @@ const Bar: FC<BarProps> = (props) => {
             }),
           },
           barStyle,
-          style,
-          {
-            backgroundColor: color || styles.backgroundColor?.backgroundColor,
-          },
+          { backgroundColor: color },
         ]}
       />
     </View>
   );
 };
 
-const defaultStyles = createStyles('ChartBar', () => ({
-  containerFlat: { borderWidth: 1, height: 25.33 },
-  containerDefault: { borderRadius: 30, borderWidth: 1, height: 20 },
-  backgroundColor: {
-    backgroundColor: '#EEF0F2',
+const defaultStyles = createStyles('ChartBar', (theme) => ({
+  containerFlat: {
+    borderWidth: 1,
+    height: 25.33,
+    backgroundColor: theme.colors.background,
+  },
+  containerDefault: {
+    borderRadius: 30,
+    borderWidth: 1,
+    backgroundColor: theme.colors.background,
   },
   barDefault: {
     borderRadius: 30,
@@ -77,4 +79,5 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
+export type BarStyles = NamedStylesProp<typeof defaultStyles>;
 export default Bar;

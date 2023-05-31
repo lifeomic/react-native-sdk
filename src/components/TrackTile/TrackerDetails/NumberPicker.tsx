@@ -1,5 +1,5 @@
 import { Modal, Platform, View, TouchableOpacity } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import { t } from '../../../../lib/i18n';
 import { tID } from '../common/testID';
@@ -10,6 +10,7 @@ import {
 import { Button, Text } from 'react-native-paper';
 import { UnitType } from '../services/TrackTileService';
 import { useStyles } from '../../../hooks';
+import range from 'lodash/range';
 
 export type NumberPickerProps = {
   onChange: (value: string) => void;
@@ -40,15 +41,15 @@ export const NumberPicker = (props: NumberPickerProps) => {
     onChange(tempValue);
   }, [onChange, tempValue]);
 
-  const numbers = [];
   const stepAmount =
     selectedUnit.targetStepAmount ?? selectedUnit.stepAmount ?? 1;
   const minValue = selectedUnit.targetMin ?? 0;
   const maxValue = selectedUnit.targetStepAmount ?? stepAmount * 50;
 
-  for (let i = minValue; i <= maxValue; i += stepAmount) {
-    numbers.push(i);
-  }
+  const numbers = useMemo(
+    () => range(minValue, maxValue, stepAmount),
+    [maxValue, minValue, stepAmount],
+  );
 
   if (Platform.OS === 'android') {
     return (
@@ -128,7 +129,7 @@ export const NumberPicker = (props: NumberPickerProps) => {
   );
 };
 
-const defaultStyles = createStyles('TrackTile.NumberPicker', () => ({
+const defaultStyles = createStyles('TrackTileNumberPicker', (theme) => ({
   androidContainer: {
     width: '75%',
     height: 40,
@@ -136,6 +137,7 @@ const defaultStyles = createStyles('TrackTile.NumberPicker', () => ({
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
+    backgroundColor: theme.colors.elevation.level1,
   },
   androidPicker: {
     height: '100%',
@@ -148,6 +150,7 @@ const defaultStyles = createStyles('TrackTile.NumberPicker', () => ({
     flexDirection: 'row',
     justifyContent: 'space-around',
     borderRadius: 1,
+    backgroundColor: theme.colors.background,
   },
   iosPlaceholderLabel: {
     color: '#262C32',

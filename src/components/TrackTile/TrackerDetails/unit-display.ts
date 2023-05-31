@@ -1,12 +1,12 @@
 import { Tracker, UnitType } from '../services/TrackTileService';
 import i18n, { t } from '../../../../lib/i18n';
+import { upperFirst } from 'lodash';
 
 type UnitDisplayConfig = {
   value: number;
   unit: UnitType;
   tracker: Tracker;
   skipInterpolation?: boolean;
-  preserveCasing?: boolean;
 };
 
 export const unitDisplay = ({
@@ -15,12 +15,8 @@ export const unitDisplay = ({
   tracker,
   skipInterpolation = false,
 }: UnitDisplayConfig) => {
-  const defaultOne = `{{count}} ${unit.unit.replace(/^(.)/, (match) =>
-    match.toUpperCase(),
-  )}`;
-  const defaultOther = `{{count}} ${unit.display.replace(/^(.)/, (match) =>
-    match.toUpperCase(),
-  )}`;
+  const defaultOne = `{{count}} ${upperFirst(unit.unit)}`;
+  const defaultOther = `{{count}} ${upperFirst(unit.display)}`;
   const defaultDisplay = value === 1 ? defaultOne : defaultOther;
 
   const normalizedId = tracker.id.replace(/:/g, '&');

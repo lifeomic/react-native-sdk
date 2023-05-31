@@ -39,17 +39,21 @@ const Paginator: FC<PaginatorProps> = (props) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        testID={tID('history-chart-view-previous-week')}
+        testID={tID('history-chart-view-next-week')}
+        accessibilityLabel={t('track-tile.next-weeks-data', "Next week's data")}
         style={styles.stepperButton}
-        accessibilityLabel={t(
-          'track-tile.previous-weeks-data',
-          "Previous week's data",
-        )}
         accessibilityRole="button"
-        onPress={() => onChangeRange(-7)}
+        disabled={isToday(range.end)}
+        onPress={() => onChangeRange(7)}
         hitSlop={hitSlop}
       >
-        <LeftChevron color={color || styles.activeButtonColorText?.color} />
+        <LeftChevron
+          color={
+            isToday(range.end)
+              ? styles.disabledButtonColorText?.color
+              : color || styles.activeButtonColorText?.color
+          }
+        />
       </TouchableOpacity>
       <Text
         testID={tID('history-chart-active-track-tile.date-range')}
@@ -57,7 +61,7 @@ const Paginator: FC<PaginatorProps> = (props) => {
         style={styles.titleText}
       >
         {t('track-tile.date-range', {
-          defaultValue: '{{start}}-{{end}}',
+          defaultValue: '{{end}}}-{{start}',
           start: shortMonthNumericDay(range.start),
           end: shortMonthNumericDay(range.end),
           formatParams: {
@@ -67,21 +71,17 @@ const Paginator: FC<PaginatorProps> = (props) => {
         })}
       </Text>
       <TouchableOpacity
-        testID={tID('history-chart-view-next-week')}
-        accessibilityLabel={t('track-tile.next-weeks-data', "Next week's data")}
+        testID={tID('history-chart-view-previous-week')}
+        accessibilityLabel={t(
+          'track-tile.previous-weeks-data',
+          "Previous week's data",
+        )}
         accessibilityRole="button"
         style={styles.stepperButton}
-        disabled={isToday(range.end)}
-        onPress={() => onChangeRange(7)}
+        onPress={() => onChangeRange(-7)}
         hitSlop={hitSlop}
       >
-        <RightChevron
-          color={
-            isToday(range.end)
-              ? styles.disabledButtonColorText?.color
-              : color || styles.activeButtonColorText?.color
-          }
-        />
+        <RightChevron color={color || styles.activeButtonColorText?.color} />
       </TouchableOpacity>
     </View>
   );
