@@ -70,7 +70,7 @@ const defaultStyles = createStyles('ChartBar', (theme) => ({
     height: 18,
   },
   barFlat: {
-    width: 23.33,
+    height: 23,
   },
 }));
 
