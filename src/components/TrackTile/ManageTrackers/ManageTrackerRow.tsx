@@ -61,7 +61,7 @@ export const ManageTrackerRow: FC<Props> = (props) => {
             </Text>
           </View>
           <View
-            style={styles.endAdornment}
+            style={styles.endAdornmentView}
             testID={tID(
               isDraggable ? `reorder-tracker-${id}` : `go-to-tracker-${id}`,
             )}
@@ -126,7 +126,7 @@ const defaultStyles = createStyles('ManageTrackersRow', () => ({
   statusInactiveText: {
     color: '#7B8996',
   },
-  endAdornment: {
+  endAdornmentView: {
     marginRight: 7,
     alignItems: 'flex-end',
   },

@@ -90,7 +90,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
 
   return (
     <ScrollView style={styles.container} testID="wearables-screen-container">
-      <View style={loading ? styles.visible : styles.hidden}>
+      <View style={loading ? styles.visibleView : styles.hiddenView}>
         <ActivityIndicator
           size="large"
           animating={loading}
@@ -100,7 +100,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
       </View>
       {showSyncTypeSelections && (
         <>
-          <Text style={styles.sectionHeaderTop}>
+          <Text style={styles.sectionHeaderTopView}>
             {t('data-sources', 'Data Sources')}
           </Text>
           <SyncTypeSelectionView
@@ -115,8 +115,8 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
         <Text
           style={
             showSyncTypeSelections
-              ? styles.sectionHeader
-              : styles.sectionHeaderTop
+              ? styles.sectionHeaderView
+              : styles.sectionHeaderTopView
           }
         >
           {t('authorize', 'Authorize')}
@@ -142,23 +142,23 @@ const defaultStyles = createStyles('WearablesView', (theme) => ({
     backgroundColor: theme.colors.surfaceVariant,
     flex: 1,
   },
-  visible: {
+  visibleView: {
     overflow: 'hidden',
     minHeight: 80,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  hidden: {
+  hiddenView: {
     overflow: 'hidden',
     minHeight: 16,
   },
-  sectionHeaderTop: {
+  sectionHeaderTopView: {
     marginHorizontal: theme.spacing.medium,
     marginBottom: theme.spacing.extraSmall,
     fontSize: 28,
     fontWeight: '500',
   },
-  sectionHeader: {
+  sectionHeaderView: {
     marginHorizontal: theme.spacing.medium,
     marginBottom: theme.spacing.extraSmall,
     fontSize: 28,

@@ -45,10 +45,10 @@ export const PillarsTile = ({
     useTrackerValues(valuesContext);
 
   return (
-    <Card style={styles.pillarsTile}>
+    <Card style={styles.pillarsTileView}>
       <Card.Content style={styles.pillarsTileBackgroundContainer}>
         {trackersLoading && (
-          <View style={styles.pillarsTileLoadingIndicator}>
+          <View style={styles.pillarsTileLoadingIndicatorView}>
             <ActivityIndicator
               testID={tID('pillars-loading')}
               accessibilityRole="progressbar"
@@ -87,7 +87,7 @@ export const PillarsTile = ({
 };
 
 const defaultStyles = createStyles('PillarsTile', (theme) => ({
-  pillarsTile: {
+  pillarsTileView: {
     overflow: 'hidden',
     marginHorizontal: theme.spacing.medium,
     marginBottom: theme.spacing.medium,
@@ -98,7 +98,7 @@ const defaultStyles = createStyles('PillarsTile', (theme) => ({
     justifyContent: 'center',
     height: 404,
   },
-  pillarsTileLoadingIndicator: {
+  pillarsTileLoadingIndicatorView: {
     height: '100%',
     justifyContent: 'center',
   },

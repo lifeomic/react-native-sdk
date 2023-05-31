@@ -46,12 +46,12 @@ export const Chart: FC<ChartProps> = (props) => {
 
   const variantStyles = isDefault
     ? {
-        chartValueBar: styles.barDefault,
+        chartValueBar: styles.barDefaultView,
         chartYTitle: styles.defaultYAxisLabel,
       }
     : isFlat
     ? {
-        chartValueBar: styles.barFlat,
+        chartValueBar: styles.barFlatView,
         chartYTitle: styles.flatYAxisLabel,
       }
     : undefined;
@@ -88,7 +88,7 @@ export const Chart: FC<ChartProps> = (props) => {
             {!loading && !hasError && (
               <Bar
                 variant={variant}
-                style={!isToday(day) ? { barFlat: { opacity: 0.35 } } : {}}
+                style={!isToday(day) ? { barFlatView: { opacity: 0.35 } } : {}}
                 color={darkenHexColor(
                   color,
                   isToday(day) || isDefault ? 0 : 45,
@@ -124,7 +124,7 @@ export const Chart: FC<ChartProps> = (props) => {
 
       {loading && (
         <View style={styles.contentWrapper}>
-          <View style={styles.content}>
+          <View style={styles.contentView}>
             <ActivityIndicator
               testID={tID('history-chart-data-loading')}
               size="large"
@@ -136,7 +136,7 @@ export const Chart: FC<ChartProps> = (props) => {
 
       {hasError && (
         <View style={styles.contentWrapper}>
-          <View style={styles.content}>
+          <View style={styles.contentView}>
             <Text variant="semibold" style={styles.errorText}>
               {t(
                 'track-tile.could-not-load-your-data',
@@ -177,9 +177,9 @@ const defaultStyles = createStyles('Chart', (theme) => ({
     flexGrow: 1,
   },
   valueText: { textAlign: 'left', width: 30 },
-  barDefault: {},
-  barFlat: {},
-  content: {
+  barDefaultView: {},
+  barFlatView: {},
+  contentView: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-around',

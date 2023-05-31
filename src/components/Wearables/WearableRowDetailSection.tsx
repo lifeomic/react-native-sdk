@@ -18,7 +18,7 @@ export const WearableRowDetailSection: FC<WearableRowDetailSection> = (
   const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
-    <View style={styles.iconAndDetails}>
+    <View style={styles.iconAndDetailsView}>
       <View style={styles.iconWrapper}>{icon}</View>
       <View style={styles.sectionDetails}>{children}</View>
     </View>
@@ -26,7 +26,7 @@ export const WearableRowDetailSection: FC<WearableRowDetailSection> = (
 };
 
 const defaultStyles = createStyles('WearableRowDetailSection', (theme) => ({
-  iconAndDetails: {
+  iconAndDetailsView: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginTop: theme.spacing.medium,

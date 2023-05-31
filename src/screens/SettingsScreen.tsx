@@ -74,7 +74,7 @@ function MainMenuItem({ title, action, badge }: Props) {
 
   return (
     <TouchableOpacity onPress={action} accessibilityRole="button">
-      <View style={styles.mainMenuItem}>
+      <View style={styles.mainMenuItemView}>
         <Text variant="titleMedium" style={styles.mainMenuItemText}>
           {title}
         </Text>
@@ -85,7 +85,7 @@ function MainMenuItem({ title, action, badge }: Props) {
 }
 
 const defaultStyles = createStyles('SettingsScreen', (theme: Theme) => ({
-  mainMenuItem: {
+  mainMenuItemView: {
     flex: 1,
     flexDirection: 'row',
     paddingVertical: 14,

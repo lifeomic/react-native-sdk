@@ -184,7 +184,7 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
             onValueChange={setValue}
             value={value}
             stepAmount={stepAmountInStoreUnits}
-            style={[styles.section, styles.horizontalLayout]}
+            style={[styles.section, styles.horizontalLayoutView]}
           />
 
           {categoryTypes?.categories && (
@@ -247,7 +247,7 @@ const defaultStyles = createStyles('AdvancedTrackerEditor', () => ({
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
     borderBottomWidth: 1,
   },
-  horizontalLayout: {
+  horizontalLayoutView: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',

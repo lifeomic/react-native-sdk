@@ -222,7 +222,7 @@ export const Pillar: FC<PillarProps> = (props) => {
   ]);
 
   return (
-    <View style={[styles.pillarViewWrapper]}>
+    <View style={[styles.pillarViewContainer]}>
       <View style={styles.pillarView}>
         <TouchableOpacity
           testID={tID(`pillar-tracker-${metricId}`)}
@@ -235,8 +235,8 @@ export const Pillar: FC<PillarProps> = (props) => {
             color={hasMetGoal ? metGoalColor : notMetGoalColor}
             scale={1.8}
           />
-          <View style={styles.pillarBase}>
-            <View style={styles.pillarBackground} />
+          <View style={styles.pillarBaseView}>
+            <View style={styles.pillarBackgroundView} />
             {loading && (
               <Svg
                 height="100%"
@@ -287,7 +287,7 @@ export const Pillar: FC<PillarProps> = (props) => {
                   <View
                     style={[
                       { backgroundColor: backdrop },
-                      styles.pillarStarBackground,
+                      styles.pillarStarBackgroundContainer,
                     ]}
                   >
                     <Animated.View
@@ -346,7 +346,7 @@ export const Pillar: FC<PillarProps> = (props) => {
 const defaultPillarWidth = 37;
 
 const defaultStyles = createStyles('Pillar', (theme) => ({
-  pillarViewWrapper: {
+  pillarViewContainer: {
     alignItems: 'center',
     paddingVertical: theme.spacing.medium,
     width: defaultPillarWidth * 2,
@@ -355,7 +355,7 @@ const defaultStyles = createStyles('Pillar', (theme) => ({
     flex: 1,
     alignItems: 'center',
   },
-  pillarBase: {
+  pillarBaseView: {
     position: 'relative',
     flex: 1,
     justifyContent: 'flex-end',
@@ -364,7 +364,7 @@ const defaultStyles = createStyles('Pillar', (theme) => ({
     borderRadius: defaultPillarWidth,
     overflow: 'hidden',
   },
-  pillarBackground: {
+  pillarBackgroundView: {
     position: 'absolute',
     width: defaultPillarWidth,
     height: '100%',
@@ -375,7 +375,7 @@ const defaultStyles = createStyles('Pillar', (theme) => ({
     height: '100%',
     borderRadius: defaultPillarWidth,
   },
-  pillarStarBackground: {
+  pillarStarBackgroundContainer: {
     position: 'absolute',
     top: 2,
     left: 2,

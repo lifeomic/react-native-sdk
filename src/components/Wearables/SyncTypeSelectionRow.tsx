@@ -65,7 +65,7 @@ export const SyncTypeSelectionRow: FC<SyncTypeSelectionRowProps> = (props) => {
           {!selecting && (
             <Text
               testID={`${testID}-sync-type-selection`}
-              style={styles.syncTypeValue}
+              style={styles.syncTypeValueView}
               accessibilityLabel={`${selection?.name} - ${syncTypeTitle}`}
             >
               {selection?.name}
@@ -106,7 +106,7 @@ const defaultStyles = createStyles('SyncTypeSelectionRow', (theme) => ({
   syncTypeLabel: {
     fontWeight: 'bold',
   },
-  syncTypeValue: {
+  syncTypeValueView: {
     flex: 1,
     textAlign: 'right',
     paddingEnd: theme.spacing.medium,

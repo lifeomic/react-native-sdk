@@ -52,7 +52,7 @@ storiesOf('TrackTile', module)
   ))
   .add('Custom style', () => {
     const styles = {
-      card: {
+      cardView: {
         backgroundColor: 'green',
       },
       titleText: {

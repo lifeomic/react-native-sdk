@@ -13,11 +13,11 @@ type BarProps = {
 };
 
 const Bar: FC<BarProps> = (props) => {
-  const { animated, testID, variant, color, percentComplete } = props;
+  const { animated, testID, variant, color, percentComplete, style } = props;
   const ref = useRef(new Animated.Value(animated ? 0 : percentComplete));
-  const { styles } = useStyles(defaultStyles);
+  const { styles } = useStyles(defaultStyles, style);
 
-  const barStyle = variant === 'flat' ? styles.barFlat : styles.barDefault;
+  const barStyle = variant === 'flat' ? styles.barFlatView : styles.barDefaultView;
   const containerStyle =
     variant === 'flat' ? styles.containerFlat : styles.containerDefault;
 
@@ -65,11 +65,11 @@ const defaultStyles = createStyles('ChartBar', (theme) => ({
     borderWidth: 1,
     backgroundColor: theme.colors.background,
   },
-  barDefault: {
+  barDefaultView: {
     borderRadius: 30,
     height: 18,
   },
-  barFlat: {
+  barFlatView: {
     height: 23,
   },
 }));

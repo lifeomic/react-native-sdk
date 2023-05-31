@@ -56,10 +56,10 @@ const HorizontalScrollLayout: React.FC<ViewProps> = (props) => {
       horizontal
       contentContainerStyle={[
         styles.container,
-        data?.length === 1 && styles.containerSingleItem,
+        data?.length === 1 && styles.containerSingleItemView,
         props.style,
       ]}
-      style={styles.list}
+      style={styles.listView}
       data={data}
       renderItem={renderItem(data?.length || 0, styles)}
       showsHorizontalScrollIndicator={false}
@@ -73,7 +73,7 @@ const defaultStyles = createStyles('HorizontalScrollLayout', () => ({
     paddingHorizontal: 12,
     marginVertical: 20,
   },
-  containerSingleItem: {
+  containerSingleItemView: {
     flex: 1,
     justifyContent: 'center',
   },
@@ -86,7 +86,7 @@ const defaultStyles = createStyles('HorizontalScrollLayout', () => ({
   centerItem: {
     marginHorizontal: 12 / 2,
   },
-  list: {
+  listView: {
     overflow: 'visible',
   },
   tile: {

@@ -36,7 +36,7 @@ export function AppNavHeader({
       {back ? (
         <Appbar.Action
           icon={ChevronLeft}
-          color={styles.backActionIconAny?.color}
+          color={styles.backActionIcon?.color}
           onPress={navigation.goBack}
           style={styles.backAction}
         />
@@ -79,6 +79,7 @@ const Title = ({
   </Text>
 );
 
+const backActionIcon: { color?: string } = {};
 const defaultStyles = createStyles('AppNavHeader', (theme) => ({
   style: {
     backgroundColor: theme.colors.background,
@@ -88,7 +89,7 @@ const defaultStyles = createStyles('AppNavHeader', (theme) => ({
     color: theme.colors.onSurfaceVariant,
   },
   backAction: {},
-  backActionIconAny: {},
+  backActionIcon: backActionIcon,
 }));
 
 declare module '@styles' {

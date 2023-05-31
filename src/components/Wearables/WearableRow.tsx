@@ -574,7 +574,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
         title={wearableProp.name}
         icon={getIcon(wearableProp.ehrType)}
       />
-      <View style={styles.details}>
+      <View style={styles.detailsView}>
         {!wearableProp.enabled && renderIntro(wearableProp)}
         {wearableProp.enabled && renderLearnMore(wearableProp)}
         {wearableProp.enabled &&
@@ -621,7 +621,7 @@ const defaultStyles = createStyles('WearableRow', (theme) => ({
     flexDirection: 'column',
     overflow: 'hidden',
   },
-  details: {
+  detailsView: {
     flexDirection: 'column',
   },
   divider: {

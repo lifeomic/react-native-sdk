@@ -34,11 +34,11 @@ export function Tracker(tracker: TrackerProps) {
   const id = tracker.metricId || tracker.id;
 
   const scale = isInstalled
-    ? styles.trackerIconInstalledHeight?.height ?? 30
-    : styles.trackerIconInstalledUninstalledHeight?.height ?? 35;
+    ? styles.trackerIconInstalledHeightView?.height ?? 30
+    : styles.trackerIconInstalledUninstalledHeightView?.height ?? 35;
 
   return (
-    <View style={styles.tracker}>
+    <View style={styles.trackerView}>
       <View style={styles.trackerProgressContainer}>
         <View style={styles.trackerProgressBarContainer}>
           <RadialProgress
@@ -100,7 +100,7 @@ const defaultStyles = createStyles('Tracker', (theme) => ({
     color: theme.colors.onSurface,
     textAlign: 'center',
   },
-  tracker: {
+  trackerView: {
     marginHorizontal: 8,
     alignItems: 'center',
     position: 'relative',
@@ -119,8 +119,8 @@ const defaultStyles = createStyles('Tracker', (theme) => ({
   trackerIconColorText: {
     color: undefined,
   },
-  trackerIconInstalledHeight: {},
-  trackerIconInstalledUninstalledHeight: {},
+  trackerIconInstalledHeightView: {},
+  trackerIconInstalledUninstalledHeightView: {},
   trackerProgressBarContainer: {
     position: 'absolute',
     top: 0,
