@@ -105,13 +105,13 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
         ))}
         <ActivityIndicatorView
           animating={isFetchingNextPage}
-          style={styles.morePostsIndicatorAny}
+          style={styles.morePostsIndicator}
         />
       </ScrollView>
       <FAB
         testID={tID('new-post-button')}
         icon={Edit2}
-        style={styles.fab}
+        style={styles.fabView}
         onPress={() => {
           showCreateEditPostModal({
             parentType: ParentType.CIRCLE,
@@ -130,9 +130,9 @@ const defaultStyles = createStyles('PostsList', (theme) => {
 
   return {
     scrollView: {},
-    morePostsIndicatorAny: activityIndicatorStyle,
+    morePostsIndicator: activityIndicatorStyle,
     noPostsText: {},
-    fab: {
+    fabView: {
       position: 'absolute',
       margin: theme.spacing.medium,
       right: 0,

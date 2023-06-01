@@ -346,7 +346,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                         key={`${code.system}|${code.code}`}
                         style={[
                           { backgroundColor: color },
-                          styles.recentHistoryPill,
+                          styles.recentHistoryPillView,
                         ]}
                       >
                         <Text
@@ -489,7 +489,7 @@ const defaultStyles = createStyles('', () => ({
   recentHistoryScrollViewContent: {
     paddingHorizontal: 35,
   },
-  recentHistoryPill: {
+  recentHistoryPillView: {
     flexDirection: 'row',
     alignSelf: 'flex-start',
     paddingHorizontal: 14,

@@ -17,7 +17,7 @@ export function ActivityIndicatorView({
   timeOutMilliseconds,
   style: instanceStyles,
   ...props
-}: Props & ActivityIndicator['props']) {
+}: Props & Omit<ActivityIndicator['props'], 'style'>) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { colors } = useTheme();
   const [showMessage] = useTimeout(timeOutMilliseconds || 5000);

@@ -40,7 +40,7 @@ export function TrackerRow(props: TrackerRowProps) {
       showsHorizontalScrollIndicator={false}
     >
       {loading && (
-        <View style={styles.trackerRowLoadingIndicator}>
+        <View style={styles.trackerRowLoadingIndicatorView}>
           <ActivityIndicator
             testID={tID('trackers-loading')}
             accessibilityRole="progressbar"
@@ -74,7 +74,7 @@ export function TrackerRow(props: TrackerRowProps) {
 }
 
 const defaultStyles = createStyles('TrackerRow', (theme) => ({
-  trackerRowLoadingIndicator: {
+  trackerRowLoadingIndicatorView: {
     height: 131,
     paddingHorizontal: theme.spacing.medium,
     justifyContent: 'center',
