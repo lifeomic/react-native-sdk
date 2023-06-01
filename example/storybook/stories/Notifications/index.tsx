@@ -6,7 +6,7 @@ import {
   requestNotificationsPermissions,
 } from '../../../../src/common/Notifications';
 import { PushNotificationsContext } from '../../../../src/hooks/usePushNotifications';
-import { useActiveAccount, useHttpClient } from 'src';
+import { useActiveAccount, useHttpClient } from '../../../../src';
 
 type EventType = 'notificationReceived' | 'notificationOpened';
 
