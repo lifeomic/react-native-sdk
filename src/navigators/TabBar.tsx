@@ -32,14 +32,14 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const bottomInset = inset.bottom || defaultBottomInset;
 
   const activeIndicators = [
-    styles.activeIndicator0,
-    styles.activeIndicator1,
-    styles.activeIndicator2,
+    styles.activeIndicator0View,
+    styles.activeIndicator1View,
+    styles.activeIndicator2View,
   ];
 
   const indicatorStyle = [
     { left: activeRouteIndex * width, width },
-    styles.activeIndicator,
+    styles.activeIndicatorView,
     activeIndicators[activeRouteIndex],
   ];
 
@@ -143,15 +143,15 @@ const TabBarButton = ({
   const bottomInset = inset.bottom || defaultBottomInset;
 
   const tabViewStylesActive = [
-    styles.tabViewActive0,
-    styles.tabViewActive1,
-    styles.tabViewActive2,
+    styles.tabActive0View,
+    styles.tabActive1View,
+    styles.tabActive2View,
   ];
 
   const tabViewStylesInactive = [
-    styles.tabViewInactive0,
-    styles.tabViewInactive1,
-    styles.tabViewInactive2,
+    styles.tabInactive0View,
+    styles.tabInactive1View,
+    styles.tabInactive2View,
   ];
 
   const labelTextStylesActive = [
@@ -161,15 +161,15 @@ const TabBarButton = ({
   ];
 
   const labelTextStylesInactive = [
-    styles.labelInactiveText0,
-    styles.labelInactiveText1,
-    styles.labelInactiveText2,
+    styles.labelInactive0Text,
+    styles.labelInactive1Text,
+    styles.labelInactive2Text,
   ];
 
   const tabViewStyle = [
     isActive
-      ? [styles.tabViewActive, tabViewStylesActive[activeRouteIndex]]
-      : [styles.tabViewInactive, tabViewStylesInactive[activeRouteIndex]],
+      ? [styles.tabActiveView, tabViewStylesActive[activeRouteIndex]]
+      : [styles.tabInactiveView, tabViewStylesInactive[activeRouteIndex]],
     { width, paddingBottom: bottomInset },
   ];
 
@@ -262,48 +262,48 @@ const defaultStyles = createStyles('TabBar', (theme) => ({
   labelInactiveText: {
     alignSelf: 'center',
   },
-  labelInactiveText0: {},
-  labelInactiveText1: {},
-  labelInactiveText2: {},
-  activeIndicator: {
+  labelInactive0Text: {},
+  labelInactive1Text: {},
+  labelInactive2Text: {},
+  activeIndicatorView: {
     position: 'absolute',
     top: -6,
     height: 2 * 3,
     zIndex: 1,
   },
-  activeIndicator0: {
+  activeIndicator0View: {
     backgroundColor: theme.colors.primary,
   },
-  activeIndicator1: {
+  activeIndicator1View: {
     backgroundColor: theme.colors.secondary,
   },
-  activeIndicator2: {
+  activeIndicator2View: {
     backgroundColor: theme.colors.tertiary,
   },
-  tabViewActive: {
+  tabActiveView: {
     height: '100%',
     paddingTop: 2,
   },
-  tabViewActive0: {
+  tabActive0View: {
     backgroundColor: theme.colors.primaryContainer,
   },
-  tabViewActive1: {
+  tabActive1View: {
     backgroundColor: theme.colors.secondaryContainer,
   },
-  tabViewActive2: {
+  tabActive2View: {
     backgroundColor: theme.colors.tertiaryContainer,
   },
-  tabViewInactive: {
+  tabInactiveView: {
     height: '100%',
     paddingTop: 2,
   },
-  tabViewInactive0: {
+  tabInactive0View: {
     backgroundColor: theme.colors.surface,
   },
-  tabViewInactive1: {
+  tabInactive1View: {
     backgroundColor: theme.colors.surface,
   },
-  tabViewInactive2: {
+  tabInactive2View: {
     backgroundColor: theme.colors.surface,
   },
 }));
