@@ -38,10 +38,6 @@ export function PushNotificationsProvider({
   const { account } = useActiveAccount();
 
   useEffect(() => {
-    // setSharedState('Initial value. hey');
-  }, []);
-
-  useEffect(() => {
     // Handler called when a notification is pressed
     onNotificationOpened((notification) => {
       setEvents((events) => [
