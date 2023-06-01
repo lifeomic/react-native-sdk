@@ -13,11 +13,16 @@ import {
 import { Platform } from 'react-native';
 import { Notifications } from 'react-native-notifications';
 
+type PushNotificationEventType = 'notificationReceived' | 'notificationOpened';
+
+export type PushNotificationEvent = {
+  type: PushNotificationEventType;
+  notification: Notification;
+};
+
 interface PushNotificationsStateType {
-  events: Event | { type: string; notification: Notification }[];
-  setEvents: Dispatch<
-    SetStateAction<Event | { type: string; notification: Notification }[]>
-  >;
+  events: PushNotificationEvent[];
+  setEvents: Dispatch<SetStateAction<PushNotificationEvent[]>>;
 }
 
 export const PushNotificationsContext =
@@ -31,35 +36,43 @@ export function PushNotificationsProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [notificationEvents, setNotificationEvents] = useState<
-    Event | { type: string; notification: Notification }[]
+  const [pushNotificationEvents, setPushNotificationEvents] = useState<
+    PushNotificationEvent[]
   >([]);
 
   useEffect(() => {
     // Handler called when a notification is pressed
     onNotificationOpened((notification) => {
-      setNotificationEvents((events) => [
-        { type: 'notificationOpened', notification },
-        //@ts-ignore - typescript is complaining about Events (of type Event[]) not being an iterable object
-        ...events,
-      ]);
+      setPushNotificationEvents(
+        (events) =>
+          [
+            { type: 'notificationOpened', notification },
+            ...events,
+          ] as PushNotificationEvent[],
+      );
     });
 
     onNotificationReceived((notification) => {
-      setNotificationEvents((events) => [
-        { type: 'notificationReceived', notification },
-        ...events,
-      ]);
+      setPushNotificationEvents(
+        (events) =>
+          [
+            { type: 'notificationReceived', notification },
+            ...events,
+          ] as PushNotificationEvent[],
+      );
     });
 
     const getInitial = async () => {
       // Get the notification that opened the application
       const notification = await getInitialNotification();
       if (notification) {
-        setNotificationEvents((events) => [
-          { type: 'notificationOpened', notification },
-          ...events,
-        ]);
+        setPushNotificationEvents(
+          (events) =>
+            [
+              { type: 'notificationOpened', notification },
+              ...events,
+            ] as PushNotificationEvent[],
+        );
       }
     };
 
@@ -83,8 +96,8 @@ export function PushNotificationsProvider({
   }, []);
 
   const value: PushNotificationsStateType = {
-    events: notificationEvents,
-    setEvents: setNotificationEvents,
+    events: pushNotificationEvents,
+    setEvents: setPushNotificationEvents,
   };
 
   return (

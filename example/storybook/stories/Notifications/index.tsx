@@ -1,19 +1,16 @@
 import React, { useContext, useEffect } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Notifications, Notification } from 'react-native-notifications';
+
 import {
   registerDeviceToken,
   requestNotificationsPermissions,
 } from '../../../../src/common/Notifications';
-import { PushNotificationsContext } from '../../../../src/hooks/usePushNotifications';
+import {
+  PushNotificationEvent,
+  PushNotificationsContext,
+} from '../../../../src/hooks/usePushNotifications';
 import { useActiveAccount, useHttpClient } from '../../../../src';
-
-type EventType = 'notificationReceived' | 'notificationOpened';
-
-type Event = {
-  type: EventType;
-  notification: Notification;
-};
+import { Notifications } from 'react-native-notifications';
 
 const styles = StyleSheet.create({
   openedNotificationView: {
@@ -106,7 +103,7 @@ export const NotificationsScreen = () => {
     );
   };
 
-  const renderEvent = (event: Event) => {
+  const renderEvent = (event: PushNotificationEvent) => {
     if (event.type === 'notificationReceived') {
       return renderReceivedNotification(event.notification);
     }
@@ -145,7 +142,7 @@ export const NotificationsScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {(events as unknown as Event[]).map((event: Event, idx: number) => (
+      {events.map((event: PushNotificationEvent, idx: number) => (
         <View key={`event${idx}`}>{renderEvent(event)}</View>
       ))}
     </View>
