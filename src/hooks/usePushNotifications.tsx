@@ -11,11 +11,6 @@ import { Platform } from 'react-native';
 import { Notifications } from 'react-native-notifications';
 import { AxiosInstance } from 'axios';
 
-interface SharedStateType {
-  sharedState: string;
-  setSharedState: React.Dispatch<React.SetStateAction<string>>;
-}
-
 interface PushNotificationsStateType {
   events: Event | { type: string; notification: Notification }[];
   setEvents: React.Dispatch<
@@ -25,7 +20,6 @@ interface PushNotificationsStateType {
   account: Account | undefined;
 }
 
-export const MyContext = createContext<SharedStateType | undefined>(undefined);
 export const PushNotificationsContext = createContext<
   PushNotificationsStateType | undefined
 >(undefined);
@@ -37,7 +31,7 @@ export function PushNotificationsProvider({
 }) {
   const [events, setEvents] = useState<
     Event | { type: string; notification: Notification }[]
-  >([]); //TODO - fix type (something like the above)
+  >([]);
   const { httpClient } = useHttpClient();
   const { account } = useActiveAccount();
 
@@ -46,7 +40,7 @@ export function PushNotificationsProvider({
     onNotificationOpened((notification) => {
       setEvents((events) => [
         { type: 'notificationOpened', notification },
-        //@ts-ignore - for some reason typescript is complaining about events not being an iterable object
+        //@ts-ignore - typescript is complaining about Events (of type Event[]) not being an iterable object
         ...events,
       ]);
     });
