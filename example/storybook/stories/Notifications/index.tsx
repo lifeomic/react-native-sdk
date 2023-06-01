@@ -5,7 +5,7 @@ import {
   registerDeviceToken,
   requestNotificationsPermissions,
 } from '../../../../src/common/Notifications';
-import { PushNotificationsContext } from 'src/hooks/usePushNotifications';
+import { PushNotificationsContext } from '../../../../src/hooks/usePushNotifications';
 
 type EventType = 'notificationReceived' | 'notificationOpened';
 
