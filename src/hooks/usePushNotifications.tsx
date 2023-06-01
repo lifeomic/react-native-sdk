@@ -6,7 +6,7 @@ import {
   getInitialNotification,
   onNotificationOpened,
   onNotificationReceived,
-} from 'src/common';
+} from '../../src/common';
 import { Platform } from 'react-native';
 import { Notifications } from 'react-native-notifications';
 import { AxiosInstance } from 'axios';
