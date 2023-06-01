@@ -146,11 +146,8 @@ export const NotificationsScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {events.map((event, idx) => (
-        <View key={`event${idx}`}>
-          {/* TODO fix typing */}
-          {renderEvent(event as unknown as Event)}
-        </View>
+      {(events as unknown as Event[]).map((event: Event, idx: number) => (
+        <View key={`event${idx}`}>{renderEvent(event)}</View>
       ))}
     </View>
   );
