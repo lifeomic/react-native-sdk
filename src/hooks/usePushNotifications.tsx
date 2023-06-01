@@ -13,16 +13,16 @@ import {
 import { Platform } from 'react-native';
 import { Notifications } from 'react-native-notifications';
 
-type PushNotificationEventType = 'notificationReceived' | 'notificationOpened';
+type PushNotificationsEventType = 'notificationReceived' | 'notificationOpened';
 
-export type PushNotificationEvent = {
-  type: PushNotificationEventType;
+export type PushNotificationsEvent = {
+  type: PushNotificationsEventType;
   notification: Notification;
 };
 
 interface PushNotificationsStateType {
-  events: PushNotificationEvent[];
-  setEvents: Dispatch<SetStateAction<PushNotificationEvent[]>>;
+  events: PushNotificationsEvent[];
+  setEvents: Dispatch<SetStateAction<PushNotificationsEvent[]>>;
 }
 
 export const PushNotificationsContext =
@@ -37,7 +37,7 @@ export function PushNotificationsProvider({
   children: React.ReactNode;
 }) {
   const [pushNotificationEvents, setPushNotificationEvents] = useState<
-    PushNotificationEvent[]
+    PushNotificationsEvent[]
   >([]);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export function PushNotificationsProvider({
           [
             { type: 'notificationOpened', notification },
             ...events,
-          ] as PushNotificationEvent[],
+          ] as PushNotificationsEvent[],
       );
     });
 
@@ -58,7 +58,7 @@ export function PushNotificationsProvider({
           [
             { type: 'notificationReceived', notification },
             ...events,
-          ] as PushNotificationEvent[],
+          ] as PushNotificationsEvent[],
       );
     });
 
@@ -71,7 +71,7 @@ export function PushNotificationsProvider({
             [
               { type: 'notificationOpened', notification },
               ...events,
-            ] as PushNotificationEvent[],
+            ] as PushNotificationsEvent[],
         );
       }
     };

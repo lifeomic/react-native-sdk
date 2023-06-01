@@ -6,7 +6,7 @@ import {
   requestNotificationsPermissions,
 } from '../../../../src/common/Notifications';
 import {
-  PushNotificationEvent,
+  PushNotificationsEvent,
   PushNotificationsContext,
 } from '../../../../src/hooks/usePushNotifications';
 import { useActiveAccount, useHttpClient } from '../../../../src';
@@ -103,7 +103,7 @@ export const NotificationsScreen = () => {
     );
   };
 
-  const renderEvent = (event: PushNotificationEvent) => {
+  const renderEvent = (event: PushNotificationsEvent) => {
     if (event.type === 'notificationReceived') {
       return renderReceivedNotification(event.notification);
     }
@@ -142,7 +142,7 @@ export const NotificationsScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {events.map((event: PushNotificationEvent, idx: number) => (
+      {events.map((event: PushNotificationsEvent, idx: number) => (
         <View key={`event${idx}`}>{renderEvent(event)}</View>
       ))}
     </View>
