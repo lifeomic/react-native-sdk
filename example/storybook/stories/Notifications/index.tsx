@@ -57,12 +57,7 @@ const styles = StyleSheet.create({
 
 export const NotificationsScreen = () => {
   const pushNotificationsContext = useContext(PushNotificationsContext);
-
-  if (!pushNotificationsContext) {
-    return <Text>Context is undefined</Text>;
-  }
-
-  const { events, setEvents, httpClient, account } = pushNotificationsContext;
+  const { events, setEvents, httpClient, account } = pushNotificationsContext!;
 
   const sendLocalNotification = () => {
     Notifications.postLocalNotification({
