@@ -1,10 +1,12 @@
 import { useQuery, useMutation } from 'react-query';
-import { Bundle, Observation } from 'fhir/r3';
+import { Bundle, Observation, Coding } from 'fhir/r3';
 import formatISO from 'date-fns/formatISO';
 import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import merge from 'deepmerge';
+import { useState, useEffect, useCallback } from 'react';
+import queryString from 'query-string';
 
 type ResourceTypes = {
   Observation: Observation;
@@ -14,6 +16,7 @@ type ResourceType = Observation;
 type QueryParams = {
   resourceType: keyof ResourceTypes;
   pageSize?: number;
+  coding?: Coding[];
 };
 
 type DeleteParams = {
@@ -27,21 +30,48 @@ export function useFhirClient() {
   const { activeProject, activeSubjectId } = useActiveProject();
 
   const useSearchResourcesQuery = (queryParams: QueryParams) => {
+    const [next, setNext] = useState(0);
+    const [nextFromData, setNextFromData] = useState<number | undefined>();
+    const [responseData, setResponseData] = useState<Bundle<Observation>>();
+    const [hasMoreData, setHasMoreData] = useState(false);
+
+    const toFhirCodeFilter = () => {
+      if (queryParams.coding) {
+        return queryParams.coding
+          .map(({ system, code }) => `${system}|${code}`)
+          .join(',');
+      }
+    };
+
     const params = merge(
       {
         // Defaults:
         _tag: `http://lifeomic.com/fhir/dataset|${activeProject?.id}`,
         patient: activeSubjectId,
+        next: next.toString(),
+        code: toFhirCodeFilter(),
       },
-      queryParams,
+      {
+        resourceType: queryParams.resourceType,
+        pageSize: queryParams.pageSize,
+      },
     );
     const resourceType = queryParams.resourceType;
 
     // TODO: add code, date, & other query param capabilities
     // TODO: consider using fhir-search across the board (documenting delay)
 
-    return useQuery(
-      [`search-${resourceType}`, params],
+    const fetchNext = useCallback(
+      (nextParam: number = next) => {
+        if (hasMoreData) {
+          setNext(nextParam);
+        }
+      },
+      [hasMoreData, next],
+    );
+
+    const queryResult = useQuery(
+      [`${resourceType}/_search`, params],
       () => {
         return httpClient
           .post<Bundle<ResourceTypes[typeof resourceType]>>(
@@ -51,12 +81,34 @@ export function useFhirClient() {
               headers: accountHeaders,
             },
           )
-          .then((res) => res.data);
+          .then((res) => {
+            const { data } = res;
+            setResponseData(data);
+            return data;
+          });
       },
       {
         enabled: !!accountHeaders && !!activeProject?.id && !!activeSubjectId,
+        keepPreviousData: true,
       },
     );
+
+    useEffect(() => {
+      const nextLink = responseData?.link?.find((_) => _.relation === 'next');
+      const nextStr = nextLink?.url
+        ? queryString.parse(nextLink.url).next?.toString()
+        : undefined;
+      const nextInt = nextStr ? parseInt(nextStr, 10) : undefined;
+      setHasMoreData(!!nextLink);
+      setNextFromData(nextInt);
+    }, [responseData]);
+
+    return {
+      ...queryResult,
+      next: nextFromData,
+      fetchNext,
+      hasMoreData,
+    };
   };
 
   const useCreateResourceMutation = () => {

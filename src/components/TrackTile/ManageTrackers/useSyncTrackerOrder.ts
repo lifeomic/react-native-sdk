@@ -53,7 +53,7 @@ export const useSyncTrackerOrder = (orderState: Tracker[] | undefined) => {
 
     notifier.emit('trackerChanged', ...toUpdate);
     setLoading(false);
-  }, [svc.upsertTracker, orderState]);
+  }, [orderState, svc]);
 
   return {
     syncTrackerOrder,

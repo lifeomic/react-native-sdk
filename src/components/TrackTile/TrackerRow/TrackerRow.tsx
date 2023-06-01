@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SvgProps } from 'react-native-svg';
 import { tID } from '../common/testID';
 import {
   Tracker as TrackerType,
@@ -20,7 +19,6 @@ type TrackerRowProps = {
   trackers: TrackerType[];
   values: TrackerValues[string];
   onOpenTracker: (metric: TrackerType) => void;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
   styles?: TrackRowStyles;
 };
 
@@ -30,7 +28,6 @@ export function TrackerRow(props: TrackerRowProps) {
     trackers,
     values,
     onOpenTracker,
-    icons,
     styles: instanceStyles,
   } = props;
   const { styles } = useStyles(defaultStyles, instanceStyles);
@@ -63,7 +60,6 @@ export function TrackerRow(props: TrackerRowProps) {
           >
             <Tracker
               {...tracker}
-              icons={icons}
               value={
                 values[tracker.metricId ?? '']?.reduce(
                   (total, { value }) => total + value,

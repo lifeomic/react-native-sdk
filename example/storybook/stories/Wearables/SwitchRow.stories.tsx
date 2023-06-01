@@ -3,18 +3,20 @@ import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
 import { SwitchRow } from '../../../../src/components/Wearables//SwitchRow';
+import { CenterView } from '../../helpers/CenterView';
 
 storiesOf('Switch Row', module)
   .addDecorator(withKnobs)
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => <DefaultView />)
   .add('disabled', () => <DefaultView disabled={true} />);
 
 const DefaultView: FC<{ disabled?: boolean }> = ({ disabled }) => {
   const [value, setValue] = useState(false);
 
-  const onValueChange = (value: boolean) => {
+  const onValueChange = (v: boolean) => {
     action('onValueChange');
-    setValue(value);
+    setValue(v);
   };
 
   const props = {

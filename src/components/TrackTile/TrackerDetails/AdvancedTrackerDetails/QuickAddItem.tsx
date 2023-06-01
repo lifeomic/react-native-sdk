@@ -2,14 +2,15 @@ import React from 'react';
 import {
   TouchableOpacity,
   TouchableOpacityProps,
-  StyleSheet,
   Image,
   Text,
   ImageSourcePropType,
 } from 'react-native';
-import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
+import { useFontOverrides } from '../../styles';
 import { Code } from '../../services/TrackTileService';
 import { t } from '../../../../../lib/i18n';
+import { createStyles } from '../../../BrandConfigProvider';
+import { useStyles } from '../../../../hooks';
 
 export type QuickAddItemProps = {
   code: Code;
@@ -19,7 +20,7 @@ export type QuickAddItemProps = {
 export const QuickAddItem = (props: QuickAddItemProps) => {
   const { code, image, ...touchableProps } = props;
 
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const fontWeights = useFontOverrides();
 
   return (
@@ -32,15 +33,15 @@ export const QuickAddItem = (props: QuickAddItemProps) => {
       })}
       {...touchableProps}
       style={[
-        styles.quickAddItemContainer,
-        touchableProps.disabled && styles.quickAddItemDisabled,
+        styles.container,
+        touchableProps.disabled && styles.disabled,
         touchableProps.style,
       ]}
     >
-      <Image style={styles.quickAddItemImage} source={image} />
+      <Image style={styles.image} source={image} />
       <Text
         accessibilityElementsHidden
-        style={[fontWeights.semibold, styles.quickAddItemText]}
+        style={[fontWeights.semibold, styles.text]}
       >
         {t('track-tile.quick-add-label', {
           defaultValue: '+ {{title}}',
@@ -51,28 +52,29 @@ export const QuickAddItem = (props: QuickAddItemProps) => {
   );
 };
 
-declare module './AdvancedTrackerDetails' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  quickAddItemContainer: {
+const defaultStyles = createStyles('QuickAddItem', () => ({
+  container: {
     flex: 1,
     backgroundColor: 'white',
   },
-  quickAddItemDisabled: {
+  disabled: {
     opacity: 0.3,
   },
-  quickAddItemImage: {
+  image: {
     width: '100%',
     height: 80,
     overflow: 'hidden',
     resizeMode: 'cover',
   },
-  quickAddItemText: {
+  text: {
     marginHorizontal: 12,
     marginVertical: 6,
     lineHeight: 18,
     fontSize: 12,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

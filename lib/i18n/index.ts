@@ -2,6 +2,7 @@ import 'intl-pluralrules';
 import i18next, { t } from 'i18next';
 import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next';
+import { loadLocalePolyfills } from './polyfills';
 export { Trans } from 'react-i18next';
 
 // See https://github.com/i18next/react-i18next/issues/1587#issuecomment-1386909661
@@ -13,6 +14,8 @@ declare module 'i18next' {
 
 // Skeleton instance will enable building i18n ready components
 export function configure() {
+  loadLocalePolyfills();
+
   return i18next
     .use(initReactI18next)
     .use(

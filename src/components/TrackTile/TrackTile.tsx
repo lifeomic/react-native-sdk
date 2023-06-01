@@ -9,7 +9,6 @@ import {
 } from './services/TrackTileService';
 import { useTrackers } from './hooks/useTrackers';
 import { useTrackerValues } from './hooks/useTrackerValues';
-import { SvgProps } from 'react-native-svg';
 import { createStyles } from '../BrandConfigProvider';
 import { useStyles } from '../../hooks/useStyles';
 import { Card } from 'react-native-paper';
@@ -19,7 +18,6 @@ export type TrackTileProps = {
   onOpenSettings: (valuesContext: TrackerValuesContext) => void;
   onOpenTracker: (metric: Tracker, valuesContext: TrackerValuesContext) => void;
   hideSettingsButton?: boolean;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
   styles?: TrackTileStyles;
 };
 
@@ -28,7 +26,6 @@ export function TrackTile({
   onOpenTracker,
   hideSettingsButton = false,
   title = '',
-  icons,
   styles: instanceStyles,
 }: TrackTileProps) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
@@ -42,7 +39,9 @@ export function TrackTile({
     useTrackerValues(valuesContext);
 
   const settingsButton = (props: { size: number }) => {
-    if (hideSettingsButton) return null;
+    if (hideSettingsButton) {
+      return null;
+    }
     return (
       <OpenSettingsButton
         {...props}
@@ -67,7 +66,6 @@ export function TrackTile({
         trackers={trackers}
         values={trackerValues[0]}
         loading={trackersLoading || valuesLoading}
-        icons={icons}
       />
     </Card>
   );

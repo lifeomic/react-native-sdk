@@ -4,6 +4,7 @@ import { action } from '@storybook/addon-actions';
 import { boolean, object, text, withKnobs } from '@storybook/addon-knobs';
 import { SyncTypeSelectionRow } from '../../../../src/components/Wearables/SyncTypeSelectionRow';
 import { WearableIntegration } from '../../../../src/components/Wearables/WearableTypes';
+import { CenterView } from '../../helpers/CenterView';
 
 export const exampleProps = {
   selectedEHRId: 'garmin',
@@ -30,6 +31,7 @@ export const exampleProps = {
 
 storiesOf('SyncType Selection Row', module)
   .addDecorator(withKnobs)
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => (
     <SyncTypeSelectionRow
       disabled={boolean('disabled', false)}

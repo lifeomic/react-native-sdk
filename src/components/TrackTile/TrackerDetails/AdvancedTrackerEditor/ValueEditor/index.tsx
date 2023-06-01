@@ -1,16 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import {
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  ViewStyle,
-  StyleProp,
-} from 'react-native';
-import { StylesProp, useStyleOverrides } from '../../../styles';
+import { TouchableOpacity, View, ViewStyle, StyleProp } from 'react-native';
 import { Tracker } from '../../../services/TrackTileService';
 import { ValueDisplay } from './ValueDisplay';
 import { tID } from '../../../common/testID';
-import { useIcons } from '../../../../BrandConfigProvider';
+import { createStyles, useIcons } from '../../../../BrandConfigProvider';
+import { useStyles } from '../../../../../hooks';
 
 export type ValueEditorProps = Pick<Tracker, 'resourceType' | 'color'> & {
   /** @description this should be represented in the stored unit type. For Procedure resources that is always seconds */
@@ -27,7 +21,7 @@ export const ValueEditor = (props: ValueEditorProps) => {
   const { observationUnit, style } = props;
   const { resourceType, onValueChange, value, stepAmount, color } = props;
   const { MinusCircle, PlusCircle } = useIcons();
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const [editUnitType, setEditUnitType] = useState<'min' | 'hour'>('min');
 
   const modifyValue = useCallback(
@@ -47,11 +41,11 @@ export const ValueEditor = (props: ValueEditorProps) => {
       <TouchableOpacity
         testID={tID('decrement-value')}
         onPress={modifyValue(-1)}
-        style={styles.advancedEditorCircleButton}
+        style={styles.button}
       >
         <MinusCircle width="100%" height="100%" color={color} />
       </TouchableOpacity>
-      <View style={styles.advancedEditorTrackerContainer}>
+      <View style={styles.valueContainer}>
         <ValueDisplay
           value={value}
           resourceType={resourceType}
@@ -63,7 +57,7 @@ export const ValueEditor = (props: ValueEditorProps) => {
       <TouchableOpacity
         testID={tID('increment-value')}
         onPress={modifyValue(1)}
-        style={styles.advancedEditorCircleButton}
+        style={styles.button}
       >
         <PlusCircle width="100%" height="100%" color={color} />
       </TouchableOpacity>
@@ -71,21 +65,17 @@ export const ValueEditor = (props: ValueEditorProps) => {
   );
 };
 
-declare module '../AdvancedTrackerEditor' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  advancedEditorCircleButton: {
+const defaultStyles = createStyles('AdvancedTrackerValueEditor', () => ({
+  button: {
     width: 30,
     height: 30,
   },
-  advancedEditorTrackerContainer: {
+  valueContainer: {
     alignItems: 'center',
   },
-  advancedEditorTrackerValue: {
-    fontSize: 34,
-    lineHeight: 40.8,
-    color: '#35383D',
-  },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

@@ -21,10 +21,12 @@ export const WearableLifecycleContext = React.createContext<{
     ehrs: WearableIntegration[],
     legacySort?: boolean,
   ) => Promise<WearableIntegration[]>;
+  onBackfill: (wearable: WearableIntegration) => Promise<boolean>;
 }>({
   onPreToggle: async () => {},
   onPostToggle: async () => {},
   sanitizeEHRs: async (ehrs) => ehrs,
+  onBackfill: async () => false,
 });
 
 const handlers: NativeWearableLifecycleHandler[] = [];
@@ -43,10 +45,9 @@ export const deregisterWearableLifecycleHandlers = (
   });
 };
 export const WearableLifecycleProvider = ({ children }: Props) => {
-  if (__DEV__) {
-    // eslint-disable-next-line
-    const [initialHookLength] = React.useState(hooks.length);
+  const [initialHookLength] = React.useState(hooks.length);
 
+  if (__DEV__) {
     if (initialHookLength !== hooks.length) {
       throw new Error(
         "[WearableLifecycleProvider]: Lifecycle hooks changed between renders. Call 'registerWearableLifecycleHook' as early as possible to prevent this error.",
@@ -54,9 +55,8 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
     }
   }
 
-  for (const useCustomWearableLifeCycleHook of hooks) {
-    // eslint-disable-next-line
-    useCustomWearableLifeCycleHook();
+  for (const customWearableLifeCycleHook of hooks) {
+    customWearableLifeCycleHook();
   }
 
   const onPreToggle = useCallback(
@@ -72,6 +72,14 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
     await Promise.all(
       handlers.map((strategy) => strategy.postToggle?.(wearable)),
     );
+  }, []);
+
+  const onBackfill = useCallback(async (wearable: WearableIntegration) => {
+    const res = await Promise.all(
+      handlers.map((strategy) => strategy.onBackfill?.(wearable)),
+    );
+
+    return res.some((didBackfill) => didBackfill);
   }, []);
 
   const sanitizeEHRs = useCallback(
@@ -107,7 +115,7 @@ export const WearableLifecycleProvider = ({ children }: Props) => {
 
   return (
     <WearableLifecycleContext.Provider
-      value={{ onPostToggle, onPreToggle, sanitizeEHRs }}
+      value={{ onPostToggle, onPreToggle, sanitizeEHRs, onBackfill }}
     >
       {children}
     </WearableLifecycleContext.Provider>

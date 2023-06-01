@@ -14,5 +14,3 @@ __mocks__
 .eslintrc.js
 *.config.js
 dist
-
-src/components/TrackTile

@@ -1,6 +1,5 @@
 import React, { ReactNode } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { SvgProps } from 'react-native-svg';
 import { tID } from '../common/testID';
 import { useTrackers } from '../hooks/useTrackers';
 import { useTrackerValues } from '../hooks/useTrackerValues';
@@ -11,13 +10,10 @@ import {
   TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
 } from '../services/TrackTileService';
-import { NamedStyles, StylesProp } from '../styles';
 import { Pillar } from './Pillar';
 import { Card } from 'react-native-paper';
 import { useStyles } from '../../../hooks/useStyles';
 import { createStyles } from '../../BrandConfigProvider';
-
-export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 
 export type PillarsTileProps = {
   onOpenDetails: (
@@ -30,14 +26,12 @@ export type PillarsTileProps = {
     originalTrackerValues?: TrackerValue[],
   ) => void;
   background?: ReactNode;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
   styles?: PillarsTileStyles;
 };
 
 export const PillarsTile = ({
   onOpenDetails,
   onSaveNewValueOverride,
-  icons,
   styles: instanceStyles,
 }: PillarsTileProps) => {
   const { styles } = useStyles(defaultStyles, instanceStyles);
@@ -73,7 +67,6 @@ export const PillarsTile = ({
                 trackerValues={trackerDayValues}
                 tracker={tracker}
                 valuesContext={valuesContext}
-                icons={icons}
                 onOpenDetails={() => onOpenDetails(tracker, valuesContext)}
                 onSaveNewValueOverride={
                   onSaveNewValueOverride

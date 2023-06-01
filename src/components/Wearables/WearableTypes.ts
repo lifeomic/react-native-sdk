@@ -94,4 +94,5 @@ export interface NativeWearableLifecycleHandler {
   preToggle?(wearable: WearableIntegration, enabled: boolean): Promise<void>;
   postToggle?(wearable: WearableIntegration): Promise<void>;
   sanitizeEHRs?(ehrs: WearableIntegration[]): Promise<WearableIntegration[]>;
+  onBackfill?(wearable: WearableIntegration): Promise<boolean>;
 }

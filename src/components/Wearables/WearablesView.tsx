@@ -15,7 +15,8 @@ import { createStyles } from '../BrandConfigProvider';
 import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 import { useWearableLifecycleHooks } from './WearableLifecycleProvider';
 
-export interface WearablesViewProps extends Omit<WearableRowProps, 'wearable'> {
+export interface WearablesViewProps
+  extends Omit<WearableRowProps, 'wearable' | 'isBackfillEnabled'> {
   loading: boolean;
   onSyncTypeSelectionsUpdate: (
     settings: Record<WearableStateSyncType, string>,
@@ -24,6 +25,10 @@ export interface WearablesViewProps extends Omit<WearableRowProps, 'wearable'> {
   wearables: WearableIntegration[];
   legacySort?: boolean;
   switchProps?: SwitchProps;
+  /**
+   * @property the ehrIds of wearables that should allow backfilling
+   */
+  enabledBackfillWearables?: string[];
 }
 
 /**
@@ -47,6 +52,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
     styles: instanceStyles,
     wearables,
     legacySort,
+    enabledBackfillWearables,
     ...otherRowProps
   } = props;
 
@@ -123,6 +129,7 @@ export const WearablesView: FC<WearablesViewProps> = (props) => {
           onRefreshNeeded={onRefreshNeeded}
           styles={styles.wearableRow}
           wearable={wearable}
+          isBackfillEnabled={enabledBackfillWearables?.includes(wearable.ehrId)}
           {...otherRowProps}
         />
       ))}

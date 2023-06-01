@@ -12,9 +12,11 @@ import {
   text,
   boolean,
 } from '@storybook/addon-knobs';
+import { CenterView } from '../../helpers/CenterView';
 
 storiesOf('Tracker', module)
   .addDecorator(withKnobs)
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => {
     const unit = text('unit', 'ounces');
     return (

@@ -20,9 +20,11 @@ export const viewActions = {
   ...rowActions,
   onSyncTypeSelectionsUpdate: action('onSyncTypeSelectionsUpdate'),
 };
+import { CenterView } from '../../helpers/CenterView';
 
 storiesOf('Wearables View', module)
   .addDecorator(withKnobs)
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => <DefaultView loading={false} />)
   .add('loading (initially)', () => <WearablesView {...loadingProps} />)
   .add('loading (after wearables change)', () => <DefaultView loading={true} />)

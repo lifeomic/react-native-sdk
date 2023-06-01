@@ -1,13 +1,7 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Image } from 'react-native';
+import { Divider, Text } from 'react-native-paper';
 import { t } from '../../../../lib/i18n';
-import {
-  NamedStyles,
-  StylesProp,
-  useStyleOverrides,
-  Text,
-  useFontOverrides,
-} from '../styles';
 import { UnitPicker } from './UnitPicker';
 import {
   Tracker,
@@ -15,7 +9,6 @@ import {
   TrackerValuesContext,
   useTrackTileService,
 } from '../services/TrackTileService';
-import Indicator from '../icons/indicator';
 import TrackAmountControl from './TrackAmountControl';
 import { useSyncTrackerSettingsEffect } from './useSyncTrackerSettingsEffect';
 import { useTrackerValues } from '../hooks/useTrackerValues';
@@ -24,7 +17,6 @@ import { notifier } from '../services/EmitterService';
 import { toFhirResource } from './to-fhir-resource';
 import { TrackerHistoryChart } from './TrackerHistoryChart';
 import { ScrollView } from 'react-native-gesture-handler';
-import { tID } from '../common/testID';
 import {
   convertToISONumber,
   convertToPreferredUnit,
@@ -34,39 +26,52 @@ import {
 } from '../util/convert-value';
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
 import { numberFormatters } from '../formatters';
-import { SvgProps } from 'react-native-svg';
-import { endOfToday, isToday, startOfToday } from 'date-fns';
+import { endOfDay, isBefore, isToday, startOfDay } from 'date-fns';
 import { DatePicker } from './DatePicker';
-import { useDynamicColorGroup } from '../../../hooks/useDynamicColorGroup';
+import { NumberPicker } from './NumberPicker';
+import { createStyles } from '../../../components/BrandConfigProvider';
+import { useStyles } from '../../../hooks';
+import { unitDisplay } from './unit-display';
 
-export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
 export type TrackerDetailsProps = {
   tracker: Tracker;
   valuesContext: TrackerValuesContext;
+  referenceDate?: Date;
   onError?: (e: any) => void;
   canEditUnit?: boolean;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
 };
 
 const { numberFormat } = numberFormatters;
 
 export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
-  const { tracker, valuesContext, onError, canEditUnit, icons } = props;
-  const { colorContainer } = useDynamicColorGroup(tracker.color);
+  const {
+    tracker,
+    valuesContext,
+    referenceDate: incomingReferenceDate,
+    onError,
+    canEditUnit,
+  } = props;
   const defaultUnit = getStoredUnitType(tracker);
-  const styles = useStyleOverrides(defaultStyles);
-  const fontWeights = useFontOverrides();
+  const { styles } = useStyles(defaultStyles);
   const svc = useTrackTileService();
-  const [dateRange, setDateRange] = useState({
-    start: startOfToday(),
-    end: endOfToday(),
+  const [saveInProgress, setSaveInProgress] = useState(false);
+  const [dateRange, setDateRange] = useState(() => {
+    const referenceDate =
+      incomingReferenceDate && isBefore(incomingReferenceDate, new Date())
+        ? incomingReferenceDate
+        : new Date();
+
+    return {
+      start: startOfDay(referenceDate),
+      end: endOfDay(referenceDate),
+    };
   });
   const {
-    trackerValues: [todaysValues],
+    trackerValues: [activeValues],
     loading: fetchingTrackerValues,
   } = useTrackerValues(valuesContext, dateRange);
   const metricId = tracker.metricId ?? tracker.id;
-  const incomingValue = (todaysValues[metricId] ?? []).reduce(
+  const incomingValue = (activeValues[metricId] ?? []).reduce(
     (total, { value }) => total + value,
     0,
   );
@@ -84,16 +89,17 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     setCurrentValue(convertToPreferredUnit(incomingValue ?? 0, tracker));
   }, [incomingValue, tracker, selectedUnit, fetchingTrackerValues]);
 
-  const updateTarget = useCallback(() => {
-    setTarget((target: string) => {
-      const newTarget = coerceToNonnegativeValue(
-        convertToISONumber(target),
+  const updateTarget = useMemo(
+    () => (newTarget: string) => {
+      setTarget(newTarget);
+      const formattedTarget = coerceToNonnegativeValue(
+        convertToISONumber(newTarget),
         currentTarget,
       );
-      setCurrentTarget(newTarget);
-      return numberFormat(newTarget);
-    });
-  }, [currentTarget]);
+      setCurrentTarget(formattedTarget);
+    },
+    [currentTarget],
+  );
 
   useSyncTrackerSettingsEffect(tracker, {
     target: currentTarget,
@@ -109,63 +115,70 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     [defaultUnit, tracker.units],
   );
 
-  const saveNewValue = useCallback(
-    debounce(async (newValue: number) => {
-      try {
-        const values = todaysValues[metricId] ?? [];
-        const currentValue = values.reduce(
-          (total, { value }) => total + value,
-          0,
-        );
-        const updates: TrackerValue[] = [];
-        const deletes: TrackerValue[] = [];
-        let trackerValueIndex = 0;
-        let delta = convertToStoreUnit(newValue, tracker) - currentValue;
-        while (delta !== 0) {
-          const trackerValue = values[trackerValueIndex];
-          const resourceValue = (trackerValue?.value ?? 0) + delta;
+  const saveNewValue = useMemo(
+    () =>
+      debounce(async (newValue: number) => {
+        setSaveInProgress(true);
+        try {
+          const values = activeValues[metricId] ?? [];
+          const cValue = values.reduce((total, { value }) => total + value, 0);
+          const updates: TrackerValue[] = [];
+          const deletes: TrackerValue[] = [];
+          let trackerValueIndex = 0;
+          let delta = convertToStoreUnit(newValue, tracker) - cValue;
+          while (delta !== 0) {
+            const trackerValue = values[trackerValueIndex];
+            const resourceValue = (trackerValue?.value ?? 0) + delta;
 
-          if (resourceValue > 0) {
-            delta = 0;
-            const res = await svc.upsertTrackerResource(
-              valuesContext,
-              toFhirResource(tracker.resourceType, {
-                ...svc,
-                createDate: isToday(dateRange.start)
-                  ? new Date()
-                  : dateRange.start,
-                ...todaysValues[metricId]?.[0],
-                value: convertToPreferredUnit(resourceValue, tracker),
-                tracker,
-              }),
-            );
-            updates.push(res);
-          } else {
-            trackerValueIndex++;
-            delta = resourceValue;
+            if (resourceValue > 0) {
+              delta = 0;
+              const res = await svc.upsertTrackerResource(
+                valuesContext,
+                toFhirResource(tracker.resourceType, {
+                  ...svc,
+                  createDate: isToday(dateRange.start)
+                    ? new Date()
+                    : dateRange.start,
+                  ...activeValues[metricId]?.[0],
+                  value: convertToPreferredUnit(resourceValue, tracker),
+                  tracker,
+                }),
+              );
+              updates.push(res);
+            } else {
+              trackerValueIndex++;
+              delta = resourceValue;
 
-            const removed = await svc.deleteTrackerResource(
-              valuesContext,
-              tracker.resourceType,
-              trackerValue.id,
-            );
+              const removed = await svc.deleteTrackerResource(
+                valuesContext,
+                tracker.resourceType,
+                trackerValue.id,
+              );
 
-            if (removed) {
-              deletes.push(trackerValue);
+              if (removed) {
+                deletes.push(trackerValue);
+              }
             }
           }
-        }
 
-        const batchMeta = { valuesContext, metricId };
-        notifier.emit('valuesChanged', [
-          ...updates.map((tracker) => ({ ...batchMeta, tracker })),
-          ...deletes.map((tracker) => ({ ...batchMeta, tracker, drop: true })),
-        ]);
-      } catch (e) {
-        onError?.(e);
-      }
-    }, 800),
-    [todaysValues, tracker, metricId, svc, valuesContext, dateRange, onError],
+          const batchMeta = { valuesContext, metricId };
+          notifier.emit('valuesChanged', [
+            ...updates.map((newTracker) => ({
+              ...batchMeta,
+              tracker: newTracker,
+            })),
+            ...deletes.map((newTracker) => ({
+              ...batchMeta,
+              tracker: newTracker,
+              drop: true,
+            })),
+          ]);
+        } catch (e) {
+          onError?.(e);
+        }
+        setSaveInProgress(false);
+      }, 800),
+    [activeValues, tracker, metricId, svc, valuesContext, dateRange, onError],
   );
 
   const onValueChange = useCallback(
@@ -173,86 +186,77 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
       setCurrentValue(newValue);
       saveNewValue(newValue);
     },
-    [saveNewValue, metricId],
+    [saveNewValue],
   );
 
   return (
     <ScrollView>
-      <View style={styles.trackerDetailsContainer}>
+      <View style={styles.container}>
         <DatePicker
-          color="#02BFF1"
           dateRange={dateRange}
           onChange={setDateRange}
           target={currentTarget}
           tracker={tracker}
           unit={selectedUnit}
+          color={tracker.color}
         />
-        <View
-          style={[
-            { backgroundColor: colorContainer },
-            styles.trackerDetailsHeaderContainer,
-          ]}
-        >
-          <Indicator
-            CustomIcon={icons?.[metricId]}
-            name={tracker.icon}
-            color={tracker.color}
-            scale={2.6}
-          />
-        </View>
+        {tracker.image && (
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: tracker.image }} style={styles.image} />
+          </View>
+        )}
         <TrackAmountControl
           value={currentValue}
           onChange={onValueChange}
           color={tracker.color}
+          saveInProgress={saveInProgress}
         />
-        <Text style={styles.trackerDetailsDescription}>
-          {tracker.description}
-        </Text>
-        <View style={styles.trackerDetailsTargetContainer}>
+        <View style={styles.targetContainer}>
           <Text
             accessible={false}
-            style={styles.trackerDetailsMyTarget}
+            style={styles.myTargetText}
             numberOfLines={1}
           >
             {t('track-tile.my-target', 'My Target')}
           </Text>
-          <TextInput
-            testID={tID('tracker-target-input')}
-            accessibilityLabel={t('track-tile.target-input', 'Target Input')}
-            value={target}
-            style={[fontWeights.semibold, styles.trackerDetailsTargetInput]}
-            onChangeText={setTarget}
-            onBlur={updateTarget}
-            onSubmitEditing={updateTarget}
-            returnKeyType="done"
-            keyboardType="numeric"
-            placeholder={numberFormat(selectedUnit.target)}
-            numberOfLines={1}
-            editable={canEditUnit}
-          />
-          {tracker.units.length > 1 && canEditUnit ? (
-            <UnitPicker
-              value={selectedUnit.unit}
-              onChange={onSelectUnit}
-              units={tracker.units}
-            />
-          ) : (
-            <Text
-              accessible={false}
-              variant="semibold"
-              style={styles.trackerDetailsSingleUnit}
-            >
-              {selectedUnit.display.toLocaleLowerCase()}
+          <View style={styles.targetTextContainer}>
+            <Text style={[styles.targetText, { color: tracker.color }]}>
+              [{target}]
             </Text>
-          )}
+            {tracker.units.length > 1 && canEditUnit ? (
+              <UnitPicker
+                value={selectedUnit.unit}
+                onChange={onSelectUnit}
+                units={tracker.units}
+              />
+            ) : (
+              <Text accessible={false} style={styles.singleUnitText}>
+                {unitDisplay({
+                  tracker,
+                  unit: selectedUnit,
+                  value: Number.parseFloat(target),
+                  skipInterpolation: true,
+                }).toLocaleLowerCase()}
+              </Text>
+            )}
+          </View>
         </View>
-        <View style={styles.trackerDetailsHistoryChartContainer}>
+        <NumberPicker
+          selectedUnit={selectedUnit}
+          onChange={updateTarget}
+          value={target}
+        />
+        <Divider style={styles.firstDivider} />
+        <Text style={styles.descriptionText}>{tracker.description}</Text>
+        <Divider style={styles.secondDivider} />
+        <View style={styles.historyChartContainer}>
           <TrackerHistoryChart
             metricId={metricId}
             target={currentTarget}
             unit={selectedUnit.display}
             tracker={tracker}
             valuesContext={valuesContext}
+            referenceDate={dateRange.start}
           />
         </View>
       </View>
@@ -260,69 +264,71 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   );
 };
 
-const defaultStyles = StyleSheet.create({
-  trackerDetailsContainer: {
-    backgroundColor: 'white',
+const defaultStyles = createStyles('TrackerDetails', (theme) => ({
+  imageContainer: {
+    width: 326,
+    height: 210,
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'contain',
+  },
+  container: {
+    backgroundColor: theme.colors.elevation.level1,
     alignItems: 'center',
     flex: 1,
     minHeight: '100%',
     paddingBottom: 24,
+    flexDirection: 'column',
   },
-  trackerDetailsHeaderContainer: {
-    width: '100%',
-    flex: 1,
-    maxHeight: 153,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: 37.5,
-    minHeight: 120,
-  },
-  trackerDetailsDescription: {
-    textAlign: 'center',
+  descriptionText: {
+    textAlign: 'left',
     color: '#000000',
-    marginTop: 30,
-    marginBottom: 6,
     marginHorizontal: 39,
     fontSize: 14,
     lineHeight: 22,
   },
-  trackerDetailsTargetContainer: {
-    flexDirection: 'row',
+  targetContainer: {
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'flex-end',
     minHeight: 30,
     paddingBottom: 10,
-    marginHorizontal: 54,
-    borderBottomColor: '#E6E6E6',
-    borderBottomWidth: 1,
   },
-  trackerDetailsMyTarget: {
+  targetTextContainer: {
+    paddingTop: 4,
+    flexDirection: 'row',
+    alignSelf: 'center',
+  },
+  targetText: {
+    letterSpacing: 3,
+    fontSize: 16,
+    lineHeight: 19.5,
+  },
+  myTargetText: {
     color: '#333333',
+    fontSize: 20,
+    lineHeight: 24,
+    fontWeight: '700',
+    paddingTop: 16,
+  },
+  singleUnitText: {
     letterSpacing: 0.23,
     fontSize: 16,
-    lineHeight: 16,
+    lineHeight: 19.5,
   },
-  trackerDetailsSingleUnit: {
-    color: '#262C32',
-    letterSpacing: 0.23,
-    fontSize: 16,
-    lineHeight: 16,
-  },
-  trackerDetailsTargetInput: {
-    flex: 1,
-    color: '#262C32',
-    fontSize: 24,
-    marginRight: 7,
-    textAlign: 'right',
-    alignSelf: 'stretch',
-    marginTop: 'auto',
-    marginBottom: -2,
-    paddingTop: 14,
-  },
-  trackerDetailsHistoryChartContainer: {
+  historyChartContainer: {
     width: '100%',
-    paddingHorizontal: 34,
-    marginTop: 10,
+    paddingHorizontal: 8,
     flex: 1,
   },
-});
+  firstDivider: { width: 326, backgroundColor: 'black', marginVertical: 24 },
+  secondDivider: { width: 326, backgroundColor: 'black', marginTop: 24 },
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type TrackTileDetailsStyles = NamedStylesProp<typeof defaultStyles>;

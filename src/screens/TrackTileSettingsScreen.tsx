@@ -1,18 +1,15 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { HomeStackScreenProps } from '../navigators/types';
 import { ManageTrackers } from '../components/TrackTile/ManageTrackers/ManageTrackers';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+import { createStyles } from '../components';
+import { useStyles } from '../hooks';
 
 export const SettingsScreen = ({
   navigation,
   route: { params },
 }: HomeStackScreenProps<'Home/TrackTileSettings'>) => {
+  const { styles } = useStyles(defaultStyles);
   const { valuesContext } = params;
 
   return (
@@ -28,5 +25,16 @@ export const SettingsScreen = ({
     </View>
   );
 };
+
+const defaultStyles = createStyles('TrackTileSettingsScreen', () => ({
+  container: {
+    flex: 1,
+  },
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
 
 export default SettingsScreen;

@@ -17,12 +17,16 @@ export type UnitType = {
   displayFew?: string;
   displayMany?: string;
   displayOther?: string;
+  targetMin?: number;
+  targetMax?: number;
+  targetStepAmount?: number;
 };
 
 export type MetricType = {
   account: string;
   color: string;
   description: string;
+  image?: string;
   icon: string;
   id: string;
   lifePoints: number;

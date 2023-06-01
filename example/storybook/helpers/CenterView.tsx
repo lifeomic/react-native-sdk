@@ -1,13 +1,22 @@
 import React from 'react';
 
-import { View, ViewStyle } from 'react-native';
+import { ViewStyle } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
   children: React.ReactNode;
+  style?: ViewStyle;
 }
 
-export function CenterView({ children }: Props) {
-  return <View style={container}>{children}</View>;
+export function CenterView({ children, style }: Props) {
+  return (
+    <SafeAreaView
+      edges={['top', 'bottom', 'left', 'right']}
+      style={[container, style]}
+    >
+      {children}
+    </SafeAreaView>
+  );
 }
 
 const container: ViewStyle = {

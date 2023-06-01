@@ -1,15 +1,11 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
-import { StylesProp, useFontOverrides, useStyleOverrides } from '../../styles';
+import { TouchableOpacity, Text, View, ScrollView } from 'react-native';
+import { useFontOverrides } from '../../styles';
 import { Code } from '../../services/TrackTileService';
 import { isCodeEqual } from '../../util/is-code-equal';
 import { tID } from '../../common/testID';
+import { createStyles } from '../../../BrandConfigProvider';
+import { useStyles } from '../../../../hooks';
 
 export type CodingCategoryPickerProps<T extends Code> = {
   codes: T[];
@@ -19,24 +15,23 @@ export type CodingCategoryPickerProps<T extends Code> = {
   onCodePressed: (code?: T) => () => void;
 };
 
-// eslint-disable-next-line prefer-arrow/prefer-arrow-functions
 export function CodingCategoryPicker<T extends Code>(
   props: CodingCategoryPickerProps<T>,
 ) {
   const { categoryHeader, codes, onCodePressed, color, selectedCode } = props;
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const fontWeights = useFontOverrides();
 
   return (
     <View>
-      <Text style={[fontWeights.bold, styles.codingCategoryPickerHeader]}>
+      <Text style={[fontWeights.bold, styles.headerText]}>
         {categoryHeader}
       </Text>
 
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={styles.codingCategoryPickerBubbleContainer}
+        style={styles.bubbleContainer}
       >
         {codes.map((code) => (
           <TouchableOpacity key={code.id} onPress={onCodePressed(code)}>
@@ -48,13 +43,13 @@ export function CodingCategoryPicker<T extends Code>(
               }
               style={[
                 fontWeights.semibold,
-                styles.codingCategoryPickerBubble,
+                styles.bubble,
                 isCodeEqual(selectedCode, code) && [
-                  styles.codingCategoryPickerBubbleSelected,
                   {
                     backgroundColor: color,
                     borderColor: color,
                   },
+                  styles.bubbleSelectedText,
                 ],
               ]}
             >
@@ -67,21 +62,17 @@ export function CodingCategoryPicker<T extends Code>(
   );
 }
 
-declare module './AdvancedTrackerEditor' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
-
-const defaultStyles = StyleSheet.create({
-  codingCategoryPickerHeader: {
+const defaultStyles = createStyles('CodingCategoryPicker', () => ({
+  headerText: {
     fontSize: 34,
     lineHeight: 40.8,
     color: '#35383D',
   },
-  codingCategoryPickerBubbleContainer: {
+  bubbleContainer: {
     overflow: 'visible',
     marginTop: 20,
   },
-  codingCategoryPickerBubble: {
+  bubble: {
     flexDirection: 'row',
     alignSelf: 'flex-start',
     paddingHorizontal: 12,
@@ -96,7 +87,12 @@ const defaultStyles = StyleSheet.create({
     borderColor: 'black',
     overflow: 'hidden',
   },
-  codingCategoryPickerBubbleSelected: {
+  bubbleSelectedText: {
     color: 'white',
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

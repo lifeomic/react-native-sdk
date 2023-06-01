@@ -18,6 +18,9 @@ import {
   CheckCircle,
   PlusSquare,
 } from '@lifeomic/chromicons-native';
+import { IconProvider } from '../../../../src';
+import { CenterView } from '../../helpers/CenterView';
+
 const baseTracker = {
   account: 'accountid',
   description: 'desc',
@@ -34,6 +37,7 @@ const nutritionPillar: Tracker = {
   color: '#33C317',
   resourceType: 'Observation',
   code: 'code',
+  system: TRACKER_PILLAR_CODE_SYSTEM,
   order: 1,
   units: [
     {
@@ -55,6 +59,7 @@ const activityPillar: Tracker = {
   color: '#CD335E',
   resourceType: 'Observation',
   code: 'activity',
+  system: TRACKER_PILLAR_CODE_SYSTEM,
   order: 2,
   units: [
     {
@@ -76,6 +81,7 @@ const mindfulnessPillar: Tracker = {
   color: '#EFC002',
   resourceType: 'Procedure',
   code: 'self-care',
+  system: TRACKER_PILLAR_CODE_SYSTEM,
   order: 3,
   units: [
     {
@@ -97,6 +103,7 @@ const sleepPillar: Tracker = {
   icon: 'moon',
   resourceType: 'Procedure',
   code: 'code',
+  system: TRACKER_PILLAR_CODE_SYSTEM,
   order: 4,
   units: [
     {
@@ -117,6 +124,7 @@ const schoolPillar: Tracker = {
   icon: 'book-open',
   resourceType: 'Procedure',
   code: 'school',
+  system: TRACKER_PILLAR_CODE_SYSTEM,
   color: '#00A7D4',
   order: 5,
   units: [
@@ -132,7 +140,7 @@ const schoolPillar: Tracker = {
 };
 
 storiesOf('PillarsTile', module)
-  .addDecorator(
+  .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator({
       trackers: [
         nutritionPillar,
@@ -141,12 +149,11 @@ storiesOf('PillarsTile', module)
         sleepPillar,
         schoolPillar,
       ],
-    }),
+    })(storyFn, context),
   )
+  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => (
-    <PillarsTile
-      onOpenDetails={action('onOpenDetails')}
-      onSaveNewValueOverride={action('onSaveNewValueOverride')}
+    <IconProvider
       icons={
         boolean('Use Custom Icons', false)
           ? {
@@ -160,7 +167,12 @@ storiesOf('PillarsTile', module)
             }
           : {}
       }
-    />
+    >
+      <PillarsTile
+        onOpenDetails={action('onOpenDetails')}
+        onSaveNewValueOverride={action('onSaveNewValueOverride')}
+      />
+    </IconProvider>
   ))
   .add('Custom Background', () => (
     <PillarsTile

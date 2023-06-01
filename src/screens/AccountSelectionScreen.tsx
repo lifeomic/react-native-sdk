@@ -1,19 +1,16 @@
 import React, { useCallback } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { tID } from '../common/testID';
 import { Account } from '../hooks/useAccounts';
 import { SettingsStackScreenProps } from '../navigators/types';
+import { createStyles } from '../components';
+import { useStyles } from '../hooks';
 
 export const AccountSelectionScreen = ({
   navigation,
 }: SettingsStackScreenProps<'Settings/AccountSelection'>) => {
+  const { styles } = useStyles(defaultStyles);
   const { accountsWithProduct, setActiveAccountId } = useActiveAccount();
   const selectAccount = useCallback(
     (selectedAccount: Account) => async () => {
@@ -28,10 +25,10 @@ export const AccountSelectionScreen = ({
   return (
     <View testID={tID('acounts-screen-container')} style={styles.container}>
       <ScrollView style={styles.scroll}>
-        <View style={styles.accountsWrapper}>
+        <View style={styles.content}>
           {accountsWithProduct?.map((account) => (
             <TouchableOpacity
-              style={styles.accountButton}
+              style={styles.button}
               onPress={selectAccount(account)}
               key={account.id}
               testID={tID(`select-account-${account.id}`)}
@@ -46,7 +43,7 @@ export const AccountSelectionScreen = ({
   );
 };
 
-const styles = StyleSheet.create({
+const defaultStyles = createStyles('AccountSelection', () => ({
   container: {
     flex: 1,
     paddingHorizontal: 28,
@@ -54,11 +51,16 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
   },
-  accountsWrapper: {
+  content: {
     marginTop: 28,
     paddingHorizontal: 28,
   },
-  accountButton: {
+  button: {
     marginBottom: 28,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

@@ -13,11 +13,16 @@ import {
   ToggleWearableResult,
   WearableIntegration,
   WearableIntegrationStatus,
+  WearableStateSyncType,
 } from '../../../../src/components/Wearables/WearableTypes';
 import { Button } from 'react-native';
+import { BrandConfigProvider } from '../../../../src/components/BrandConfigProvider';
 
 storiesOf('Wearable Row', module)
   .addDecorator(withKnobs)
+  .addDecorator((storyFn) => (
+    <BrandConfigProvider>{storyFn()}</BrandConfigProvider>
+  ))
   .add('default', () => <DefaultView />)
   .add('disabled', () => <WearableRow {...baseProps} disabled={true} />)
   .add('needs auth', () => (
@@ -38,6 +43,27 @@ storiesOf('Wearable Row', module)
       }}
     />
   ))
+  .add('backfill', () => {
+    const hasSyncTypes = boolean('Has Sync Types', true);
+    const backfillSucceeds = boolean('Simulate Backfill Success', true);
+
+    return (
+      <WearableRow
+        {...baseProps}
+        wearable={{
+          ...exampleWearable,
+          syncTypes: hasSyncTypes ? [WearableStateSyncType.BodyMass] : [],
+          status: WearableIntegrationStatus.NeedsAuthorization,
+        }}
+        isBackfillEnabled
+        onBackfillWearable={() => {
+          return new Promise((r) => {
+            setTimeout(() => r(backfillSucceeds), 800);
+          });
+        }}
+      />
+    );
+  })
   .add('custom switch row', () => {
     interface CustomSwitchRowProps extends Omit<SwitchRowProps, 'title'> {
       /*
@@ -116,18 +142,21 @@ interface Props {
 const DefaultView: FC<Props> = (props) => {
   const [enabled, setEnabled] = useState(false);
 
-  const onToggleWearable = async (ehrId: string, enabled: boolean) => {
-    const result = rowActions.onToggleWearable(ehrId, enabled);
-    setEnabled(enabled);
+  const onToggleWearable = async (ehrId: string, newEnabledStatus: boolean) => {
+    const result = rowActions.onToggleWearable(ehrId, newEnabledStatus);
+    setEnabled(newEnabledStatus);
     return result;
   };
 
   const onToggleBackgroundSync = async (
     enabledWearable: WearableIntegration,
-    enabled: boolean,
+    newEnabledStatus: boolean,
   ) => {
-    const result = rowActions.onToggleBackgroundSync(enabledWearable, enabled);
-    setEnabled(enabled);
+    const result = rowActions.onToggleBackgroundSync(
+      enabledWearable,
+      newEnabledStatus,
+    );
+    setEnabled(newEnabledStatus);
     return result;
   };
 

@@ -18,8 +18,8 @@ export const SelectorRow: FC<SelectorRowProps> = (props) => {
   const { styles } = useStyles(defaultStyles);
 
   const _onSelected = useCallback(
-    (id: string) => () => {
-      onSelected(id);
+    (selectedId: string) => () => {
+      onSelected(selectedId);
     },
     [onSelected],
   );

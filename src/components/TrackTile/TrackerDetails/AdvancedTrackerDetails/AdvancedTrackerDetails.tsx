@@ -1,19 +1,12 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
-  StyleSheet,
   ImageSourcePropType,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
 import i18n, { Trans, t } from '../../../../../lib/i18n';
-import {
-  NamedStyles,
-  StylesProp,
-  useStyleOverrides,
-  Text,
-  useFontOverrides,
-} from '../../styles';
+import { Text, useFontOverrides } from '../../styles';
 import {
   Tracker,
   TrackerValue,
@@ -32,7 +25,13 @@ import {
   getStoredUnitType,
 } from '../../util/convert-value';
 import { numberFormatters } from '../../formatters';
-import { addDays, endOfToday, startOfToday, isBefore } from 'date-fns';
+import {
+  addDays,
+  startOfToday,
+  isBefore,
+  startOfDay,
+  endOfDay,
+} from 'date-fns';
 import { toFhirResource } from '../to-fhir-resource';
 import { throttle, flattenDepth } from 'lodash';
 import { notifier } from '../../services/EmitterService';
@@ -44,8 +43,8 @@ import { isCodeEqual } from '../../util/is-code-equal';
 import { useRecentCodedValues } from '../../hooks/useRecentCodedValues';
 import { DatePicker } from '../DatePicker';
 import { unitDisplay as baseUnitDisplay } from '../unit-display';
-
-export interface Styles extends NamedStyles, StylesProp<typeof defaultStyles> {}
+import { createStyles } from '../../../BrandConfigProvider';
+import { useStyles } from '../../../../hooks';
 
 export type AdvancedTrackerDetailsProps = {
   tracker: Tracker;
@@ -55,6 +54,7 @@ export type AdvancedTrackerDetailsProps = {
   onEditValue: (value: TrackerValue) => void;
   children?: React.ReactNode;
   editsDisabledAfterNumberOfDays?: number;
+  referenceDate?: Date;
 };
 
 const { numberFormat } = numberFormatters;
@@ -75,14 +75,28 @@ const extractCodeImage = (
 
 export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
   const { children, editsDisabledAfterNumberOfDays = 7 } = props;
-  const { tracker, icons = {}, valuesContext, onEditValue, onError } = props;
+  const {
+    tracker,
+    icons = {},
+    valuesContext,
+    onEditValue,
+    onError,
+    referenceDate: incomingReferenceDate,
+  } = props;
   const defaultUnit = getStoredUnitType(tracker);
-  const styles = useStyleOverrides(defaultStyles);
+  const { styles } = useStyles(defaultStyles);
   const fontWeights = useFontOverrides();
   const svc = useTrackTileService();
-  const [dateRange, setDateRange] = useState({
-    start: startOfToday(),
-    end: endOfToday(),
+  const [dateRange, setDateRange] = useState(() => {
+    const referenceDate =
+      incomingReferenceDate && isBefore(incomingReferenceDate, new Date())
+        ? incomingReferenceDate
+        : new Date();
+
+    return {
+      start: startOfDay(referenceDate),
+      end: endOfDay(referenceDate),
+    };
   });
   const {
     trackerValues: [activeValues],
@@ -130,13 +144,13 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
          * layer of codes under the metric (Custom C/S) and merge the
          * underlying Code Trees.
          */
-        const relationships = flattenDepth(
+        const newRelationships = flattenDepth(
           res?.map((code) => code.specializedBy) ?? [],
         );
 
         setRelationships(
-          relationships.length
-            ? relationships
+          newRelationships.length
+            ? newRelationships
             : [
                 {
                   ...tracker,
@@ -147,7 +161,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         );
         setCodings(
           flattenDepth(
-            relationships?.map((code) => [
+            newRelationships?.map((code) => [
               code,
               ...(code.specializedBy?.map((code2) => [
                 code2,
@@ -159,42 +173,94 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         );
       })
       .catch(() => setRelationships([]));
-  }, [tracker.code, svc.fetchOntology]);
+  }, [tracker.code, svc.fetchOntology, svc, tracker]);
 
-  const addTrackerResource = useCallback(
+  const addTrackerResource = useMemo(
     // This makes it so the user doesn't add too many records at once
-    throttle(async (code: Code, value = quickAddAmount) => {
-      if (editsDisabled) {
-        return;
-      }
+    () =>
+      throttle(async (code: Code, value = quickAddAmount) => {
+        if (editsDisabled) {
+          return;
+        }
 
-      try {
-        const res = await svc.upsertTrackerResource(
-          valuesContext,
-          toFhirResource(
-            tracker.resourceType,
-            {
-              ...svc,
-              createDate: dateRange.start,
-              value,
-              tracker,
-            },
-            code,
-          ),
-        );
-        notifier.emit('valuesChanged', [
-          {
+        try {
+          const res = await svc.upsertTrackerResource(
             valuesContext,
-            metricId,
-            tracker: res,
-            saveToRecent: false, // don't add to recent items. It is already there or is a root option. LX has this functionality
-          },
-        ]);
-      } catch (e) {
-        onError?.(e);
-      }
-    }, 800),
-    [tracker, svc, dateRange.start, editsDisabled, quickAddAmount],
+            toFhirResource(
+              tracker.resourceType,
+              {
+                ...svc,
+                createDate: dateRange.start,
+                value,
+                tracker,
+              },
+              code,
+            ),
+          );
+          notifier.emit('valuesChanged', [
+            {
+              valuesContext,
+              metricId,
+              tracker: res,
+              saveToRecent: false, // don't add to recent items. It is already there or is a root option. LX has this functionality
+            },
+          ]);
+        } catch (e) {
+          onError?.(e);
+        }
+      }, 800),
+    [
+      quickAddAmount,
+      editsDisabled,
+      svc,
+      valuesContext,
+      tracker,
+      dateRange.start,
+      metricId,
+      onError,
+    ],
+  );
+
+  const trackerValue = useCallback(
+    (valueText?: string) => (
+      <Text
+        accessibilityLabel={t('track-tile.tracker-value-value', {
+          defaultValue: 'Tracker value, {{value}}',
+          value: currentValue,
+        })}
+        style={[fontWeights.regular, styles.trackerValueText]}
+      >
+        {valueText}
+      </Text>
+    ),
+    [currentValue, fontWeights.regular, styles.trackerValueText],
+  );
+
+  const trackerDivider = useCallback(
+    (dividerText?: string) => (
+      <Text
+        accessibilityElementsHidden
+        style={[fontWeights.regular, styles.trackerValueDividerText]}
+      >
+        {dividerText}
+      </Text>
+    ),
+    [fontWeights.regular, styles.trackerValueDividerText],
+  );
+
+  const trackerTarget = useCallback(
+    (targetText?: string) => (
+      <Text
+        accessibilityLabel={t('track-tile.tracker-value-value', {
+          defaultValue: 'Tracker target, {{value}}',
+          value: target,
+        })}
+        style={[fontWeights.semibold, styles.trackerTargetText]}
+      >
+        {targetText}
+      </Text>
+    ),
+    [fontWeights.semibold, styles.trackerTargetText, target],
   );
 
   return (
@@ -211,7 +277,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
       <Trans
         i18n={i18n}
         parent={TransTextParent}
-        style={styles.advancedDetailsHorizontalRow}
+        style={styles.horizontalRowContainer}
         i18nKey="track-tile.advanced-tracker-value"
         ns="track-tile-ui"
         defaults="<value>{{value}}</value><divider>/</divider><target>{{target}}</target>"
@@ -220,42 +286,9 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
           target,
         }}
         components={{
-          value: ((valueText?: string) => (
-            <Text
-              accessibilityLabel={t('track-tile.tracker-value-value', {
-                defaultValue: 'Tracker value, {{value}}',
-                value: currentValue,
-              })}
-              style={[fontWeights.regular, styles.advancedDetailsTrackerValue]}
-            >
-              {valueText}
-            </Text>
-          ))(),
-          divider: ((dividerText?: string) => (
-            <Text
-              accessibilityElementsHidden
-              style={[
-                fontWeights.regular,
-                styles.advancedDetailsTrackerValueDivider,
-              ]}
-            >
-              {dividerText}
-            </Text>
-          ))(),
-          target: ((targetText?: string) => (
-            <Text
-              accessibilityLabel={t('track-tile.tracker-value-value', {
-                defaultValue: 'Tracker target, {{value}}',
-                value: target,
-              })}
-              style={[
-                fontWeights.semibold,
-                styles.advancedDetailsTrackerTarget,
-              ]}
-            >
-              {targetText}
-            </Text>
-          ))(),
+          value: ((valueText?: string) => trackerValue(valueText))(),
+          divider: ((dividerText?: string) => trackerDivider(dividerText))(),
+          target: ((targetText?: string) => trackerTarget(targetText))(),
         }}
       />
 
@@ -282,22 +315,17 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
           </HorizontalScrollLayout>
 
           {!!recentValues.length && (
-            <View style={styles.advancedDetailsRecentHistoryContainer}>
+            <View style={styles.recentHistoryContainer}>
               <Text
-                style={[
-                  fontWeights.semibold,
-                  styles.advancedDetailsRecentHistoryTitle,
-                ]}
+                style={[fontWeights.semibold, styles.recentHistoryTitleText]}
               >
                 {t('track-tile.add-recent', 'Add Recent')}
               </Text>
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={
-                  styles.advancedDetailsRecentHistoryScrollViewContent
-                }
-                style={styles.advancedDetailsRecentHistoryScrollView}
+                contentContainerStyle={styles.recentHistoryScrollViewContent}
+                style={styles.recentHistoryScrollView}
               >
                 {recentValues.map(({ code, value }) => {
                   const isProcedure = tracker.resourceType === 'Procedure';
@@ -318,13 +346,13 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                         key={`${code.system}|${code.code}`}
                         style={[
                           { backgroundColor: color },
-                          styles.advancedDetailsRecentHistoryPill,
+                          styles.recentHistoryPill,
                         ]}
                       >
                         <Text
                           style={[
                             fontWeights.semibold,
-                            styles.advancedDetailsRecentHistoryPillText,
+                            styles.recentHistoryPillText,
                           ]}
                         >
                           {t('track-tile.recent-item-text', {
@@ -362,32 +390,30 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         />
       ))}
 
-      <View style={styles.advancedDetailsSection}>
-        <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
+      <View style={styles.section}>
+        <Text style={[fontWeights.bold, styles.sectionPrefixText]}>
           {t('track-tile.science-of-prefix', 'The science of')}
         </Text>
-        <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
+        <Text style={[fontWeights.bold, styles.sectionTitleText]}>
           {tracker.name}
         </Text>
-        <Text style={styles.advancedDetailsDescription}>
-          {tracker.description}
-        </Text>
+        <Text style={styles.descriptionText}>{tracker.description}</Text>
       </View>
 
       {children}
 
-      <View style={styles.advancedDetailsSection}>
-        <Text style={[fontWeights.bold, styles.advancedDetailsSectionPrefix]}>
+      <View style={styles.section}>
+        <Text style={[fontWeights.bold, styles.sectionPrefixText]}>
           {t('track-tile.weekly-metrics-prefix', 'Weekly Metrics')}
         </Text>
-        <Text style={[fontWeights.bold, styles.advancedDetailsSectionTitle]}>
+        <Text style={[fontWeights.bold, styles.sectionTitleText]}>
           {t('track-tile.total-daily-units', {
             defaultValue: 'Total Daily {{unit}}',
             unit: unitDisplay(targetAmount, true),
           })}
         </Text>
 
-        <View style={styles.advancedDetailsChartContainer}>
+        <View style={styles.chartContainer}>
           <TrackerHistoryChart
             variant="flat"
             stepperPosition="bottom"
@@ -398,6 +424,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
             tracker={tracker}
             valuesContext={valuesContext}
             dateRangeType="calendarWeek"
+            referenceDate={dateRange.start}
           />
         </View>
       </View>
@@ -405,64 +432,64 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
   );
 };
 
-const defaultStyles = StyleSheet.create({
-  advancedDetailsHorizontalRow: {
+const defaultStyles = createStyles('', () => ({
+  horizontalRowContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginVertical: 16,
     alignItems: 'center',
   },
-  advancedDetailsTrackerValue: {
+  trackerValueText: {
     fontSize: 48,
   },
-  advancedDetailsTrackerValueDivider: {
+  trackerValueDividerText: {
     fontSize: 48,
     marginHorizontal: 12,
   },
-  advancedDetailsTrackerTarget: {
+  trackerTargetText: {
     fontSize: 24,
   },
-  advancedDetailsSection: {
+  section: {
     padding: 35,
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
     borderBottomWidth: 1,
   },
-  advancedDetailsSectionPrefix: {
+  sectionPrefixText: {
     textTransform: 'uppercase',
     fontSize: 12,
     color: '#52566A',
   },
-  advancedDetailsSectionTitle: {
+  sectionTitleText: {
     fontSize: 34,
     color: '#35383D',
     lineHeight: 40.8,
   },
-  advancedDetailsDescription: {
+  descriptionText: {
     fontSize: 14,
     lineHeight: 21,
     marginTop: 24,
   },
-  advancedDetailsChartContainer: {
+  chartContainer: {
     marginTop: 30,
   },
-  advancedDetailsRecentHistoryContainer: {
+  recentHistoryContainer: {
     paddingHorizontal: 35,
     paddingBottom: 20,
   },
-  advancedDetailsRecentHistoryTitle: {
+  recentHistoryTitleText: {
     fontSize: 14,
     color: '#35383D',
     marginBottom: 12,
     lineHeight: 21,
   },
-  advancedDetailsRecentHistoryScrollView: {
+  recentHistoryScrollView: {
     overflow: 'visible',
     marginHorizontal: -35,
   },
-  advancedDetailsRecentHistoryScrollViewContent: {
+  recentHistoryScrollViewContent: {
     paddingHorizontal: 35,
   },
-  advancedDetailsRecentHistoryPill: {
+  recentHistoryPill: {
     flexDirection: 'row',
     alignSelf: 'flex-start',
     paddingHorizontal: 14,
@@ -472,7 +499,12 @@ const defaultStyles = StyleSheet.create({
     minWidth: 65,
     marginEnd: 8,
   },
-  advancedDetailsRecentHistoryPillText: {
+  recentHistoryPillText: {
     color: 'white',
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}

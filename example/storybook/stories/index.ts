@@ -1,11 +1,12 @@
 import './BrandConfigProvider/BrandConfigProvider.stories';
 import './CustomAppTileScreen.stories';
-import './ExampleApp.stories';
+import './ExampleApp/ExampleApp.stories';
 import './NoInternetToastProvider.stories';
 import './Notifications/NotificationsScreen.stories';
 import './OAuth.stories';
 import './ActivityIndicatorView.stories';
 import './TrackTile/AdvancedTrackerDetails.stories';
+import './TrackTile/Indicator.stories';
 import './TrackTile/AdvancedTrackerEditor.stories';
 import './TrackTile/ManageTrackers.stories';
 import './TrackTile/Pillar.stories';

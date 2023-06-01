@@ -13,5 +13,19 @@ module.exports = {
         patterns: ['src/*'],
       },
     ],
+    'no-alert': [
+      'off',
+      { 
+        paths: ['example/storybook'],
+        patterns: ['example/storybook/*'],
+      },
+    ],
+    'react-native/no-inline-styles': [
+    'off',
+    { 
+      paths: ['example/storybook'],
+      patterns: ['example/storybook/*'],
+    }
+    ],
   },
 };

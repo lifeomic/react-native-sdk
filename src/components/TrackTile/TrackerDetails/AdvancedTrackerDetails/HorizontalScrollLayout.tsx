@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  StyleSheet,
   View,
   ImageSourcePropType,
   ViewProps,
@@ -8,6 +7,8 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
+import { createStyles } from '../../../BrandConfigProvider';
+import { useStyles } from '../../../../hooks';
 
 export interface QuickAddProps {
   title: string;
@@ -23,7 +24,51 @@ export const itemMinWidth = Math.floor(
   windowWidth / (windowWidth > sizeCutoff ? 2.5 : 2),
 );
 
-const styles = StyleSheet.create({
+const renderItem = (
+  count: number,
+  styles: NamedStylesProp<typeof defaultStyles>,
+) => {
+  const listItem = ({ item, index }: { item: JSX.Element; index: number }) => {
+    let layoutStyle;
+    if (index === 0) {
+      layoutStyle = styles.leftItem;
+    } else if (index === count - 1) {
+      layoutStyle = styles.rightItem;
+    } else {
+      layoutStyle = styles.centerItem;
+    }
+    return (
+      <View style={[layoutStyle, { minWidth: itemMinWidth }]}>{item}</View>
+    );
+  };
+
+  return listItem;
+};
+
+const HorizontalScrollLayout: React.FC<ViewProps> = (props) => {
+  const { styles } = useStyles(defaultStyles);
+  const data = React.Children.map(props.children, (item) => (
+    <View style={styles.tile}>{item}</View>
+  ));
+
+  return (
+    <FlatList
+      horizontal
+      contentContainerStyle={[
+        styles.container,
+        data?.length === 1 && styles.containerSingleItem,
+        props.style,
+      ]}
+      style={styles.list}
+      data={data}
+      renderItem={renderItem(data?.length || 0, styles)}
+      showsHorizontalScrollIndicator={false}
+      scrollEnabled={(data?.length || 0) > 1}
+    />
+  );
+};
+
+const defaultStyles = createStyles('HorizontalScrollLayout', () => ({
   container: {
     paddingHorizontal: 12,
     marginVertical: 20,
@@ -63,46 +108,11 @@ const styles = StyleSheet.create({
       },
     }),
   },
-});
+}));
 
-const renderItem = (count: number) => {
-  const listItem = ({ item, index }: { item: JSX.Element; index: number }) => {
-    let layoutStyle;
-    if (index === 0) {
-      layoutStyle = styles.leftItem;
-    } else if (index === count - 1) {
-      layoutStyle = styles.rightItem;
-    } else {
-      layoutStyle = styles.centerItem;
-    }
-    return (
-      <View style={[layoutStyle, { minWidth: itemMinWidth }]}>{item}</View>
-    );
-  };
-
-  return listItem;
-};
-
-const HorizontalScrollLayout: React.FC<ViewProps> = (props) => {
-  const data = React.Children.map(props.children, (item) => (
-    <View style={styles.tile}>{item}</View>
-  ));
-
-  return (
-    <FlatList
-      horizontal
-      contentContainerStyle={[
-        styles.container,
-        data?.length === 1 && styles.containerSingleItem,
-        props.style,
-      ]}
-      style={styles.list}
-      data={data}
-      renderItem={renderItem(data?.length || 0)}
-      showsHorizontalScrollIndicator={false}
-      scrollEnabled={(data?.length || 0) > 1}
-    />
-  );
-};
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
 
 export default HorizontalScrollLayout;

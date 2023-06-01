@@ -705,7 +705,7 @@ describe('Tracker Advanced Details', () => {
 
     await waitFor(() => expect(spy).toHaveBeenCalledTimes(1));
 
-    expect(
+    await expect(
       async () => await new Promise(notifySaveEditTrackerValue),
     ).rejects.toThrowError('Could not delete the value');
   });
@@ -804,7 +804,7 @@ describe('Tracker Advanced Details', () => {
 
     await waitFor(() => expect(spy).toHaveBeenCalledTimes(1));
 
-    expect(
+    await expect(
       async () => await new Promise(notifySaveEditTrackerValue),
     ).rejects.toThrowError(expectedError);
   });

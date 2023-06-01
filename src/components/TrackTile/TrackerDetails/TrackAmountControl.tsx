@@ -1,30 +1,36 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { StylesProp, useStyleOverrides, Text, fontWeights } from '../styles';
+import { View, TouchableOpacity, TextInput } from 'react-native';
+import { Text, fontWeights } from '../styles';
 import { t } from '../../../../lib/i18n';
 import { tID } from '../common/testID';
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
-import { useFlattenedStyles } from '../hooks/useFlattenedStyles';
 import { convertToISONumber } from '../util/convert-value';
 import { numberFormatters } from '../formatters';
+import { createStyles } from '../../BrandConfigProvider';
+import { useStyles } from '../../../hooks';
 
 type Props = {
   color: string;
   value: number;
   onChange: (value: number) => void;
+  saveInProgress: boolean;
 };
 const { numberFormat } = numberFormatters;
-const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
-  const styles = useStyleOverrides(defaultStyles);
-  const fonts = useFlattenedStyles(styles, [
-    'trackAmountControlValueFontSizeLarge',
-    'trackAmountControlValueFontSizeMedium',
-    'trackAmountControlValueFontSizeSmall',
-  ]);
+const TrackAmountControl: FC<Props> = ({
+  color,
+  value,
+  onChange,
+  saveInProgress,
+}) => {
+  const { styles } = useStyles(defaultStyles);
 
   const [currentValue, setCurrentValue] = useState(numberFormat(value));
 
-  useEffect(() => setCurrentValue(numberFormat(value)), [value]);
+  useEffect(() => {
+    if (!saveInProgress) {
+      setCurrentValue(numberFormat(value));
+    }
+  }, [value, saveInProgress]);
 
   const submitChange = useCallback(() => {
     const newValue = coerceToNonnegativeValue(
@@ -33,18 +39,18 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
     );
     onChange(newValue);
     setCurrentValue(numberFormat(newValue));
-  }, [currentValue, value]);
+  }, [currentValue, onChange, value]);
 
-  let { fontSize } = fonts.trackAmountControlValueFontSizeLarge;
+  let { fontSize } = styles.valueLargeSizeText ?? {};
 
   if (value.toString().length === 5) {
-    ({ fontSize } = fonts.trackAmountControlValueFontSizeMedium);
+    ({ fontSize } = styles.valueMediumSizeText ?? {});
   } else if (value.toString().length > 5) {
-    ({ fontSize } = fonts.trackAmountControlValueFontSizeSmall);
+    ({ fontSize } = styles.valueSmallSizeText ?? {});
   }
 
   return (
-    <View style={styles.trackAmountControlContainer}>
+    <View style={styles.container}>
       <TouchableOpacity
         testID={tID('decrement-tracker-value-button')}
         accessibilityLabel={t(
@@ -52,10 +58,18 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
           'Decrement tracker value',
         )}
         accessibilityRole="button"
-        onPress={() => value > 0 && onChange(value - 1)}
+        onPress={() => {
+          const asString = addToNumberString(currentValue, -1, false) as string;
+          const asNumber = addToNumberString(currentValue, -1, true) as number;
+          if (asNumber > -1) {
+            setCurrentValue(asString);
+            onChange(asNumber);
+          }
+        }}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
+        style={styles.unaryButton}
       >
-        <Text variant="light" style={styles.trackAmountControlUnaryButton}>
+        <Text variant="light" style={styles.unaryButtonText}>
           {t('track-tile.dash-symbol', '-')}
         </Text>
       </TouchableOpacity>
@@ -65,12 +79,7 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
           defaultValue: 'Tracker value, {{value}}',
           value,
         })}
-        style={[
-          { color },
-          styles.trackAmountControlValue,
-          fontWeights.bold,
-          { fontSize },
-        ]}
+        style={[{ color }, styles.valueInput, fontWeights.bold, { fontSize }]}
         keyboardType="numeric"
         value={currentValue}
         returnKeyType="done"
@@ -86,10 +95,16 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
           'Increment tracker value',
         )}
         accessibilityRole="button"
-        onPress={() => onChange(value + 1)}
+        onPress={() => {
+          const asString = addToNumberString(currentValue, 1, false) as string;
+          const asNumber = addToNumberString(currentValue, 1, true) as number;
+          setCurrentValue(asString);
+          onChange(asNumber);
+        }}
         hitSlop={{ left: 18, right: 18, top: 18, bottom: 18 }}
+        style={styles.unaryButton}
       >
-        <Text variant="light" style={styles.trackAmountControlUnaryButton}>
+        <Text variant="light" style={styles.unaryButtonText}>
           {t('track-tile.plus-symbol', '+')}
         </Text>
       </TouchableOpacity>
@@ -97,52 +112,60 @@ const TrackAmountControl: FC<Props> = ({ color, value, onChange }) => {
   );
 };
 
-declare module './TrackerDetails' {
-  interface Styles extends StylesProp<typeof defaultStyles> {}
-}
+const addToNumberString = (
+  numberString: string,
+  numberToAdd: number,
+  returnNumber: boolean,
+) => {
+  const number = Number(convertToISONumber(numberString));
+  const result = number + numberToAdd;
+  return returnNumber ? result : numberFormat(result);
+};
 
-const defaultStyles = StyleSheet.create({
-  trackAmountControlContainer: {
-    marginTop: -37.5,
-    borderRadius: 50,
-    width: '55%',
-    maxWidth: 220,
-    borderColor: '#D4DCE3',
-    borderWidth: 1,
-    height: 75,
-    overflow: 'hidden',
-    elevation: 1,
-    shadowColor: '#000000',
-    shadowOpacity: 0.1,
-    shadowOffset: { height: 4, width: 0 },
-    shadowRadius: 34,
-    backgroundColor: 'white',
+const defaultStyles = createStyles('TrackAmountControl', (theme) => ({
+  container: {
+    marginTop: 30,
+    width: '80%',
+    backgroundColor: theme.colors.elevation.level1,
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignContent: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 24,
   },
-  trackAmountControlUnaryButton: {
+  unaryButton: {
+    backgroundColor: theme.colors.background,
+    borderRadius: 32,
+    height: 60,
+    width: 60,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  unaryButtonText: {
     color: 'black',
     textAlign: 'center',
-    fontSize: 34,
-    letterSpacing: 0.23,
-    minWidth: 22,
-    height: 44,
+    textAlignVertical: 'center',
+    aspectRatio: 1,
+    fontSize: 30,
+    fontWeight: 'bold',
   },
-  trackAmountControlValue: {
+  valueInput: {
     flex: 1,
     textAlign: 'center',
   },
-  trackAmountControlValueFontSizeLarge: {
+  valueLargeSizeText: {
     fontSize: 40,
   },
-  trackAmountControlValueFontSizeMedium: {
+  valueMediumSizeText: {
     fontSize: 35,
   },
-  trackAmountControlValueFontSizeSmall: {
+  valueSmallSizeText: {
     fontSize: 26,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
 
 export default TrackAmountControl;

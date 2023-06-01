@@ -10,7 +10,6 @@ import { Tracker } from '../services/TrackTileService';
 import Indicator from '../icons/indicator';
 import { Text } from '../styles/Text';
 import { tID } from '../common/testID';
-import { SvgProps } from 'react-native-svg';
 import { useIcons, createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
 
@@ -19,16 +18,15 @@ type Props = TouchableHighlightProps & {
   isBeingDragged?: boolean;
   isDraggable?: boolean;
   endAdornment?: React.ReactNode;
-  icons?: Record<string, React.ComponentType<SvgProps>>;
 };
 
 export const ManageTrackerRow: FC<Props> = (props) => {
-  const { tracker, endAdornment, icons, ...remainingProps } = props;
+  const { tracker, endAdornment, ...remainingProps } = props;
   const { isBeingDragged, isDraggable, ...highlightProps } = remainingProps;
-  const { Menu, ChevronRight, ChevronLeft } = useIcons();
   const { styles } = useStyles(defaultStyles);
   const inactive = !tracker.metricId;
   const id = tracker.metricId || tracker.id;
+  const { Menu, ChevronRight, ChevronLeft } = useIcons();
 
   return (
     <TouchableHighlight {...highlightProps}>
@@ -39,8 +37,8 @@ export const ManageTrackerRow: FC<Props> = (props) => {
         >
           <View style={[styles.icon, inactive && styles.iconInactive]}>
             <Indicator
-              CustomIcon={icons?.[id]}
-              name={tracker.icon}
+              name={id}
+              fallbackName={tracker.icon}
               color={tracker.color}
             />
           </View>
@@ -94,7 +92,7 @@ export const ManageTrackerRow: FC<Props> = (props) => {
   );
 };
 
-const defaultStyles = createStyles('ManageTrackers', () => ({
+const defaultStyles = createStyles('ManageTrackersRow', () => ({
   container: {
     flexDirection: 'row',
     paddingHorizontal: 35,

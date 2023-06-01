@@ -1,20 +1,28 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, Linking, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { WearablesView } from '../components/Wearables';
 import { useWearables } from '../hooks/useWearables';
-import { SyncTypeSettings } from '../components/Wearables/WearableTypes';
+import {
+  SyncTypeSettings,
+  WearableIntegration,
+} from '../components/Wearables/WearableTypes';
 import { getBundleId } from 'react-native-device-info';
 import { useWearableLifecycleHooks } from '../components/Wearables/WearableLifecycleProvider';
+import { useWearableBackfill } from '../hooks/useWearableBackfill';
+import { createStyles } from '../components/BrandConfigProvider';
+import { useStyles } from '../hooks';
 
 export const openURL = (url: string) => {
   Linking.openURL(url);
 };
 
 const WearablesScreen = () => {
+  const { styles } = useStyles(defaultStyles);
   const { setWearableState, setSyncTypes, useWearableIntegrationsQuery } =
     useWearables();
   const { data, refetch, isLoading } = useWearableIntegrationsQuery();
-  const { onPostToggle } = useWearableLifecycleHooks();
+  const { onPostToggle, onBackfill } = useWearableLifecycleHooks();
+  const { enabledBackfillWearables, backfillEHR } = useWearableBackfill(data);
 
   const wearables = data?.items || [];
 
@@ -39,6 +47,19 @@ const WearablesScreen = () => {
     await setSyncTypes(settings);
     refetch();
   };
+
+  const handleBackfill = useCallback(
+    async (integration: WearableIntegration) => {
+      const res = await Promise.all([
+        backfillEHR(integration.ehrId),
+        onBackfill(integration),
+      ]);
+
+      return res.some((didBackfill) => didBackfill);
+    },
+    [onBackfill, backfillEHR],
+  );
+
   return (
     <View style={[styles.container]}>
       <WearablesView
@@ -48,17 +69,24 @@ const WearablesScreen = () => {
         onShowWearableAuth={openURL}
         onSyncTypeSelectionsUpdate={updateSyncTypeSettings}
         onToggleWearable={toggleWearable}
+        onBackfillWearable={handleBackfill}
         wearables={wearables}
+        enabledBackfillWearables={enabledBackfillWearables}
       />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const defaultStyles = createStyles('TrackTileSettingsScreen', () => ({
   container: {
     flex: 1,
     padding: 0,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
 
 export default WearablesScreen;

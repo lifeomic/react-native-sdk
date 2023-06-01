@@ -8,7 +8,7 @@ import {
   TRACKER_CODE_SYSTEM,
   Tracker,
 } from '../../services/TrackTileService';
-import { addDays, format } from 'date-fns';
+import { add, addDays, endOfWeek, format, startOfWeek } from 'date-fns';
 import { useRecentCodedValues } from '../../hooks/useRecentCodedValues';
 import { notifier } from '../../services/EmitterService';
 
@@ -99,7 +99,7 @@ describe('Tracker Advanced Details', () => {
     );
 
     expect(await findByText("Today's Servings")).toBeDefined();
-    expect(await findAllByText('1.5')).toHaveLength(2); // Total Value & Chart Value
+    expect(await findAllByText('1.5')).toHaveLength(2); // Chart Value
     expect(await findByText('42.5')).toBeDefined(); // Target Value
     expect(await findByText('The science of')).toBeDefined();
     expect(await findByText('Test Name')).toBeDefined();
@@ -294,6 +294,78 @@ describe('Tracker Advanced Details', () => {
     ).toBeDefined();
   });
 
+  it('should render from referenceDate when provided', async () => {
+    mockUseTrackerValues.mockReturnValue({
+      loading: false,
+      trackerValues: [{}],
+    } as any);
+
+    const upsertTrackerResource = jest.fn();
+    const fetchOntology = jest.fn().mockResolvedValue([]);
+    const onError = jest.fn();
+    const referenceDate = new Date('2023-03-17T03:24:00');
+
+    const { findByText } = render(
+      <AdvancedTrackerDetailsProvider
+        trackTileService={{ upsertTrackerResource, fetchOntology } as any}
+        tracker={
+          {
+            id: 'tracker-id',
+            metricId: 'metric-id',
+            resourceType: 'Observation',
+            units: [{ display: 'Servings', target: 5, unit: 'unit' }],
+          } as any
+        }
+        valuesContext={valuesContext}
+        onEditValue={jest.fn()}
+        onError={onError}
+        referenceDate={referenceDate}
+      />,
+    );
+
+    await findByText('Friday, March 17');
+    await findByText('Mar 13-Mar 19');
+  });
+
+  it('should NOT render from referenceDate in the future', async () => {
+    mockUseTrackerValues.mockReturnValue({
+      loading: false,
+      trackerValues: [{}],
+    } as any);
+
+    const upsertTrackerResource = jest.fn();
+    const fetchOntology = jest.fn().mockResolvedValue([]);
+    const onError = jest.fn();
+    const now = new Date();
+    const referenceDate = add(now, { months: 2 });
+
+    const { findByText } = render(
+      <AdvancedTrackerDetailsProvider
+        trackTileService={{ upsertTrackerResource, fetchOntology } as any}
+        tracker={
+          {
+            id: 'tracker-id',
+            metricId: 'metric-id',
+            resourceType: 'Observation',
+            units: [{ display: 'Servings', target: 5, unit: 'unit' }],
+          } as any
+        }
+        valuesContext={valuesContext}
+        onEditValue={jest.fn()}
+        onError={onError}
+        referenceDate={referenceDate}
+      />,
+    );
+
+    await findByText("Today's Servings");
+    await findByText(
+      `${format(startOfWeek(now, { weekStartsOn: 1 }), 'MMM d')}-${format(
+        endOfWeek(now, { weekStartsOn: 1 }),
+        'MMM d',
+      )}`,
+    );
+  });
+
   it('calls onEditValue when tapping on a value row', async () => {
     const trackerValue = {
       id: 'first-value',
@@ -326,7 +398,13 @@ describe('Tracker Advanced Details', () => {
             id: 'tracker-id',
             metricId: 'metric-id',
             resourceType: 'Observation',
-            units: [{ display: 'Serving of Fruit', target: 5, unit: 'unit' }],
+            units: [
+              {
+                display: 'Servings of Fruit',
+                target: 5,
+                unit: 'Serving of Fruit',
+              },
+            ],
           } as any
         }
         valuesContext={valuesContext}

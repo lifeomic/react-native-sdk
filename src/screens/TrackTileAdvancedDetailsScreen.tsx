@@ -6,7 +6,7 @@ export const AdvancedTrackerDetailsScreen = ({
   navigation,
   route: { params },
 }: HomeStackScreenProps<'Home/AdvancedTrackerDetails'>) => {
-  const { tracker, valuesContext } = params;
+  const { tracker, valuesContext, referenceDate } = params;
 
   React.useLayoutEffect(() =>
     navigation.setOptions({ headerTitle: tracker?.name }),
@@ -16,6 +16,7 @@ export const AdvancedTrackerDetailsScreen = ({
     <AdvancedTrackerDetails
       tracker={tracker}
       valuesContext={valuesContext}
+      referenceDate={referenceDate}
       onEditValue={(trackerValue) =>
         navigation.push('Home/AdvancedTrackerEditor', {
           tracker,

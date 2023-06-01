@@ -34,7 +34,7 @@ export const MockEnvironmentDecorator = ({
   } as FetchTrackerResponse,
 } = {}) => {
   mock.onGet(/\/track-tiles\/trackers.*/).reply(200, trackers);
-  mock.onPost('/graphql').reply((req) => {
+  mock.onPost('/v1/graphql').reply((req) => {
     const body = JSON.parse(req.data ?? '{}');
 
     if (body?.variables?.resource) {

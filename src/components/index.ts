@@ -7,3 +7,5 @@ export * from './OAuthLogoutButton';
 export * from './tiles/Tile';
 export * from './tiles/TilesList';
 export * from './Wearables';
+export * from './AppNavHeader';
+export * from './LogoHeader';
