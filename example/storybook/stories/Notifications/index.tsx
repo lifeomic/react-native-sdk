@@ -6,6 +6,7 @@ import {
   requestNotificationsPermissions,
 } from '../../../../src/common/Notifications';
 import { PushNotificationsContext } from '../../../../src/hooks/usePushNotifications';
+import { useActiveAccount, useHttpClient } from 'src';
 
 type EventType = 'notificationReceived' | 'notificationOpened';
 
@@ -57,7 +58,10 @@ const styles = StyleSheet.create({
 
 export const NotificationsScreen = () => {
   const pushNotificationsContext = useContext(PushNotificationsContext);
-  const { events, setEvents, httpClient, account } = pushNotificationsContext!;
+
+  const { events, setEvents } = pushNotificationsContext;
+  const { httpClient } = useHttpClient();
+  const { account } = useActiveAccount();
 
   const sendLocalNotification = () => {
     Notifications.postLocalNotification({

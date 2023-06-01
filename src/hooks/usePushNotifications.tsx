@@ -1,7 +1,10 @@
-import React, { createContext, useEffect, useState } from 'react';
-import { useHttpClient } from './useHttpClient';
-import { Account } from './useAccounts';
-import { useActiveAccount } from './useActiveAccount';
+import React, {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useEffect,
+  useState,
+} from 'react';
 import {
   getInitialNotification,
   onNotificationOpened,
@@ -9,20 +12,19 @@ import {
 } from '../../src/common';
 import { Platform } from 'react-native';
 import { Notifications } from 'react-native-notifications';
-import { AxiosInstance } from 'axios';
 
 interface PushNotificationsStateType {
   events: Event | { type: string; notification: Notification }[];
-  setEvents: React.Dispatch<
-    React.SetStateAction<Event | { type: string; notification: Notification }[]>
+  setEvents: Dispatch<
+    SetStateAction<Event | { type: string; notification: Notification }[]>
   >;
-  httpClient: AxiosInstance;
-  account: Account | undefined;
 }
 
-export const PushNotificationsContext = createContext<
-  PushNotificationsStateType | undefined
->(undefined);
+export const PushNotificationsContext =
+  createContext<PushNotificationsStateType>({
+    events: [],
+    setEvents: () => [],
+  });
 
 export function PushNotificationsProvider({
   children,
@@ -32,8 +34,6 @@ export function PushNotificationsProvider({
   const [notificationEvents, setNotificationEvents] = useState<
     Event | { type: string; notification: Notification }[]
   >([]);
-  const { httpClient } = useHttpClient();
-  const { account } = useActiveAccount();
 
   useEffect(() => {
     // Handler called when a notification is pressed
@@ -85,8 +85,6 @@ export function PushNotificationsProvider({
   const value: PushNotificationsStateType = {
     events: notificationEvents,
     setEvents: setNotificationEvents,
-    httpClient,
-    account,
   };
 
   return (
