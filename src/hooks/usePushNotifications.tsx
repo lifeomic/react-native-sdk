@@ -17,8 +17,10 @@ interface SharedStateType {
 }
 
 interface PushNotificationsStateType {
-  events: Event[];
-  setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
+  events: Event | { type: string; notification: Notification }[];
+  setEvents: React.Dispatch<
+    React.SetStateAction<Event | { type: string; notification: Notification }[]>
+  >;
   httpClient: AxiosInstance;
   account: Account | undefined;
 }
@@ -33,7 +35,9 @@ export function PushNotificationsProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [events, setEvents] = useState<any[]>([]); //TODO - fix type (something like the above)
+  const [events, setEvents] = useState<
+    Event | { type: string; notification: Notification }[]
+  >([]); //TODO - fix type (something like the above)
   const { httpClient } = useHttpClient();
   const { account } = useActiveAccount();
 
@@ -42,6 +46,7 @@ export function PushNotificationsProvider({
     onNotificationOpened((notification) => {
       setEvents((events) => [
         { type: 'notificationOpened', notification },
+        //@ts-ignore - for some reason typescript is complaining about events not being an iterable object
         ...events,
       ]);
     });
