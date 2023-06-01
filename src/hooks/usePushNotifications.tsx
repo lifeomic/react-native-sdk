@@ -29,7 +29,7 @@ export function PushNotificationsProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [events, setEvents] = useState<
+  const [notificationEvents, setNotificationEvents] = useState<
     Event | { type: string; notification: Notification }[]
   >([]);
   const { httpClient } = useHttpClient();
@@ -38,7 +38,7 @@ export function PushNotificationsProvider({
   useEffect(() => {
     // Handler called when a notification is pressed
     onNotificationOpened((notification) => {
-      setEvents((events) => [
+      setNotificationEvents((events) => [
         { type: 'notificationOpened', notification },
         //@ts-ignore - typescript is complaining about Events (of type Event[]) not being an iterable object
         ...events,
@@ -46,7 +46,7 @@ export function PushNotificationsProvider({
     });
 
     onNotificationReceived((notification) => {
-      setEvents((events) => [
+      setNotificationEvents((events) => [
         { type: 'notificationReceived', notification },
         ...events,
       ]);
@@ -56,7 +56,7 @@ export function PushNotificationsProvider({
       // Get the notification that opened the application
       const notification = await getInitialNotification();
       if (notification) {
-        setEvents((events) => [
+        setNotificationEvents((events) => [
           { type: 'notificationOpened', notification },
           ...events,
         ]);
@@ -83,8 +83,8 @@ export function PushNotificationsProvider({
   }, []);
 
   const value: PushNotificationsStateType = {
-    events,
-    setEvents,
+    events: notificationEvents,
+    setEvents: setNotificationEvents,
     httpClient,
     account,
   };
