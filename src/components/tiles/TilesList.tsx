@@ -87,7 +87,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
           title={trackTileTitle}
         />
       )}
-      <View style={styles.tiles}>
+      <View style={styles.tilesView}>
         {todayTileEnabled && todayTile && (
           <Tile
             id={todayTile.id}
@@ -161,7 +161,7 @@ const TodayIcon = () => {
 
 const defaultStyles = createStyles('TilesList', (theme) => ({
   view: {},
-  tiles: {
+  tilesView: {
     marginHorizontal: theme.spacing.large,
     marginBottom: theme.spacing.large,
   },
