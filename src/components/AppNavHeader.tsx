@@ -22,7 +22,7 @@ export function AppNavHeader({
     'backgroundColor',
     config.AppNavHeader?.headerColors,
     route,
-    styles.style,
+    styles.view,
   );
   const titleStyles = useColorMapping(
     'color',
@@ -82,7 +82,7 @@ const Title = ({
 
 const backActionIcon: { color?: string } = {};
 const defaultStyles = createStyles('AppNavHeader', (theme) => ({
-  style: {
+  view: {
     backgroundColor: theme.colors.background,
   },
   content: {},

@@ -18,7 +18,7 @@ export function ScreenSurface({
   const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
-    <Surface style={styles.surface} {...props}>
+    <Surface style={styles.surfaceView} {...props}>
       <ScrollView overScrollMode="always" showsVerticalScrollIndicator={false}>
         <View style={styles.container}>{children}</View>
       </ScrollView>
@@ -27,7 +27,7 @@ export function ScreenSurface({
 }
 
 const defaultStyles = createStyles('ScreenSurface', (theme) => ({
-  surface: {
+  surfaceView: {
     flex: 1,
     backgroundColor: theme.colors.elevation.level1,
   },

@@ -36,14 +36,14 @@ export const SelectorRow: FC<SelectorRowProps> = (props) => {
           testID={`${testID}-label`}
           style={[
             styles.textWrapper,
-            selected ? styles.selected : styles.unselected,
+            selected ? styles.selectedView : styles.unselectedView,
           ]}
         >
           <Text
             testID={`${testID}-title`}
             style={[
               styles.choiceText,
-              selected ? styles.selected : styles.unselected,
+              selected ? styles.selectedView : styles.unselectedView,
             ]}
           >
             {title}
@@ -64,10 +64,10 @@ const defaultStyles = createStyles('SelectorRow', (theme) => ({
   textWrapper: {
     padding: theme.spacing.small,
   },
-  unselected: {
+  unselectedView: {
     backgroundColor: theme.colors.surface,
   },
-  selected: {
+  selectedView: {
     backgroundColor: theme.colors.surface,
     fontWeight: '700',
   },

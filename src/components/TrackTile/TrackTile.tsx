@@ -58,7 +58,7 @@ export function TrackTile({
           titleStyle={styles.titleText}
           right={settingsButton}
           rightStyle={styles.settingsButton}
-          style={styles.title}
+          style={styles.titleView}
         />
       )}
       <TrackerRow
@@ -72,7 +72,7 @@ export function TrackTile({
 }
 
 const defaultStyles = createStyles('TrackTile', (theme) => ({
-  title: {
+  titleView: {
     marginVertical: -8,
   },
   titleText: {},
