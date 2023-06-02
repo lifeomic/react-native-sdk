@@ -4,7 +4,6 @@ import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
 import { useStyles } from '../hooks/useStyles';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
-import { EnvironmentSelection } from '../components/EnvironmentSelection';
 import { Dialog, Portal, Text } from 'react-native-paper';
 
 export const LoginScreen: FC = () => {
@@ -43,7 +42,6 @@ export const LoginScreen: FC = () => {
           label={t('login-button-title', 'Login')}
           onFail={onFail}
         />
-        <EnvironmentSelection />
       </View>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
