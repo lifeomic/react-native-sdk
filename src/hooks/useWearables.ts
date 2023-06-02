@@ -87,7 +87,7 @@ export const useWearables = () => {
     );
 
   const setSyncTypes = async (settings: SyncTypeSettings) =>
-    httpClient.post('/v1/wearables/sync-types', settings, {
+    httpClient.put('/v1/wearables/sync-types', settings, {
       headers: accountHeaders,
     });
 
