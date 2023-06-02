@@ -39,6 +39,7 @@ export type DeveloperConfig = {
     onHeaderColors?: RouteColor[];
     statusBarHeight?: number;
   };
+  pushNotificationsConfig?: PushNotificationsConfig;
 };
 
 export type AppTileScreens = {
@@ -67,4 +68,11 @@ export type AdditionalNavigationTab = {
     tabBarLabel: string;
     tabBarIcon: string | ((props: SvgProps) => JSX.Element);
   };
+};
+
+export type PushNotificationsConfig = {
+  enabled: boolean;
+  applicationName: string;
+  channelId: string;
+  description: string;
 };

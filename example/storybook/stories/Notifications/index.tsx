@@ -1,16 +1,11 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-
-import {
-  registerDeviceToken,
-  requestNotificationsPermissions,
-} from '../../../../src/common/Notifications';
-import {
-  PushNotificationsEvent,
-  PushNotificationsContext,
-} from '../../../../src/hooks/usePushNotifications';
-import { useActiveAccount, useHttpClient } from '../../../../src';
 import { Notifications } from 'react-native-notifications';
+import {
+  getInitialNotification,
+  onNotificationOpened,
+  onNotificationReceived,
+} from '../../../../src/common/Notifications';
 
 const styles = StyleSheet.create({
   openedNotificationView: {
@@ -53,12 +48,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export const NotificationsScreen = () => {
-  const pushNotificationsContext = useContext(PushNotificationsContext);
+type PushNotificationsEventType = 'notificationReceived' | 'notificationOpened';
 
-  const { events, setEvents } = pushNotificationsContext;
-  const { httpClient } = useHttpClient();
-  const { account } = useActiveAccount();
+export type PushNotificationsEvent = {
+  type: PushNotificationsEventType;
+  notification: Notification;
+};
+
+export const NotificationsScreen = () => {
+  const [events, setEvents] = useState<PushNotificationsEvent[]>([]);
 
   const sendLocalNotification = () => {
     Notifications.postLocalNotification({
@@ -78,8 +76,47 @@ export const NotificationsScreen = () => {
   };
 
   const clearLocalNotifications = () => {
-    setEvents([]);
+    // setEvents([]);
   };
+
+  useEffect(() => {
+    // Handler called when a notification is pressed
+    onNotificationOpened((notification) => {
+      setEvents(
+        (events) =>
+          [
+            { type: 'notificationOpened', notification },
+            ...events,
+          ] as PushNotificationsEvent[],
+      );
+    });
+
+    onNotificationReceived((notification) => {
+      setEvents(
+        (events) =>
+          [
+            { type: 'notificationReceived', notification },
+            ...events,
+          ] as PushNotificationsEvent[],
+      );
+    });
+
+    const getInitial = async () => {
+      // Get the notification that opened the application
+      const notification = await getInitialNotification();
+      if (notification) {
+        setEvents(
+          (events) =>
+            [
+              { type: 'notificationOpened', notification },
+              ...events,
+            ] as PushNotificationsEvent[],
+        );
+      }
+    };
+
+    getInitial();
+  }, []);
 
   const renderOpenedNotification = (notification: Notification) => {
     return (
@@ -109,21 +146,6 @@ export const NotificationsScreen = () => {
     }
     return renderOpenedNotification(event.notification);
   };
-
-  // Request the permissions to receive notifications
-  useEffect(() => {
-    requestNotificationsPermissions(({ deviceToken }) => {
-      if (deviceToken && account) {
-        // Register the device with the LifeOmic platform to start receiving push notifications
-        registerDeviceToken({
-          deviceToken,
-          application: 'Application-Name', // The application name will be provided by LifeOmic upon onboarding
-          httpClient,
-          accountId: account.id,
-        });
-      }
-    });
-  }, [account, httpClient]);
 
   return (
     <View>
