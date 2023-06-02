@@ -69,11 +69,11 @@ export const NotificationsScreen = () => {
       type: '',
       thread: '',
       payload: {
-        category: 'SOME_CATEGORY',
+        category: 'LO_RN_SDK_CATEGORY',
         link: 'localNotificationLink',
       },
       //@ts-ignore
-      android_channel_id: 'sdk-example-channel',
+      android_channel_id: 'LifeOmic react native SDK',
     });
   };
 
@@ -117,7 +117,7 @@ export const NotificationsScreen = () => {
         // Register the device with the LifeOmic platform to start receiving push notifications
         registerDeviceToken({
           deviceToken,
-          application: 'lifeResearch', // The application name will be provided by LifeOmic upon onboarding
+          application: 'Application-Name', // The application name will be provided by LifeOmic upon onboarding
           httpClient,
           accountId: account.id,
         });

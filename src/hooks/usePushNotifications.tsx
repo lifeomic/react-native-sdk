@@ -83,8 +83,8 @@ export function PushNotificationsProvider({
   useEffect(() => {
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannel({
-        channelId: 'sdk-example-channel',
-        name: 'SDK Example',
+        channelId: 'LifeOmic react native SDK',
+        name: 'LifeOmic react native SDK',
         importance: 5,
         description: 'Channel for the SDK',
         enableLights: true,
