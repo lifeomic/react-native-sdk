@@ -39,6 +39,20 @@ export type DeveloperConfig = {
     onHeaderColors?: RouteColor[];
     statusBarHeight?: number;
   };
+  componentProps?: {
+    TabNavigator?: {
+      useTabBar?: boolean;
+    };
+    TabBar?: {
+      showLabels?: boolean;
+      tabs?: {
+        icon: (props: SvgProps) => JSX.Element;
+        svgProps?: (theme: Theme) => SvgProps;
+        svgPropsActive?: (theme: Theme) => SvgProps;
+        svgPropsInactive?: (theme: Theme) => SvgProps;
+      }[];
+    };
+  };
   pushNotificationsConfig?: PushNotificationsConfig;
 };
 
@@ -66,7 +80,7 @@ export type AdditionalNavigationTab = {
   component: () => JSX.Element;
   options: {
     tabBarLabel: string;
-    tabBarIcon: string | ((props: SvgProps) => JSX.Element);
+    tabBarIcon: (props: SvgProps) => JSX.Element;
   };
 };
 

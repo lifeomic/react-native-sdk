@@ -27,11 +27,11 @@ import {
 import { coerceToNonnegativeValue } from './coerce-to-nonnegative-value';
 import { numberFormatters } from '../formatters';
 import { endOfDay, isBefore, isToday, startOfDay } from 'date-fns';
-import { DatePicker } from './DatePicker';
 import { NumberPicker } from './NumberPicker';
 import { createStyles } from '../../../components/BrandConfigProvider';
 import { useStyles } from '../../../hooks';
 import { unitDisplay } from './unit-display';
+import { DayPicker } from './DayPicker';
 
 export type TrackerDetailsProps = {
   tracker: Tracker;
@@ -192,7 +192,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <DatePicker
+        <DayPicker
           dateRange={dateRange}
           onChange={setDateRange}
           target={currentTarget}
@@ -245,6 +245,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           selectedUnit={selectedUnit}
           onChange={updateTarget}
           value={target}
+          chevronColor={tracker.color}
         />
         <Divider style={styles.firstDivider} />
         <Text style={styles.descriptionText}>{tracker.description}</Text>

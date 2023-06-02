@@ -22,7 +22,7 @@ export function AppNavHeader({
     'backgroundColor',
     config.AppNavHeader?.headerColors,
     route,
-    styles.style,
+    styles.view,
   );
   const titleStyles = useColorMapping(
     'color',
@@ -37,7 +37,7 @@ export function AppNavHeader({
       {back ? (
         <Appbar.Action
           icon={ChevronLeft}
-          color={styles.backActionIconAny?.color}
+          color={styles.backActionIcon?.color}
           onPress={navigation.goBack}
           style={styles.backAction}
         />
@@ -80,8 +80,9 @@ const Title = ({
   </Text>
 );
 
+const backActionIcon: { color?: string } = {};
 const defaultStyles = createStyles('AppNavHeader', (theme) => ({
-  style: {
+  view: {
     backgroundColor: theme.colors.background,
   },
   content: {},
@@ -89,7 +90,7 @@ const defaultStyles = createStyles('AppNavHeader', (theme) => ({
     color: theme.colors.onSurfaceVariant,
   },
   backAction: {},
-  backActionIconAny: {},
+  backActionIcon: backActionIcon,
 }));
 
 declare module '@styles' {

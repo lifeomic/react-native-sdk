@@ -34,7 +34,7 @@ export const Tile = ({
     >
       <View style={styles.container} id={id} testID={testID}>
         <View style={styles.contentsWrapper}>
-          <View style={styles.contents}>
+          <View style={styles.contentsView}>
             <View style={styles.iconContainer}>
               {Icon && <Icon style={styles.icon} />}
             </View>
@@ -63,7 +63,7 @@ export const Tile = ({
 };
 
 const defaultStyles = createStyles('Tile', (theme) => ({
-  contents: {
+  contentsView: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingLeft: theme.spacing.large,

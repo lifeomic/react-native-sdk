@@ -53,7 +53,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={styles.headerContainer}>
         <Text variant="semibold" style={styles.headerText}>
           {t('track-tile.your-active-items', 'Your active items')}
         </Text>
@@ -215,7 +215,7 @@ const defaultStyles = createStyles('ManageTrackers', () => ({
     backgroundColor: '#FFFFFF',
     flex: 1,
   },
-  header: {
+  headerContainer: {
     justifyContent: 'space-between',
     paddingHorizontal: 35,
     backgroundColor: '#EEF0F2',

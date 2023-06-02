@@ -79,7 +79,12 @@ const TrackAmountControl: FC<Props> = ({
           defaultValue: 'Tracker value, {{value}}',
           value,
         })}
-        style={[{ color }, styles.valueInput, fontWeights.bold, { fontSize }]}
+        style={[
+          { color },
+          styles.valueInputView,
+          fontWeights.bold,
+          { fontSize },
+        ]}
         keyboardType="numeric"
         value={currentValue}
         returnKeyType="done"
@@ -148,7 +153,7 @@ const defaultStyles = createStyles('TrackAmountControl', (theme) => ({
     fontSize: 30,
     fontWeight: 'bold',
   },
-  valueInput: {
+  valueInputView: {
     flex: 1,
     textAlign: 'center',
   },

@@ -24,7 +24,6 @@ import './TrackerDetails/TrackAmountControl';
 import './TrackerDetails/UnitPicker';
 import './TrackerDetails/TrackerHistoryChart/Bar';
 import './TrackerDetails/TrackerHistoryChart/Chart';
-import './TrackerDetails/TrackerHistoryChart/Paginator';
 import './TrackerRow/RadialProgress';
 import './TrackerRow/Tracker';
 import './TrackerRow/TrackerRow';

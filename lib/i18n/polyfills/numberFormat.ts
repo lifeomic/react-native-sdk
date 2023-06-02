@@ -1,5 +1,5 @@
 export const polyfill = () => {
-  // We are running into issues where the native Intl (namely android 12) passes the polyfill check but
+  // We are running into issues where the native Intl passes the polyfill check but
   // does not support all of the things we need. The interim fix is to force a polyfill.
   require('@formatjs/intl-numberformat/polyfill-force');
 

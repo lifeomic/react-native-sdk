@@ -9,7 +9,8 @@ import { Theme } from '../theme/types';
  * Each named styles will be typed according to the case-insensitive suffix of their name:
  *   - Names ending in `Image` will become an `ImageStyle` type
  *   - Names ending in `Text` or `Label` will become a `TextStyle` type
- *   - Names ending in anything else (often `View` or `Container`) will become a `ViewStyle` type
+ *   - Names ending in `View`, `Container`, `Button` or `Wrapper` will become a `ViewStyle` type
+ *   - Names ending in anything else will be returned as the type of object provided.
  * Other suffixes and/or types can be added when needed.
  * @returns The defaultStyles function that returns the named, typed style builder to be given to `useStyles`
  */
@@ -37,9 +38,9 @@ export type NamedStyles<T> = {
     ? TextStyle
     : P extends `${string}${IgnoreCapitals<ImageSuffixes>}`
     ? ImageStyle
-    : P extends `${string}${IgnoreCapitals<AnySuffix>}`
-    ? any
-    : ViewStyle;
+    : P extends `${string}${IgnoreCapitals<ViewSuffix>}`
+    ? ViewStyle
+    : T[P];
 };
 
 /**
@@ -54,7 +55,7 @@ type TextSuffixes = 'Text' | 'Label';
 
 type ImageSuffixes = 'Image';
 
-type AnySuffix = 'Any';
+type ViewSuffix = 'Container' | 'View' | 'Button' | 'Wrapper';
 
 type StylesBuilder<T> = (theme: Theme) => NamedStyles<T>;
 

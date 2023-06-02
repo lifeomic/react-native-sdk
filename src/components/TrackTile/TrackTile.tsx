@@ -51,14 +51,14 @@ export function TrackTile({
   };
 
   return (
-    <Card elevation={0} style={styles.card}>
+    <Card elevation={0} style={styles.cardView}>
       {title && (
         <Card.Title
           title={title}
           titleStyle={styles.titleText}
           right={settingsButton}
           rightStyle={styles.settingsButton}
-          style={styles.title}
+          style={styles.titleView}
         />
       )}
       <TrackerRow
@@ -72,11 +72,11 @@ export function TrackTile({
 }
 
 const defaultStyles = createStyles('TrackTile', (theme) => ({
-  title: {
+  titleView: {
     marginVertical: -8,
   },
   titleText: {},
-  card: {
+  cardView: {
     marginBottom: theme.spacing.large,
   },
   settingsButton: {
