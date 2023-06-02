@@ -36,6 +36,14 @@ export const Chart: FC<ChartProps> = (props) => {
   const isDefault = variant === 'default';
   const isFlat = variant === 'flat';
 
+  const getPercentComplete = (value: number, total: number) => {
+    if (total <= 0) {
+      return Math.min(Math.max(0, value), 1);
+    } else {
+      return Math.min(value / total, 1);
+    }
+  };
+
   const variantStyles = isDefault
     ? {
         chartValueBar: styles.barDefaultView,
@@ -86,9 +94,7 @@ export const Chart: FC<ChartProps> = (props) => {
                   isToday(day) || isDefault ? 0 : 45,
                 )}
                 testID={tID(`history-chart-value-bar-${index}`)}
-                percentComplete={
-                  values[index] / target >= 1 ? 1 : values[index] / target
-                }
+                percentComplete={getPercentComplete(values[index], target)}
                 animated
               />
             )}
@@ -105,7 +111,11 @@ export const Chart: FC<ChartProps> = (props) => {
               numberOfLines={1}
               style={[
                 styles.valueText,
-                { ...(values[index] >= target && { color: color }) },
+                {
+                  ...(getPercentComplete(values[index], target) >= 1 && {
+                    color: color,
+                  }),
+                },
               ]}
             >
               {numberFormatCompact(values[index])}

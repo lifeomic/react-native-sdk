@@ -32,8 +32,8 @@ export const DateRangePicker: FC<DateRangePicker> = (props) => {
           'track-tile.next-weeks-data',
           "Next week's data",
         )}
-        backValue={-1}
-        forwardValue={1}
+        backValue={-7}
+        forwardValue={7}
         dateText={t('track-tile.date-range', {
           defaultValue: '{{start}}-{{end}}',
           start: shortMonthNumericDay(range.start),
