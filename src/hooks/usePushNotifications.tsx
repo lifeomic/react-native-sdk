@@ -1,108 +1,68 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  createContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import {
-  getInitialNotification,
-  onNotificationOpened,
-  onNotificationReceived,
+  PushNotificationsConfig,
+  registerDeviceToken,
+  requestNotificationsPermissions,
 } from '../../src/common';
 import { Platform } from 'react-native';
 import { Notifications } from 'react-native-notifications';
+import { useHttpClient } from './useHttpClient';
+import { useActiveAccount } from './useActiveAccount';
 
-type PushNotificationsEventType = 'notificationReceived' | 'notificationOpened';
-
-export type PushNotificationsEvent = {
-  type: PushNotificationsEventType;
-  notification: Notification;
-};
-
-interface PushNotificationsStateType {
-  events: PushNotificationsEvent[];
-  setEvents: Dispatch<SetStateAction<PushNotificationsEvent[]>>;
-}
-
-export const PushNotificationsContext =
-  createContext<PushNotificationsStateType>({
-    events: [],
-    setEvents: () => [],
-  });
+export const PushNotificationsContext = createContext<{}>({});
 
 export function PushNotificationsProvider({
+  config,
   children,
 }: {
+  config?: PushNotificationsConfig;
   children: React.ReactNode;
 }) {
-  const [pushNotificationEvents, setPushNotificationEvents] = useState<
-    PushNotificationsEvent[]
-  >([]);
+  const { httpClient } = useHttpClient();
+  const { account } = useActiveAccount();
 
-  useEffect(() => {
-    // Handler called when a notification is pressed
-    onNotificationOpened((notification) => {
-      setPushNotificationEvents(
-        (events) =>
-          [
-            { type: 'notificationOpened', notification },
-            ...events,
-          ] as PushNotificationsEvent[],
-      );
-    });
-
-    onNotificationReceived((notification) => {
-      setPushNotificationEvents(
-        (events) =>
-          [
-            { type: 'notificationReceived', notification },
-            ...events,
-          ] as PushNotificationsEvent[],
-      );
-    });
-
-    const getInitial = async () => {
-      // Get the notification that opened the application
-      const notification = await getInitialNotification();
-      if (notification) {
-        setPushNotificationEvents(
-          (events) =>
-            [
-              { type: 'notificationOpened', notification },
-              ...events,
-            ] as PushNotificationsEvent[],
-        );
-      }
-    };
-
-    getInitial();
-  }, []);
+  const enabled = config?.applicationName && config?.enabled;
 
   // Set the notification channel for Android
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      Notifications.setNotificationChannel({
-        channelId: 'LifeOmic react native SDK',
-        name: 'LifeOmic react native SDK',
-        importance: 5,
-        description: 'Channel for the SDK',
-        enableLights: true,
-        enableVibration: true,
-        showBadge: true,
-        vibrationPattern: [200, 1000, 500, 1000, 500],
+    if (enabled) {
+      if (Platform.OS === 'android') {
+        Notifications.setNotificationChannel({
+          channelId: config.channelId,
+          name: config.applicationName,
+          importance: 5,
+          description: config.description,
+          enableLights: true,
+          enableVibration: true,
+          showBadge: true,
+          vibrationPattern: [200, 1000, 500, 1000, 500],
+        });
+      }
+    }
+  }, [config]);
+
+  useEffect(() => {
+    if (enabled) {
+      requestNotificationsPermissions(({ deviceToken }) => {
+        if (deviceToken && account) {
+          // Register the device with the LifeOmic platform to start receiving push notifications
+          registerDeviceToken({
+            deviceToken,
+            application: config.applicationName,
+            httpClient,
+            accountId: account.id,
+          });
+        }
       });
     }
-  }, []);
-
-  const value: PushNotificationsStateType = {
-    events: pushNotificationEvents,
-    setEvents: setPushNotificationEvents,
-  };
+  }, [account, httpClient, config]);
 
   return (
-    <PushNotificationsContext.Provider value={value}>
+    <PushNotificationsContext.Provider value={{}}>
       {children}
     </PushNotificationsContext.Provider>
   );
 }
+
+export const usePushNotificationsClient = () =>
+  useContext(PushNotificationsContext);

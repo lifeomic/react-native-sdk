@@ -18,6 +18,7 @@ import { WearableLifecycleProvider } from '../components/Wearables/WearableLifec
 import { CreateEditPostModal } from '../components/Circles/CreateEditPostModal';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { InviteProvider } from '../components/Invitations/InviteProvider';
+import { PushNotificationsProvider } from 'src/hooks/usePushNotifications';
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,7 @@ export function RootProviders({
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
 }) {
-  const { theme, apiBaseURL } = useDeveloperConfig();
+  const { theme, apiBaseURL, pushNotificationsConfig } = useDeveloperConfig();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -46,7 +47,11 @@ export function RootProviders({
                             <ActionSheetProvider>
                               <SafeAreaProvider>
                                 <ThemedNavigationContainer>
-                                  {children}
+                                  <PushNotificationsProvider
+                                    config={pushNotificationsConfig}
+                                  >
+                                    {children}
+                                  </PushNotificationsProvider>
                                 </ThemedNavigationContainer>
                                 <CreateEditPostModal />
                                 <Toast />
