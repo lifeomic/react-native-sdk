@@ -56,7 +56,9 @@ export type PushNotificationsEvent = {
 };
 
 export const NotificationsScreen = () => {
-  const [events, setEvents] = useState<PushNotificationsEvent[]>([]);
+  const [pushNotificationsEvents, setPushNotificationsEvents] = useState<
+    PushNotificationsEvent[]
+  >([]);
 
   const sendLocalNotification = () => {
     Notifications.postLocalNotification({
@@ -76,13 +78,13 @@ export const NotificationsScreen = () => {
   };
 
   const clearLocalNotifications = () => {
-    // setEvents([]);
+    setPushNotificationsEvents([]);
   };
 
   useEffect(() => {
     // Handler called when a notification is pressed
     onNotificationOpened((notification) => {
-      setEvents(
+      setPushNotificationsEvents(
         (events) =>
           [
             { type: 'notificationOpened', notification },
@@ -92,7 +94,7 @@ export const NotificationsScreen = () => {
     });
 
     onNotificationReceived((notification) => {
-      setEvents(
+      setPushNotificationsEvents(
         (events) =>
           [
             { type: 'notificationReceived', notification },
@@ -105,7 +107,7 @@ export const NotificationsScreen = () => {
       // Get the notification that opened the application
       const notification = await getInitialNotification();
       if (notification) {
-        setEvents(
+        setPushNotificationsEvents(
           (events) =>
             [
               { type: 'notificationOpened', notification },
@@ -164,9 +166,11 @@ export const NotificationsScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {events.map((event: PushNotificationsEvent, idx: number) => (
-        <View key={`event${idx}`}>{renderEvent(event)}</View>
-      ))}
+      {pushNotificationsEvents.map(
+        (event: PushNotificationsEvent, idx: number) => (
+          <View key={`event${idx}`}>{renderEvent(event)}</View>
+        ),
+      )}
     </View>
   );
 };
