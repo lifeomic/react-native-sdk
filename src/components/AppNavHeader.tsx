@@ -44,7 +44,7 @@ export function AppNavHeader({
       ) : null}
       <Appbar.Content
         title={<Title text={title} style={titleStyles} />}
-        style={styles.content}
+        style={styles.contentView}
       />
     </Appbar.Header>
   );
@@ -85,7 +85,9 @@ const defaultStyles = createStyles('AppNavHeader', (theme) => ({
   view: {
     backgroundColor: theme.colors.background,
   },
-  content: {},
+  contentView: {
+    alignItems: 'center',
+  },
   titleText: {
     color: theme.colors.onSurfaceVariant,
   },

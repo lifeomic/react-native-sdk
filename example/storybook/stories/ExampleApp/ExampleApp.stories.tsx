@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
-import { authConfig } from '../OAuth.stories';
+import { authConfig } from '../../helpers/oauthConfig';
 import {
   DeveloperConfigProvider,
   RootProviders,

@@ -3,31 +3,14 @@ import { Text, View, ViewStyle } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
 import { text, boolean, select } from '@storybook/addon-knobs';
-import { AuthConfiguration, AuthorizeResult } from 'react-native-app-auth';
+import { AuthorizeResult } from 'react-native-app-auth';
 import { OAuthLoginButton } from '../../../src/components/OAuthLoginButton';
 import { OAuthLogoutButton } from '../../../src/components/OAuthLogoutButton';
 import { OAuthContextProvider } from '../../../src/hooks/useOAuthFlow';
 import { AuthContextProvider, useAuth } from '../../../src/hooks/useAuth';
 import { CenterView } from '../helpers/CenterView';
 import { BrandConfigProvider } from '../../../src/components/BrandConfigProvider';
-import { oauthConfig, apiBaseUrl } from '../../config';
-
-export const authConfig: AuthConfiguration = {
-  clientId: oauthConfig.clientId,
-  redirectUrl: oauthConfig.redirectUrl,
-  serviceConfiguration: {
-    authorizationEndpoint: oauthConfig.authorizationEndpoint,
-    tokenEndpoint: oauthConfig.tokenEndpoint,
-    revocationEndpoint: oauthConfig.revokeEndpoint,
-  },
-  usePKCE: true,
-  scopes: ['openid', 'offline_access'],
-  additionalParameters: {
-    prompt: 'consent',
-  },
-};
-
-export const baseURL = apiBaseUrl;
+import { authConfig } from '../helpers/oauthConfig';
 
 storiesOf('OAuth', module)
   .addDecorator((story) => <CenterView>{story()}</CenterView>)
