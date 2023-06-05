@@ -46,10 +46,10 @@ export const NumberPicker = (props: NumberPickerProps) => {
   const stepAmount =
     selectedUnit.targetStepAmount ?? selectedUnit.stepAmount ?? 1;
   const minValue = selectedUnit.targetMin ?? 0;
-  const maxValue = selectedUnit.targetStepAmount ?? stepAmount * 50;
+  const maxValue = selectedUnit.targetMax ?? stepAmount * 50;
 
   const numbers = useMemo(
-    () => range(minValue, maxValue, stepAmount),
+    () => range(minValue, maxValue + 1, stepAmount),
     [maxValue, minValue, stepAmount],
   );
 
