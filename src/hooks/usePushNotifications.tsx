@@ -39,7 +39,7 @@ export function PushNotificationsProvider({
         });
       }
     }
-  }, [config]);
+  }, [config, enabled]);
 
   useEffect(() => {
     if (enabled) {
@@ -55,7 +55,7 @@ export function PushNotificationsProvider({
         }
       });
     }
-  }, [account, httpClient, config]);
+  }, [account, httpClient, config, enabled]);
 
   return (
     <PushNotificationsContext.Provider value={{}}>
