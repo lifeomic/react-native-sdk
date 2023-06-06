@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { View, Image, ImageSourcePropType } from 'react-native';
+import { View, Image, ImageSourcePropType, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createStyles } from './BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
@@ -11,12 +11,13 @@ interface Props {
 
 export function LogoHeader({ imageSource }: Props) {
   const { styles } = useStyles(defaultStyles);
+  const androidFix = Platform.OS === 'android' ? { marginTop: 12 } : {};
 
   return (
     <View style={styles.view}>
       <SafeAreaView
         edges={['left', 'right', 'top']}
-        style={styles.safeAreaView}
+        style={[androidFix, styles.safeAreaView]}
       >
         <Image source={imageSource} style={styles.image} />
       </SafeAreaView>
