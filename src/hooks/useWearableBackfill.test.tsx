@@ -207,6 +207,46 @@ describe('useWearableBackfill', () => {
     expect(data).toEqual(false);
   });
 
+  it('should NOT fetch syncStatus if feature is not fetched or disabled', async () => {
+    const scope = mockGraphQLResponse(
+      `${baseURL}/v1/graphql`,
+      undefined,
+      defaultResponse,
+    );
+
+    mockUseFeature
+      .mockReturnValueOnce({ data: undefined })
+      .mockReturnValueOnce({ data: false })
+      .mockReturnValueOnce({ data: true });
+
+    const state = {
+      items: [
+        {
+          ehrId: 'ehrId',
+          ehrType: 'fitbit',
+        } as any,
+      ],
+    };
+
+    const { result, rerender } = renderHookWithInjectedClient(state);
+
+    expect(scope.isDone()).toBe(false);
+    expect(result.current.enabledBackfillWearables).toHaveLength(0);
+
+    rerender(state);
+
+    expect(scope.isDone()).toBe(false);
+    expect(result.current.enabledBackfillWearables).toHaveLength(0);
+
+    rerender(state);
+
+    await waitFor(() => {
+      expect(scope.isDone()).toBe(true);
+    });
+
+    expect(result.current.enabledBackfillWearables).toEqual(['ehrId']);
+  });
+
   it('handles an ehrType that cannot be backfilled', async () => {
     mockUseFeature.mockReturnValue({ data: true });
     const scope = mockGraphQLResponse(
