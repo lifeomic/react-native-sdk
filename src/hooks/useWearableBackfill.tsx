@@ -55,7 +55,7 @@ export const useWearableBackfill = (
         !!activeSubjectId &&
         isFetched &&
         ehrTypes.length > 0 &&
-        isBackfillEnabled,
+        !!isBackfillEnabled,
       select(data) {
         return Object.fromEntries(
           Object.entries(data).map(([type, patientData]) => {
@@ -72,7 +72,7 @@ export const useWearableBackfill = (
   );
 
   useEffect(() => {
-    if (!wearablesState?.items?.length || !syncStatus) {
+    if (!wearablesState?.items?.length || !syncStatus || !isBackfillEnabled) {
       return;
     }
 
@@ -87,7 +87,7 @@ export const useWearableBackfill = (
     };
 
     updateEnabledBackfillWearables();
-  }, [wearablesState?.items, syncStatus]);
+  }, [wearablesState?.items, syncStatus, isBackfillEnabled]);
 
   const backfillEHR = useCallback(
     async (ehrId: string) => {
