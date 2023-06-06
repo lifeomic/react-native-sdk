@@ -3,6 +3,8 @@ import { getBundleId } from 'react-native-device-info';
 import { AppTile } from '../hooks/useAppConfig';
 import { SvgProps } from 'react-native-svg';
 import { Theme } from '../components/BrandConfigProvider';
+import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+export { TypedNavigator, RouteConfig } from '@react-navigation/core';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -23,6 +25,9 @@ import { Theme } from '../components/BrandConfigProvider';
  *
  * @param additionalNavigationTab Allows for configuring a custom additional material
  * bottom navigation tab (in addition to Home, Notifications, and Settings.
+ *
+ * @param additionalLoggedInNavigationScreens Allows for custom screens or stacks
+ * to be registered and added to the logged-in navigation stack.
  */
 export interface RouteColor {
   route: string;
@@ -34,6 +39,7 @@ export type DeveloperConfig = {
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
   additionalNavigationTabs?: AdditionalNavigationTab[];
+  additionalLoggedInNavigationScreens?: AdditionalLoggedInNavigationScreen[];
   AppNavHeader?: {
     headerColors?: RouteColor[];
     onHeaderColors?: RouteColor[];
@@ -81,4 +87,10 @@ export type AdditionalNavigationTab = {
     tabBarLabel: string;
     tabBarIcon: (props: SvgProps) => JSX.Element;
   };
+};
+
+export type AdditionalLoggedInNavigationScreen = {
+  name: string;
+  component: () => JSX.Element;
+  options: NativeStackNavigationOptions;
 };

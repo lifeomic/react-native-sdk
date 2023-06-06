@@ -1,7 +1,7 @@
 import React from 'react';
 import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
-import { useAuth, useConsent } from '../hooks';
+import { useAuth, useConsent, useDeveloperConfig } from '../hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoggedInProviders } from '../common/LoggedInProviders';
 import { LoginScreen } from '../screens/LoginScreen';
@@ -14,6 +14,7 @@ export function RootStack() {
   const { isLoggedIn, loading: loadingAuth } = useAuth();
   const { useShouldRenderConsentScreen } = useConsent();
   const { shouldRenderConsentScreen } = useShouldRenderConsentScreen();
+  const { additionalLoggedInNavigationScreens } = useDeveloperConfig();
 
   if (!isLoggedIn && loadingAuth) {
     return (
@@ -45,6 +46,15 @@ export function RootStack() {
               title: t('consent', 'Consent'),
             }}
           />
+          {additionalLoggedInNavigationScreens?.map((screen) => (
+            <Stack.Screen
+              key={screen.name}
+              // @ts-ignore
+              name={screen.name}
+              component={screen.component}
+              options={screen.options}
+            />
+          ))}
           <Stack.Screen name="Circle/Thread" component={CircleThreadScreen} />
         </Stack.Navigator>
       </LoggedInProviders>
