@@ -8,5 +8,5 @@ export const coerceToNonnegativeValue = (num: string, defaultNum: number) => {
     return defaultNum;
   }
 
-  return Math.round(targetNum);
+  return targetNum;
 };
