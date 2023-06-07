@@ -266,7 +266,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={{ alignItems: 'center' }}>
+      <View style={styles.dayPickerContainer}>
         <DayPicker
           dateRange={dateRange}
           tracker={tracker}
@@ -443,6 +443,9 @@ const defaultStyles = createStyles('AdvancedTrackerDetails', (theme) => ({
     labelsContainer: {
       flexBasis: 20,
     },
+  },
+  dayPickerContainer: {
+    alignItems: 'center',
   },
   horizontalRowContainer: {
     flexDirection: 'row',
