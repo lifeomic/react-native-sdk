@@ -23,14 +23,23 @@ export type ChartProps = {
     start: Date;
     end: Date;
   };
+  styles?: ChartStyles;
 };
 
 const { shortWeekday } = dateFormatters;
 
 export const Chart: FC<ChartProps> = (props) => {
   const { variant = 'default', color = '#02BFF1' } = props;
-  const { loading, range, target, values, hasError, unit = '' } = props;
-  const { styles } = useStyles(defaultStyles);
+  const {
+    loading,
+    range,
+    target,
+    values,
+    hasError,
+    unit = '',
+    styles: styleProps,
+  } = props;
+  const { styles } = useStyles(defaultStyles, styleProps);
   const { numberFormatCompact } = numberFormatters;
   const days = eachDayOfInterval(range).reverse();
   const isDefault = variant === 'default';
@@ -222,3 +231,5 @@ declare module '@styles' {
   interface ComponentStyles
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
+
+export type ChartStyles = NamedStylesProp<typeof defaultStyles>;

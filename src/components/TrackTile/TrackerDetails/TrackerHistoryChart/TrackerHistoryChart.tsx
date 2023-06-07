@@ -1,6 +1,6 @@
 import React, { FC, useState, useCallback } from 'react';
 import { useTrackerValues } from '../../hooks/useTrackerValues';
-import { Chart, ChartProps } from './Chart';
+import { Chart, ChartProps, ChartStyles } from './Chart';
 import {
   startOfToday,
   addDays,
@@ -23,6 +23,7 @@ type TrackerHistoryChartProps = {
   stepperPosition?: 'top' | 'bottom';
   dateRangeType?: DateRangeType;
   referenceDate?: Date;
+  chartStyles?: ChartStyles;
 } & Pick<ChartProps, 'variant' | 'color'>;
 
 const getInitialRange = (dateRangeType: DateRangeType, referenceDate: Date) => {
@@ -46,6 +47,7 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
     stepperPosition = 'bottom',
     tracker,
     valuesContext,
+    chartStyles,
   } = props;
   const {
     variant,
@@ -90,6 +92,7 @@ export const TrackerHistoryChart: FC<TrackerHistoryChartProps> = (props) => {
         target={target}
         unit={unit}
         hasError={!!error}
+        styles={chartStyles}
         values={trackerValues
           .map((value) =>
             convertToPreferredUnit(
