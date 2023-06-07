@@ -109,7 +109,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
 
     upsertTracker: async (metricId, settings) => {
       const res = await httpClient.put<InstalledMetric>(
-        `/track-tiles/metrics/installs/${metricId}`,
+        `/v1/track-tiles/metrics/installs/${metricId}`,
         settings,
         axiosConfig({ account: accountId }),
       );
@@ -118,13 +118,13 @@ export const useAxiosTrackTileService = (): TrackTileService => {
     },
 
     upsertTrackers: async (settings) => {
-      await httpClient.patch('/track-tiles/metrics/installs', settings);
+      await httpClient.patch('/v1/track-tiles/metrics/installs', settings);
 
       settings.forEach(updateSettingsInCache);
     },
 
     uninstallTracker: async (metricId) => {
-      await httpClient.delete(`/track-tiles/metrics/installs/${metricId}`);
+      await httpClient.delete(`/v1/track-tiles/metrics/installs/${metricId}`);
 
       cache.trackers = cache.trackers?.map((t) => {
         if (t.metricId === metricId) {

@@ -182,7 +182,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(putMock).toHaveBeenCalledWith(
-      '/track-tiles/metrics/installs/metric-id',
+      '/v1/track-tiles/metrics/installs/metric-id',
       settings,
       DATASTORE_HEADERS,
     );
@@ -282,7 +282,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(patchMock).toHaveBeenCalledWith(
-      '/track-tiles/metrics/installs',
+      '/v1/track-tiles/metrics/installs',
       updatedSettings,
     );
     expect(cachedResult).toEqual(updatedSettings);
@@ -306,7 +306,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(deleteMock).toHaveBeenCalledWith(
-      `/track-tiles/metrics/installs/${tracker.metricId}`,
+      `/v1/track-tiles/metrics/installs/${tracker.metricId}`,
     );
     expect(initialCacheValue.every(isInstalledMetric)).toEqual(true);
     expect(cachedResult.every(isInstalledMetric)).toEqual(false);
