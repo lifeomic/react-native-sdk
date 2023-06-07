@@ -45,6 +45,7 @@ import { unitDisplay as baseUnitDisplay } from '../unit-display';
 import { createStyles } from '../../../BrandConfigProvider';
 import { useStyles } from '../../../../hooks';
 import { DayPicker } from '../DayPicker';
+import { Divider } from 'react-native-paper';
 
 export type AdvancedTrackerDetailsProps = {
   tracker: Tracker;
@@ -264,16 +265,17 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
   );
 
   return (
-    <ScrollView>
-      <DayPicker
-        dateRange={dateRange}
-        tracker={tracker}
-        color={tracker.color}
-        target={targetAmount}
-        unit={selectedUnit}
-        onChange={setDateRange}
-      />
-
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.dayPickerContainer}>
+        <DayPicker
+          dateRange={dateRange}
+          tracker={tracker}
+          color={tracker.color}
+          target={targetAmount}
+          unit={selectedUnit}
+          onChange={setDateRange}
+        />
+      </View>
       <Trans
         i18n={i18n}
         parent={TransTextParent}
@@ -399,6 +401,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
         </Text>
         <Text style={styles.descriptionText}>{tracker.description}</Text>
       </View>
+      <Divider style={styles.descriptionBottomDividerView} />
 
       {children}
 
@@ -412,27 +415,38 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
             unit: unitDisplay(targetAmount, true),
           })}
         </Text>
-
-        <View style={styles.chartContainer}>
-          <TrackerHistoryChart
-            variant="flat"
-            stepperPosition="bottom"
-            color={tracker.color}
-            metricId={metricId}
-            target={targetAmount}
-            unit={selectedUnit.display}
-            tracker={tracker}
-            valuesContext={valuesContext}
-            dateRangeType="calendarWeek"
-            referenceDate={dateRange.start}
-          />
-        </View>
+      </View>
+      <View style={styles.chartContainer}>
+        <TrackerHistoryChart
+          variant="flat"
+          stepperPosition="bottom"
+          color={tracker.color}
+          metricId={metricId}
+          target={targetAmount}
+          unit={selectedUnit.display}
+          tracker={tracker}
+          valuesContext={valuesContext}
+          dateRangeType="calendarWeek"
+          referenceDate={dateRange.start}
+          chartStyles={styles.chart}
+        />
       </View>
     </ScrollView>
   );
 };
 
-const defaultStyles = createStyles('', () => ({
+const defaultStyles = createStyles('AdvancedTrackerDetails', (theme) => ({
+  container: {
+    backgroundColor: theme.colors.elevation.level1,
+  },
+  chart: {
+    labelsContainer: {
+      flexBasis: 20,
+    },
+  },
+  dayPickerContainer: {
+    alignItems: 'center',
+  },
   horizontalRowContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -450,9 +464,9 @@ const defaultStyles = createStyles('', () => ({
     fontSize: 24,
   },
   section: {
-    padding: 35,
+    paddingHorizontal: 35,
+    paddingTop: 35,
     borderBottomColor: 'rgba(36, 37, 54, 0.15)',
-    borderBottomWidth: 1,
   },
   sectionPrefixText: {
     textTransform: 'uppercase',
@@ -469,8 +483,11 @@ const defaultStyles = createStyles('', () => ({
     lineHeight: 21,
     marginTop: 24,
   },
+  descriptionBottomDividerView: {
+    marginTop: 35,
+  },
   chartContainer: {
-    marginTop: 30,
+    marginTop: 10,
   },
   recentHistoryContainer: {
     paddingHorizontal: 35,
