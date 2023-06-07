@@ -8,9 +8,7 @@ export const AdvancedTrackerDetailsScreen = ({
 }: HomeStackScreenProps<'Home/AdvancedTrackerDetails'>) => {
   const { tracker, valuesContext, referenceDate } = params;
 
-  React.useLayoutEffect(() =>
-    navigation.setOptions({ headerTitle: tracker?.name }),
-  );
+  React.useLayoutEffect(() => navigation.setOptions({ title: tracker?.name }));
 
   return (
     <AdvancedTrackerDetails
