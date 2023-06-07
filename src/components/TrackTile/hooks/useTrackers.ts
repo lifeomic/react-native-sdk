@@ -42,35 +42,71 @@ export const useTrackers = (trackersToUse?: Trackers) => {
         return;
       }
 
+      const pillarTileTrackers = installedMetrics.filter(
+        (t) => t.system === TRACKER_PILLAR_CODE_SYSTEM,
+      );
+      const trackTileTrackers = installedMetrics.filter(
+        (t) => !pillarTileTrackers.includes(t),
+      );
+
       setTrackers((currentTrackers) =>
         sortTrackers(
           currentTrackers
             ?.filter(
               (t) =>
-                !installedMetrics.find(
+                !trackTileTrackers.find(
                   ({ id, metricId }) => t.id === id || t.id === metricId,
                 ),
             )
-            .concat(installedMetrics),
+            .concat(trackTileTrackers),
+        ),
+      );
+
+      setPillarTrackers((currentTrackers) =>
+        sortTrackers(
+          currentTrackers
+            ?.filter(
+              (t) =>
+                !pillarTileTrackers.find(
+                  ({ id, metricId }) => t.id === id || t.id === metricId,
+                ),
+            )
+            .concat(pillarTileTrackers),
         ),
       );
     };
 
     const onRemoved = (tracker: Tracker) => {
       if (isInstalledMetric(tracker)) {
-        setTrackers((currentTrackers) =>
-          sortTrackers(
-            currentTrackers?.map((t) => {
-              if (t.id === tracker.id) {
-                return {
-                  ...omit(t, ['target', 'unit', 'metricId']),
-                  id: tracker.metricId,
-                };
-              }
-              return t;
-            }),
-          ),
-        );
+        if (tracker.system === TRACKER_PILLAR_CODE_SYSTEM) {
+          setPillarTrackers((currentTrackers) =>
+            sortTrackers(
+              currentTrackers?.map((t) => {
+                if (t.id === tracker.id) {
+                  return {
+                    ...omit(t, ['target', 'unit', 'metricId']),
+                    id: tracker.metricId,
+                  };
+                }
+                return t;
+              }),
+            ),
+          );
+        } else {
+          setTrackers((currentTrackers) =>
+            sortTrackers(
+              currentTrackers?.map((t) => {
+                if (t.id === tracker.id) {
+                  return {
+                    ...omit(t, ['target', 'unit', 'metricId']),
+                    id: tracker.metricId,
+                  };
+                }
+                return t;
+              }),
+            ),
+          );
+        }
       }
     };
     if (!trackersToUse) {
