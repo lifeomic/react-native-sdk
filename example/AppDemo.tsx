@@ -1,5 +1,5 @@
 import React from 'react';
-import { authConfig, baseURL } from './storybook/stories/OAuth.stories';
+import { authConfig, baseURL } from './storybook/helpers/oauthConfig';
 import { DeveloperConfigProvider, RootProviders, RootStack } from '../src';
 import { FhirExampleScreen } from './src/screens/FhirExampleScreen';
 
