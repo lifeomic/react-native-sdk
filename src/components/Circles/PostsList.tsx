@@ -65,7 +65,7 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
   }
 
   return (
-    <View>
+    <View style={styles.rootView}>
       <ScrollView
         onScroll={handleScroll}
         scrollEventThrottle={400}
@@ -129,7 +129,8 @@ const defaultStyles = createStyles('PostsList', (theme) => {
   };
 
   return {
-    scrollView: {},
+    rootView: { minHeight: '100%', maxHeight: '100%' },
+    scrollView: { minHeight: '100%' },
     morePostsIndicator: activityIndicatorStyle,
     noPostsText: {},
     fabView: {
