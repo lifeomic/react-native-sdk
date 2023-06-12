@@ -1,28 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Text,
-  View,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import { Notifications, Notification } from 'react-native-notifications';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Notifications } from 'react-native-notifications';
 import {
   getInitialNotification,
   onNotificationOpened,
   onNotificationReceived,
-  registerDeviceToken,
-  requestNotificationsPermissions,
 } from '../../../../src/common/Notifications';
-import { useActiveAccount } from '../../../../src/hooks/useActiveAccount';
-import { useHttpClient } from '../../../../src/hooks/useHttpClient';
-
-type EventType = 'notificationReceived' | 'notificationOpened';
-
-type Event = {
-  type: EventType;
-  notification: Notification;
-};
 
 const styles = StyleSheet.create({
   openedNotificationView: {
@@ -65,10 +48,17 @@ const styles = StyleSheet.create({
   },
 });
 
+type PushNotificationsEventType = 'notificationReceived' | 'notificationOpened';
+
+export type PushNotificationsEvent = {
+  type: PushNotificationsEventType;
+  notification: Notification;
+};
+
 export const NotificationsScreen = () => {
-  const [events, setEvents] = useState<Event[]>([]);
-  const { httpClient } = useHttpClient();
-  const { account } = useActiveAccount();
+  const [pushNotificationsEvents, setPushNotificationsEvents] = useState<
+    PushNotificationsEvent[]
+  >([]);
 
   const sendLocalNotification = () => {
     Notifications.postLocalNotification({
@@ -79,17 +69,56 @@ export const NotificationsScreen = () => {
       type: '',
       thread: '',
       payload: {
-        category: 'SOME_CATEGORY',
+        category: 'LO_RN_SDK_CATEGORY',
         link: 'localNotificationLink',
       },
       //@ts-ignore
-      android_channel_id: 'sdk-example-channel',
+      android_channel_id: 'LifeOmic react native SDK',
     });
   };
 
   const clearLocalNotifications = () => {
-    setEvents([]);
+    setPushNotificationsEvents([]);
   };
+
+  useEffect(() => {
+    // Handler called when a notification is pressed
+    onNotificationOpened((notification) => {
+      setPushNotificationsEvents(
+        (events) =>
+          [
+            { type: 'notificationOpened', notification },
+            ...events,
+          ] as PushNotificationsEvent[],
+      );
+    });
+
+    onNotificationReceived((notification) => {
+      setPushNotificationsEvents(
+        (events) =>
+          [
+            { type: 'notificationReceived', notification },
+            ...events,
+          ] as PushNotificationsEvent[],
+      );
+    });
+
+    const getInitial = async () => {
+      // Get the notification that opened the application
+      const notification = await getInitialNotification();
+      if (notification) {
+        setPushNotificationsEvents(
+          (events) =>
+            [
+              { type: 'notificationOpened', notification },
+              ...events,
+            ] as PushNotificationsEvent[],
+        );
+      }
+    };
+
+    getInitial();
+  }, []);
 
   const renderOpenedNotification = (notification: Notification) => {
     return (
@@ -113,73 +142,12 @@ export const NotificationsScreen = () => {
     );
   };
 
-  const renderEvent = (event: Event) => {
+  const renderEvent = (event: PushNotificationsEvent) => {
     if (event.type === 'notificationReceived') {
       return renderReceivedNotification(event.notification);
     }
     return renderOpenedNotification(event.notification);
   };
-
-  // Request the permissions to receive notifications
-  useEffect(() => {
-    requestNotificationsPermissions(({ deviceToken }) => {
-      if (deviceToken && account) {
-        // Register the device with the LifeOmic platform to start receiving push notifications
-        registerDeviceToken({
-          deviceToken,
-          application: 'lifeResearch', // The application name will be provided by LifeOmic upon onboarding
-          httpClient,
-          accountId: account.id,
-        });
-      }
-    });
-  }, [account, httpClient]);
-
-  // Set the notification channel for Android
-  useEffect(() => {
-    if (Platform.OS === 'android') {
-      Notifications.setNotificationChannel({
-        channelId: 'sdk-example-channel',
-        name: 'SDK Example',
-        importance: 5,
-        description: 'Channel for the SDK',
-        enableLights: true,
-        enableVibration: true,
-        showBadge: true,
-        vibrationPattern: [200, 1000, 500, 1000, 500],
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    // Handler called when a notification is pressed
-    onNotificationOpened((notification) => {
-      setEvents((events) => [
-        { type: 'notificationOpened', notification },
-        ...events,
-      ]);
-    });
-
-    onNotificationReceived((notification) => {
-      setEvents((events) => [
-        { type: 'notificationReceived', notification },
-        ...events,
-      ]);
-    });
-
-    const getInitial = async () => {
-      // Get the notification that opened the application
-      const notification = await getInitialNotification();
-      if (notification) {
-        setEvents((events) => [
-          { type: 'notificationOpened', notification },
-          ...events,
-        ]);
-      }
-    };
-
-    getInitial();
-  }, []);
 
   return (
     <View>
@@ -198,9 +166,11 @@ export const NotificationsScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {events.map((event, idx) => (
-        <View key={`event${idx}`}>{renderEvent(event)}</View>
-      ))}
+      {pushNotificationsEvents.map(
+        (event: PushNotificationsEvent, idx: number) => (
+          <View key={`event${idx}`}>{renderEvent(event)}</View>
+        ),
+      )}
     </View>
   );
 };

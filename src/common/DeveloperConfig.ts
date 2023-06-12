@@ -53,6 +53,7 @@ export type DeveloperConfig = {
       }[];
     };
   };
+  pushNotificationsConfig?: PushNotificationsConfig;
 };
 
 export type AppTileScreens = {
@@ -81,4 +82,11 @@ export type AdditionalNavigationTab = {
     tabBarLabel: string;
     tabBarIcon: (props: SvgProps) => JSX.Element;
   };
+};
+
+export type PushNotificationsConfig = {
+  enabled: boolean;
+  applicationName: string;
+  channelId: string;
+  description: string;
 };
