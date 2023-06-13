@@ -55,36 +55,6 @@ beforeEach(() => {
   axiosMock.reset();
 });
 
-describe('useDefaultConsent', () => {
-  test('returns the default consent', async () => {
-    const consent = {
-      title: 'Consent Title',
-      resourceType: 'Questionnaire',
-      id: 'consentId',
-      status: 'active',
-    };
-
-    axiosMock
-      .onGet(`/v1/consent/projects/${activeProject.id}/default-form`)
-      .reply(200, consent);
-
-    const useTestHook = () => {
-      const { useDefaultConsent } = useConsent();
-      return useDefaultConsent();
-    };
-
-    const { result } = renderHookInContext(useTestHook);
-
-    expect(axiosMock.history.get[0].url).toBe(
-      `/v1/consent/projects/${activeProject.id}/default-form`,
-    );
-
-    await waitFor(() => {
-      expect(result.current.data).toEqual(consent);
-    });
-  });
-});
-
 describe('useConsentDirectives', () => {
   test("returns the user's consent directives", async () => {
     const directive = {
@@ -114,7 +84,7 @@ describe('useConsentDirectives', () => {
 
 describe('useUpdateProjectConsentDirective', () => {
   test('updates the accepted consent', async () => {
-    axiosMock.onPost('/v1/consent/directives/me').reply(201, {});
+    axiosMock.onPatch('/v1/consent/directives/me/directive-id').reply(200, {});
 
     const useTestHook = () => {
       const { useUpdateProjectConsentDirective } = useConsent();
@@ -123,15 +93,22 @@ describe('useUpdateProjectConsentDirective', () => {
 
     const { result } = renderHookInContext(useTestHook);
     await act(async () => {
-      await result.current.mutateAsync(true);
+      await result.current.mutateAsync({
+        directiveId: 'directive-id',
+        accept: true,
+      });
     });
 
-    expect(axiosMock.history.post[0].url).toBe(`/v1/consent/directives/me`);
-    expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({
-      projectId: activeProject?.id,
+    expect(axiosMock.history.patch[0].url).toBe(
+      `/v1/consent/directives/me/directive-id`,
+    );
+    expect(JSON.parse(axiosMock.history.patch[0].data)).toEqual({
       status: 'active',
-      consentForm: {
+      response: {
         item: [
+          {
+            linkId: 'terms',
+          },
           {
             linkId: 'acceptance',
             answer: [
@@ -146,7 +123,7 @@ describe('useUpdateProjectConsentDirective', () => {
   });
 
   test('updates the rejected consent', async () => {
-    axiosMock.onPost('/v1/consent/directives/me').reply(201, {});
+    axiosMock.onPatch('/v1/consent/directives/me/directive-id').reply(200, {});
 
     const useTestHook = () => {
       const { useUpdateProjectConsentDirective } = useConsent();
@@ -155,15 +132,22 @@ describe('useUpdateProjectConsentDirective', () => {
 
     const { result } = renderHookInContext(useTestHook);
     await act(async () => {
-      await result.current.mutateAsync(false);
+      await result.current.mutateAsync({
+        directiveId: 'directive-id',
+        accept: false,
+      });
     });
 
-    expect(axiosMock.history.post[0].url).toBe(`/v1/consent/directives/me`);
-    expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({
-      projectId: activeProject?.id,
+    expect(axiosMock.history.patch[0].url).toBe(
+      `/v1/consent/directives/me/directive-id`,
+    );
+    expect(JSON.parse(axiosMock.history.patch[0].data)).toEqual({
       status: 'rejected',
-      consentForm: {
+      response: {
         item: [
+          {
+            linkId: 'terms',
+          },
           {
             linkId: 'acceptance',
             answer: [
@@ -179,11 +163,7 @@ describe('useUpdateProjectConsentDirective', () => {
 });
 
 describe('useShouldRenderConsentScreen', () => {
-  test('should return false if the project does not have a default consent form', async () => {
-    axiosMock
-      .onGet(`/v1/consent/projects/${activeProject.id}/default-form`)
-      .reply(200, undefined);
-
+  test('should return false if the user has accepted all assigned any consents', async () => {
     const directive = {
       title: 'Directive',
       resourceType: 'Consent',
@@ -206,52 +186,14 @@ describe('useShouldRenderConsentScreen', () => {
     });
   });
 
-  test('should return false if the user accepted the consent', async () => {
-    const consent = {
-      title: 'Consent Title',
-      resourceType: 'Questionnaire',
-      id: 'consentId',
-      status: 'active',
-    };
-    axiosMock
-      .onGet(`/v1/consent/projects/${activeProject.id}/default-form`)
-      .reply(200, consent);
-
+  test('should return true if the user has a proposed consent', async () => {
     const directive = {
       title: 'Directive',
       resourceType: 'Consent',
       id: 'directiveId',
-      status: 'active',
+      status: 'proposed',
     };
     const responseMock = { items: [directive] };
-
-    axiosMock.onGet(`/v1/consent/directives/me`).reply(200, responseMock);
-
-    const useTestHook = () => {
-      const { useShouldRenderConsentScreen } = useConsent();
-      return useShouldRenderConsentScreen();
-    };
-
-    const { result } = renderHookInContext(useTestHook);
-
-    await waitFor(() => {
-      expect(result.current.shouldRenderConsentScreen).toBe(false);
-    });
-  });
-
-  test('should return true if the user did not accept the existing project consent', async () => {
-    const consent = {
-      title: 'Consent Title',
-      resourceType: 'Questionnaire',
-      id: 'consentId',
-      status: 'active',
-    };
-    axiosMock
-      .onGet(`/v1/consent/projects/${activeProject.id}/default-form`)
-      .reply(200, consent);
-
-    const responseMock = { items: [] };
-
     axiosMock.onGet(`/v1/consent/directives/me`).reply(200, responseMock);
 
     const useTestHook = () => {
@@ -263,6 +205,7 @@ describe('useShouldRenderConsentScreen', () => {
 
     await waitFor(() => {
       expect(result.current.shouldRenderConsentScreen).toBe(true);
+      expect(result.current.consentDirectives).toEqual([directive]);
     });
   });
 
@@ -296,6 +239,7 @@ describe('useShouldRenderConsentScreen', () => {
 
     await waitFor(() => {
       expect(result.current.shouldRenderConsentScreen).toBe(true);
+      expect(result.current.consentDirectives).toEqual([directive]);
     });
   });
 });
