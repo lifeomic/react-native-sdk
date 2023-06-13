@@ -2,35 +2,12 @@ import { useQuery, useMutation } from 'react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 import { useActiveProject } from './useActiveProject';
-import { Consent } from 'fhir/r3';
+import { Consent, Questionnaire } from 'fhir/r3';
 
 export const useConsent = () => {
   const { accountHeaders, account } = useActiveAccount();
   const { activeProject } = useActiveProject();
   const { httpClient } = useHttpClient();
-
-  const useDefaultConsent = () => {
-    return useQuery(
-      [
-        `/v1/consent/projects/${activeProject?.id}/default-form`,
-        {
-          projectId: activeProject?.id,
-          account,
-        },
-      ],
-      () =>
-        httpClient
-          .get<Consent & { item: any[] }>(
-            `/v1/consent/projects/${activeProject?.id}/default-form`,
-            {
-              params: { active: true },
-              headers: { ...accountHeaders },
-            },
-          )
-          .then((res) => res.data),
-      { enabled: !!accountHeaders && !!activeProject?.id },
-    );
-  };
 
   const useConsentDirectives = () => {
     return useQuery(
@@ -43,7 +20,7 @@ export const useConsent = () => {
       ],
       () =>
         httpClient
-          .get<{ items: Consent[] }>('/v1/consent/directives/me', {
+          .get<{ items: ConsentAndForm[] }>('/v1/consent/directives/me', {
             params: { projectId: activeProject?.id, includeForm: true },
             headers: { ...accountHeaders },
           })
@@ -54,19 +31,21 @@ export const useConsent = () => {
 
   const useUpdateProjectConsentDirective = () => {
     return useMutation({
-      mutationFn: async (accept: boolean) =>
-        httpClient.post(
-          '/v1/consent/directives/me',
+      mutationFn: async (params: ConsentPatch) =>
+        httpClient.patch(
+          `/v1/consent/directives/me/${params.directiveId}`,
           {
-            projectId: activeProject?.id,
-            status: accept ? 'active' : 'rejected',
-            consentForm: {
+            status: params.accept ? 'active' : 'rejected',
+            response: {
               item: [
+                {
+                  linkId: 'terms',
+                },
                 {
                   linkId: 'acceptance',
                   answer: [
                     {
-                      valueBoolean: accept,
+                      valueBoolean: params.accept,
                     },
                   ],
                 },
@@ -81,29 +60,36 @@ export const useConsent = () => {
   };
 
   const useShouldRenderConsentScreen = () => {
-    const { data: directivesData, isLoading: loadingDirectives } =
-      useConsentDirectives();
-    const { data: defaultConsentData, isLoading: loadingDefaultConsents } =
-      useDefaultConsent();
+    const {
+      data: directivesData,
+      isLoading: loadingDirectives,
+      isFetched: fetchedDirectives,
+    } = useConsentDirectives();
 
-    const didAcceptConsent =
-      !loadingDirectives &&
-      !!directivesData?.items?.length &&
-      directivesData.items[0].status === 'active';
-
-    const defaultConsentExists =
-      !loadingDefaultConsents && !!defaultConsentData;
+    const consentDirectives = directivesData?.items?.filter(
+      (c) => c.status === 'proposed' || c.status === 'rejected',
+    );
+    const shouldRenderConsentScreen = !!consentDirectives?.length;
 
     return {
-      isLoading: loadingDirectives || loadingDefaultConsents,
-      shouldRenderConsentScreen: defaultConsentExists && !didAcceptConsent,
+      isLoading: !fetchedDirectives || loadingDirectives,
+      consentDirectives,
+      shouldRenderConsentScreen,
     };
   };
 
   return {
     useConsentDirectives,
-    useDefaultConsent,
     useUpdateProjectConsentDirective,
     useShouldRenderConsentScreen,
   };
+};
+
+type ConsentPatch = {
+  directiveId: string;
+  accept: boolean;
+};
+
+type ConsentAndForm = Consent & {
+  form: Questionnaire;
 };
