@@ -68,6 +68,7 @@ export const ConsentScreen = ({
   }, [logout, updateConsentDirective]);
 
   const consentText = consentToPresent?.form?.item?.[0].text;
+  const acceptText = consentToPresent?.form?.item?.[1].text;
   if (loadingDirectives || !consentText) {
     return (
       <ActivityIndicatorView
@@ -78,15 +79,15 @@ export const ConsentScreen = ({
 
   return (
     <View style={styles.view}>
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text>
-          <Markdown>{consentText}</Markdown>
-        </Text>
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.consentTextContainer}>
+          <Text>
+            <Markdown>{consentText}</Markdown>
+          </Text>
+        </View>
       </ScrollView>
       <View style={styles.buttonsContainer}>
+        {acceptText && <Text style={styles.acceptText}>{acceptText}</Text>}
         <Button
           mode="contained"
           onPress={acceptConsent}
@@ -107,14 +108,17 @@ export const ConsentScreen = ({
 
 const defaultStyles = createStyles('ConsentScreen', (theme) => ({
   view: {
-    marginHorizontal: theme.spacing.large,
     flex: 1,
   },
-  scrollView: {
-    paddingVertical: theme.spacing.large,
+  scrollView: {},
+  consentTextContainer: {
+    margin: theme.spacing.large,
+  },
+  acceptText: {
+    marginBottom: theme.spacing.large,
   },
   buttonsContainer: {
-    marginVertical: theme.spacing.large,
+    margin: theme.spacing.large,
   },
   agreeButton: {},
   declineButton: {},
@@ -125,4 +129,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
-export type TileStyles = NamedStylesProp<typeof defaultStyles>;
+export type ConsentScreenStyles = NamedStylesProp<typeof defaultStyles>;
