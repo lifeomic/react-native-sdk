@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View, ScrollView, Text, Alert } from 'react-native';
 import { t } from 'i18next';
 import Markdown from 'react-native-markdown-display';
@@ -11,15 +11,30 @@ export const ConsentScreen = ({
   navigation,
 }: LoggedInRootScreenProps<'screens/ConsentScreen'>) => {
   const { styles } = useStyles(defaultStyles);
-  const { useDefaultConsent, useUpdateProjectConsentDirective } = useConsent();
-  const { data: defaultConsentData, isLoading: loadingDefaultConsent } =
-    useDefaultConsent();
+  const { useShouldRenderConsentScreen, useUpdateProjectConsentDirective } =
+    useConsent();
+  const { consentDirectives, isLoading: loadingDirectives } =
+    useShouldRenderConsentScreen();
   const updateConsentDirectiveMutation = useUpdateProjectConsentDirective();
   const { logout } = useOAuthFlow();
 
+  // TODO: If needed, allow for accepting multiple consents in a row.
+  const consentToPresent = useMemo(
+    () => consentDirectives?.[0],
+    [consentDirectives],
+  );
+
   const updateConsentDirective = useCallback(
-    (accept: boolean) => updateConsentDirectiveMutation.mutateAsync(accept),
-    [updateConsentDirectiveMutation],
+    (accept: boolean) => {
+      if (!consentToPresent?.id) {
+        return;
+      }
+      updateConsentDirectiveMutation.mutateAsync({
+        directiveId: consentToPresent.id,
+        accept,
+      });
+    },
+    [updateConsentDirectiveMutation, consentToPresent],
   );
 
   const acceptConsent = useCallback(async () => {
@@ -52,8 +67,8 @@ export const ConsentScreen = ({
     );
   }, [logout, updateConsentDirective]);
 
-  const consentText = defaultConsentData?.item?.[0].text;
-  if (loadingDefaultConsent || !consentText) {
+  const consentText = consentToPresent?.form?.item?.[0].text;
+  if (loadingDirectives || !consentText) {
     return (
       <ActivityIndicatorView
         message={t('consent-screen-loading-consent', 'Loading consent')}

@@ -13,7 +13,8 @@ import { CircleThreadScreen } from '../screens/CircleThreadScreen';
 export function RootStack() {
   const { isLoggedIn, loading: loadingAuth } = useAuth();
   const { useShouldRenderConsentScreen } = useConsent();
-  const { shouldRenderConsentScreen } = useShouldRenderConsentScreen();
+  const { shouldRenderConsentScreen, isLoading: loadingConsents } =
+    useShouldRenderConsentScreen();
 
   if (!isLoggedIn && loadingAuth) {
     return (
@@ -24,6 +25,14 @@ export function RootStack() {
   }
 
   if (isLoggedIn) {
+    if (loadingConsents) {
+      return (
+        <ActivityIndicatorView
+          message={t('root-stack-waiting-for-consent', 'Waiting for consent')}
+        />
+      );
+    }
+
     const Stack = createNativeStackNavigator<LoggedInRootParamList>();
     const initialRouteName = shouldRenderConsentScreen
       ? 'screens/ConsentScreen'
