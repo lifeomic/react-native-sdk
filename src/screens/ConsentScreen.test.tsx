@@ -70,9 +70,10 @@ test('render the activity indicator when loading', () => {
   expect(getByTestId('activity-indicator-view')).toBeDefined();
 });
 
-test('renders the consent body', () => {
+test('renders the consent body and acceptance verbiage', () => {
   const { getByText } = render(consentScreen);
   expect(getByText(defaultConsentDirective.form.item[0].text)).toBeDefined();
+  expect(getByText(defaultConsentDirective.form.item[1].text)).toBeDefined();
 });
 
 test('should accept the consent and navigate to the home screen', async () => {
