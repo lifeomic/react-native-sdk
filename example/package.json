@@ -33,7 +33,7 @@
     "react": "18.2.0",
     "react-i18next": "^12.1.5",
     "react-native": "0.71.1",
-    "react-native-app-auth": "^6.4.3",
+    "react-native-app-auth": "7.0.0-rc2",
     "react-native-device-info": "^10.3.0",
     "react-native-draggable-flatlist": "^3.0.6",
     "react-native-gesture-handler": "^2.9.0",
