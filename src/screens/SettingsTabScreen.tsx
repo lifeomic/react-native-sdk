@@ -101,7 +101,7 @@ function MainMenuItem({ title, action, badge }: Props) {
   );
 }
 
-const defaultStyles = createStyles('SettingsScreen', (theme: Theme) => ({
+const defaultStyles = createStyles('SettingsTabScreen', (theme: Theme) => ({
   mainMenuItemView: {
     flex: 1,
     flexDirection: 'row',
@@ -137,4 +137,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
-export type SettingsScreenStyles = NamedStylesProp<typeof defaultStyles>;
+export type SettingsTabScreenStyles = NamedStylesProp<typeof defaultStyles>;

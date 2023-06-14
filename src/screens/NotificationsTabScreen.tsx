@@ -80,7 +80,7 @@ export const NotificationsTabScreen = () => {
   );
 };
 
-const defaultStyles = createStyles('NotificationsScreen', () => ({
+const defaultStyles = createStyles('NotificationsTabScreen', () => ({
   listItem: {},
   icon: { paddingLeft: 16 },
 }));
@@ -90,4 +90,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
-export type NotificationsScreenStyle = NamedStylesProp<typeof defaultStyles>;
+export type NotificationsTabScreenStyle = NamedStylesProp<typeof defaultStyles>;
