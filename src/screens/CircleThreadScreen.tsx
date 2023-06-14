@@ -1,12 +1,12 @@
 import React, { useLayoutEffect, useCallback } from 'react';
 import { t } from 'i18next';
-import { LoggedInScreenProps } from '../navigators/types';
+import { HomeStackScreenProps } from '../navigators/types';
 import { Thread } from '../components/Circles/Thread';
 
 export const CircleThreadScreen = ({
   navigation,
   route,
-}: LoggedInScreenProps<'Circle/Thread'>) => {
+}: HomeStackScreenProps<'Home/Circle/Thread'>) => {
   useLayoutEffect(() => {
     if (route.params.post.author) {
       navigation.setOptions({

@@ -8,7 +8,8 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { TabNavigator } from './TabNavigator';
 import { LoggedInRootParamList, NotLoggedInRootParamList } from './types';
 import { ConsentScreen } from '../screens/ConsentScreen';
-import { CircleThreadScreen } from '../screens/CircleThreadScreen';
+import { HomeStack } from './HomeStack';
+import { SettingsStack } from './SettingsStack';
 
 export function RootStack() {
   const { isLoggedIn, loading: loadingAuth } = useAuth();
@@ -36,13 +37,16 @@ export function RootStack() {
     const Stack = createNativeStackNavigator<LoggedInRootParamList>();
     const initialRouteName = shouldRenderConsentScreen
       ? 'screens/ConsentScreen'
-      : 'app';
+      : 'LandingTabs';
 
     return (
       <LoggedInProviders>
-        <Stack.Navigator initialRouteName={initialRouteName}>
+        <Stack.Navigator
+          initialRouteName={initialRouteName}
+          id={'LoggedInStack'}
+        >
           <Stack.Screen
-            name="app"
+            name="LandingTabs"
             component={TabNavigator}
             options={{ headerShown: false }}
           />
@@ -54,7 +58,16 @@ export function RootStack() {
               title: t('consent', 'Consent'),
             }}
           />
-          <Stack.Screen name="Circle/Thread" component={CircleThreadScreen} />
+          <Stack.Screen
+            name="HomeScreens"
+            component={HomeStack}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SettingsScreens"
+            component={SettingsStack}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </LoggedInProviders>
     );

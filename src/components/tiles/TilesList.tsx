@@ -9,9 +9,13 @@ import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { createStyles, useIcons } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
 import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
-import { HomeStackScreenProps } from '../../navigators/types';
+import {
+  HomeTabScreenProps,
+  LoggedInRootParamList,
+} from '../../navigators/types';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-interface Props extends HomeStackScreenProps<'Home'> {
+interface Props extends HomeTabScreenProps<'HomeTabScreen'> {
   styles?: TilesListStyles;
 }
 
@@ -19,6 +23,8 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { appTileScreens } = useDeveloperConfig();
   const { data } = useAppConfig();
+  const parentNavigation =
+    navigation.getParent<StackNavigationProp<LoggedInRootParamList>>();
 
   const pillarsTileEnabled = data?.homeTab?.tiles?.includes?.('pillarsTile');
   const pillarSettings = data?.homeTab?.pillarSettings;
@@ -29,30 +35,45 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
 
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
-      navigation.navigate('Home/Circle/Discussion', { circleTile });
+      parentNavigation.navigate('HomeScreens', {
+        screen: 'Home/Circle/Discussion',
+        params: { circleTile },
+      });
     },
-    [navigation],
+    [parentNavigation],
   );
 
   const onAppTilePress = useCallback(
     (appTile: AppTile) => () => {
       if (getCustomAppTileComponent(appTileScreens, appTile)) {
-        navigation.navigate('Home/CustomAppTile', { appTile });
+        parentNavigation.navigate('HomeScreens', {
+          screen: 'Home/CustomAppTile',
+          params: { appTile },
+        });
       } else if (appTile.clientId) {
-        navigation.navigate('Home/AuthedAppTile', { appTile });
+        parentNavigation.navigate('HomeScreens', {
+          screen: 'Home/AuthedAppTile',
+          params: { appTile },
+        });
       } else {
-        navigation.navigate('Home/AppTile', { appTile });
+        parentNavigation.navigate('HomeScreens', {
+          screen: 'Home/AppTile',
+          params: { appTile },
+        });
       }
     },
-    [navigation, appTileScreens],
+    [parentNavigation, appTileScreens],
   );
 
   const onTodayTilePress = useCallback(() => {
     if (!todayTile) {
       return;
     }
-    navigation.navigate('Home/AuthedAppTile', { appTile: todayTile });
-  }, [navigation, todayTile]);
+    parentNavigation.navigate('HomeScreens', {
+      screen: 'Home/AuthedAppTile',
+      params: { appTile: todayTile },
+    });
+  }, [parentNavigation, todayTile]);
 
   return (
     <View testID={tID('tiles-list')} style={styles.view}>
@@ -64,9 +85,9 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             )
               ? 'Home/AdvancedTrackerDetails'
               : 'Home/TrackTile';
-            navigation.navigate(screenName, {
-              tracker,
-              valuesContext,
+            parentNavigation.navigate('HomeScreens', {
+              screen: screenName,
+              params: { tracker, valuesContext },
             });
           }}
         />
@@ -74,14 +95,18 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
       {trackTileEnabled && (
         <TrackTile
           onOpenSettings={(valuesContext) =>
-            navigation.navigate('Home/TrackTileSettings', {
-              valuesContext,
+            parentNavigation.navigate('HomeScreens', {
+              screen: 'Home/TrackTileSettings',
+              params: { valuesContext },
             })
           }
           onOpenTracker={(tracker, valuesContext) =>
-            navigation.navigate('Home/TrackTile', {
-              tracker,
-              valuesContext,
+            parentNavigation.navigate('HomeScreens', {
+              screen: 'Home/TrackTile',
+              params: {
+                tracker,
+                valuesContext,
+              },
             })
           }
           title={trackTileTitle}

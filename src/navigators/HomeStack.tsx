@@ -1,6 +1,5 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomeScreen } from '../screens/HomeScreen';
 import { AppTileScreen } from '../screens/AppTileScreen';
 import { CustomAppTileScreen } from '../screens/CustomAppTileScreen';
 import { TrackTileTrackerScreen } from '../screens/TrackTileTrackerScreen';
@@ -19,13 +18,13 @@ import {
 import { AuthedAppTileScreen } from '../screens/AuthedAppTileScreen';
 import { HomeStackParamList } from './types';
 import { CircleDiscussionScreen } from '../screens/CircleDiscussionScreen';
+import { CircleThreadScreen } from '../screens/CircleThreadScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
 export function HomeStack() {
   return (
     <Stack.Navigator screenOptions={{ header: AppNavHeader }}>
-      <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Home/AppTile" component={AppTileScreen} />
       <Stack.Screen name="Home/AuthedAppTile" component={AuthedAppTileScreen} />
       <Stack.Screen name="Home/CustomAppTile" component={CustomAppTileScreen} />
@@ -50,6 +49,7 @@ export function HomeStack() {
           headerRight: SaveEditorButton,
         })}
       />
+      <Stack.Screen name="Home/Circle/Thread" component={CircleThreadScreen} />
     </Stack.Navigator>
   );
 }

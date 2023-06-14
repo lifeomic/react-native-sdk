@@ -9,8 +9,12 @@ import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useStyles } from '../hooks/useStyles';
 import { Theme, createStyles } from '../components/BrandConfigProvider';
 import { Text, Divider } from 'react-native-paper';
-import { SettingsStackScreenProps } from '../navigators/types';
+import {
+  LoggedInRootParamList,
+  SettingsTabScreenProps,
+} from '../navigators/types';
 import { useWearables } from '../hooks/useWearables';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -18,30 +22,43 @@ const fullVersion = versionNumber + ' (' + buildNumber + ')';
 
 export const SettingsScreen = ({
   navigation,
-}: SettingsStackScreenProps<'Settings'>) => {
+}: SettingsTabScreenProps<'SettingsTabScreen'>) => {
   const { account } = useActiveAccount();
   const { styles } = useStyles(defaultStyles);
   const { useWearableIntegrationsQuery } = useWearables();
   const { data } = useWearableIntegrationsQuery();
-
+  const parentNavigation =
+    navigation.getParent<StackNavigationProp<LoggedInRootParamList>>();
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.scroll}>
           <MainMenuItem
             title={t('settings-profile-row-title', 'Profile')}
-            action={() => navigation.navigate('Settings/Profile')}
+            action={() =>
+              parentNavigation.navigate('SettingsScreens', {
+                screen: 'Settings/Profile',
+              })
+            }
           />
           <Divider />
           <MainMenuItem
             title={account?.name || t('settings-account-selection', 'Accounts')}
-            action={() => navigation.navigate('Settings/AccountSelection')}
+            action={() =>
+              parentNavigation.navigate('SettingsScreens', {
+                screen: 'Settings/AccountSelection',
+              })
+            }
           />
           <Divider />
           {!!data?.items?.length && (
             <MainMenuItem
               title={t('settings-sync-data', 'Sync Data')}
-              action={() => navigation.navigate('Settings/Wearables')}
+              action={() =>
+                parentNavigation.navigate('SettingsScreens', {
+                  screen: 'Settings/Wearables',
+                })
+              }
             />
           )}
         </ScrollView>

@@ -5,10 +5,10 @@ import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { TilesList } from '../components/tiles/TilesList';
 import { ScreenSurface } from '../components/ScreenSurface';
-import { HomeStackScreenProps } from '../navigators/types';
+import { HomeTabScreenProps } from '../navigators/types';
 import { useJoinCircles } from '../hooks';
 
-export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
+export const HomeScreen = (navProps: HomeTabScreenProps<'HomeTabScreen'>) => {
   const { isLoading: loadingAccount } = useActiveAccount();
   const { isLoading: loadingAppConfig } = useAppConfig();
   const { isLoading: loadingJoinCircles } = useJoinCircles();

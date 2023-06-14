@@ -2,17 +2,63 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { t } from 'i18next';
-import { SettingsStack } from './SettingsStack';
-import { HomeStack } from './HomeStack';
-import { NotificationsStack } from './NotificationsStack';
 import { useStyles } from '../hooks/useStyles';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
-import { TabParamList } from './types';
+import {
+  HomeTabScreenParamList,
+  NotificationsTabScreenParamList,
+  SettingsTabScreenParamList,
+  TabParamList,
+} from './types';
 import { useDeveloperConfig } from '../hooks';
 import { TabBar } from './TabBar';
+import { HomeScreen, SettingsScreen } from '../screens';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+const HomeScreenStack = createNativeStackNavigator<HomeTabScreenParamList>();
+function HomeTabStack() {
+  return (
+    <HomeScreenStack.Navigator>
+      <HomeScreenStack.Screen
+        name="HomeTabScreen"
+        component={HomeScreen}
+        options={{ title: t('tabs-home', 'Home') }}
+      />
+    </HomeScreenStack.Navigator>
+  );
+}
+
+const NotificationsScreenStack =
+  createNativeStackNavigator<NotificationsTabScreenParamList>();
+function NotificationsTabStack() {
+  return (
+    <NotificationsScreenStack.Navigator>
+      <NotificationsScreenStack.Screen
+        name="NotificationsTabScreen"
+        component={NotificationsScreen}
+        options={{ title: t('tabs-notifications', 'Notifications') }}
+      />
+    </NotificationsScreenStack.Navigator>
+  );
+}
+
+const SettingsScreenStack =
+  createNativeStackNavigator<SettingsTabScreenParamList>();
+function SettingsTabStack() {
+  return (
+    <SettingsScreenStack.Navigator>
+      <SettingsScreenStack.Screen
+        name="SettingsTabScreen"
+        component={SettingsScreen}
+        options={{ title: t('tabs-settings', 'Settings') }}
+      />
+    </SettingsScreenStack.Navigator>
+  );
+}
 
 export function TabNavigator() {
   const { Home, Bell, Settings } = useIcons();
@@ -40,33 +86,31 @@ export function TabNavigator() {
     >
       <Tab.Screen
         name="HomeTab"
-        component={HomeStack}
+        component={HomeTabStack}
         key="HomeTab"
         options={{
           tabBarLabel: t('tabs-home', 'Home'),
           tabBarIcon: Home,
           tabBarColor: 'red',
-          headerShown: false,
         }}
       />
       <Tab.Screen
         name="NotificationsTab"
-        component={NotificationsStack}
+        component={NotificationsTabStack}
         key="NotificationsTab"
         options={{
           tabBarLabel: t('tabs-notifications', 'Notifications'),
           tabBarIcon: Bell,
-          headerShown: false,
         }}
       />
       <Tab.Screen
         name="SettingsTab"
         key="SettingsTab"
-        component={SettingsStack}
+        component={SettingsTabStack}
         options={{
           tabBarLabel: t('tabs-settings', 'Settings'),
           tabBarIcon: Settings,
-          headerShown: false,
+          headerShown: true,
         }}
       />
       {!useTabBar &&
