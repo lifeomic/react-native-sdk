@@ -18,11 +18,12 @@ import { TabBar } from './TabBar';
 import { HomeScreen, SettingsScreen } from '../screens';
 import { NotificationsScreen } from '../screens/NotificationsScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { AppNavHeader } from '../components';
 
 const HomeScreenStack = createNativeStackNavigator<HomeTabScreenParamList>();
 function HomeTabStack() {
   return (
-    <HomeScreenStack.Navigator>
+    <HomeScreenStack.Navigator screenOptions={{ header: AppNavHeader }}>
       <HomeScreenStack.Screen
         name="HomeTabScreen"
         component={HomeScreen}
@@ -36,7 +37,9 @@ const NotificationsScreenStack =
   createNativeStackNavigator<NotificationsTabScreenParamList>();
 function NotificationsTabStack() {
   return (
-    <NotificationsScreenStack.Navigator>
+    <NotificationsScreenStack.Navigator
+      screenOptions={{ header: AppNavHeader }}
+    >
       <NotificationsScreenStack.Screen
         name="NotificationsTabScreen"
         component={NotificationsScreen}
@@ -50,7 +53,7 @@ const SettingsScreenStack =
   createNativeStackNavigator<SettingsTabScreenParamList>();
 function SettingsTabStack() {
   return (
-    <SettingsScreenStack.Navigator>
+    <SettingsScreenStack.Navigator screenOptions={{ header: AppNavHeader }}>
       <SettingsScreenStack.Screen
         name="SettingsTabScreen"
         component={SettingsScreen}
@@ -105,12 +108,11 @@ export function TabNavigator() {
       />
       <Tab.Screen
         name="SettingsTab"
-        key="SettingsTab"
         component={SettingsTabStack}
+        key="SettingsTab"
         options={{
           tabBarLabel: t('tabs-settings', 'Settings'),
           tabBarIcon: Settings,
-          headerShown: true,
         }}
       />
       {!useTabBar &&
@@ -122,7 +124,6 @@ export function TabNavigator() {
             options={{
               tabBarLabel: tab.options.tabBarLabel,
               tabBarIcon: tab.options.tabBarIcon,
-              headerShown: false,
             }}
           />
         ))}
