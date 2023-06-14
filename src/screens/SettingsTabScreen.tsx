@@ -20,7 +20,7 @@ const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
 const fullVersion = versionNumber + ' (' + buildNumber + ')';
 
-export const SettingsScreen = ({
+export const SettingsTabScreen = ({
   navigation,
 }: SettingsTabScreenProps<'SettingsTabScreen'>) => {
   const { account } = useActiveAccount();

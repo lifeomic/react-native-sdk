@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { AppConfig, useActiveAccount, useAppConfig } from '../hooks';
-import { HomeScreen } from './HomeScreen';
+import { HomeTabScreen } from './HomeTabScreen';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
@@ -58,7 +58,7 @@ const baseURL = 'https://some-domain/unit-test';
 const homeScreen = (
   <QueryClientProvider client={queryClient}>
     <GraphQLClientContextProvider baseURL={baseURL}>
-      <HomeScreen navigation={navigateMock as any} route={{} as any} />
+      <HomeTabScreen navigation={navigateMock as any} route={{} as any} />
     </GraphQLClientContextProvider>
   </QueryClientProvider>
 );

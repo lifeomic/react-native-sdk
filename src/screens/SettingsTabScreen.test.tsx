@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import DeviceInfo from 'react-native-device-info';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useWearables } from '../hooks/useWearables';
-import { SettingsScreen } from './SettingsScreen';
+import { SettingsTabScreen } from './SettingsTabScreen';
 
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
@@ -37,7 +37,7 @@ const navigationMock = {
 
 test('shows logout button and version', async () => {
   const { getByTestId } = await render(
-    <SettingsScreen navigation={navigationMock as any} route={{} as any} />,
+    <SettingsTabScreen navigation={navigationMock as any} route={{} as any} />,
   );
 
   await waitFor(() => {
@@ -48,7 +48,7 @@ test('shows logout button and version', async () => {
 
 test('shows account name', async () => {
   const { getByText } = await render(
-    <SettingsScreen navigation={navigationMock as any} route={{} as any} />,
+    <SettingsTabScreen navigation={navigationMock as any} route={{} as any} />,
   );
 
   await waitFor(() => {
@@ -59,7 +59,7 @@ test('shows account name', async () => {
 test('shows placeholder if account still loading', async () => {
   useActiveAccountMock.mockReturnValue({});
   const { getByText } = await render(
-    <SettingsScreen navigation={navigationMock as any} route={{} as any} />,
+    <SettingsTabScreen navigation={navigationMock as any} route={{} as any} />,
   );
 
   await waitFor(() => {
@@ -69,7 +69,7 @@ test('shows placeholder if account still loading', async () => {
 
 test('navigates to user profile', async () => {
   const { getByText } = await render(
-    <SettingsScreen navigation={navigationMock as any} route={{} as any} />,
+    <SettingsTabScreen navigation={navigationMock as any} route={{} as any} />,
   );
 
   await waitFor(() => {
@@ -84,7 +84,7 @@ test('navigates to user profile', async () => {
 
 test('navigates to account selection', async () => {
   const { getByText } = await render(
-    <SettingsScreen navigation={navigationMock as any} route={{} as any} />,
+    <SettingsTabScreen navigation={navigationMock as any} route={{} as any} />,
   );
 
   await waitFor(() => {

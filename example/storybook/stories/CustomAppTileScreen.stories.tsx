@@ -16,7 +16,7 @@ import {
   HomeTabScreenParamList,
   HomeTabScreenProps,
   LoggedInRootParamList,
-  TabParamList,
+  LandingTabsParamList,
 } from '../../../src/navigators/types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -108,7 +108,7 @@ function HomeTabStack() {
   );
 }
 
-const BottomTabNavigator = createBottomTabNavigator<TabParamList>();
+const BottomTabNavigator = createBottomTabNavigator<LandingTabsParamList>();
 function TabNavigator() {
   return (
     <BottomTabNavigator.Navigator>

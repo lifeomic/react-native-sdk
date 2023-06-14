@@ -11,55 +11,60 @@ import {
   HomeTabScreenParamList,
   NotificationsTabScreenParamList,
   SettingsTabScreenParamList,
-  TabParamList,
+  LandingTabsParamList,
 } from './types';
 import { useDeveloperConfig } from '../hooks';
 import { TabBar } from './TabBar';
-import { HomeScreen, SettingsScreen } from '../screens';
-import { NotificationsScreen } from '../screens/NotificationsScreen';
+import { HomeTabScreen, SettingsTabScreen } from '../screens';
+import { NotificationsTabScreen } from '../screens/NotificationsTabScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AppNavHeader } from '../components';
 
-const HomeScreenStack = createNativeStackNavigator<HomeTabScreenParamList>();
-function HomeTabStack() {
+const HomeTabScreenStackNavigator =
+  createNativeStackNavigator<HomeTabScreenParamList>();
+function HomeTabScreenStack() {
   return (
-    <HomeScreenStack.Navigator screenOptions={{ header: AppNavHeader }}>
-      <HomeScreenStack.Screen
-        name="HomeTabScreen"
-        component={HomeScreen}
-        options={{ title: t('tabs-home', 'Home') }}
-      />
-    </HomeScreenStack.Navigator>
-  );
-}
-
-const NotificationsScreenStack =
-  createNativeStackNavigator<NotificationsTabScreenParamList>();
-function NotificationsTabStack() {
-  return (
-    <NotificationsScreenStack.Navigator
+    <HomeTabScreenStackNavigator.Navigator
       screenOptions={{ header: AppNavHeader }}
     >
-      <NotificationsScreenStack.Screen
-        name="NotificationsTabScreen"
-        component={NotificationsScreen}
-        options={{ title: t('tabs-notifications', 'Notifications') }}
+      <HomeTabScreenStackNavigator.Screen
+        name="HomeTabScreen"
+        component={HomeTabScreen}
+        options={{ title: t('tabs-home', 'Home') }}
       />
-    </NotificationsScreenStack.Navigator>
+    </HomeTabScreenStackNavigator.Navigator>
   );
 }
 
-const SettingsScreenStack =
-  createNativeStackNavigator<SettingsTabScreenParamList>();
-function SettingsTabStack() {
+const NotificationsTabScreenStackNavigator =
+  createNativeStackNavigator<NotificationsTabScreenParamList>();
+function NotificationsTabScreenStack() {
   return (
-    <SettingsScreenStack.Navigator screenOptions={{ header: AppNavHeader }}>
-      <SettingsScreenStack.Screen
+    <NotificationsTabScreenStackNavigator.Navigator
+      screenOptions={{ header: AppNavHeader }}
+    >
+      <NotificationsTabScreenStackNavigator.Screen
+        name="NotificationsTabScreen"
+        component={NotificationsTabScreen}
+        options={{ title: t('tabs-notifications', 'Notifications') }}
+      />
+    </NotificationsTabScreenStackNavigator.Navigator>
+  );
+}
+
+const SettingsTabScreenStackNavigator =
+  createNativeStackNavigator<SettingsTabScreenParamList>();
+function SettingsScreenTabStack() {
+  return (
+    <SettingsTabScreenStackNavigator.Navigator
+      screenOptions={{ header: AppNavHeader }}
+    >
+      <SettingsTabScreenStackNavigator.Screen
         name="SettingsTabScreen"
-        component={SettingsScreen}
+        component={SettingsTabScreen}
         options={{ title: t('tabs-settings', 'Settings') }}
       />
-    </SettingsScreenStack.Navigator>
+    </SettingsTabScreenStackNavigator.Navigator>
   );
 }
 
@@ -71,8 +76,8 @@ export function TabNavigator() {
   const { useTabBar } = componentProps?.TabNavigator || {};
 
   const Tab = useTabBar
-    ? createBottomTabNavigator<TabParamList>()
-    : createMaterialBottomTabNavigator<TabParamList>();
+    ? createBottomTabNavigator<LandingTabsParamList>()
+    : createMaterialBottomTabNavigator<LandingTabsParamList>();
 
   const tabBar = (props: any) => {
     return useTabBar ? <TabBar {...props} /> : null;
@@ -89,7 +94,7 @@ export function TabNavigator() {
     >
       <Tab.Screen
         name="HomeTab"
-        component={HomeTabStack}
+        component={HomeTabScreenStack}
         key="HomeTab"
         options={{
           tabBarLabel: t('tabs-home', 'Home'),
@@ -99,7 +104,7 @@ export function TabNavigator() {
       />
       <Tab.Screen
         name="NotificationsTab"
-        component={NotificationsTabStack}
+        component={NotificationsTabScreenStack}
         key="NotificationsTab"
         options={{
           tabBarLabel: t('tabs-notifications', 'Notifications'),
@@ -108,7 +113,7 @@ export function TabNavigator() {
       />
       <Tab.Screen
         name="SettingsTab"
-        component={SettingsTabStack}
+        component={SettingsScreenTabStack}
         key="SettingsTab"
         options={{
           tabBarLabel: t('tabs-settings', 'Settings'),

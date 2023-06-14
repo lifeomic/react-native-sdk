@@ -26,7 +26,7 @@ export type LoggedInScreenProps<T extends keyof LoggedInRootParamList> =
   >;
 
 export type LoggedInRootParamList = {
-  LandingTabs: NavigatorScreenParams<TabParamList>;
+  LandingTabs: NavigatorScreenParams<LandingTabsParamList>;
   HomeScreens: NavigatorScreenParams<HomeStackParamList>;
   SettingsScreens: NavigatorScreenParams<SettingsStackParamList>;
   'screens/ConsentScreen': undefined;
@@ -39,7 +39,7 @@ export type NotLoggedInRootParamList = {
   'screens/LoginScreen': { username?: string };
 };
 
-export type TabParamList = {
+export type LandingTabsParamList = {
   HomeTab: NavigatorScreenParams<HomeTabScreenParamList>;
   NotificationsTab: NavigatorScreenParams<NotificationsTabScreenParamList>;
   SettingsTab: NavigatorScreenParams<SettingsTabScreenParamList>;
@@ -69,10 +69,8 @@ export type SettingsTabScreenParamList = {
 export type SettingsTabScreenProps<T extends keyof SettingsTabScreenParamList> =
   StackScreenProps<SettingsTabScreenParamList, T>;
 
-export type TabScreenProps<T extends keyof TabParamList> = StackScreenProps<
-  TabParamList,
-  T
->;
+export type LandingTabsScreenProps<T extends keyof LandingTabsParamList> =
+  StackScreenProps<LandingTabsParamList, T>;
 
 export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
   CompositeScreenProps<

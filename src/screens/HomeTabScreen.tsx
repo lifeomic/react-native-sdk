@@ -8,7 +8,9 @@ import { ScreenSurface } from '../components/ScreenSurface';
 import { HomeTabScreenProps } from '../navigators/types';
 import { useJoinCircles } from '../hooks';
 
-export const HomeScreen = (navProps: HomeTabScreenProps<'HomeTabScreen'>) => {
+export const HomeTabScreen = (
+  navProps: HomeTabScreenProps<'HomeTabScreen'>,
+) => {
   const { isLoading: loadingAccount } = useActiveAccount();
   const { isLoading: loadingAppConfig } = useAppConfig();
   const { isLoading: loadingJoinCircles } = useJoinCircles();

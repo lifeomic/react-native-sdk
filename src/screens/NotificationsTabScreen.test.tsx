@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react-native';
 import { useActiveAccount, useUser } from '../hooks';
 import { NotificationQueryResponse } from '../hooks/useNotifications';
 import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
-import { NotificationsScreen } from './NotificationsScreen';
+import { NotificationsTabScreen } from './NotificationsTabScreen';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
@@ -26,7 +26,7 @@ const baseURL = 'https://some-domain/unit-test';
 const notificationsScreen = (
   <QueryClientProvider client={queryClient}>
     <GraphQLClientContextProvider baseURL={baseURL}>
-      <NotificationsScreen />
+      <NotificationsTabScreen />
     </GraphQLClientContextProvider>
   </QueryClientProvider>
 );

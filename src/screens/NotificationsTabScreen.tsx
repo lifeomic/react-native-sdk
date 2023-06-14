@@ -9,7 +9,7 @@ import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { tID } from '../common';
 
-export const NotificationsScreen = () => {
+export const NotificationsTabScreen = () => {
   const { Bell, BellOff } = useIcons();
   const { isLoading, data } = useNotifications();
   const { styles } = useStyles(defaultStyles);
