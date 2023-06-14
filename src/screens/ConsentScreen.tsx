@@ -39,7 +39,9 @@ export const ConsentScreen = ({
 
   const acceptConsent = useCallback(async () => {
     await updateConsentDirective(true);
-    navigation.replace('app');
+    navigation.replace('LandingTabs', {
+      screen: 'HomeTabScreen',
+    });
   }, [updateConsentDirective, navigation]);
 
   const declineConsent = useCallback(() => {

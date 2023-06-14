@@ -85,7 +85,9 @@ test('should accept the consent and navigate to the home screen', async () => {
         accept: true,
       },
     );
-    expect(navigateMock.replace).toHaveBeenCalledWith('app');
+    expect(navigateMock.replace).toHaveBeenCalledWith('LandingTabs', {
+      screen: 'HomeTabScreen',
+    });
   });
 });
 

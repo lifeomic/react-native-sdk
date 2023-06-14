@@ -13,8 +13,13 @@ import {
 import { TilesList } from '../../../src/components/tiles/TilesList';
 import {
   HomeStackParamList,
-  HomeStackScreenProps,
+  HomeTabScreenParamList,
+  HomeTabScreenProps,
+  LoggedInRootParamList,
+  TabParamList,
 } from '../../../src/navigators/types';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 storiesOf('Custom App Tile Screen', module).add('demo', () => (
   <DeveloperConfigProvider
@@ -24,7 +29,7 @@ storiesOf('Custom App Tile Screen', module).add('demo', () => (
       },
     }}
   >
-    <HomeStack />
+    <LoggedInStack />
   </DeveloperConfigProvider>
 ));
 
@@ -37,7 +42,12 @@ function MyCustomAppTileScreen1() {
   );
 }
 
-function HomeScreen({ navigation, route }: HomeStackScreenProps<'Home'>) {
+function HomeScreen({
+  navigation,
+  route,
+}: HomeTabScreenProps<'HomeTabScreen'>) {
+  const parentNavigation =
+    navigation.getParent<StackNavigationProp<LoggedInRootParamList>>();
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView>
@@ -51,12 +61,15 @@ function HomeScreen({ navigation, route }: HomeStackScreenProps<'Home'>) {
               id="app-tile-invalid"
               title="Error 2"
               onPress={() => {
-                navigation.navigate('Home/CustomAppTile', {
-                  appTile: {
-                    id: 'app-tile-invalid',
-                    title: 'Title 3',
-                    source: {
-                      url: 'https://lifeomic.com/custom-app-tile-3',
+                parentNavigation.navigate('HomeScreens', {
+                  screen: 'Home/CustomAppTile',
+                  params: {
+                    appTile: {
+                      id: 'app-tile-invalid',
+                      title: 'Title 3',
+                      source: {
+                        url: 'https://lifeomic.com/custom-app-tile-3',
+                      },
                     },
                   },
                 });
@@ -82,19 +95,58 @@ function HomeScreen({ navigation, route }: HomeStackScreenProps<'Home'>) {
   );
 }
 
-const Stack = createNativeStackNavigator<HomeStackParamList>();
+const HomeTabStackNavigator =
+  createNativeStackNavigator<HomeTabScreenParamList>();
+function HomeTabStack() {
+  return (
+    <HomeTabStackNavigator.Navigator>
+      <HomeTabStackNavigator.Screen
+        name="HomeTabScreen"
+        component={HomeScreen}
+      />
+    </HomeTabStackNavigator.Navigator>
+  );
+}
 
+const BottomTabNavigator = createBottomTabNavigator<TabParamList>();
+function TabNavigator() {
+  return (
+    <BottomTabNavigator.Navigator>
+      <BottomTabNavigator.Screen name="HomeTab" component={HomeTabStack} />
+    </BottomTabNavigator.Navigator>
+  );
+}
+
+const Stack = createNativeStackNavigator<HomeStackParamList>();
 function HomeStack() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Home/AppTile" component={AppTileScreen} />
         <Stack.Screen
           name="Home/CustomAppTile"
           component={CustomAppTileScreen}
         />
       </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+const LoggedInStackNavigator =
+  createNativeStackNavigator<LoggedInRootParamList>();
+function LoggedInStack() {
+  return (
+    <NavigationContainer>
+      <LoggedInStackNavigator.Navigator>
+        <LoggedInStackNavigator.Screen
+          name="LandingTabs"
+          component={TabNavigator}
+        />
+        <LoggedInStackNavigator.Screen
+          name="HomeScreens"
+          component={HomeStack}
+        />
+      </LoggedInStackNavigator.Navigator>
     </NavigationContainer>
   );
 }

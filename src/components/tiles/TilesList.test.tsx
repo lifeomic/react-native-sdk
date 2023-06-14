@@ -24,6 +24,8 @@ jest.mock('../BrandConfigProvider/icons/IconProvider', () => ({
   })),
 }));
 
+const useNavigationMock = useNavigation as jest.Mock;
+
 beforeEach(() => {
   (useAppConfig as jest.Mock).mockReturnValue({
     data: {
@@ -58,6 +60,9 @@ beforeEach(() => {
         ],
       },
     },
+  });
+  useNavigationMock.mockReturnValue({
+    getParent: jest.fn(),
   });
 });
 

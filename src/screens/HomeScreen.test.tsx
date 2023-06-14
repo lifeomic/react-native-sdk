@@ -16,8 +16,13 @@ jest.mock('../hooks/useAppConfig', () => ({
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useAppConfigMock = useAppConfig as jest.Mock;
+
+const innerNavigateMock = jest.fn();
 const navigateMock = {
   navigate: jest.fn(),
+  getParent: () => ({
+    navigate: innerNavigateMock,
+  }),
 };
 
 const exampleAppConfig: AppConfig = {
@@ -95,7 +100,10 @@ test('handles app tile taps via navigation', async () => {
   const { getByTestId } = render(homeScreen);
   const firstTile = exampleAppConfig.homeTab?.appTiles?.[0];
   fireEvent.press(getByTestId(`tile-button-${firstTile?.id}`));
-  expect(navigateMock.navigate).toHaveBeenCalledWith('Home/AppTile', {
-    appTile: firstTile,
+  expect(innerNavigateMock).toHaveBeenCalledWith('HomeScreens', {
+    screen: 'Home/AppTile',
+    params: {
+      appTile: firstTile,
+    },
   });
 });
