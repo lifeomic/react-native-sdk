@@ -204,6 +204,53 @@ describe('useSearchResourcesQuery', () => {
     });
   });
 
+  test('support custom pageSize', async () => {
+    const resultBundle = {
+      entry: [
+        {
+          resource: {
+            id: 'o1',
+          },
+        },
+        {
+          resource: {
+            id: 'o2',
+          },
+        },
+      ],
+    };
+    axiosMock
+      .onPost('/v1/fhir/dstu3/Observation/_search')
+      .reply(200, resultBundle);
+
+    function useTestHook() {
+      const { useSearchResourcesQuery } = useFhirClient();
+      const searchResult = useSearchResourcesQuery({
+        resourceType: 'Observation',
+        pageSize: 20,
+      });
+      return searchResult;
+    }
+    const { result } = renderHookInContext(useTestHook);
+
+    expect(axiosMock.history.post[0].url).toBe(
+      '/v1/fhir/dstu3/Observation/_search',
+    );
+
+    expect(axiosMock.history.post[0].data).toEqual(
+      JSON.stringify({
+        _tag: 'http://lifeomic.com/fhir/dataset|projectId',
+        patient: 'subjectId',
+        next: '0',
+        resourceType: 'Observation',
+        pageSize: '20',
+      }),
+    );
+    await waitFor(() => {
+      expect(result.current.data).toEqual(resultBundle);
+    });
+  });
+
   test('supports FHIR code filters', async () => {
     const resultBundle = {
       entry: [
