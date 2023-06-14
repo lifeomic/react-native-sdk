@@ -61,6 +61,16 @@ export const OAuthContextProvider = ({
     authConfig.usePKCE = true;
   }
 
+  // Ephemeral session is required
+  if (!authConfig.iosPrefersEphemeralSession) {
+    if (process.env.NODE_ENV !== 'test') {
+      console.warn(
+        'NOTE: LifeOmic requires iosPrefersEphemeralSession. Overriding to iosPrefersEphemeralSession=true',
+      );
+    }
+    authConfig.iosPrefersEphemeralSession = true;
+  }
+
   if (inviteId && evc) {
     authConfig.additionalParameters = {
       ...authConfig.additionalParameters,

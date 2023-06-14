@@ -8826,10 +8826,10 @@ react-is@^16.13.0, react-is@^16.13.1, react-is@^16.7.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-native-app-auth@^6.4.3:
-  version "6.4.3"
-  resolved "https://registry.yarnpkg.com/react-native-app-auth/-/react-native-app-auth-6.4.3.tgz#14e6d0b66087c60fd72cd98cc0219f0420195071"
-  integrity sha512-3Qi9D11WwB96h56UBkdUPfemOxhsp+lLryPy7YRmETrC0Our4AfgyHMfackJp7eCMKO/oB5LxU99Yh19ueIriA==
+react-native-app-auth@7.0.0-rc2:
+  version "7.0.0-rc2"
+  resolved "https://registry.yarnpkg.com/react-native-app-auth/-/react-native-app-auth-7.0.0-rc2.tgz#8d02fc9c3ade3cf6efe64c56da1cfe0ed662c8f6"
+  integrity sha512-fuowyI5UfFJJ3BoV8xv6wrUvcbAwEizIWher/G6JusK252gTlO+WyD7zM7pBgtlC6g1h4wCqD84SGbAZOPwOLQ==
   dependencies:
     invariant "2.2.4"
     react-native-base64 "0.0.2"
