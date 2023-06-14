@@ -53,7 +53,10 @@ export function useFhirClient() {
       },
       {
         resourceType: queryParams.resourceType,
-        pageSize: queryParams.pageSize,
+        pageSize:
+          queryParams.pageSize === undefined
+            ? undefined
+            : queryParams.pageSize.toString(),
       },
     );
     const resourceType = queryParams.resourceType;
