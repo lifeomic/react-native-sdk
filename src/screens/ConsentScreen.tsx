@@ -67,8 +67,12 @@ export const ConsentScreen = ({
     );
   }, [logout, updateConsentDirective]);
 
-  const consentText = consentToPresent?.form?.item?.[0].text;
-  const acceptText = consentToPresent?.form?.item?.[1].text;
+  const consentText = consentToPresent?.form?.item?.find(
+    (f) => f.linkId === 'terms',
+  )?.text;
+  const acceptText = consentToPresent?.form?.item?.find(
+    (f) => f.linkId === 'acceptance',
+  )?.text;
   if (loadingDirectives || !consentText) {
     return (
       <ActivityIndicatorView
