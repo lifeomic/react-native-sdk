@@ -18,7 +18,7 @@ import { WearableLifecycleProvider } from '../components/Wearables/WearableLifec
 import { CreateEditPostModal } from '../components/Circles/CreateEditPostModal';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { InviteProvider } from '../components/Invitations/InviteProvider';
-import { PushNotificationsProvider } from '../hooks/usePushNotifications';
+// import { PushNotificationsProvider } from '../hooks/usePushNotifications';
 
 const queryClient = new QueryClient();
 
@@ -47,11 +47,11 @@ export function RootProviders({
                             <ActionSheetProvider>
                               <SafeAreaProvider>
                                 <ThemedNavigationContainer>
-                                  <PushNotificationsProvider
+                                  {/* <PushNotificationsProvider
                                     config={pushNotificationsConfig}
-                                  >
-                                    {children}
-                                  </PushNotificationsProvider>
+                                  > */}
+                                  {children}
+                                  {/* </PushNotificationsProvider> */}
                                 </ThemedNavigationContainer>
                                 <CreateEditPostModal />
                                 <Toast />

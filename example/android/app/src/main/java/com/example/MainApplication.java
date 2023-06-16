@@ -10,8 +10,8 @@ import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 
-import com.google.firebase.FirebaseApp;
-import com.wix.reactnativenotifications.RNNotificationsPackage;
+// import com.google.firebase.FirebaseApp;
+// import com.wix.reactnativenotifications.RNNotificationsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -45,6 +45,11 @@ public class MainApplication extends Application implements ReactApplication {
         protected Boolean isHermesEnabled() {
           return BuildConfig.IS_HERMES_ENABLED;
         }
+
+        @Override
+        protected Boolean isPushNotificationsEnabled() {
+          return BuildConfig.IS_PUSH_NOTIFICATIONS_ENABLED;
+        }
       };
 
   @Override
@@ -55,7 +60,12 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-    FirebaseApp.initializeApp(this);
+    
+    if (BuildConfig.IS_PUSH_NOTIFICATIONS_ENABLED) {
+      // If you opted-in for Push Notifications, we initialize Firebase.
+      // FirebaseApp.initializeApp(this);
+    }
+    
     SoLoader.init(this, /* native exopackage */ false);
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
