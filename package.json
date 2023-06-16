@@ -87,7 +87,8 @@
     "rn-emoji-keyboard": "^1.2.2",
     "semantic-release": "^19.0.3",
     "ts-jest": "^29.0.5",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "victory-native": "^36.6.11"
   },
   "peerDependencies": {
     "@expo/react-native-action-sheet": "^4.0.1",
@@ -129,7 +130,8 @@
     "react-native-uuid": "^2.0.1",
     "react-native-webview": ">=11.26.1",
     "react-query": ">=3.39.3",
-    "rn-emoji-keyboard": "^1.2.2"
+    "rn-emoji-keyboard": "^1.2.2",
+    "victory-native": "^36.6.11"
   },
   "dependencies": {
     "@lifeomic/chromicons-native": "^2.16.1",

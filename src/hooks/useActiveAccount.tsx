@@ -26,7 +26,7 @@ export type ActiveAccountContextProps = ActiveAccountProps & {
   error?: any;
 };
 
-const ActiveAccountContext = createContext({
+export const ActiveAccountContext = createContext({
   refetch: () => Promise.reject(),
   setActiveAccountId: () => Promise.reject(),
   isLoading: true,
