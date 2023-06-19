@@ -3,6 +3,16 @@ import { getBundleId } from 'react-native-device-info';
 import { AppTile } from '../hooks/useAppConfig';
 import { SvgProps } from 'react-native-svg';
 import { Theme } from '../components/BrandConfigProvider';
+import {
+  NavigationState,
+  ParamListBase,
+  TypedNavigator,
+} from '@react-navigation/native';
+import {
+  NativeStackNavigationEventMap,
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack';
+import { NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -29,6 +39,17 @@ export interface RouteColor {
   color: (theme: Theme) => string;
 }
 
+export type Navigator<
+  ParamList extends ParamListBase,
+  Props extends Record<string, unknown>,
+> = TypedNavigator<
+  ParamList,
+  NavigationState,
+  NativeStackNavigationOptions,
+  NativeStackNavigationEventMap,
+  React.ComponentType<Props>
+>;
+
 export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
@@ -54,6 +75,9 @@ export type DeveloperConfig = {
     };
   };
   pushNotificationsConfig?: PushNotificationsConfig;
+  getAdditionalHomeScreens?: <ParamList extends ParamListBase>(
+    HomeStack: Navigator<ParamList, NativeStackNavigatorProps>,
+  ) => JSX.Element[];
 };
 
 export type AppTileScreens = {

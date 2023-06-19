@@ -85,6 +85,85 @@ export default function App() {
 }
 ```
 
+### Inject custom screens to the root stack
+
+1- Define your own custom screens.
+
+```typescript
+import React from 'react';
+import { StyleSheet, Text, Button } from 'react-native';
+import { HomeStackParamList } from '@lifeomic/react-native-sdk';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
+
+type CustomHomeStackParamsList = HomeStackParamList & {
+  'CustomHomeScreen/Users': undefined;
+  'CustomHomeScreen/UserDetails': { userId: string };
+};
+
+type UserDetailsScreenNavigationProp = NativeStackNavigationProp<
+  CustomHomeStackParamsList,
+  'CustomHomeScreen/Users'
+>;
+
+type UserDetailsScreenRouteProp = RouteProp<
+  CustomHomeStackParamsList,
+  'CustomHomeScreen/Users'
+>;
+
+export const UsersScreen = () => {
+  const navigation = useNavigation<UserDetailsScreenNavigationProp>();
+  const route = useRoute<UserDetailsScreenRouteProp>();
+
+  return (
+    <>
+      <Text>Users</Text>
+      <Button
+        title="Navigate to the user details screen"
+        onPress={() =>
+          navigation.navigate('CustomHomeScreen/UserDetails', { userId: '123' })
+        }
+      />
+    </>
+  );
+};
+```
+
+2- Add your custom screens to the Home navigation stack.
+
+```typescript
+import React, { FC } from 'react';
+import { authConfig } from './authConfig';
+import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+import { UserDetailsScreen, UsersScreen } from './screens';
+
+export default function App() {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={{
+        getAdditionalHomeScreens: (HomeStack) => {
+          return [
+            <HomeStack.Screen
+              name="CustomHomeScreen/Users"
+              component={UsersScreen}
+            />,
+            <HomeStack.Screen
+              name="CustomHomeScreen/UserDetails"
+              component={UserDetailsScreen}
+            />,
+          ];
+        },
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <RootStack />
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+}
+```
+
 ### Peer dependencies
 
 We may have more peer dependencies than is typical. We have run into a number of

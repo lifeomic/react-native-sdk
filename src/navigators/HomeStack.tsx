@@ -19,10 +19,13 @@ import {
 import { AuthedAppTileScreen } from '../screens/AuthedAppTileScreen';
 import { HomeStackParamList } from './types';
 import { CircleDiscussionScreen } from '../screens/CircleDiscussionScreen';
+import { useDeveloperConfig } from '../hooks';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
 export function HomeStack() {
+  const { getAdditionalHomeScreens } = useDeveloperConfig();
+
   return (
     <Stack.Navigator screenOptions={{ header: AppNavHeader }}>
       <Stack.Screen name="Home" component={HomeScreen} />
@@ -50,6 +53,7 @@ export function HomeStack() {
           headerRight: SaveEditorButton,
         })}
       />
+      {getAdditionalHomeScreens?.(Stack)}
     </Stack.Navigator>
   );
 }

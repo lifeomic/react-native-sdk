@@ -1,5 +1,6 @@
 import './BrandConfigProvider/BrandConfigProvider.stories';
 import './CustomAppTileScreen.stories';
+import './CustomScreenInjection/CustomScreenInjection.stories';
 import './ExampleApp/ExampleApp.stories';
 import './NoInternetToastProvider.stories';
 import './Notifications/NotificationsScreen.stories';
