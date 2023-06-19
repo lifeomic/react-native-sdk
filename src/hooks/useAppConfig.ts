@@ -2,6 +2,7 @@ import { useQuery } from 'react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { useHttpClient } from './useHttpClient';
+import { Trace } from '../components/MyData/LineChart/TraceLine';
 
 export interface AppTile {
   id: string;
@@ -31,6 +32,14 @@ export interface AppConfig {
     tiles?: Tile[];
     trackTileSettings?: { title: string };
     pillarSettings?: { advancedScreenTrackers: string[] };
+    myDataSettings?: {
+      components: {
+        type: 'LineChart';
+        title: string;
+        trace1: Trace;
+        trace2?: Trace;
+      }[];
+    };
     todayTile?: AppTile;
     todayTileSettings?: {
       todayTile: AppTile;

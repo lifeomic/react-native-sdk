@@ -8,7 +8,10 @@ interface Props {
 
 export function SafeView({ children }: Props) {
   return (
-    <SafeAreaView edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView
+      edges={['top', 'bottom', 'left', 'right']}
+      style={{ flex: 1 }}
+    >
       {children}
     </SafeAreaView>
   );
