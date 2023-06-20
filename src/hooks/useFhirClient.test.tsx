@@ -307,6 +307,48 @@ describe('useSearchResourcesQuery', () => {
       expect(result.current.data).toEqual(resultBundle);
     });
   });
+
+  test('supports FHIR date filters', async () => {
+    const resultBundle = {
+      entry: [
+        {
+          resource: {
+            id: 'o1',
+          },
+        },
+      ],
+    };
+    axiosMock
+      .onPost('/v1/fhir/dstu3/Observation/_search')
+      .reply(200, resultBundle);
+
+    function useTestHook() {
+      const { useSearchResourcesQuery } = useFhirClient();
+      const searchResult = useSearchResourcesQuery({
+        resourceType: 'Observation',
+        dateRange: [new Date(0), new Date(1)],
+      });
+      return searchResult;
+    }
+    const { result } = renderHookInContext(useTestHook);
+
+    expect(axiosMock.history.post[0].url).toBe(
+      '/v1/fhir/dstu3/Observation/_search',
+    );
+
+    expect(axiosMock.history.post[0].data).toEqual(
+      JSON.stringify({
+        _tag: 'http://lifeomic.com/fhir/dataset|projectId',
+        patient: 'subjectId',
+        next: '0',
+        date: ['ge1970-01-01T00:00:00.000Z', 'le1970-01-01T00:00:00.001Z'],
+        resourceType: 'Observation',
+      }),
+    );
+    await waitFor(() => {
+      expect(result.current.data).toEqual(resultBundle);
+    });
+  });
 });
 
 describe('useCreateResourceMutation', () => {

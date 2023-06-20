@@ -17,6 +17,7 @@ type QueryParams = {
   resourceType: keyof ResourceTypes;
   pageSize?: number;
   coding?: Coding[];
+  dateRange?: [Date, Date?];
 };
 
 type DeleteParams = {
@@ -43,6 +44,21 @@ export function useFhirClient() {
       }
     };
 
+    const toDateRangeFilter = useCallback((range?: [Date, Date?]) => {
+      let date = [] as string[];
+      if (!range) {
+        return {} as { date?: string[] };
+      }
+
+      date.push(`ge${range[0].toISOString()}`);
+
+      if (range[1]) {
+        date.push(`le${range[1].toISOString()}`);
+      }
+
+      return { date };
+    }, []);
+
     const params = merge(
       {
         // Defaults:
@@ -50,6 +66,7 @@ export function useFhirClient() {
         patient: activeSubjectId,
         next: next.toString(),
         code: toFhirCodeFilter(),
+        ...toDateRangeFilter(queryParams.dateRange),
       },
       {
         resourceType: queryParams.resourceType,

@@ -23,7 +23,7 @@ export type ActiveProjectContextProps = ActiveProjectProps & {
   error?: any;
 };
 
-const ActiveProjectContext = createContext({
+export const ActiveProjectContext = createContext({
   setActiveProjectId: () => Promise.reject(),
   isLoading: true,
   isFetched: false,
