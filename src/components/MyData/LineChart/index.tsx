@@ -1,6 +1,12 @@
 import React, { useMemo } from 'react';
 import { VictoryChart, VictoryAxis } from 'victory-native';
-import { format, addDays, differenceInDays } from 'date-fns';
+import {
+  format,
+  addDays,
+  differenceInDays,
+  startOfDay,
+  isSameDay,
+} from 'date-fns';
 import { Trace, TraceLine } from './TraceLine';
 import { useVictoryTheme } from '../useVictoryTheme';
 import { scaleTime } from 'd3-scale';
@@ -12,6 +18,8 @@ import {
   CommonChartPropsProvider,
   useCommonChartProps,
 } from '../useCommonChartProps';
+import { DataSelector } from './DataSelector';
+import { useChartData } from './useChartData';
 
 type Props = {
   title: string;
@@ -21,21 +29,34 @@ type Props = {
 };
 
 const LineChart = (props: Props) => {
-  const { trace1, trace2, dateRange } = props;
+  const { trace1, trace2, dateRange: incomingDateRange } = props;
+  const dateRange = useMemo<[Date, Date]>(
+    () => [startOfDay(incomingDateRange[0]), startOfDay(incomingDateRange[1])],
+    [incomingDateRange],
+  );
   const common = useCommonChartProps();
   const { styles } = useStyles(defaultStyles);
+  const { trace1Data, trace2Data } = useChartData({
+    trace1,
+    trace2,
+    dateRange,
+  });
 
   const tickValues = useMemo(() => {
     let domain = dateRange;
-    const rangeInDays = Math.abs(differenceInDays(...dateRange));
-    if (rangeInDays < 1) {
-      domain = [addDays(dateRange[0], -2), addDays(dateRange[1], 1)];
+    if (isSameDay(dateRange[0], dateRange[1])) {
+      domain = [addDays(dateRange[0], -1), addDays(dateRange[0], 1)];
     }
 
     const ticks = Math.min(5, Math.abs(differenceInDays(...domain)));
 
-    return scaleTime().domain(domain).nice().ticks(ticks);
+    return scaleTime().domain([domain[0], domain[1]]).nice().ticks(ticks);
   }, [dateRange]);
+
+  const domain: [number, number] = [
+    +dateRange[0],
+    +dateRange[dateRange.length - 1],
+  ];
 
   return (
     <View style={styles.container}>
@@ -43,15 +64,27 @@ const LineChart = (props: Props) => {
       <VictoryChart {...common}>
         <VictoryAxis
           {...common}
+          standalone={false}
           tickValues={tickValues}
           tickFormat={(tick: number, index: number) =>
             format(new Date(tick), index === 0 ? 'MMM dd' : 'dd')
           }
         />
-        <TraceLine trace={trace1} dateRange={dateRange} />
+        <TraceLine trace={trace1} data={trace1Data} xDomain={domain} />
         {trace2 && (
-          <TraceLine trace={trace2} dateRange={dateRange} variant="secondary" />
+          <TraceLine
+            trace={trace2}
+            data={trace2Data}
+            xDomain={domain}
+            variant="secondary"
+          />
         )}
+        <DataSelector
+          xDomain={domain}
+          dateRange={dateRange}
+          trace1={trace1Data}
+          trace2={trace2Data}
+        />
       </VictoryChart>
     </View>
   );
