@@ -3,6 +3,7 @@ import { VictoryLine, VictoryAxis, VictoryScatter } from 'victory-native';
 import { useFhirClient } from '../../../hooks';
 import { useVictoryTheme } from '../useVictoryTheme';
 import { sortBy } from 'lodash';
+import { useCommonChartProps } from '../useCommonChartProps';
 
 export type Trace = {
   type: 'Observation';
@@ -19,6 +20,7 @@ type Props = {
 export const TraceLine = (props: Props) => {
   const { trace, dateRange, variant = 'primary' } = props;
   const isPrimary = variant === 'primary';
+  const common = useCommonChartProps();
   const theme = useVictoryTheme(variant);
   const { useSearchResourcesQuery } = useFhirClient();
   const { data } = useSearchResourcesQuery({
@@ -40,21 +42,27 @@ export const TraceLine = (props: Props) => {
     return null;
   }
 
+  const domainMax = Math.max(...values.map((v) => v.y));
+
   return (
     <>
       <VictoryAxis
+        {...common}
         standalone={false}
         dependentAxis
         theme={theme}
         label={trace.label}
-        domain={[
-          Math.min(...values.map((v) => v.y)),
-          Math.max(...values.map((v) => v.y)),
-        ]}
+        domain={{ y: [0, 1] }}
+        tickFormat={(value) => Math.round(value * domainMax)}
         orientation={isPrimary ? 'left' : 'right'}
       />
-      <VictoryLine standalone={false} data={values} theme={theme} />
-      <VictoryScatter standalone={false} data={values} theme={theme} />
+      <VictoryLine {...common} standalone={false} data={values} theme={theme} />
+      <VictoryScatter
+        {...common}
+        standalone={false}
+        data={values}
+        theme={theme}
+      />
     </>
   );
 };

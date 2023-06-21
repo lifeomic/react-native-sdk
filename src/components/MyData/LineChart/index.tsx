@@ -5,9 +5,13 @@ import { Trace, TraceLine } from './TraceLine';
 import { useVictoryTheme } from '../useVictoryTheme';
 import { scaleTime } from 'd3-scale';
 import { Title } from './Title';
-import { View } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
+import {
+  CommonChartPropsProvider,
+  useCommonChartProps,
+} from '../useCommonChartProps';
 
 type Props = {
   title: string;
@@ -16,9 +20,9 @@ type Props = {
   dateRange: [Date, Date];
 };
 
-export const LineChart = (props: Props) => {
+const LineChart = (props: Props) => {
   const { trace1, trace2, dateRange } = props;
-  const theme = useVictoryTheme();
+  const common = useCommonChartProps();
   const { styles } = useStyles(defaultStyles);
 
   const tickValues = useMemo(() => {
@@ -36,10 +40,9 @@ export const LineChart = (props: Props) => {
   return (
     <View style={styles.container}>
       <Title {...props} />
-      <VictoryChart theme={theme}>
+      <VictoryChart {...common}>
         <VictoryAxis
-          standalone={true}
-          theme={theme}
+          {...common}
           tickValues={tickValues}
           tickFormat={(tick: number, index: number) =>
             format(new Date(tick), index === 0 ? 'MMM dd' : 'dd')
@@ -53,6 +56,24 @@ export const LineChart = (props: Props) => {
     </View>
   );
 };
+
+const LineChartWrapper = (props: Props & { padding?: number }) => {
+  const { padding = 0, ...lineChartProps } = props;
+  const theme = useVictoryTheme();
+  const width = Dimensions.get('window').width - padding;
+
+  return (
+    <CommonChartPropsProvider
+      theme={theme}
+      width={width}
+      padding={padding + 10}
+    >
+      <LineChart {...lineChartProps} />
+    </CommonChartPropsProvider>
+  );
+};
+
+export { LineChartWrapper as LineChart };
 
 const defaultStyles = createStyles('LineChart', () => ({
   container: {},
