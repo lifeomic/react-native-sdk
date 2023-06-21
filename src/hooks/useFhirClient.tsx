@@ -18,6 +18,7 @@ type QueryParams = {
   pageSize?: number;
   coding?: Coding[];
   dateRange?: [Date, Date?];
+  enabled?: boolean;
 };
 
 type DeleteParams = {
@@ -108,7 +109,11 @@ export function useFhirClient() {
           });
       },
       {
-        enabled: !!accountHeaders && !!activeProject?.id && !!activeSubjectId,
+        enabled:
+          !!accountHeaders &&
+          !!activeProject?.id &&
+          !!activeSubjectId &&
+          (queryParams.enabled ?? true),
         keepPreviousData: true,
       },
     );

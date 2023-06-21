@@ -1,9 +1,9 @@
 import React from 'react';
 import { VictoryLine, VictoryAxis, VictoryScatter } from 'victory-native';
-import { useFhirClient } from '../../../hooks';
 import { useVictoryTheme } from '../useVictoryTheme';
-import { sortBy } from 'lodash';
 import { useCommonChartProps } from '../useCommonChartProps';
+import { PointData } from './useChartData';
+import { round } from 'lodash';
 
 export type Trace = {
   type: 'Observation';
@@ -13,36 +13,23 @@ export type Trace = {
 
 type Props = {
   trace: Trace;
-  dateRange: [Date, Date];
+  xDomain: [number, number];
+  data: PointData[];
   variant?: 'primary' | 'secondary';
 };
 
 export const TraceLine = (props: Props) => {
-  const { trace, dateRange, variant = 'primary' } = props;
+  const { trace, data, xDomain, variant = 'primary' } = props;
   const isPrimary = variant === 'primary';
   const common = useCommonChartProps();
   const theme = useVictoryTheme(variant);
-  const { useSearchResourcesQuery } = useFhirClient();
-  const { data } = useSearchResourcesQuery({
-    resourceType: trace.type,
-    coding: [trace.code],
-    dateRange,
-  });
 
-  const values = sortBy(
-    data?.entry?.map((entry) => ({
-      y: entry.resource?.valueQuantity?.value ?? 0,
-      x: Number(new Date(entry.resource?.effectiveDateTime ?? '')),
-      size: data.entry?.length === 1 ? 5 : undefined,
-    })) ?? [],
-    'x', // sort by date
-  );
-
-  if (!values?.length) {
+  if (!data?.length) {
     return null;
   }
 
-  const domainMax = Math.max(...values.map((v) => v.y));
+  const domainMax = Math.max(...data.map((v) => v.y));
+  const domainMin = Math.min(...data.map((v) => v.y));
 
   return (
     <>
@@ -52,15 +39,24 @@ export const TraceLine = (props: Props) => {
         dependentAxis
         theme={theme}
         label={trace.label}
-        domain={{ y: [0, 1] }}
-        tickFormat={(value) => Math.round(value * domainMax)}
+        maxDomain={domainMax}
+        minDomain={domainMin}
+        tickCount={domainMax === domainMin ? 1 : undefined}
+        tickFormat={(value) => round(value, 1)}
         orientation={isPrimary ? 'left' : 'right'}
       />
-      <VictoryLine {...common} standalone={false} data={values} theme={theme} />
+      <VictoryLine
+        {...common}
+        domain={{ x: xDomain }}
+        standalone={false}
+        data={data}
+        theme={theme}
+      />
       <VictoryScatter
         {...common}
+        domain={{ x: xDomain }}
         standalone={false}
-        data={values}
+        data={data}
         theme={theme}
       />
     </>
