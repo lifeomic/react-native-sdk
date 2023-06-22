@@ -45,11 +45,6 @@ public class MainApplication extends Application implements ReactApplication {
         protected Boolean isHermesEnabled() {
           return BuildConfig.IS_HERMES_ENABLED;
         }
-
-        @Override
-        protected Boolean isPushNotificationsEnabled() {
-          return BuildConfig.IS_PUSH_NOTIFICATIONS_ENABLED;
-        }
       };
 
   @Override
@@ -61,10 +56,9 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     
-    if (BuildConfig.IS_PUSH_NOTIFICATIONS_ENABLED) {
-      // If you opted-in for Push Notifications, we initialize Firebase.
-      // FirebaseApp.initializeApp(this);
-    }
+    // If you opted-in for Push Notifications, Firebase is initialized.
+    // Uncomment next line to enable Firebase
+    // FirebaseApp.initializeApp(this);
     
     SoLoader.init(this, /* native exopackage */ false);
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {

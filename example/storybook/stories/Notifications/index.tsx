@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-// import { Notifications } from 'react-native-notifications';
-// import {
-//   getInitialNotification,
-//   onNotificationOpened,
-//   onNotificationReceived,
-// } from '../../../../src/common/Notifications';
+import { Notifications } from 'react-native-notifications';
+import {
+  getInitialNotification,
+  onNotificationOpened,
+  onNotificationReceived,
+} from '../../../../src/common/Notifications';
 
 const styles = StyleSheet.create({
   openedNotificationView: {
@@ -60,65 +60,65 @@ export const NotificationsScreen = () => {
     PushNotificationsEvent[]
   >([]);
 
-  // const sendLocalNotification = () => {
-  //   Notifications.postLocalNotification({
-  //     body: 'Local notification!',
-  //     title: 'Local Notification Title',
-  //     sound: 'chime.aiff',
-  //     badge: 0,
-  //     type: '',
-  //     thread: '',
-  //     payload: {
-  //       category: 'LO_RN_SDK_CATEGORY',
-  //       link: 'localNotificationLink',
-  //     },
-  //     //@ts-ignore
-  //     android_channel_id: 'LifeOmic react native SDK',
-  //   });
-  // };
+  const sendLocalNotification = () => {
+    Notifications.postLocalNotification({
+      body: 'Local notification!',
+      title: 'Local Notification Title',
+      sound: 'chime.aiff',
+      badge: 0,
+      type: '',
+      thread: '',
+      payload: {
+        category: 'LO_RN_SDK_CATEGORY',
+        link: 'localNotificationLink',
+      },
+      //@ts-ignore
+      android_channel_id: 'LifeOmic react native SDK',
+    });
+  };
 
   const clearLocalNotifications = () => {
     setPushNotificationsEvents([]);
   };
 
-  // useEffect(() => {
-  //   // Handler called when a notification is pressed
-  //   onNotificationOpened((notification) => {
-  //     setPushNotificationsEvents(
-  //       (events) =>
-  //         [
-  //           { type: 'notificationOpened', notification },
-  //           ...events,
-  //         ] as PushNotificationsEvent[],
-  //     );
-  //   });
+  useEffect(() => {
+    // Handler called when a notification is pressed
+    onNotificationOpened((notification) => {
+      setPushNotificationsEvents(
+        (events) =>
+          [
+            { type: 'notificationOpened', notification },
+            ...events,
+          ] as PushNotificationsEvent[],
+      );
+    });
 
-  //   onNotificationReceived((notification) => {
-  //     setPushNotificationsEvents(
-  //       (events) =>
-  //         [
-  //           { type: 'notificationReceived', notification },
-  //           ...events,
-  //         ] as PushNotificationsEvent[],
-  //     );
-  //   });
+    onNotificationReceived((notification) => {
+      setPushNotificationsEvents(
+        (events) =>
+          [
+            { type: 'notificationReceived', notification },
+            ...events,
+          ] as PushNotificationsEvent[],
+      );
+    });
 
-  //   const getInitial = async () => {
-  //     // Get the notification that opened the application
-  //     const notification = await getInitialNotification();
-  //     if (notification) {
-  //       setPushNotificationsEvents(
-  //         (events) =>
-  //           [
-  //             { type: 'notificationOpened', notification },
-  //             ...events,
-  //           ] as PushNotificationsEvent[],
-  //       );
-  //     }
-  //   };
+    const getInitial = async () => {
+      // Get the notification that opened the application
+      const notification = await getInitialNotification();
+      if (notification) {
+        setPushNotificationsEvents(
+          (events) =>
+            [
+              { type: 'notificationOpened', notification },
+              ...events,
+            ] as PushNotificationsEvent[],
+        );
+      }
+    };
 
-  //   getInitial();
-  // }, []);
+    getInitial();
+  }, []);
 
   const renderOpenedNotification = (notification: Notification) => {
     return (
@@ -154,8 +154,7 @@ export const NotificationsScreen = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.sendButton}
-          // onPress={sendLocalNotification}
-          onPress={() => {}}
+          onPress={sendLocalNotification}
         >
           <Text style={styles.buttonText}>Send local notification</Text>
         </TouchableOpacity>

@@ -8897,6 +8897,11 @@ react-native-markdown-display@^6.1.6:
     prop-types "^15.7.2"
     react-native-fit-image "^1.5.5"
 
+react-native-notifications@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/react-native-notifications/-/react-native-notifications-4.3.5.tgz#90c7f3b1b248f6628c8efc8cafab4fd464ce3e5a"
+  integrity sha512-tCKkPaauN8/RIwPTeWdyezHXt5i4iDJViZGZ7/EBBuHB9kl9Oq3UjKFZeDfnM4DmJt+m7K2FQ7NaAuh3Kg1FCA==
+
 react-native-paper@^5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-5.3.1.tgz#09a1164bcd8afa62063384646b9fb4bf563f407b"

@@ -73,6 +73,7 @@
     "react-native-gesture-handler": "^2.9.0",
     "react-native-keychain": "^8.1.1",
     "react-native-markdown-display": "^6.1.6",
+    "react-native-notifications": "^4.3.5",
     "react-native-reanimated": "2.14.4",
     "react-native-safe-area-context": "^4.5.0",
     "react-native-screens": "^3.19.0",
