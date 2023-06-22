@@ -76,7 +76,7 @@ const LineChart = (props: Props) => {
             trace={trace2}
             data={trace2Data}
             xDomain={domain}
-            variant="secondary"
+            variant="trace2"
           />
         )}
         <DataSelector

@@ -40,7 +40,7 @@ export type NamedStyles<T> = {
     ? ImageStyle
     : P extends `${string}${IgnoreCapitals<ViewSuffix>}`
     ? ViewStyle
-    : T[P];
+    : Partial<T[P]>;
 };
 
 /**
