@@ -6,7 +6,8 @@ import { eachDayOfInterval, format, isSameDay } from 'date-fns';
 import { sortBy } from 'lodash';
 import { PointData } from './useChartData';
 import { G, Text, Circle, Rect } from 'react-native-svg';
-import { useTheme } from '../../../hooks';
+import { useStyles } from '../../../hooks';
+import { defaultChartStyles } from '../styles';
 
 type Props = {
   xDomain: [number, number];
@@ -28,7 +29,7 @@ type Selection = {
 
 export const DataSelector = (props: Props) => {
   const { trace1, trace2, xDomain } = props;
-  const theme = useTheme();
+  const { styles } = useStyles(defaultChartStyles);
   const common = useCommonChartProps();
   const [selection, setSelection] = useState<Selection>();
 
@@ -109,7 +110,7 @@ export const DataSelector = (props: Props) => {
           barWidth={StyleSheet.hairlineWidth}
           style={{
             data: {
-              fill: theme.colors.onBackground,
+              fill: styles.dataSelectionTooltip?.lineColor,
             },
           }}
         />
@@ -162,7 +163,7 @@ type CustomLabelProps = {
 };
 
 const CustomLabel = ({ selection, x = 0, y = 0 }: CustomLabelProps) => {
-  const theme = useTheme();
+  const { styles } = useStyles(defaultChartStyles);
 
   const decreaseBy = !selection.point1 || !selection.point2 ? 25 : 0;
   const shiftX = Math.min(selection.chartWidth - (x + 115 - decreaseBy), 0);
@@ -179,30 +180,35 @@ const CustomLabel = ({ selection, x = 0, y = 0 }: CustomLabelProps) => {
         x={-shiftX}
         y={0}
         height={25}
-        strokeWidth={1}
-        stroke={theme.colors.onBackground}
+        strokeWidth={styles.dataSelectionTooltip?.lineWidth}
+        stroke={styles.dataSelectionTooltip?.lineColor}
       />
       <Rect
         x={-12}
         y={-20}
         width={115 - decreaseBy}
         height={30}
-        fill={theme.colors.primaryContainer}
-        stroke={theme.colors.border}
-        strokeWidth={StyleSheet.hairlineWidth}
+        fill={styles.dataSelectionTooltip?.backgroundColor}
+        stroke={styles.dataSelectionTooltip?.border}
+        strokeWidth={styles.dataSelectionTooltip?.borderWidth}
       />
-      <Text x={0} y={0} fill={theme.colors.onPrimaryContainer}>
+      <Text x={0} y={0} fill={styles.dataSelectionTooltip?.dateTextColor}>
         {dateString}
       </Text>
       {selection.point1 && (
         <>
-          <Circle x={55} y={-5} r={9} fill={theme.colors.primary} />
+          <Circle
+            x={55}
+            y={-5}
+            r={9}
+            fill={selection.point1.trace.color ?? styles.colors?.trace1}
+          />
           <Text
             x={55}
             y={-4}
             textAnchor="middle"
             alignmentBaseline="middle"
-            fill={theme.colors.onPrimary}
+            fill={styles.dataSelectionTooltip?.bubble1TextColor}
           >
             {Math.round(selection.point1?.y)}
           </Text>
@@ -214,14 +220,14 @@ const CustomLabel = ({ selection, x = 0, y = 0 }: CustomLabelProps) => {
             x={80 - decreaseBy}
             y={-5}
             r={9}
-            fill={theme.colors.secondary}
+            fill={selection.point2.trace.color ?? styles.colors?.trace2}
           />
           <Text
             x={80 - decreaseBy}
             y={-4}
             textAnchor="middle"
             alignmentBaseline="middle"
-            fill={theme.colors.onSecondary}
+            fill={styles.dataSelectionTooltip?.bubble2TextColor}
           >
             {Math.round(selection.point2?.y)}
           </Text>

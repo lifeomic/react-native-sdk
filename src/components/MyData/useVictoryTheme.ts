@@ -1,58 +1,54 @@
-import { useTheme } from '../../hooks';
-import { VictoryTheme } from 'victory-native';
-
-type Theme = (typeof VictoryTheme)['grayscale'];
+import { useStyles } from '../../hooks';
+import { VictoryThemeDefinition } from 'victory-core';
+import { Trace } from './LineChart/TraceLine';
+import { defaultChartStyles } from './styles';
+import { merge } from 'lodash';
 
 export const useVictoryTheme = (
-  variant: 'primary' | 'secondary' = 'primary',
-): Theme => {
-  const theme = useTheme();
+  trace?: Trace,
+  variant: 'trace1' | 'trace2' = 'trace1',
+): VictoryThemeDefinition => {
+  const { styles } = useStyles(defaultChartStyles);
 
   return {
     axis: {
-      style: {
-        grid: {
-          strokeDasharray: '0 2 0',
-          stroke: theme.colors.outline,
-        },
-        axis: {
-          stroke: theme.colors.onBackground,
-        },
-        tickLabels: {
-          padding: 8,
-        },
-      },
+      style: styles.independentAxis,
     },
     dependentAxis: {
-      style: {
-        axis: {
-          stroke: theme.colors[variant],
+      style: merge(
+        {
+          axis: {
+            stroke: trace?.color ?? styles.colors?.[variant],
+          },
+          tickLabels: {
+            fill: trace?.color ?? styles.colors?.[variant],
+          },
+          axisLabel: {
+            fill: trace?.color ?? styles.colors?.[variant],
+          },
         },
-        grid: {
-          display: 'none',
-        },
-        tickLabels: {
-          padding: 4,
-        },
-        axisLabel: {
-          fill: theme.colors[variant],
-        },
-      },
+        styles.dependentAxis,
+      ),
     },
     line: {
-      style: {
-        data: {
-          stroke: theme.colors[variant],
-          strokeWidth: 2,
+      style: merge(
+        {
+          data: {
+            stroke: trace?.color ?? styles.colors?.[variant],
+          },
         },
-      },
+        styles.line,
+      ),
     },
     scatter: {
-      style: {
-        data: {
-          fill: theme.colors[variant],
+      style: merge(
+        {
+          data: {
+            fill: trace?.color ?? styles.colors?.[variant],
+          },
         },
-      },
+        styles.scatter,
+      ),
     },
   };
 };

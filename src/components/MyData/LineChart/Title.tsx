@@ -1,12 +1,11 @@
 import React from 'react';
 import { Trace } from './TraceLine';
-import { useVictoryTheme } from '../useVictoryTheme';
 import { Text } from 'react-native-paper';
 import { View } from 'react-native';
 import { Svg, Line, Circle } from 'react-native-svg';
-import type { StringOrNumberOrCallback } from 'victory-core/lib/types/callbacks';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
+import { defaultChartStyles } from '../styles';
 
 type Props = {
   title: string;
@@ -17,11 +16,7 @@ type Props = {
 export const Title = (props: Props) => {
   const { title, trace1, trace2 } = props;
   const { styles } = useStyles(defaultStyles);
-  const primaryTheme = useVictoryTheme('primary');
-  const secondaryTheme = useVictoryTheme('secondary');
-
-  const primaryColor = primaryTheme.line?.style?.data?.stroke;
-  const secondaryColor = secondaryTheme.line?.style?.data?.stroke;
+  const { styles: chartStyles } = useStyles(defaultChartStyles);
 
   return (
     <View style={styles.container}>
@@ -29,11 +24,11 @@ export const Title = (props: Props) => {
         {title}
       </Text>
       <View style={styles.traceContainer}>
-        <DotLine color={toColor(primaryColor)} />
+        <DotLine color={trace1.color ?? chartStyles.colors?.trace1} />
         <Text style={styles.traceLabelText}>{trace1.label}</Text>
         {trace2 && (
           <>
-            <DotLine color={toColor(secondaryColor)} />
+            <DotLine color={trace2.color ?? chartStyles.colors?.trace2} />
             <Text style={styles.traceLabelText}>{trace2.label}</Text>
           </>
         )}
@@ -42,12 +37,7 @@ export const Title = (props: Props) => {
   );
 };
 
-const toColor = (creator?: StringOrNumberOrCallback) => {
-  const value = typeof creator === 'function' ? creator({}) : creator;
-  return value?.toString() ?? '';
-};
-
-const DotLine = ({ color }: { color: string }) => (
+const DotLine = ({ color }: { color?: string }) => (
   <Svg width={44} height={12}>
     <Line x1={0} y1={6} x2={44} y2={6} strokeWidth={2} stroke={color} />
     <Circle x={22} y={6} r={6} fill={color} />

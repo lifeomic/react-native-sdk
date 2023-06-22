@@ -33,7 +33,7 @@ const mockDateLabel = format(mockDate, 'MMM dd');
 describe('LineChart', () => {
   it('should render the chart', async () => {
     mockUseChartData.mockReturnValue({
-      trace1Data: [{ x: Number(mockDate), y: 5 }],
+      trace1Data: [{ x: Number(mockDate), y: 5, trace: {} }],
       trace2Data: [],
     });
 
@@ -63,8 +63,8 @@ describe('LineChart', () => {
 
   it('should render the chart with second trace when supplied', async () => {
     mockUseChartData.mockReturnValue({
-      trace1Data: [{ x: Number(mockDate), y: 5 }],
-      trace2Data: [{ x: Number(mockDate), y: 6 }],
+      trace1Data: [{ x: Number(mockDate), y: 5, trace: {} }],
+      trace2Data: [{ x: Number(mockDate), y: 6, trace: {} }],
     });
 
     const { findAllByText } = render(
@@ -119,7 +119,7 @@ describe('LineChart', () => {
 
   it('should allow selecting the data to see details', async () => {
     mockUseChartData.mockReturnValue({
-      trace1Data: [{ x: Number(mockDate), y: 5 }],
+      trace1Data: [{ x: Number(mockDate), y: 5, trace: {} }],
       trace2Data: [],
     });
 
@@ -146,10 +146,10 @@ describe('LineChart', () => {
   it('should allow selecting data details and display two points of data', async () => {
     mockUseChartData.mockReturnValue({
       trace1Data: [
-        { x: Number(mockDate), y: 5 },
-        { x: Number(addDays(mockDate, 1)), y: 10 },
+        { x: Number(mockDate), y: 5, trace: {} },
+        { x: Number(addDays(mockDate, 1)), y: 10, trace: {} },
       ],
-      trace2Data: [{ x: Number(mockDate), y: 6 }],
+      trace2Data: [{ x: Number(mockDate), y: 6, trace: {} }],
     });
 
     const { getByTestId } = render(
@@ -182,7 +182,7 @@ describe('LineChart', () => {
 
   it('can deselect data details', async () => {
     mockUseChartData.mockReturnValue({
-      trace1Data: [{ x: Number(mockDate), y: 5 }],
+      trace1Data: [{ x: Number(mockDate), y: 5, trace: {} }],
       trace2Data: [],
     });
 

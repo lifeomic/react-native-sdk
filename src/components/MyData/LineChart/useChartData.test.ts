@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react-native';
 import { startOfDay } from 'date-fns';
 import { useFhirClient } from '../../../hooks';
 import { useChartData } from './useChartData';
+import { Trace } from './TraceLine';
 
 jest.mock('../../../hooks/useFhirClient', () => ({
   useFhirClient: jest.fn(),
@@ -40,14 +41,16 @@ describe('useChartData', () => {
         data: undefined,
       });
 
+    const trace1: Trace = {
+      label: 'Label',
+      type: 'Observation',
+      code: { code: 'code', system: 'system' },
+    };
+
     const { result } = renderHook(() =>
       useChartData({
         dateRange: [new Date(0), new Date(0)],
-        trace1: {
-          label: 'Label',
-          type: 'Observation',
-          code: { code: 'code', system: 'system' },
-        },
+        trace1,
       }),
     );
 
@@ -68,6 +71,7 @@ describe('useChartData', () => {
         size: 5,
         x: Number(startOfDay(new Date(0))),
         y: 5,
+        trace: trace1,
       },
     ]);
     expect(result.current.trace2Data).toEqual([]);
@@ -112,19 +116,22 @@ describe('useChartData', () => {
         },
       });
 
+    const trace1: Trace = {
+      label: 'Label',
+      type: 'Observation',
+      code: { code: 'code', system: 'system' },
+    };
+    const trace2: Trace = {
+      label: 'Label',
+      type: 'Observation',
+      code: { code: 'code2', system: 'system2' },
+    };
+
     const { result } = renderHook(() =>
       useChartData({
         dateRange: [new Date(0), new Date(0)],
-        trace1: {
-          label: 'Label',
-          type: 'Observation',
-          code: { code: 'code', system: 'system' },
-        },
-        trace2: {
-          label: 'Label',
-          type: 'Observation',
-          code: { code: 'code2', system: 'system2' },
-        },
+        trace1,
+        trace2,
       }),
     );
 
@@ -142,10 +149,12 @@ describe('useChartData', () => {
       {
         x: Number(startOfDay(new Date(0))),
         y: 0,
+        trace: trace1,
       },
       {
         x: Number(startOfDay(new Date(0))),
         y: 3,
+        trace: trace1,
       },
     ]);
     expect(result.current.trace2Data).toEqual([
@@ -153,6 +162,7 @@ describe('useChartData', () => {
         size: 5,
         x: Number(startOfDay(new Date(0))),
         y: 5,
+        trace: trace2,
       },
     ]);
   });

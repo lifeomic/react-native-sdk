@@ -9,20 +9,21 @@ export type Trace = {
   type: 'Observation';
   label: string;
   code: Pick<fhir3.Coding, 'code' | 'system'>;
+  color?: string;
 };
 
 type Props = {
   trace: Trace;
   xDomain: [number, number];
   data: PointData[];
-  variant?: 'primary' | 'secondary';
+  variant?: 'trace1' | 'trace2';
 };
 
 export const TraceLine = (props: Props) => {
-  const { trace, data, xDomain, variant = 'primary' } = props;
-  const isPrimary = variant === 'primary';
+  const { trace, data, xDomain, variant = 'trace1' } = props;
+  const isTrace1 = variant === 'trace1';
   const common = useCommonChartProps();
-  const theme = useVictoryTheme(variant);
+  const theme = useVictoryTheme(trace, variant);
 
   if (!data?.length) {
     return null;
@@ -43,7 +44,7 @@ export const TraceLine = (props: Props) => {
         minDomain={domainMin}
         tickCount={domainMax === domainMin ? 1 : undefined}
         tickFormat={(value) => round(value, 1)}
-        orientation={isPrimary ? 'left' : 'right'}
+        orientation={isTrace1 ? 'left' : 'right'}
       />
       <VictoryLine
         {...common}

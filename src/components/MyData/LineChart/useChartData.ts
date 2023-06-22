@@ -26,8 +26,8 @@ export const useChartData = (props: Props) => {
     enabled: !!trace2,
   });
 
-  const trace1Data = sortBy(extractPointData(trace1Res), 'x');
-  const trace2Data = sortBy(extractPointData(trace2Res), 'x');
+  const trace1Data = sortBy(extractPointData(trace1Res, trace1), 'x');
+  const trace2Data = sortBy(extractPointData(trace2Res, trace2!), 'x');
 
   return {
     trace1Data,
@@ -35,15 +35,19 @@ export const useChartData = (props: Props) => {
   };
 };
 
-const extractPointData = ({
-  data,
-}: {
-  data?: fhir3.Bundle<fhir3.Observation>;
-}) =>
+const extractPointData = (
+  {
+    data,
+  }: {
+    data?: fhir3.Bundle<fhir3.Observation>;
+  },
+  trace: Trace,
+) =>
   data?.entry?.map((entry) => ({
     y: entry.resource?.valueQuantity?.value ?? 0,
     x: Number(startOfDay(new Date(entry.resource?.effectiveDateTime ?? ''))),
     size: data.entry?.length === 1 ? 5 : undefined, // TODO: Make size configurable
+    trace,
   })) ?? [];
 
 export type PointData = ReturnType<typeof extractPointData>[number];
