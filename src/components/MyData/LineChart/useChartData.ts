@@ -15,13 +15,13 @@ export const useChartData = (props: Props) => {
 
   const trace1Res = useSearchResourcesQuery({
     resourceType: trace1.type,
-    coding: [trace1.code],
+    coding: trace1.coding,
     dateRange,
   });
 
   const trace2Res = useSearchResourcesQuery({
     resourceType: trace2?.type ?? 'Observation',
-    coding: [trace2?.code ?? {}],
+    coding: trace2?.coding ?? [],
     dateRange,
     enabled: !!trace2,
   });

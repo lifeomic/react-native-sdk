@@ -44,7 +44,7 @@ describe('useChartData', () => {
     const trace1: Trace = {
       label: 'Label',
       type: 'Observation',
-      code: { code: 'code', system: 'system' },
+      coding: [{ code: 'code', system: 'system' }],
     };
 
     const { result } = renderHook(() =>
@@ -119,12 +119,12 @@ describe('useChartData', () => {
     const trace1: Trace = {
       label: 'Label',
       type: 'Observation',
-      code: { code: 'code', system: 'system' },
+      coding: [{ code: 'code', system: 'system' }],
     };
     const trace2: Trace = {
       label: 'Label',
       type: 'Observation',
-      code: { code: 'code2', system: 'system2' },
+      coding: [{ code: 'code2', system: 'system2' }],
     };
 
     const { result } = renderHook(() =>

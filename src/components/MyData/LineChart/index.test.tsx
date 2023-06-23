@@ -44,10 +44,12 @@ describe('LineChart', () => {
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',
-          code: {
-            code: 'c',
-            system: 's',
-          },
+          coding: [
+            {
+              code: 'c',
+              system: 's',
+            },
+          ],
         }}
       />,
     );
@@ -74,18 +76,22 @@ describe('LineChart', () => {
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',
-          code: {
-            code: 'c',
-            system: 's',
-          },
+          coding: [
+            {
+              code: 'c',
+              system: 's',
+            },
+          ],
         }}
         trace2={{
           type: 'Observation',
           label: 'Trace2Label',
-          code: {
-            code: 'c',
-            system: 's',
-          },
+          coding: [
+            {
+              code: 'c',
+              system: 's',
+            },
+          ],
         }}
       />,
     );
@@ -106,10 +112,12 @@ describe('LineChart', () => {
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',
-          code: {
-            code: 'c',
-            system: 's',
-          },
+          coding: [
+            {
+              code: 'c',
+              system: 's',
+            },
+          ],
         }}
       />,
     );
@@ -130,10 +138,12 @@ describe('LineChart', () => {
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',
-          code: {
-            code: 'c',
-            system: 's',
-          },
+          coding: [
+            {
+              code: 'c',
+              system: 's',
+            },
+          ],
         }}
       />,
     );
@@ -159,18 +169,22 @@ describe('LineChart', () => {
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',
-          code: {
-            code: 'c',
-            system: 's',
-          },
+          coding: [
+            {
+              code: 'c',
+              system: 's',
+            },
+          ],
         }}
         trace2={{
           type: 'Observation',
           label: 'Trace2Label',
-          code: {
-            code: 'c2',
-            system: 's',
-          },
+          coding: [
+            {
+              code: 'c2',
+              system: 's',
+            },
+          ],
         }}
       />,
     );
@@ -193,10 +207,12 @@ describe('LineChart', () => {
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',
-          code: {
-            code: 'c',
-            system: 's',
-          },
+          coding: [
+            {
+              code: 'c',
+              system: 's',
+            },
+          ],
         }}
       />,
     );
