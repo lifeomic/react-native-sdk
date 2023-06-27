@@ -23,7 +23,7 @@ export interface CircleTile {
   isMember: boolean;
 }
 
-type Tile = 'todayTile' | 'trackTile' | 'pillarsTile';
+type Tile = 'todayTile' | 'trackTile' | 'pillarsTile' | 'myDataTile';
 
 export interface AppConfig {
   homeTab?: {

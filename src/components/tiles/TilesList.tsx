@@ -6,10 +6,11 @@ import { Tile, TileStyles } from './Tile';
 import { TrackTile } from '../TrackTile';
 import { useStyles, useDeveloperConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
-import { createStyles, useIcons } from '../BrandConfigProvider';
+import { ChromiconName, createStyles, useIcons } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
 import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
 import { HomeStackScreenProps } from '../../navigators/types';
+import { t } from '../../../lib/i18n';
 
 interface Props extends HomeStackScreenProps<'Home'> {
   styles?: TilesListStyles;
@@ -25,6 +26,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const trackTileEnabled = data?.homeTab?.tiles?.includes?.('trackTile');
   const trackTileTitle = data?.homeTab?.trackTileSettings?.title;
   const todayTileEnabled = data?.homeTab?.tiles?.includes?.('todayTile');
+  const myDataTileEnabled = data?.homeTab?.tiles?.includes?.('myDataTile');
   const todayTile = data?.homeTab?.todayTile;
 
   const onCircleTilePress = useCallback(
@@ -93,8 +95,17 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             id={todayTile.id}
             key={todayTile.id}
             title={todayTile.title}
-            Icon={TodayIcon}
+            Icon={tileIcon('HeartCheck', 'today')}
             onPress={onTodayTilePress}
+          />
+        )}
+        {myDataTileEnabled && (
+          <Tile
+            id={'my-data-tile'}
+            key={'my-data-tile'}
+            title={t('My Data')}
+            Icon={tileIcon('Scatter', 'my-data-tile-icon')}
+            onPress={() => navigation.navigate('Home/MyData')}
           />
         )}
         {data?.homeTab?.appTiles?.map((appTile: AppTile) => (
@@ -112,7 +123,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             key={circleTile.circleId}
             title={circleTile.buttonText ?? circleTile.circleName}
             onPress={onCircleTilePress(circleTile)}
-            Icon={circleIcon(circleTile.circleId)}
+            Icon={tileIcon('HeartCircle', circleTile.circleId)}
           />
         ))}
       </View>
@@ -136,28 +147,18 @@ const appTileIcon = (id: string, uri?: string, styles?: ImageStyle) =>
     return null;
   };
 
-const circleIcon = (circleId: string) =>
-  function CircleIcon() {
-    const { HeartCircle, [circleId]: CustomCircleIcon } = useIcons();
+const tileIcon = (defaultIconName: ChromiconName, customIdentifier: string) =>
+  function TileIcon() {
+    const { [defaultIconName]: DefaultIcon, [customIdentifier]: CustomIcon } =
+      useIcons();
     const { styles } = useStyles(defaultStyles);
 
-    if (CustomCircleIcon) {
-      return <CustomCircleIcon />;
+    if (CustomIcon) {
+      return <CustomIcon />;
     }
 
-    return <HeartCircle stroke={styles.circleIconImage?.overlayColor} />;
+    return <DefaultIcon stroke={styles.tileIconImage?.overlayColor} />;
   };
-
-const TodayIcon = () => {
-  const { HeartCheck, today: CustomTodayIcon } = useIcons();
-  const { styles } = useStyles(defaultStyles);
-
-  if (CustomTodayIcon) {
-    return <CustomTodayIcon />;
-  }
-
-  return <HeartCheck stroke={styles.todayIconImage?.overlayColor} />;
-};
 
 const defaultStyles = createStyles('TilesList', (theme) => ({
   view: {},
@@ -170,7 +171,7 @@ const defaultStyles = createStyles('TilesList', (theme) => ({
     height: 30,
     marginRight: theme.spacing.small,
   },
-  circleIconImage: {
+  tileIconImage: {
     overlayColor: theme.colors.primarySource,
   },
   todayIconImage: {

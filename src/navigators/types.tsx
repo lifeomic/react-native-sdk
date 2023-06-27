@@ -75,6 +75,7 @@ export type HomeStackParamList = {
     trackerValue: TrackerValue;
     valuesContext: TrackerValuesContext;
   };
+  'Home/MyData': undefined;
 };
 
 export type NotificationsStackParamList = {
