@@ -41,18 +41,22 @@ storiesOf('MyDataScreen', module)
                   trace1: {
                     type: 'Observation',
                     label: 'Weight',
-                    code: {
-                      code: 'code1',
-                      system: 'system1',
-                    },
+                    coding: [
+                      {
+                        code: 'code1',
+                        system: 'system1',
+                      },
+                    ],
                   },
                   trace2: {
                     type: 'Observation',
                     label: 'Resting Heart Rate',
-                    code: {
-                      code: 'code2',
-                      system: 'system1',
-                    },
+                    coding: [
+                      {
+                        code: 'code2',
+                        system: 'system1',
+                      },
+                    ],
                   },
                 },
                 {
@@ -60,10 +64,12 @@ storiesOf('MyDataScreen', module)
                   trace1: {
                     type: 'Observation',
                     label: 'Body Fat %',
-                    code: {
-                      code: 'code3',
-                      system: 'system1',
-                    },
+                    coding: [
+                      {
+                        code: 'code3',
+                        system: 'system1',
+                      },
+                    ],
                   },
                 },
               ],
@@ -82,7 +88,10 @@ storiesOf('MyDataScreen', module)
           dates = chunk(dates, 12).map((d) => d[0]);
         }
 
-        return [200, buildSampleDate(data.code, dates)];
+        return [
+          200,
+          buildSampleDate(data.coding.map((c: any) => c.code).join(','), dates),
+        ];
       });
     }),
   )

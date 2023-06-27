@@ -8,7 +8,7 @@ import { round } from 'lodash';
 export type Trace = {
   type: 'Observation';
   label: string;
-  code: Pick<fhir3.Coding, 'code' | 'system'>;
+  coding: Pick<fhir3.Coding, 'code' | 'system'>[];
   color?: string;
 };
 
