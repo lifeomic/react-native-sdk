@@ -60,8 +60,10 @@ export const DataSelector = (props: Props) => {
         domain: trace1Domain,
       };
 
-      const trace1Percent = point1?.y / trace1Domain[1];
-      const trace2Percent = point2?.y / trace2Domain[1];
+      const trace1Percent =
+        (point1?.y - trace1Domain[0]) / (trace1Domain[1] - trace1Domain[0]);
+      const trace2Percent =
+        (point2?.y - trace2Domain[0]) / (trace2Domain[1] - trace2Domain[0]);
 
       if (!point1 || trace2Percent > trace1Percent) {
         highestPointMeta = {
@@ -209,8 +211,13 @@ const CustomLabel = ({ selection, x = 0, y = 0 }: CustomLabelProps) => {
             textAnchor="middle"
             alignmentBaseline="middle"
             fill={styles.dataSelectionTooltip?.bubble1TextColor}
+            fontSize={
+              Math.round(selection.point1.y).toString().length > 2
+                ? 8
+                : undefined
+            }
           >
-            {Math.round(selection.point1?.y)}
+            {Math.round(selection.point1.y)}
           </Text>
         </>
       )}
@@ -227,9 +234,14 @@ const CustomLabel = ({ selection, x = 0, y = 0 }: CustomLabelProps) => {
             y={-4}
             textAnchor="middle"
             alignmentBaseline="middle"
+            fontSize={
+              Math.round(selection.point2.y).toString().length > 2
+                ? 8
+                : undefined
+            }
             fill={styles.dataSelectionTooltip?.bubble2TextColor}
           >
-            {Math.round(selection.point2?.y)}
+            {Math.round(selection.point2.y)}
           </Text>
         </>
       )}
