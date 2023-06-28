@@ -55,10 +55,6 @@ export function RootStack() {
       ? 'screens/ConsentScreen'
       : 'app';
 
-    if (initialRoute === 'InviteRequired') {
-      console.log(loadingAccountOrProject, activeProject, account);
-    }
-
     if (loadingAccountOrProject && initialRoute === 'InviteRequired') {
       return (
         <ActivityIndicatorView
