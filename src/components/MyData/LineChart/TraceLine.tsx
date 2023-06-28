@@ -25,10 +25,6 @@ export const TraceLine = (props: Props) => {
   const common = useCommonChartProps();
   const theme = useVictoryTheme(trace, variant);
 
-  if (!data?.length) {
-    return null;
-  }
-
   const domainMax = Math.max(...data.map((v) => v.y));
   const domainMin = Math.min(...data.map((v) => v.y));
 
@@ -46,20 +42,24 @@ export const TraceLine = (props: Props) => {
         tickFormat={(value) => round(value, 1)}
         orientation={isTrace1 ? 'left' : 'right'}
       />
-      <VictoryLine
-        {...common}
-        domain={{ x: xDomain }}
-        standalone={false}
-        data={data}
-        theme={theme}
-      />
-      <VictoryScatter
-        {...common}
-        domain={{ x: xDomain }}
-        standalone={false}
-        data={data}
-        theme={theme}
-      />
+      {!!data?.length && (
+        <>
+          <VictoryLine
+            {...common}
+            domain={{ x: xDomain }}
+            standalone={false}
+            data={data}
+            theme={theme}
+          />
+          <VictoryScatter
+            {...common}
+            domain={{ x: xDomain }}
+            standalone={false}
+            data={data}
+            theme={theme}
+          />
+        </>
+      )}
     </>
   );
 };

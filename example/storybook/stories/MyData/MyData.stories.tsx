@@ -88,10 +88,7 @@ storiesOf('MyDataScreen', module)
           dates = chunk(dates, 12).map((d) => d[0]);
         }
 
-        return [
-          200,
-          buildSampleDate(data.coding.map((c: any) => c.code).join(','), dates),
-        ];
+        return [200, buildSampleDate(data.code, dates)];
       });
     }),
   )

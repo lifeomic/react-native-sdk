@@ -105,7 +105,7 @@ describe('LineChart', () => {
       trace2Data: [],
     });
 
-    const { findByText } = render(
+    const { findAllByText } = render(
       <LineChart
         dateRange={[mockDate, mockDate]}
         title="Test Title"
@@ -122,7 +122,7 @@ describe('LineChart', () => {
       />,
     );
 
-    expect(await findByText('Trace1Label')).toBeDefined(); // Legend Only
+    expect(await findAllByText('Trace1Label')).toHaveLength(2); // Legend & Axis
   });
 
   it('should allow selecting the data to see details', async () => {
