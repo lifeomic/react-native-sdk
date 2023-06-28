@@ -38,6 +38,11 @@ export const TraceLine = (props: Props) => {
         label={trace.label}
         maxDomain={domainMax}
         minDomain={domainMin}
+        style={{
+          tickLabels: {
+            display: !data?.length ? 'none' : undefined,
+          },
+        }}
         tickCount={domainMax === domainMin ? 1 : undefined}
         tickFormat={(value) => round(value, 1)}
         orientation={isTrace1 ? 'left' : 'right'}
