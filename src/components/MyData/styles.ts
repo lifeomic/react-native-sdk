@@ -49,6 +49,10 @@ export const defaultChartStyles = createStyles('ChartStyles', (theme) => ({
     trace1: theme.colors.primary,
     trace2: theme.colors.secondary,
   },
+  chart: {
+    height: undefined as number | undefined,
+    width: undefined as number | undefined,
+  },
 }));
 
 declare module '@styles' {
