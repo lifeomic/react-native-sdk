@@ -63,10 +63,14 @@ export const ActiveProjectContextProvider = ({
   children?: React.ReactNode;
 }) => {
   const projectsResult = useSubjectProjects();
+  const projectLoading = projectsResult.isLoading || !projectsResult.isFetched;
+
   const useMeResult = useMe();
+  const useMeLoading = useMeResult.isLoading || !useMeResult.isFetched;
   const [hookReturnValue, setHookReturnValue] = useState<ActiveProjectProps>(
     {},
   );
+  const [isFetched, setIsFetched] = useState<boolean>(false);
   const [storedProjectIdResult, setStoredProjectId] =
     useAsyncStorage(selectedProjectIdKey);
 
@@ -76,8 +80,8 @@ export const ActiveProjectContextProvider = ({
   useEffect(() => {
     if (
       hookReturnValue.activeProject?.id || // active project already set
-      !projectsResult.data?.length || // wait for projects endpoint to return data
-      !useMeResult.data?.length || // wait for subjects endpoint to return data
+      projectLoading || // wait for projects endpoint
+      useMeLoading || // wait for subjects endpoint
       (storedProjectIdResult.isLoading && !storedProjectIdResult.isError) // wait for async storage result or error
     ) {
       return;
@@ -96,6 +100,7 @@ export const ActiveProjectContextProvider = ({
       });
       setStoredProjectId(selectedProject.id);
     }
+    setIsFetched(true);
   }, [
     storedProjectIdResult.data,
     storedProjectIdResult.isLoading,
@@ -104,6 +109,8 @@ export const ActiveProjectContextProvider = ({
     useMeResult.data,
     hookReturnValue.activeProject?.id,
     setStoredProjectId,
+    projectLoading,
+    useMeLoading,
   ]);
 
   const setActiveProjectId = useCallback(
@@ -121,6 +128,7 @@ export const ActiveProjectContextProvider = ({
         });
         await setStoredProjectId(selectedProject.id);
       }
+      setIsFetched(true);
     },
     [projectsResult.data, useMeResult.data, setStoredProjectId],
   );
@@ -131,7 +139,11 @@ export const ActiveProjectContextProvider = ({
         ...hookReturnValue,
         setActiveProjectId,
         isLoading: !!(projectsResult.isLoading || useMeResult.isLoading),
-        isFetched: !!(projectsResult.isFetched && useMeResult.isFetched),
+        isFetched: !!(
+          projectsResult.isFetched &&
+          useMeResult.isFetched &&
+          isFetched
+        ),
         error: projectsResult.error || useMeResult.error,
       }}
     >

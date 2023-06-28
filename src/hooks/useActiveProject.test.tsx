@@ -57,9 +57,13 @@ const renderHookInContext = async () => {
 beforeEach(() => {
   useSubjectProjectsMock.mockReturnValue({
     data: mockSubjectProjects,
+    isLoading: false,
+    isFetched: true,
   });
   useMeMock.mockReturnValue({
     data: mockMe,
+    isLoading: false,
+    isFetched: true,
   });
 
   useAsyncStorageSpy.mockReturnValue([
@@ -104,7 +108,7 @@ test('exposes some props from useSubjectProjects and useMe', async () => {
     isFetched: true,
   });
   useMeMock.mockReturnValue({
-    isLoading: true,
+    isLoading: false,
     isFetched: true,
     error,
   });
@@ -112,7 +116,7 @@ test('exposes some props from useSubjectProjects and useMe', async () => {
   await rerender({});
 
   expect(result.current).toMatchObject({
-    isLoading: true,
+    isLoading: false,
     isFetched: true,
     error,
   });

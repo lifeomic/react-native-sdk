@@ -1,7 +1,12 @@
 import React from 'react';
 import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
-import { useAuth, useConsent } from '../hooks';
+import {
+  useActiveAccount,
+  useActiveProject,
+  useAuth,
+  useConsent,
+} from '../hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoggedInProviders } from '../common/LoggedInProviders';
 import { LoginScreen } from '../screens/LoginScreen';
@@ -9,12 +14,28 @@ import { TabNavigator } from './TabNavigator';
 import { LoggedInRootParamList, NotLoggedInRootParamList } from './types';
 import { ConsentScreen } from '../screens/ConsentScreen';
 import { CircleThreadScreen } from '../screens/CircleThreadScreen';
+import { InviteRequiredScreen } from '../screens/InviteRequiredScreen';
 
 export function RootStack() {
   const { isLoggedIn, loading: loadingAuth } = useAuth();
+  const {
+    account,
+    isLoading: isLoadingAccount,
+    isFetched: isFetchedAccount,
+  } = useActiveAccount();
+  const {
+    activeProject,
+    isLoading: isLoadingProject,
+    isFetched: isFetchedProject,
+  } = useActiveProject();
+
   const { useShouldRenderConsentScreen } = useConsent();
   const { shouldRenderConsentScreen, isLoading: loadingConsents } =
     useShouldRenderConsentScreen();
+
+  const loadingProject = !isFetchedProject || isLoadingProject;
+  const loadingAccount = !isFetchedAccount || isLoadingAccount;
+  const loadingAccountOrProject = loadingProject || loadingAccount;
 
   if (!isLoggedIn && loadingAuth) {
     return (
@@ -25,22 +46,46 @@ export function RootStack() {
   }
 
   if (isLoggedIn) {
-    if (loadingConsents) {
+    const Stack = createNativeStackNavigator<LoggedInRootParamList>();
+    const hasAccountAndProject = !!(activeProject?.id && account?.id);
+
+    const initialRoute = !hasAccountAndProject
+      ? 'InviteRequired'
+      : shouldRenderConsentScreen
+      ? 'screens/ConsentScreen'
+      : 'app';
+
+    if (initialRoute === 'InviteRequired') {
+      console.log(loadingAccountOrProject, activeProject, account);
+    }
+
+    if (loadingAccountOrProject && initialRoute === 'InviteRequired') {
       return (
         <ActivityIndicatorView
-          message={t('root-stack-waiting-for-consent', 'Waiting for consent')}
+          message={t('root-stack-waiting-for-account-and-project', 'Loading')}
         />
       );
     }
 
-    const Stack = createNativeStackNavigator<LoggedInRootParamList>();
-    const initialRouteName = shouldRenderConsentScreen
-      ? 'screens/ConsentScreen'
-      : 'app';
+    if (loadingConsents && initialRoute === 'screens/ConsentScreen') {
+      return (
+        <ActivityIndicatorView
+          message={t('root-stack-waiting-for-consents', 'Loading')}
+        />
+      );
+    }
 
     return (
       <LoggedInProviders>
-        <Stack.Navigator initialRouteName={initialRouteName}>
+        <Stack.Navigator initialRouteName={initialRoute}>
+          <Stack.Screen
+            name="InviteRequired"
+            component={InviteRequiredScreen}
+            options={{
+              presentation: 'fullScreenModal',
+              title: t('invite-required', 'Invitation Required'),
+            }}
+          />
           <Stack.Screen
             name="app"
             component={TabNavigator}
