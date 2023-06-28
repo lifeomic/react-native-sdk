@@ -3,6 +3,7 @@ import {
   PushNotificationsConfig,
   registerDeviceToken,
   requestNotificationsPermissions,
+  safelyImportReactNativeNotifications,
 } from '../../src/common';
 import { Platform } from 'react-native';
 import { useHttpClient } from './useHttpClient';
@@ -19,15 +20,7 @@ export function PushNotificationsProvider({
 }) {
   const { httpClient } = useHttpClient();
   const { account } = useActiveAccount();
-
-  let Notifications: any;
-  if (config?.enabled) {
-    try {
-      Notifications = require('react-native-notifications');
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  }
+  const { rnnotifications } = safelyImportReactNativeNotifications();
 
   const enabled = config?.applicationName && config?.enabled;
 
@@ -35,7 +28,7 @@ export function PushNotificationsProvider({
   useEffect(() => {
     if (enabled) {
       if (Platform.OS === 'android') {
-        Notifications.setNotificationChannel({
+        rnnotifications.Notifications.setNotificationChannel({
           channelId: config.channelId,
           name: config.applicationName,
           importance: 5,

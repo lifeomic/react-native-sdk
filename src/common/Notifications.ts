@@ -10,7 +10,10 @@ import { useDeveloperConfig } from '../hooks';
 export const safelyImportReactNativeNotifications = () => {
   const { pushNotificationsConfig } = useDeveloperConfig();
   let rnnotifications: any; // we cant cast to the actual NotificationsRoot at this time due to dynamic imported dependency
-  if (pushNotificationsConfig?.enabled) {
+  if (
+    pushNotificationsConfig?.enabled &&
+    pushNotificationsConfig?.applicationName
+  ) {
     try {
       rnnotifications = require('react-native-notifications');
       return rnnotifications;
@@ -50,25 +53,14 @@ export const registerDeviceToken = ({
   httpClient.post('/v1/device-endpoints', params, options);
 };
 
-const { rnnotifications } = safelyImportReactNativeNotifications();
-
 export const getInitialNotification = () => {
+  const { rnnotifications } = safelyImportReactNativeNotifications();
   return rnnotifications.Notifcations.getInitialNotification();
 };
 
 export const isRegisteredForNotifications = () => {
-  const { pushNotificationsConfig } = useDeveloperConfig();
-  let NotificationsModule: any;
-  if (pushNotificationsConfig?.enabled) {
-    try {
-      NotificationsModule = require('react-native-notifications');
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  }
-  if (pushNotificationsConfig?.enabled) {
-    return NotificationsModule.Notifications.isRegisteredForRemoteNotifications();
-  }
+  const { rnnotifications } = safelyImportReactNativeNotifications();
+  return rnnotifications.Notifications.isRegisteredForRemoteNotifications();
 };
 
 export const requestNotificationsPermissions = (
@@ -83,126 +75,92 @@ export const requestNotificationsPermissions = (
     error?: any;
   }) => void,
 ) => {
-  const { pushNotificationsConfig } = useDeveloperConfig();
-  let NotificationsModule: any;
-  if (pushNotificationsConfig?.enabled) {
-    try {
-      NotificationsModule = require('react-native-notifications');
-    } catch (error) {
-      console.log(
-        'Error: Failed to import react-native-notifications, ',
-        error,
-      );
-    }
-  }
+  const { rnnotifications } = safelyImportReactNativeNotifications();
 
-  if (pushNotificationsConfig?.enabled) {
-    // Starting Android 13 (ie SDK 33), the POST_NOTIFICATIONS permission is required
-    if (Platform.OS === 'android' && Platform.constants.Version >= 33) {
-      PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-      ).then((permissionStatus) => {
-        if (permissionStatus === 'granted') {
-          NotificationsModule.Notifications.registerRemoteNotifications();
-        } else {
-          callback({ denied: true });
-          return;
-        }
-      });
-    } else {
-      if (pushNotificationsConfig?.enabled) {
-        NotificationsModule.Notifications.registerRemoteNotifications();
+  // Starting Android 13 (ie SDK 33), the POST_NOTIFICATIONS permission is required
+  if (Platform.OS === 'android' && Platform.constants.Version >= 33) {
+    PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+    ).then((permissionStatus) => {
+      if (permissionStatus === 'granted') {
+        rnnotifications.Notifications.registerRemoteNotifications();
+      } else {
+        callback({ denied: true });
+        return;
       }
-    }
-
-    if (pushNotificationsConfig?.enabled) {
-      NotificationsModule.Notifications.events().registerRemoteNotificationsRegistered(
-        // (event: Registered) => {
-        (event: any) => {
-          callback({ deviceToken: event.deviceToken, denied: false });
-        },
-      );
-
-      NotificationsModule.Notifications.events().registerRemoteNotificationsRegistrationDenied(
-        () => {
-          callback({ denied: true });
-        },
-      );
-
-      NotificationsModule.Notifications.events().registerRemoteNotificationsRegistrationFailed(
-        // (registrationError: RegistrationError) => {
-        (registrationError: any) => {
-          callback({
-            denied: false,
-            error: registrationError,
-          });
-        },
-      );
-    }
+    });
+  } else {
+    rnnotifications.Notifications.registerRemoteNotifications();
   }
+
+  rnnotifications.Notifications.events().registerRemoteNotificationsRegistered(
+    // (event: Registered) => {
+    (event: any) => {
+      callback({ deviceToken: event.deviceToken, denied: false });
+    },
+  );
+
+  rnnotifications.Notifications.events().registerRemoteNotificationsRegistrationDenied(
+    () => {
+      callback({ denied: true });
+    },
+  );
+
+  rnnotifications.Notifications.events().registerRemoteNotificationsRegistrationFailed(
+    // (registrationError: RegistrationError) => {
+    (registrationError: any) => {
+      callback({
+        denied: false,
+        error: registrationError,
+      });
+    },
+  );
 };
 
 export const onNotificationReceived = (
-  callback: (notification: Notification) => void,
+  //   callback: (notification: Notification) => void,
+  callback: (notification: any) => void,
 ) => {
-  const { pushNotificationsConfig } = useDeveloperConfig();
-  let NotificationsModule: any;
-  if (pushNotificationsConfig?.enabled) {
-    try {
-      NotificationsModule = require('react-native-notifications');
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  }
-  if (pushNotificationsConfig?.enabled) {
-    NotificationsModule.Notifications.events().registerNotificationReceivedForeground(
-      (
-        foregroundNotification: Notification,
-        //   completion: (response: NotificationCompletion) => void,
-        completion: (response: any) => void,
-      ) => {
-        callback(foregroundNotification);
-        completion({ alert: true, badge: false, sound: false });
-      },
-    );
+  const { rnnotifications } = safelyImportReactNativeNotifications();
+  rnnotifications.Notifications.events().registerNotificationReceivedForeground(
+    (
+      //   foregroundNotification: Notification,
+      foregroundNotification: any,
+      //   completion: (response: NotificationCompletion) => void,
+      completion: (response: any) => void,
+    ) => {
+      callback(foregroundNotification);
+      completion({ alert: true, badge: false, sound: false });
+    },
+  );
 
-    NotificationsModule.Notifications.events().registerNotificationReceivedBackground(
-      (
-        backgroundNotification: Notification,
-        //   completion: (response: NotificationBackgroundFetchResult) => void,
-        completion: (response: any) => void,
-      ) => {
-        callback(backgroundNotification);
-        completion(
-          NotificationsModule.NotificationBackgroundFetchResult.NEW_DATA,
-        );
-      },
-    );
-  }
+  rnnotifications.Notifications.events().registerNotificationReceivedBackground(
+    (
+      //   backgroundNotification: Notification,
+      backgroundNotification: any,
+      //   completion: (response: NotificationBackgroundFetchResult) => void,
+      completion: (response: any) => void,
+    ) => {
+      callback(backgroundNotification);
+      completion(rnnotifications.NotificationBackgroundFetchResult.NEW_DATA);
+    },
+  );
 };
 
 export const onNotificationOpened = (
-  callback: (notification: Notification) => void,
+  //   callback: (notification: Notification) => void,
+  callback: (notification: any) => void,
 ) => {
-  const { pushNotificationsConfig } = useDeveloperConfig();
-  let NotificationsModule: any;
-  if (pushNotificationsConfig?.enabled) {
-    try {
-      NotificationsModule = require('react-native-notifications');
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  }
-  if (pushNotificationsConfig?.enabled) {
-    NotificationsModule.Notifications.events().registerNotificationOpened(
-      (
-        openedNotification: Notification,
-        //   completion: (response: NotificationCompletion) => void,
-        completion: (response: any) => void,
-      ) => {
-        callback(openedNotification);
-        completion({ alert: true, badge: false, sound: false });
-      },
-    );
-  }
+  const { rnnotifications } = safelyImportReactNativeNotifications();
+  rnnotifications.Notifications.events().registerNotificationOpened(
+    (
+      //   openedNotification: Notification,
+      openedNotification: any,
+      //   completion: (response: NotificationCompletion) => void,
+      completion: (response: any) => void,
+    ) => {
+      callback(openedNotification);
+      completion({ alert: true, badge: false, sound: false });
+    },
+  );
 };

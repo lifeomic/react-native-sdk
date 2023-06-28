@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-
 import {
   getInitialNotification,
   onNotificationOpened,
   onNotificationReceived,
+  safelyImportReactNativeNotifications,
 } from '../../../../src/common/Notifications';
-import { useDeveloperConfig } from '../../../../src/hooks';
 
 const styles = StyleSheet.create({
   openedNotificationView: {
@@ -61,18 +60,9 @@ export const NotificationsScreen = () => {
     PushNotificationsEvent[]
   >([]);
 
-  const { pushNotificationsConfig } = useDeveloperConfig();
-  let NotificationsModule: any;
-  if (pushNotificationsConfig?.enabled) {
-    try {
-      NotificationsModule = require('react-native-notifications');
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  }
-
   const sendLocalNotification = () => {
-    NotificationsModule.Notifications.postLocalNotification({
+    const { rnnotifications } = safelyImportReactNativeNotifications();
+    rnnotifications.Notifications.postLocalNotification({
       body: 'Local notification!',
       title: 'Local Notification Title',
       sound: 'chime.aiff',

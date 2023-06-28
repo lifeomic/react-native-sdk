@@ -18,6 +18,7 @@ import { WearableLifecycleProvider } from '../components/Wearables/WearableLifec
 import { CreateEditPostModal } from '../components/Circles/CreateEditPostModal';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { InviteProvider } from '../components/Invitations/InviteProvider';
+import { PushNotificationsProvider } from '../../src/hooks/usePushNotifications';
 
 const queryClient = new QueryClient();
 
@@ -29,15 +30,6 @@ export function RootProviders({
   children?: React.ReactNode;
 }) {
   const { theme, apiBaseURL, pushNotificationsConfig } = useDeveloperConfig();
-
-  let PushNotificationsProvider;
-  if (pushNotificationsConfig?.enabled) {
-    try {
-      PushNotificationsProvider = require('../hooks/usePushNotifications');
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -55,15 +47,11 @@ export function RootProviders({
                             <ActionSheetProvider>
                               <SafeAreaProvider>
                                 <ThemedNavigationContainer>
-                                  {pushNotificationsConfig?.enabled && (
-                                    <PushNotificationsProvider
-                                      config={pushNotificationsConfig}
-                                    >
-                                      {children}
-                                    </PushNotificationsProvider>
-                                  )}
-                                  {!pushNotificationsConfig?.enabled &&
-                                    children}
+                                  <PushNotificationsProvider
+                                    config={pushNotificationsConfig}
+                                  >
+                                    {children}
+                                  </PushNotificationsProvider>
                                 </ThemedNavigationContainer>
                                 <CreateEditPostModal />
                                 <Toast />
