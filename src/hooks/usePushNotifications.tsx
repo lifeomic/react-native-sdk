@@ -5,7 +5,6 @@ import {
   requestNotificationsPermissions,
 } from '../../src/common';
 import { Platform } from 'react-native';
-import { Notifications } from 'react-native-notifications';
 import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
 
@@ -20,6 +19,15 @@ export function PushNotificationsProvider({
 }) {
   const { httpClient } = useHttpClient();
   const { account } = useActiveAccount();
+
+  let Notifications: any;
+  if (config?.enabled) {
+    try {
+      Notifications = require('react-native-notifications');
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  }
 
   const enabled = config?.applicationName && config?.enabled;
 
