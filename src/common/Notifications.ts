@@ -5,11 +5,13 @@ import { useDeveloperConfig } from '../hooks';
 // React native notifications automatically initializes Firebase which
 // causes Android app crashes if the user has not registered their app
 // with Firebase services. This function adds safety to not import
-// the dependency unintentionally still allows all
+// the dependency unintentionally and still allows all
 // react-native-notifications code to exist.
 export const safelyImportReactNativeNotifications = () => {
   const { pushNotificationsConfig } = useDeveloperConfig();
-  let rnnotifications: any; // we cant cast to the actual NotificationsRoot at this time due to dynamic imported dependency
+  // we cant cast to the actual NotificationsRoot at this time due to dynamic imported dependency.
+  // this is true for types used below as well.
+  let rnnotifications: any;
   if (
     pushNotificationsConfig?.enabled &&
     pushNotificationsConfig?.applicationName
@@ -71,7 +73,6 @@ export const requestNotificationsPermissions = (
   }: {
     deviceToken?: string;
     denied?: boolean;
-    // error?: RegistrationError;
     error?: any;
   }) => void,
 ) => {
@@ -94,7 +95,6 @@ export const requestNotificationsPermissions = (
   }
 
   rnnotifications.Notifications.events().registerRemoteNotificationsRegistered(
-    // (event: Registered) => {
     (event: any) => {
       callback({ deviceToken: event.deviceToken, denied: false });
     },
@@ -107,7 +107,6 @@ export const requestNotificationsPermissions = (
   );
 
   rnnotifications.Notifications.events().registerRemoteNotificationsRegistrationFailed(
-    // (registrationError: RegistrationError) => {
     (registrationError: any) => {
       callback({
         denied: false,
@@ -118,47 +117,28 @@ export const requestNotificationsPermissions = (
 };
 
 export const onNotificationReceived = (
-  //   callback: (notification: Notification) => void,
   callback: (notification: any) => void,
 ) => {
   const { rnnotifications } = safelyImportReactNativeNotifications();
   rnnotifications.Notifications.events().registerNotificationReceivedForeground(
-    (
-      //   foregroundNotification: Notification,
-      foregroundNotification: any,
-      //   completion: (response: NotificationCompletion) => void,
-      completion: (response: any) => void,
-    ) => {
+    (foregroundNotification: any, completion: (response: any) => void) => {
       callback(foregroundNotification);
       completion({ alert: true, badge: false, sound: false });
     },
   );
 
   rnnotifications.Notifications.events().registerNotificationReceivedBackground(
-    (
-      //   backgroundNotification: Notification,
-      backgroundNotification: any,
-      //   completion: (response: NotificationBackgroundFetchResult) => void,
-      completion: (response: any) => void,
-    ) => {
+    (backgroundNotification: any, completion: (response: any) => void) => {
       callback(backgroundNotification);
       completion(rnnotifications.NotificationBackgroundFetchResult.NEW_DATA);
     },
   );
 };
 
-export const onNotificationOpened = (
-  //   callback: (notification: Notification) => void,
-  callback: (notification: any) => void,
-) => {
+export const onNotificationOpened = (callback: (notification: any) => void) => {
   const { rnnotifications } = safelyImportReactNativeNotifications();
   rnnotifications.Notifications.events().registerNotificationOpened(
-    (
-      //   openedNotification: Notification,
-      openedNotification: any,
-      //   completion: (response: NotificationCompletion) => void,
-      completion: (response: any) => void,
-    ) => {
+    (openedNotification: any, completion: (response: any) => void) => {
       callback(openedNotification);
       completion({ alert: true, badge: false, sound: false });
     },
