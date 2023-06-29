@@ -20,38 +20,42 @@ export function PushNotificationsProvider({
 }) {
   const { httpClient } = useHttpClient();
   const { account } = useActiveAccount();
-  const { rnnotifications } = safelyImportReactNativeNotifications();
 
   const enabled = config?.applicationName && config?.enabled;
 
   // Set the notification channel for Android
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      rnnotifications.Notifications.setNotificationChannel({
-        channelId: config?.channelId,
-        name: config?.applicationName,
-        importance: 5,
-        description: config?.description,
-        enableLights: true,
-        enableVibration: true,
-        showBadge: true,
-        vibrationPattern: [200, 1000, 500, 1000, 500],
-      });
+    if (enabled) {
+      const { rnnotifications } = safelyImportReactNativeNotifications();
+      if (Platform.OS === 'android' && rnnotifications) {
+        rnnotifications.Notifications.setNotificationChannel({
+          channelId: config?.channelId,
+          name: config?.applicationName,
+          importance: 5,
+          description: config?.description,
+          enableLights: true,
+          enableVibration: true,
+          showBadge: true,
+          vibrationPattern: [200, 1000, 500, 1000, 500],
+        });
+      }
     }
   }, [config, enabled]);
 
   useEffect(() => {
-    requestNotificationsPermissions(({ deviceToken }) => {
-      if (deviceToken && account && config) {
-        // Register the device with the LifeOmic platform to start receiving push notifications
-        registerDeviceToken({
-          deviceToken,
-          application: config.applicationName,
-          httpClient,
-          accountId: account.id,
-        });
-      }
-    });
+    if (enabled) {
+      requestNotificationsPermissions(({ deviceToken }) => {
+        if (deviceToken && account && config) {
+          // Register the device with the LifeOmic platform to start receiving push notifications
+          registerDeviceToken({
+            deviceToken,
+            application: config.applicationName,
+            httpClient,
+            accountId: account.id,
+          });
+        }
+      });
+    }
   }, [account, httpClient, config, enabled]);
 
   return (

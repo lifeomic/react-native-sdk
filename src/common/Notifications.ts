@@ -116,31 +116,53 @@ export const requestNotificationsPermissions = (
   );
 };
 
-export const onNotificationReceived = (
+export const onNotificationReceived = async (
   callback: (notification: any) => void,
 ) => {
-  const { rnnotifications } = safelyImportReactNativeNotifications();
-  rnnotifications.Notifications.events().registerNotificationReceivedForeground(
-    (foregroundNotification: any, completion: (response: any) => void) => {
-      callback(foregroundNotification);
-      completion({ alert: true, badge: false, sound: false });
-    },
-  );
+  try {
+    const { rnnotifications } = await safelyImportReactNativeNotifications();
+    if (rnnotifications) {
+      rnnotifications.Notifications.events().registerNotificationReceivedForeground(
+        (foregroundNotification: any, completion: (response: any) => void) => {
+          callback(foregroundNotification);
+          completion({ alert: true, badge: false, sound: false });
+        },
+      );
 
-  rnnotifications.Notifications.events().registerNotificationReceivedBackground(
-    (backgroundNotification: any, completion: (response: any) => void) => {
-      callback(backgroundNotification);
-      completion(rnnotifications.NotificationBackgroundFetchResult.NEW_DATA);
-    },
-  );
+      rnnotifications.Notifications.events().registerNotificationReceivedBackground(
+        (backgroundNotification: any, completion: (response: any) => void) => {
+          callback(backgroundNotification);
+          completion(
+            rnnotifications.NotificationBackgroundFetchResult.NEW_DATA,
+          );
+        },
+      );
+    }
+  } catch (error) {
+    console.log(
+      'error: rnnotifications is undefined in onNotificationRecieved, ',
+      error,
+    );
+  }
 };
 
-export const onNotificationOpened = (callback: (notification: any) => void) => {
-  const { rnnotifications } = safelyImportReactNativeNotifications();
-  rnnotifications.Notifications.events().registerNotificationOpened(
-    (openedNotification: any, completion: (response: any) => void) => {
-      callback(openedNotification);
-      completion({ alert: true, badge: false, sound: false });
-    },
-  );
+export const onNotificationOpened = async (
+  callback: (notification: any) => void,
+) => {
+  try {
+    const { rnnotifications } = safelyImportReactNativeNotifications();
+    if (rnnotifications) {
+      await rnnotifications.Notifications.events().registerNotificationOpened(
+        (openedNotification: any, completion: (response: any) => void) => {
+          callback(openedNotification);
+          completion({ alert: true, badge: false, sound: false });
+        },
+      );
+    }
+  } catch (error) {
+    console.log(
+      'error: rnnotifications is undefined in onNotificationOpened, ',
+      error,
+    );
+  }
 };
