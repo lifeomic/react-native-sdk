@@ -12,10 +12,7 @@ export const safelyImportReactNativeNotifications = () => {
   // we cant cast to the actual NotificationsRoot at this time due to dynamic imported dependency.
   // this is true for types used below as well.
   let rnnotifications: any;
-  if (
-    pushNotificationsConfig?.enabled &&
-    pushNotificationsConfig?.applicationName
-  ) {
+  if (pushNotificationsConfig?.enabled) {
     try {
       rnnotifications = require('react-native-notifications');
       return rnnotifications;
@@ -119,29 +116,20 @@ export const requestNotificationsPermissions = (
 export const onNotificationReceived = async (
   callback: (notification: any) => void,
 ) => {
-  try {
-    const { rnnotifications } = await safelyImportReactNativeNotifications();
-    if (rnnotifications) {
-      rnnotifications.Notifications.events().registerNotificationReceivedForeground(
-        (foregroundNotification: any, completion: (response: any) => void) => {
-          callback(foregroundNotification);
-          completion({ alert: true, badge: false, sound: false });
-        },
-      );
+  const { rnnotifications } = await safelyImportReactNativeNotifications();
+  if (rnnotifications) {
+    rnnotifications.Notifications.events().registerNotificationReceivedForeground(
+      (foregroundNotification: any, completion: (response: any) => void) => {
+        callback(foregroundNotification);
+        completion({ alert: true, badge: false, sound: false });
+      },
+    );
 
-      rnnotifications.Notifications.events().registerNotificationReceivedBackground(
-        (backgroundNotification: any, completion: (response: any) => void) => {
-          callback(backgroundNotification);
-          completion(
-            rnnotifications.NotificationBackgroundFetchResult.NEW_DATA,
-          );
-        },
-      );
-    }
-  } catch (error) {
-    console.log(
-      'error: rnnotifications is undefined in onNotificationRecieved, ',
-      error,
+    rnnotifications.Notifications.events().registerNotificationReceivedBackground(
+      (backgroundNotification: any, completion: (response: any) => void) => {
+        callback(backgroundNotification);
+        completion(rnnotifications.NotificationBackgroundFetchResult.NEW_DATA);
+      },
     );
   }
 };
@@ -149,20 +137,13 @@ export const onNotificationReceived = async (
 export const onNotificationOpened = async (
   callback: (notification: any) => void,
 ) => {
-  try {
-    const { rnnotifications } = safelyImportReactNativeNotifications();
-    if (rnnotifications) {
-      await rnnotifications.Notifications.events().registerNotificationOpened(
-        (openedNotification: any, completion: (response: any) => void) => {
-          callback(openedNotification);
-          completion({ alert: true, badge: false, sound: false });
-        },
-      );
-    }
-  } catch (error) {
-    console.log(
-      'error: rnnotifications is undefined in onNotificationOpened, ',
-      error,
+  const { rnnotifications } = safelyImportReactNativeNotifications();
+  if (rnnotifications) {
+    await rnnotifications.Notifications.events().registerNotificationOpened(
+      (openedNotification: any, completion: (response: any) => void) => {
+        callback(openedNotification);
+        completion({ alert: true, badge: false, sound: false });
+      },
     );
   }
 };

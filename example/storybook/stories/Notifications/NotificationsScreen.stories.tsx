@@ -24,8 +24,8 @@ const PushNotificationsScreen = () => {
       ) : (
         <View>
           <Text style={styles.text}>
-            Enable Push Notifications in DeveloperConfig to experiment with Push
-            Notifications
+            Enable Push Notifications in DeveloperConfig (and refer to
+            directions in README.md) to experiment with Push Notifications
           </Text>
         </View>
       )}
