@@ -7,14 +7,15 @@ import { useDeveloperConfig } from '../hooks';
 // with Firebase services. This function adds safety to not import
 // the dependency unintentionally and still allows all
 // react-native-notifications code to exist.
-export const safelyImportReactNativeNotifications = () => {
+export const safelyImportReactNativeNotifications = async () => {
   const { pushNotificationsConfig } = useDeveloperConfig();
   // we cant cast to the actual NotificationsRoot at this time due to dynamic imported dependency.
   // this is true for types used below as well.
   let rnnotifications: any;
   if (pushNotificationsConfig?.enabled) {
     try {
-      rnnotifications = require('react-native-notifications');
+      const resolvePath = require.resolve('react-native-notifications');
+      rnnotifications = await import(resolvePath);
       return rnnotifications;
     } catch (error) {
       console.error(
@@ -52,17 +53,17 @@ export const registerDeviceToken = ({
   httpClient.post('/v1/device-endpoints', params, options);
 };
 
-export const getInitialNotification = () => {
-  const { rnnotifications } = safelyImportReactNativeNotifications();
+export const getInitialNotification = async () => {
+  const { rnnotifications } = await safelyImportReactNativeNotifications();
   return rnnotifications.Notifcations.getInitialNotification();
 };
 
-export const isRegisteredForNotifications = () => {
-  const { rnnotifications } = safelyImportReactNativeNotifications();
+export const isRegisteredForNotifications = async () => {
+  const { rnnotifications } = await safelyImportReactNativeNotifications();
   return rnnotifications.Notifications.isRegisteredForRemoteNotifications();
 };
 
-export const requestNotificationsPermissions = (
+export const requestNotificationsPermissions = async (
   callback: ({
     deviceToken,
     denied,
@@ -73,7 +74,7 @@ export const requestNotificationsPermissions = (
     error?: any;
   }) => void,
 ) => {
-  const { rnnotifications } = safelyImportReactNativeNotifications();
+  const { rnnotifications } = await safelyImportReactNativeNotifications();
 
   // Starting Android 13 (ie SDK 33), the POST_NOTIFICATIONS permission is required
   if (Platform.OS === 'android' && Platform.constants.Version >= 33) {
@@ -144,7 +145,7 @@ export const onNotificationOpened = async (
   callback: (notification: any) => void,
 ) => {
   try {
-    const { rnnotifications } = safelyImportReactNativeNotifications();
+    const { rnnotifications } = await safelyImportReactNativeNotifications();
     if (rnnotifications) {
       await rnnotifications.Notifications.events().registerNotificationOpened(
         (openedNotification: any, completion: (response: any) => void) => {

@@ -26,19 +26,24 @@ export function PushNotificationsProvider({
   // Set the notification channel for Android
   useEffect(() => {
     if (enabled) {
-      const { rnnotifications } = safelyImportReactNativeNotifications();
-      if (Platform.OS === 'android' && rnnotifications) {
-        rnnotifications.Notifications.setNotificationChannel({
-          channelId: config?.channelId,
-          name: config?.applicationName,
-          importance: 5,
-          description: config?.description,
-          enableLights: true,
-          enableVibration: true,
-          showBadge: true,
-          vibrationPattern: [200, 1000, 500, 1000, 500],
-        });
-      }
+      const setNotificationChannelAsync = async () => {
+        const { rnnotifications } =
+          await safelyImportReactNativeNotifications();
+
+        if (Platform.OS === 'android' && rnnotifications) {
+          rnnotifications.Notifications.setNotificationChannel({
+            channelId: config?.channelId,
+            name: config?.applicationName,
+            importance: 5,
+            description: config?.description,
+            enableLights: true,
+            enableVibration: true,
+            showBadge: true,
+            vibrationPattern: [200, 1000, 500, 1000, 500],
+          });
+        }
+      };
+      setNotificationChannelAsync();
     }
   }, [config, enabled]);
 

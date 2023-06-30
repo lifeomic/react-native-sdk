@@ -60,8 +60,8 @@ export const NotificationsScreen = () => {
     PushNotificationsEvent[]
   >([]);
 
-  const sendLocalNotification = () => {
-    const { rnnotifications } = safelyImportReactNativeNotifications();
+  const sendLocalNotification = async () => {
+    const { rnnotifications } = await safelyImportReactNativeNotifications();
     rnnotifications.Notifications.postLocalNotification({
       body: 'Local notification!',
       title: 'Local Notification Title',

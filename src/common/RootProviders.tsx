@@ -47,15 +47,11 @@ export function RootProviders({
                             <ActionSheetProvider>
                               <SafeAreaProvider>
                                 <ThemedNavigationContainer>
-                                  {pushNotificationsConfig?.enabled && (
-                                    <PushNotificationsProvider
-                                      config={pushNotificationsConfig}
-                                    >
-                                      {children}
-                                    </PushNotificationsProvider>
-                                  )}
-                                  {!pushNotificationsConfig?.enabled &&
-                                    children}
+                                  <PushNotificationsProvider
+                                    config={pushNotificationsConfig}
+                                  >
+                                    {children}
+                                  </PushNotificationsProvider>
                                 </ThemedNavigationContainer>
                                 <CreateEditPostModal />
                                 <Toast />
