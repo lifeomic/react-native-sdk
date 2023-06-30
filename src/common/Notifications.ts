@@ -14,8 +14,9 @@ export const safelyImportReactNativeNotifications = async () => {
   let rnnotifications: any;
   if (pushNotificationsConfig?.enabled) {
     try {
-      const resolvePath = require.resolve('react-native-notifications');
-      rnnotifications = await import(resolvePath);
+      // const resolvePath = require.resolve('react-native-notifications');
+      // rnnotifications = await import(resolvePath);
+      rnnotifications = await import('react-native-notifications');
       return rnnotifications;
     } catch (error) {
       console.error(
