@@ -18,7 +18,7 @@ export const safelyImportReactNativeNotifications = () => {
       return rnnotifications;
     } catch (error) {
       console.error(
-        'Error: Failed to import react-native-notifications, ',
+        'Error: Failed to import react-native-notifications. ',
         error,
       );
       return undefined;
@@ -116,34 +116,44 @@ export const requestNotificationsPermissions = (
 export const onNotificationReceived = async (
   callback: (notification: any) => void,
 ) => {
-  const { rnnotifications } = await safelyImportReactNativeNotifications();
-  if (rnnotifications) {
-    rnnotifications.Notifications.events().registerNotificationReceivedForeground(
-      (foregroundNotification: any, completion: (response: any) => void) => {
-        callback(foregroundNotification);
-        completion({ alert: true, badge: false, sound: false });
-      },
-    );
+  try {
+    const { rnnotifications } = await safelyImportReactNativeNotifications();
+    if (rnnotifications) {
+      rnnotifications.Notifications.events().registerNotificationReceivedForeground(
+        (foregroundNotification: any, completion: (response: any) => void) => {
+          callback(foregroundNotification);
+          completion({ alert: true, badge: false, sound: false });
+        },
+      );
 
-    rnnotifications.Notifications.events().registerNotificationReceivedBackground(
-      (backgroundNotification: any, completion: (response: any) => void) => {
-        callback(backgroundNotification);
-        completion(rnnotifications.NotificationBackgroundFetchResult.NEW_DATA);
-      },
-    );
+      rnnotifications.Notifications.events().registerNotificationReceivedBackground(
+        (backgroundNotification: any, completion: (response: any) => void) => {
+          callback(backgroundNotification);
+          completion(
+            rnnotifications.NotificationBackgroundFetchResult.NEW_DATA,
+          );
+        },
+      );
+    }
+  } catch (error) {
+    console.log('Error: ', error);
   }
 };
 
 export const onNotificationOpened = async (
   callback: (notification: any) => void,
 ) => {
-  const { rnnotifications } = safelyImportReactNativeNotifications();
-  if (rnnotifications) {
-    await rnnotifications.Notifications.events().registerNotificationOpened(
-      (openedNotification: any, completion: (response: any) => void) => {
-        callback(openedNotification);
-        completion({ alert: true, badge: false, sound: false });
-      },
-    );
+  try {
+    const { rnnotifications } = safelyImportReactNativeNotifications();
+    if (rnnotifications) {
+      await rnnotifications.Notifications.events().registerNotificationOpened(
+        (openedNotification: any, completion: (response: any) => void) => {
+          callback(openedNotification);
+          completion({ alert: true, badge: false, sound: false });
+        },
+      );
+    }
+  } catch (error) {
+    console.log('Error: ', error);
   }
 };
