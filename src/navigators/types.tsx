@@ -24,6 +24,7 @@ export type LoggedInScreenProps<T extends keyof LoggedInRootParamList> =
 export type LoggedInRootParamList = {
   app: NavigatorScreenParams<TabParamList> | undefined;
   'screens/ConsentScreen': undefined;
+  InviteRequired: undefined;
   'Circle/Thread': { post: Post; createNewComment?: boolean };
 };
 

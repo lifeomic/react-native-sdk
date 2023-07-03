@@ -61,7 +61,16 @@ test('fetches and returns projects related to useMe', async () => {
   await waitFor(() => expect(result.current.data).toEqual([{}, {}]));
 });
 
-test('does not fetch if useMe has no data', async () => {
+/*
+  This test used to not fetch if useMe
+  returned empty. This would lead to an endless loading
+  state for the useSubjectProjects query for users that
+  do not have subjects, i.e, they were never invited to a project.
+  To control the flow of the app (specifically to navigate to the InviteRequired screen)
+  we need to know when this query has settled even if it failed.
+*/
+
+test('fetches even if useMe returns no data', async () => {
   useMeMock.mockReturnValue({
     isLoading: true,
   });
@@ -80,6 +89,6 @@ test('does not fetch if useMe has no data', async () => {
   await rerender({});
   await waitFor(() => result.current.isSuccess);
 
-  expect(axiosMock.history.get.length).toBe(0);
+  expect(axiosMock.history.get.length).toBe(3);
   expect(result.current.data).toBeUndefined();
 });
