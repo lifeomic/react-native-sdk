@@ -12,19 +12,12 @@ export const safelyImportReactNativeNotifications = async () => {
   // we cant cast to the actual NotificationsRoot at this time due to dynamic imported dependency.
   // this is true for types used below as well.
   let rnnotifications: any;
-  if (pushNotificationsConfig?.enabled) {
-    try {
-      // const resolvePath = require.resolve('react-native-notifications');
-      // rnnotifications = await import(resolvePath);
-      rnnotifications = await import('react-native-notifications');
-      return rnnotifications;
-    } catch (error) {
-      console.error(
-        'Error: Failed to import react-native-notifications. ',
-        error,
-      );
-      return undefined;
-    }
+  if (
+    pushNotificationsConfig?.enabled &&
+    pushNotificationsConfig.applicationName === 'example'
+  ) {
+    rnnotifications = await import('react-native-notifications');
+    return rnnotifications;
   }
   return undefined;
 };
