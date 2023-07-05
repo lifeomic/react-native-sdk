@@ -164,9 +164,9 @@ export default function App() {
 }
 ```
 
-### Custom Logging Screen
+### Custom Login Screen
 
-1- Define your custom logging screen
+1- Define your custom login screen
 
 ```typescript
 import React, { useCallback } from 'react';
@@ -174,7 +174,7 @@ import { useOAuthFlow } from '@lifeomic/react-native-sdk';
 import { Text, View, Button } from 'react-native';
 import { AuthorizeResult } from 'react-native-app-auth';
 
-const CustomLoggingScreen = () => {
+const CustomLoginScreen = () => {
   const { login } = useOAuthFlow();
 
   const onLoginPress = useCallback(() => {
@@ -190,14 +190,14 @@ const CustomLoggingScreen = () => {
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Custom Logging Screen</Text>
+      <Text>Custom Login Screen</Text>
       <Button onPress={onLoginPress} title="Login" />
     </View>
   );
 };
 ```
 
-2- Pass in your custom logging screen to the `DeveloperConfigProvider`
+2- Pass in your custom login screen to the `DeveloperConfigProvider`
 
 ```typescript
 import React, { FC } from 'react';
@@ -208,7 +208,7 @@ export default function App() {
   return (
     <DeveloperConfigProvider
       developerConfig={{
-        renderCustomLoginScreen: () => <CustomLoggingScreen />,
+        renderCustomLoginScreen: () => <CustomLoginScreen />,
       }}
     >
       <RootProviders authConfig={authConfig}>
