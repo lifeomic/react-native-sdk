@@ -164,6 +164,61 @@ export default function App() {
 }
 ```
 
+### Custom Logging Screen
+
+1- Define your custom logging screen
+
+```typescript
+import React, { useCallback } from 'react';
+import { useOAuthFlow } from '@lifeomic/react-native-sdk';
+import { Text, View, Button } from 'react-native';
+import { AuthorizeResult } from 'react-native-app-auth';
+
+const CustomLoggingScreen = () => {
+  const { login } = useOAuthFlow();
+
+  const onLoginPress = useCallback(() => {
+    login({
+      onSuccess: (result: AuthorizeResult) => {
+        console.log('Login Success', result);
+      },
+      onFail: (error) => {
+        console.log('Login Fail', error);
+      },
+    });
+  }, [login]);
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Custom Logging Screen</Text>
+      <Button onPress={onLoginPress} title="Login" />
+    </View>
+  );
+};
+```
+
+2- Pass in your custom logging screen to the `DeveloperConfigProvider`
+
+```typescript
+import React, { FC } from 'react';
+import { authConfig } from './authConfig';
+import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+
+export default function App() {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={{
+        renderCustomLoginScreen: () => <CustomLoggingScreen />,
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <RootStack />
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+}
+```
+
 ### Peer dependencies
 
 We may have more peer dependencies than is typical. We have run into a number of

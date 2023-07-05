@@ -33,7 +33,10 @@ import { NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/ty
  *
  * @param additionalNavigationTab Allows for configuring a custom additional material
  * bottom navigation tab (in addition to Home, Notifications, and Settings.
+ *
+ * @param renderCustomLoggingScreen Allows for configuring a custom login screen
  */
+
 export interface RouteColor {
   route: string;
   color: (theme: Theme) => string;
@@ -78,6 +81,7 @@ export type DeveloperConfig = {
   getAdditionalHomeScreens?: <ParamList extends ParamListBase>(
     HomeStack: Navigator<ParamList, NativeStackNavigatorProps>,
   ) => JSX.Element[];
+  renderCustomLoginScreen?: () => JSX.Element;
 };
 
 export type AppTileScreens = {
