@@ -257,6 +257,22 @@ required for Firebase services to work correctly.
 Make sure to follow the Firebase documentation to obtain the
 `google-services.json` file specific to your Firebase project.
 
+#### Generate the Apple Push Notification service (APNs) certificate
+
+In order to receive push notifications on iOS, you will need to generate an APNs
+certificate. Please follow
+[these steps](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/establishing_a_certificate-based_connection_to_apns#2947597)
+to generate the certificate.
+
+#### 4. Add Firebase Cloud Messaging (FCM) Server Key
+
+LifeOmic uses Firebase Cloud Messaging (FCM) to send push notifications to
+Android devices. AWS expects the Firebase Server key, which is part of the
+now-deprecated Cloud Messaging API. As of the time of this writing, the only
+known solution is to enable the Cloud Messaging API in Firebase under
+`project -> Project Settings -> General -> Cloud Messaging API -> Manange -> Enable`.
+Refreshing the Project Settings page should reveal the Server key.
+
 ## Gotchas
 
 ### Android login not working locally
