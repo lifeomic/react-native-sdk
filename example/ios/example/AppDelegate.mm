@@ -3,7 +3,8 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 
-#import <RNNotifications.h>
+// Needed for push notifications
+// #import <RNNotifications.h>
 
 @implementation AppDelegate
 
@@ -15,7 +16,7 @@
   self.initialProps = @{};
 
   // Needed for push notifications
-  [RNNotifications startMonitorNotifications]; 
+  // [RNNotifications startMonitorNotifications];
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
@@ -46,15 +47,15 @@
   return true;
 }
 
-// Push notifications registration
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-  [RNNotifications didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-}
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-  [RNNotifications didFailToRegisterForRemoteNotificationsWithError:error];
-}
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
-  [RNNotifications didReceiveBackgroundNotification:userInfo withCompletionHandler:completionHandler];
-}
+// Needed for push notifications - push notifications registration
+// - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+//   [RNNotifications didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+// }
+// - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+//   [RNNotifications didFailToRegisterForRemoteNotificationsWithError:error];
+// }
+// - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+//   [RNNotifications didReceiveBackgroundNotification:userInfo withCompletionHandler:completionHandler];
+// }
 
 @end
