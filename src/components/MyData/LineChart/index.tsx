@@ -20,6 +20,8 @@ import {
 } from '../useCommonChartProps';
 import { DataSelector } from './DataSelector';
 import { useChartData } from './useChartData';
+import { AxisArrows } from './AxisArrows';
+import { defaultChartStyles } from '../styles';
 
 type Props = {
   title: string;
@@ -70,6 +72,7 @@ const LineChart = (props: Props) => {
             format(new Date(tick), index === 0 ? 'MMM dd' : 'dd')
           }
         />
+        <AxisArrows trace1={trace1} trace2={trace2} />
         <TraceLine trace={trace1} data={trace1Data} xDomain={domain} />
         {trace2 && (
           <TraceLine
@@ -93,13 +96,20 @@ const LineChart = (props: Props) => {
 const LineChartWrapper = (props: Props & { padding?: number }) => {
   const { padding = 0, ...lineChartProps } = props;
   const theme = useVictoryTheme();
-  const width = Dimensions.get('window').width - padding;
+  const { styles } = useStyles(defaultChartStyles);
+  const width = styles.chart?.width ?? Dimensions.get('window').width - padding;
 
   return (
     <CommonChartPropsProvider
       theme={theme}
       width={width}
-      padding={padding + 10}
+      height={styles.chart?.height ?? 300}
+      padding={{
+        left: padding + 10,
+        right: padding + 10,
+        top: 30,
+        bottom: 40,
+      }}
     >
       <LineChart {...lineChartProps} />
     </CommonChartPropsProvider>

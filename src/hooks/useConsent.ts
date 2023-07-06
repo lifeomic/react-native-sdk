@@ -16,6 +16,7 @@ export const useConsent = () => {
         {
           account,
           projectId: activeProject?.id,
+          accountHeaders,
         },
       ],
       () =>

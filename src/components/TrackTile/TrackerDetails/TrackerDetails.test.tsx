@@ -10,11 +10,18 @@ import {
 import { notifier } from '../services/EmitterService';
 import { startOfYesterday, format, add } from 'date-fns';
 import * as fhirHelperModule from './to-fhir-resource';
+import { Platform, View } from 'react-native';
 
 jest.unmock('i18next');
 
 jest.mock('../hooks/useTrackerValues');
 jest.mock('lodash/debounce', () => jest.fn((fn) => fn));
+jest.mock('@react-native-picker/picker', () => {
+  const Picker = (props: any) => <View {...props} />;
+  Picker.Item = (props: any) => <View {...props} />;
+
+  return { Picker };
+});
 
 const mockUseTrackerValues: jest.Mock<typeof useTrackerValues> =
   useTrackerValues as any;
@@ -24,11 +31,10 @@ const valuesContext: TrackerValuesContext = {
   codeBelow: TRACKER_CODE,
 };
 
-const upsertTracker = jest.fn();
-
 describe('Tracker Details', () => {
   afterEach(() => {
     jest.useRealTimers();
+    Platform.OS = 'ios';
   });
 
   it('should display tracker description', async () => {
@@ -36,6 +42,8 @@ describe('Tracker Details', () => {
       loading: false,
       trackerValues: [{}],
     } as any);
+
+    const upsertTracker = jest.fn();
 
     const { findByText } = render(
       <TrackerDetailsProvider
@@ -84,7 +92,8 @@ describe('Tracker Details', () => {
     });
   });
 
-  it.skip('should upsert the tracker with a new target on unmount', async () => {
+  it('should upsert the tracker with a new target on unmount', async () => {
+    Platform.OS = 'android';
     mockUseTrackerValues.mockReturnValue({
       loading: false,
       trackerValues: [{}],
@@ -102,7 +111,15 @@ describe('Tracker Details', () => {
             target: 4,
             unit: 'unit',
             order: 0,
-            units: [{ display: '', target: 5, unit: 'unit' }],
+            units: [
+              {
+                display: '',
+                target: 5,
+                unit: 'unit',
+                targetMin: 0,
+                targetMax: 2,
+              },
+            ],
           } as any
         }
         valuesContext={valuesContext}
@@ -110,13 +127,19 @@ describe('Tracker Details', () => {
     );
 
     fireEvent.press(await findByTestId('android-number-picker'));
-    fireEvent.press(await findByTestId('number-picker-option-10'));
+
+    expect(await findByTestId('number-picker-option-0')).toBeDefined();
+    expect(await findByTestId('number-picker-option-1')).toBeDefined();
+    expect(await findByTestId('number-picker-option-2')).toBeDefined();
+
+    fireEvent(await findByTestId('android-number-picker'), 'valueChange', '2');
+    fireEvent(await findByTestId('android-number-picker'), 'blur');
 
     unmount();
 
     expect(upsertTracker).toHaveBeenCalledWith('metric-id', {
       unit: 'unit',
-      target: 13,
+      target: 2,
       order: 0,
     });
   });

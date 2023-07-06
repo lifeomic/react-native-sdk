@@ -20,6 +20,7 @@ import { AuthedAppTileScreen } from '../screens/AuthedAppTileScreen';
 import { HomeStackParamList } from './types';
 import { CircleDiscussionScreen } from '../screens/CircleDiscussionScreen';
 import { useDeveloperConfig } from '../hooks';
+import { MyDataScreen } from '../screens/MyDataScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -52,6 +53,11 @@ export function HomeStack() {
         options={() => ({
           headerRight: SaveEditorButton,
         })}
+      />
+      <Stack.Screen
+        name="Home/MyData"
+        component={MyDataScreen}
+        options={{ title: t('My Data') }}
       />
       {getAdditionalHomeScreens?.(Stack)}
     </Stack.Navigator>

@@ -2,11 +2,12 @@ import React, { FC, useState } from 'react';
 import { View } from 'react-native';
 import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
-import { useStyles } from '../hooks/useStyles';
+import { useStyles, useDeveloperConfig } from '../hooks/';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { Dialog, Portal, Text } from 'react-native-paper';
 
 export const LoginScreen: FC = () => {
+  const { renderCustomLoginScreen } = useDeveloperConfig();
   const { styles } = useStyles(defaultStyles);
   const [visible, setVisible] = useState(false);
   const [errorText, setErrorText] = useState('');
@@ -35,7 +36,9 @@ export const LoginScreen: FC = () => {
     setVisible(true);
   };
 
-  return (
+  return renderCustomLoginScreen ? (
+    renderCustomLoginScreen()
+  ) : (
     <>
       <View style={styles.containerView}>
         <OAuthLoginButton

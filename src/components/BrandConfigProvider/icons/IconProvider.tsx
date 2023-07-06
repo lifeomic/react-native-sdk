@@ -2,6 +2,8 @@ import React, { createContext, useContext } from 'react';
 import * as Chromicons from '@lifeomic/chromicons-native';
 import { TriangleFilled } from './TriangleFilled';
 
+export type ChromiconName = keyof typeof Chromicons;
+
 export type Icons = typeof Chromicons &
   Record<string, React.ComponentType> & {
     TriangleFilled: typeof TriangleFilled;

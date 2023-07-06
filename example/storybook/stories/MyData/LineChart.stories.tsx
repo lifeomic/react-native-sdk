@@ -41,7 +41,10 @@ storiesOf('LineChart', module)
           dates = chunk(dates, 12).map((d) => d[0]);
         }
 
-        return [200, buildSampleDate(data.code, dates)];
+        return [
+          200,
+          buildSampleDate(data.coding.map((c: any) => c.code).join(','), dates),
+        ];
       });
     }),
   )
@@ -62,20 +65,24 @@ storiesOf('LineChart', module)
           trace1={{
             type: 'Observation',
             label: 'Trace 1',
-            code: {
-              code: 'code1',
-              system: 'system1',
-            },
+            coding: [
+              {
+                code: 'code1',
+                system: 'system1',
+              },
+            ],
           }}
           trace2={
             hasSecondTrace
               ? {
                   type: 'Observation',
                   label: 'Trace 2',
-                  code: {
-                    code: 'code2',
-                    system: 'system1',
-                  },
+                  coding: [
+                    {
+                      code: 'code2',
+                      system: 'system1',
+                    },
+                  ],
                 }
               : undefined
           }

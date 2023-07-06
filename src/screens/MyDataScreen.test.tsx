@@ -31,7 +31,7 @@ const exampleAppConfig: AppConfig = {
           title: 'Chart1',
           type: 'LineChart',
           trace1: {
-            code: {},
+            coding: [],
             label: 'Label1',
             type: 'Observation',
           },
@@ -40,7 +40,7 @@ const exampleAppConfig: AppConfig = {
           title: 'Chart2',
           type: 'LineChart',
           trace1: {
-            code: {},
+            coding: [],
             label: 'Label1',
             type: 'Observation',
           },

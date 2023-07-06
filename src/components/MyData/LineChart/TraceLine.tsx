@@ -8,7 +8,7 @@ import { round } from 'lodash';
 export type Trace = {
   type: 'Observation';
   label: string;
-  code: Pick<fhir3.Coding, 'code' | 'system'>;
+  coding: Pick<fhir3.Coding, 'code' | 'system'>[];
   color?: string;
 };
 
@@ -25,10 +25,6 @@ export const TraceLine = (props: Props) => {
   const common = useCommonChartProps();
   const theme = useVictoryTheme(trace, variant);
 
-  if (!data?.length) {
-    return null;
-  }
-
   const domainMax = Math.max(...data.map((v) => v.y));
   const domainMin = Math.min(...data.map((v) => v.y));
 
@@ -42,24 +38,33 @@ export const TraceLine = (props: Props) => {
         label={trace.label}
         maxDomain={domainMax}
         minDomain={domainMin}
+        style={{
+          tickLabels: {
+            display: !data?.length ? 'none' : undefined,
+          },
+        }}
         tickCount={domainMax === domainMin ? 1 : undefined}
         tickFormat={(value) => round(value, 1)}
         orientation={isTrace1 ? 'left' : 'right'}
       />
-      <VictoryLine
-        {...common}
-        domain={{ x: xDomain }}
-        standalone={false}
-        data={data}
-        theme={theme}
-      />
-      <VictoryScatter
-        {...common}
-        domain={{ x: xDomain }}
-        standalone={false}
-        data={data}
-        theme={theme}
-      />
+      {!!data?.length && (
+        <>
+          <VictoryLine
+            {...common}
+            domain={{ x: xDomain }}
+            standalone={false}
+            data={data}
+            theme={theme}
+          />
+          <VictoryScatter
+            {...common}
+            domain={{ x: xDomain }}
+            standalone={false}
+            data={data}
+            theme={theme}
+          />
+        </>
+      )}
     </>
   );
 };

@@ -164,6 +164,61 @@ export default function App() {
 }
 ```
 
+### Custom Login Screen
+
+1- Define your custom login screen
+
+```typescript
+import React, { useCallback } from 'react';
+import { useOAuthFlow } from '@lifeomic/react-native-sdk';
+import { Text, View, Button } from 'react-native';
+import { AuthorizeResult } from 'react-native-app-auth';
+
+const CustomLoginScreen = () => {
+  const { login } = useOAuthFlow();
+
+  const onLoginPress = useCallback(() => {
+    login({
+      onSuccess: (result: AuthorizeResult) => {
+        console.log('Login Success', result);
+      },
+      onFail: (error) => {
+        console.log('Login Fail', error);
+      },
+    });
+  }, [login]);
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Custom Login Screen</Text>
+      <Button onPress={onLoginPress} title="Login" />
+    </View>
+  );
+};
+```
+
+2- Pass in your custom login screen to the `DeveloperConfigProvider`
+
+```typescript
+import React, { FC } from 'react';
+import { authConfig } from './authConfig';
+import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+
+export default function App() {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={{
+        renderCustomLoginScreen: () => <CustomLoginScreen />,
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <RootStack />
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+}
+```
+
 ### Peer dependencies
 
 We may have more peer dependencies than is typical. We have run into a number of
@@ -282,6 +337,22 @@ To enable push notifications in iOS projects:
   [RNNotifications didReceiveBackgroundNotification:userInfo withCompletionHandler:completionHandler];
 }
 ```
+
+#### Generate the Apple Push Notification service (APNs) certificate
+
+In order to receive push notifications on iOS, you will need to generate an APNs
+certificate. Please follow
+[these steps](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/establishing_a_certificate-based_connection_to_apns#2947597)
+to generate the certificate.
+
+#### 4. Add Firebase Cloud Messaging (FCM) Server Key
+
+LifeOmic uses Firebase Cloud Messaging (FCM) to send push notifications to
+Android devices. AWS expects the Firebase Server key, which is part of the
+now-deprecated Cloud Messaging API. As of the time of this writing, the only
+known solution is to enable the Cloud Messaging API in Firebase under
+`project -> Project Settings -> General -> Cloud Messaging API -> Manange -> Enable`.
+Refreshing the Project Settings page should reveal the Server key.
 
 ## Gotchas
 

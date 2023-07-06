@@ -18,7 +18,7 @@ export function useSubjectProjects() {
   const { httpClient } = useHttpClient();
 
   return useQuery(
-    `${account?.id}-projects`,
+    [`${account?.id}-projects`, subjects],
     () =>
       httpClient
         .get<ProjectsResponse>(
@@ -27,10 +27,7 @@ export function useSubjectProjects() {
         )
         .then((res) => res.data.items),
     {
-      enabled:
-        !!accountHeaders &&
-        (subjects?.length ?? 0) > 0 &&
-        !!subjects?.every((s) => s.projectId),
+      enabled: !!accountHeaders,
     },
   );
 }
