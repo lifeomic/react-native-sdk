@@ -20,7 +20,9 @@ export const AxisArrows = ({ trace1, trace2 }: Props) => {
   const height = commonProps.height ?? 0;
   const padding: Required<BlockProps> = new Proxy({} as any, {
     get(_, key: keyof BlockProps) {
-      if (typeof commonProps.padding === 'number') return commonProps.padding;
+      if (typeof commonProps.padding === 'number') {
+        return commonProps.padding;
+      }
 
       return commonProps.padding?.[key] ?? 50;
     },

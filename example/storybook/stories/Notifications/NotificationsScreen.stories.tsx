@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react-native';
 import { NotificationsScreen } from '.';
 import { PushNotificationsProvider } from '../../../../src/hooks/usePushNotifications';
-import { useDeveloperConfig } from 'src';
+import { useDeveloperConfig } from '../../../../src';
 import { View, Text, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({

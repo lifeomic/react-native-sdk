@@ -6,6 +6,7 @@ import {
   onNotificationReceived,
   safelyImportReactNativeNotifications,
 } from '../../../../src/common/Notifications';
+import { useDeveloperConfig } from '../../../../src';
 
 const styles = StyleSheet.create({
   openedNotificationView: {
@@ -59,9 +60,12 @@ export const NotificationsScreen = () => {
   const [pushNotificationsEvents, setPushNotificationsEvents] = useState<
     PushNotificationsEvent[]
   >([]);
+  const { pushNotificationsConfig } = useDeveloperConfig();
 
   const sendLocalNotification = async () => {
-    const { rnnotifications } = await safelyImportReactNativeNotifications();
+    const { rnnotifications } = await safelyImportReactNativeNotifications(
+      pushNotificationsConfig,
+    );
     rnnotifications.Notifications.postLocalNotification({
       body: 'Local notification!',
       title: 'Local Notification Title',
@@ -84,7 +88,7 @@ export const NotificationsScreen = () => {
 
   useEffect(() => {
     // Handler called when a notification is pressed
-    onNotificationOpened((notification) => {
+    onNotificationOpened(pushNotificationsConfig, (notification) => {
       setPushNotificationsEvents(
         (events) =>
           [
@@ -94,7 +98,7 @@ export const NotificationsScreen = () => {
       );
     });
 
-    onNotificationReceived((notification) => {
+    onNotificationReceived(pushNotificationsConfig, (notification) => {
       setPushNotificationsEvents(
         (events) =>
           [
@@ -106,7 +110,9 @@ export const NotificationsScreen = () => {
 
     const getInitial = async () => {
       // Get the notification that opened the application
-      const notification = await getInitialNotification();
+      const notification = await getInitialNotification(
+        pushNotificationsConfig,
+      );
       if (notification) {
         setPushNotificationsEvents(
           (events) =>
@@ -119,7 +125,7 @@ export const NotificationsScreen = () => {
     };
 
     getInitial();
-  }, []);
+  }, [pushNotificationsConfig]);
 
   const renderOpenedNotification = (notification: Notification) => {
     return (

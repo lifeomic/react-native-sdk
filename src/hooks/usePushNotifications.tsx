@@ -8,6 +8,7 @@ import {
 import { Platform } from 'react-native';
 import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
+import { useDeveloperConfig } from './useDeveloperConfig';
 
 export const PushNotificationsContext = createContext<{}>({});
 
@@ -20,6 +21,7 @@ export function PushNotificationsProvider({
 }) {
   const { httpClient } = useHttpClient();
   const { account } = useActiveAccount();
+  const { pushNotificationsConfig } = useDeveloperConfig();
 
   const enabled = config?.applicationName && config?.enabled;
 
@@ -27,8 +29,9 @@ export function PushNotificationsProvider({
   useEffect(() => {
     if (enabled) {
       const setNotificationChannelAsync = async () => {
-        const { rnnotifications } =
-          await safelyImportReactNativeNotifications();
+        const { rnnotifications } = await safelyImportReactNativeNotifications(
+          config,
+        );
 
         if (Platform.OS === 'android' && rnnotifications) {
           rnnotifications.Notifications.setNotificationChannel({
@@ -49,19 +52,22 @@ export function PushNotificationsProvider({
 
   useEffect(() => {
     if (enabled) {
-      requestNotificationsPermissions(({ deviceToken }) => {
-        if (deviceToken && account && config) {
-          // Register the device with the LifeOmic platform to start receiving push notifications
-          registerDeviceToken({
-            deviceToken,
-            application: config.applicationName,
-            httpClient,
-            accountId: account.id,
-          });
-        }
-      });
+      requestNotificationsPermissions(
+        pushNotificationsConfig,
+        ({ deviceToken }) => {
+          if (deviceToken && account && config) {
+            // Register the device with the LifeOmic platform to start receiving push notifications
+            registerDeviceToken({
+              deviceToken,
+              application: config.applicationName,
+              httpClient,
+              accountId: account.id,
+            });
+          }
+        },
+      );
     }
-  }, [account, httpClient, config, enabled]);
+  }, [account, httpClient, config, enabled, pushNotificationsConfig]);
 
   return (
     <PushNotificationsContext.Provider value={{}}>
