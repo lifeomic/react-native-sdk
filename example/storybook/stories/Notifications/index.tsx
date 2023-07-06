@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { Notifications } from 'react-native-notifications';
 import {
   getInitialNotification,
   onNotificationOpened,
   onNotificationReceived,
+  safelyImportReactNativeNotifications,
 } from '../../../../src/common/Notifications';
 
 const styles = StyleSheet.create({
@@ -60,8 +60,9 @@ export const NotificationsScreen = () => {
     PushNotificationsEvent[]
   >([]);
 
-  const sendLocalNotification = () => {
-    Notifications.postLocalNotification({
+  const sendLocalNotification = async () => {
+    const { rnnotifications } = await safelyImportReactNativeNotifications();
+    rnnotifications.Notifications.postLocalNotification({
       body: 'Local notification!',
       title: 'Local Notification Title',
       sound: 'chime.aiff',

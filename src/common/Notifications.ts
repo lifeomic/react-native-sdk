@@ -1,13 +1,29 @@
 import { AxiosInstance } from 'axios';
 import { Platform, PermissionsAndroid } from 'react-native';
-import {
-  Notifications,
-  Registered,
-  Notification,
-  NotificationCompletion,
-  RegistrationError,
-  NotificationBackgroundFetchResult,
-} from 'react-native-notifications';
+import { useDeveloperConfig } from '../hooks';
+
+// React native notifications automatically initializes Firebase which
+// causes Android app crashes if the user has not registered their app
+// with Firebase services. This function adds safety to not import
+// the dependency unintentionally and still allows all
+// react-native-notifications code to exist.
+export const safelyImportReactNativeNotifications = async () => {
+  const { pushNotificationsConfig } = useDeveloperConfig();
+  // we cant cast to the actual NotificationsRoot at this time due to dynamic imported dependency.
+  // this is true for types used below as well.
+  let rnnotifications: any;
+  if (pushNotificationsConfig?.enabled) {
+    const modulePath = 'react-native-notifications';
+    if (pushNotificationsConfig.applicationName !== 'example') {
+      const resolvePath = require.resolve(modulePath);
+      rnnotifications = await import(resolvePath);
+    } else {
+      rnnotifications = await import(modulePath);
+    }
+    return rnnotifications;
+  }
+  return undefined;
+};
 
 export const registerDeviceToken = ({
   deviceToken,
@@ -34,15 +50,17 @@ export const registerDeviceToken = ({
   httpClient.post('/v1/device-endpoints', params, options);
 };
 
-export const getInitialNotification = () => {
-  return Notifications.getInitialNotification();
+export const getInitialNotification = async () => {
+  const { rnnotifications } = await safelyImportReactNativeNotifications();
+  return rnnotifications.Notifcations.getInitialNotification();
 };
 
-export const isRegisteredForNotifications = () => {
-  return Notifications.isRegisteredForRemoteNotifications();
+export const isRegisteredForNotifications = async () => {
+  const { rnnotifications } = await safelyImportReactNativeNotifications();
+  return rnnotifications.Notifications.isRegisteredForRemoteNotifications();
 };
 
-export const requestNotificationsPermissions = (
+export const requestNotificationsPermissions = async (
   callback: ({
     deviceToken,
     denied,
@@ -50,37 +68,41 @@ export const requestNotificationsPermissions = (
   }: {
     deviceToken?: string;
     denied?: boolean;
-    error?: RegistrationError;
+    error?: any;
   }) => void,
 ) => {
+  const { rnnotifications } = await safelyImportReactNativeNotifications();
+
   // Starting Android 13 (ie SDK 33), the POST_NOTIFICATIONS permission is required
   if (Platform.OS === 'android' && Platform.constants.Version >= 33) {
     PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
     ).then((permissionStatus) => {
       if (permissionStatus === 'granted') {
-        Notifications.registerRemoteNotifications();
+        rnnotifications.Notifications.registerRemoteNotifications();
       } else {
         callback({ denied: true });
         return;
       }
     });
   } else {
-    Notifications.registerRemoteNotifications();
+    rnnotifications.Notifications.registerRemoteNotifications();
   }
 
-  Notifications.events().registerRemoteNotificationsRegistered(
-    (event: Registered) => {
+  rnnotifications.Notifications.events().registerRemoteNotificationsRegistered(
+    (event: any) => {
       callback({ deviceToken: event.deviceToken, denied: false });
     },
   );
 
-  Notifications.events().registerRemoteNotificationsRegistrationDenied(() => {
-    callback({ denied: true });
-  });
+  rnnotifications.Notifications.events().registerRemoteNotificationsRegistrationDenied(
+    () => {
+      callback({ denied: true });
+    },
+  );
 
-  Notifications.events().registerRemoteNotificationsRegistrationFailed(
-    (registrationError: RegistrationError) => {
+  rnnotifications.Notifications.events().registerRemoteNotificationsRegistrationFailed(
+    (registrationError: any) => {
       callback({
         denied: false,
         error: registrationError,
@@ -89,40 +111,37 @@ export const requestNotificationsPermissions = (
   );
 };
 
-export const onNotificationReceived = (
-  callback: (notification: Notification) => void,
+export const onNotificationReceived = async (
+  callback: (notification: any) => void,
 ) => {
-  Notifications.events().registerNotificationReceivedForeground(
-    (
-      foregroundNotification: Notification,
-      completion: (response: NotificationCompletion) => void,
-    ) => {
-      callback(foregroundNotification);
-      completion({ alert: true, badge: false, sound: false });
-    },
-  );
+  const { rnnotifications } = await safelyImportReactNativeNotifications();
+  if (rnnotifications) {
+    rnnotifications.Notifications.events().registerNotificationReceivedForeground(
+      (foregroundNotification: any, completion: (response: any) => void) => {
+        callback(foregroundNotification);
+        completion({ alert: true, badge: false, sound: false });
+      },
+    );
 
-  Notifications.events().registerNotificationReceivedBackground(
-    (
-      backgroundNotification: Notification,
-      completion: (response: NotificationBackgroundFetchResult) => void,
-    ) => {
-      callback(backgroundNotification);
-      completion(NotificationBackgroundFetchResult.NEW_DATA);
-    },
-  );
+    rnnotifications.Notifications.events().registerNotificationReceivedBackground(
+      (backgroundNotification: any, completion: (response: any) => void) => {
+        callback(backgroundNotification);
+        completion(rnnotifications.NotificationBackgroundFetchResult.NEW_DATA);
+      },
+    );
+  }
 };
 
-export const onNotificationOpened = (
-  callback: (notification: Notification) => void,
+export const onNotificationOpened = async (
+  callback: (notification: any) => void,
 ) => {
-  Notifications.events().registerNotificationOpened(
-    (
-      openedNotification: Notification,
-      completion: (response: NotificationCompletion) => void,
-    ) => {
-      callback(openedNotification);
-      completion({ alert: true, badge: false, sound: false });
-    },
-  );
+  const { rnnotifications } = await safelyImportReactNativeNotifications();
+  if (rnnotifications) {
+    await rnnotifications.Notifications.events().registerNotificationOpened(
+      (openedNotification: any, completion: (response: any) => void) => {
+        callback(openedNotification);
+        completion({ alert: true, badge: false, sound: false });
+      },
+    );
+  }
 };

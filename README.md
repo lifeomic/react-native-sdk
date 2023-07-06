@@ -269,7 +269,7 @@ mobile app UI.
 - `npx react-native start` (from `example` folder)
 - type `i` or `a` to run on either platform
 
-#### Push Notifications for Android and Firebase services Integration Guide
+### Push Notifications for Android and Firebase services Integration Guide
 
 Push notifications require `react-native-notifications` and Firebase services.
 To integrate with your example app, follow the steps below:
@@ -311,6 +311,30 @@ required for Firebase services to work correctly.
 
 Make sure to follow the Firebase documentation to obtain the
 `google-services.json` file specific to your Firebase project.
+
+### Push Notifications for iOS Integration Guide
+
+To enable push notifications in iOS projects:
+
+1. Open the `AppDelegate.mm` file in your XCode project
+2. Uncomment the following lines:
+
+```
+(line 7)
+#import <RNNotifications.h>
+(line 19)
+[RNNotifications startMonitorNotifications];
+(lines 50-59)
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+  [RNNotifications didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
+}
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+  [RNNotifications didFailToRegisterForRemoteNotificationsWithError:error];
+}
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler {
+  [RNNotifications didReceiveBackgroundNotification:userInfo withCompletionHandler:completionHandler];
+}
+```
 
 #### Generate the Apple Push Notification service (APNs) certificate
 

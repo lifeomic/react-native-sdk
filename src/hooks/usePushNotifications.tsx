@@ -3,9 +3,9 @@ import {
   PushNotificationsConfig,
   registerDeviceToken,
   requestNotificationsPermissions,
+  safelyImportReactNativeNotifications,
 } from '../../src/common';
 import { Platform } from 'react-native';
-import { Notifications } from 'react-native-notifications';
 import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
 
@@ -26,25 +26,31 @@ export function PushNotificationsProvider({
   // Set the notification channel for Android
   useEffect(() => {
     if (enabled) {
-      if (Platform.OS === 'android') {
-        Notifications.setNotificationChannel({
-          channelId: config.channelId,
-          name: config.applicationName,
-          importance: 5,
-          description: config.description,
-          enableLights: true,
-          enableVibration: true,
-          showBadge: true,
-          vibrationPattern: [200, 1000, 500, 1000, 500],
-        });
-      }
+      const setNotificationChannelAsync = async () => {
+        const { rnnotifications } =
+          await safelyImportReactNativeNotifications();
+
+        if (Platform.OS === 'android' && rnnotifications) {
+          rnnotifications.Notifications.setNotificationChannel({
+            channelId: config?.channelId,
+            name: config?.applicationName,
+            importance: 5,
+            description: config?.description,
+            enableLights: true,
+            enableVibration: true,
+            showBadge: true,
+            vibrationPattern: [200, 1000, 500, 1000, 500],
+          });
+        }
+      };
+      setNotificationChannelAsync();
     }
   }, [config, enabled]);
 
   useEffect(() => {
     if (enabled) {
       requestNotificationsPermissions(({ deviceToken }) => {
-        if (deviceToken && account) {
+        if (deviceToken && account && config) {
           // Register the device with the LifeOmic platform to start receiving push notifications
           registerDeviceToken({
             deviceToken,

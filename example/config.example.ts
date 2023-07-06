@@ -12,5 +12,7 @@ export const simpleTheme = {
 
 export const apiBaseUrl = 'https://api.us.lifeomic.com';
 
+export const applicationName = 'example';
+
 // Change this to true to see a full demo app instead of storybook
 export const useDemoApp = false;
