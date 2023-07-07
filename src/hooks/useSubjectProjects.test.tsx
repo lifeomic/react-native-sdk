@@ -80,12 +80,15 @@ test('fetches even if useMe returns no data', async () => {
   useMeMock.mockReturnValue({
     data: [],
   });
+
   await rerender({});
   await waitFor(() => result.current.isSuccess);
 
   useMeMock.mockReturnValue({
     data: [{ projectId: 'proj1' }, { noProjectIdEdgeCase: true }],
   });
+
+  axiosMock.onGet().replyOnce(200, { items: [] });
   await rerender({});
   await waitFor(() => result.current.isSuccess);
 

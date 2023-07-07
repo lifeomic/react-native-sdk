@@ -30,7 +30,7 @@ export function useSubjectProjects() {
         // Having no subjects is a supported state.
         // Instead of disabling the query to wait for subjects we are
         // returning a mock response to keep downstream queries moving
-        return new Promise((resolve) => resolve([]));
+        return [];
       }
     },
     {
