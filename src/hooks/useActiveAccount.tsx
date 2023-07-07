@@ -139,7 +139,8 @@ export const ActiveAccountContextProvider = ({
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
       await refetch();
-      setActiveAccountId(acceptedInvite.account);
+      await setActiveAccountId(acceptedInvite.account);
+      inviteNotifier.emit('inviteAccountSettled');
     };
     inviteNotifier.addListener('inviteAccepted', listener);
     return () => {
