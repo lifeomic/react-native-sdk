@@ -49,27 +49,30 @@ export function RootStack() {
     const Stack = createNativeStackNavigator<LoggedInRootParamList>();
     const hasAccountAndProject = !!(activeProject?.id && account?.id);
 
+    if (loadingAccountOrProject) {
+      return (
+        <ActivityIndicatorView
+          message={t(
+            'root-stack-waiting-for-account-and-project',
+            'Loading account',
+          )}
+        />
+      );
+    }
+
+    if (loadingConsents) {
+      return (
+        <ActivityIndicatorView
+          message={t('root-stack-waiting-for-consents', 'Loading consents')}
+        />
+      );
+    }
+
     const initialRoute = !hasAccountAndProject
       ? 'InviteRequired'
       : shouldRenderConsentScreen
       ? 'screens/ConsentScreen'
       : 'app';
-
-    if (loadingAccountOrProject && initialRoute === 'InviteRequired') {
-      return (
-        <ActivityIndicatorView
-          message={t('root-stack-waiting-for-account-and-project', 'Loading')}
-        />
-      );
-    }
-
-    if (loadingConsents && initialRoute === 'screens/ConsentScreen') {
-      return (
-        <ActivityIndicatorView
-          message={t('root-stack-waiting-for-consents', 'Loading')}
-        />
-      );
-    }
 
     return (
       <LoggedInProviders>
