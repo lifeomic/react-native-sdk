@@ -10,9 +10,8 @@ import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
 
-// Uncomment next lines to import Firebase and react-native-notifications
-// import com.google.firebase.FirebaseApp;
-// import com.wix.reactnativenotifications.RNNotificationsPackage;
+import com.google.firebase.FirebaseApp;
+import com.wix.reactnativenotifications.RNNotificationsPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -56,11 +55,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
-
-    // If you opted-in for Push Notifications, Firebase is initialized.
-    // Uncomment next line to enable Firebase
-    // FirebaseApp.initializeApp(this);
-    
+    FirebaseApp.initializeApp(this);
     SoLoader.init(this, /* native exopackage */ false);
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
