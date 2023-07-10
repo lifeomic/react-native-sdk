@@ -6,6 +6,7 @@ import {
   useActiveProject,
   useAuth,
   useConsent,
+  usePendingInvite,
 } from '../hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoggedInProviders } from '../common/LoggedInProviders';
@@ -28,6 +29,7 @@ export function RootStack() {
     isLoading: isLoadingProject,
     isFetched: isFetchedProject,
   } = useActiveProject();
+  const { inviteParams } = usePendingInvite();
 
   const { useShouldRenderConsentScreen } = useConsent();
   const { shouldRenderConsentScreen, isLoading: loadingConsents } =
@@ -35,7 +37,9 @@ export function RootStack() {
 
   const loadingProject = !isFetchedProject || isLoadingProject;
   const loadingAccount = !isFetchedAccount || isLoadingAccount;
-  const loadingAccountOrProject = loadingProject || loadingAccount;
+  const hasAccount = !loadingAccount && account?.id;
+  const loadingAccountOrProject =
+    loadingAccount || (hasAccount && loadingProject);
 
   if (!isLoggedIn && loadingAuth) {
     return (
@@ -49,27 +53,38 @@ export function RootStack() {
     const Stack = createNativeStackNavigator<LoggedInRootParamList>();
     const hasAccountAndProject = !!(activeProject?.id && account?.id);
 
+    if (loadingAccountOrProject) {
+      return (
+        <ActivityIndicatorView
+          message={t(
+            'root-stack-waiting-for-account-and-project',
+            'Loading account',
+          )}
+        />
+      );
+    }
+
+    if (hasAccountAndProject && loadingConsents) {
+      return (
+        <ActivityIndicatorView
+          message={t('root-stack-waiting-for-consents', 'Loading consents')}
+        />
+      );
+    }
+
+    if (inviteParams?.inviteId) {
+      return (
+        <ActivityIndicatorView
+          message={t('root-stack-waiting-for-consents', 'Accepting invitation')}
+        />
+      );
+    }
+
     const initialRoute = !hasAccountAndProject
       ? 'InviteRequired'
       : shouldRenderConsentScreen
       ? 'screens/ConsentScreen'
       : 'app';
-
-    if (loadingAccountOrProject && initialRoute === 'InviteRequired') {
-      return (
-        <ActivityIndicatorView
-          message={t('root-stack-waiting-for-account-and-project', 'Loading')}
-        />
-      );
-    }
-
-    if (loadingConsents && initialRoute === 'screens/ConsentScreen') {
-      return (
-        <ActivityIndicatorView
-          message={t('root-stack-waiting-for-consents', 'Loading')}
-        />
-      );
-    }
 
     return (
       <LoggedInProviders>

@@ -9,6 +9,7 @@ export type InviteParams = {
 export type EventTypeHandlers = {
   inviteDetected: (inviteParams: InviteParams) => void;
   inviteAccepted: (invite: ProjectInvite) => void;
+  inviteAccountSettled: () => void;
 };
 
 export type EventTypes = keyof EventTypeHandlers;

@@ -53,7 +53,6 @@ export const InviteProvider = ({ children }: ProviderProps) => {
           console.warn('Error accepting invitation', error);
           Alert.alert(t('Error accepting invitation. Please try again.'));
         }
-      } finally {
         clearPendingInvite();
         reset();
       }
@@ -95,6 +94,18 @@ export const InviteProvider = ({ children }: ProviderProps) => {
       inviteNotifier.removeListener('inviteDetected', listener);
     };
   }, []);
+
+  // Listen to inviteAccountSettled event to clear state
+  useEffect(() => {
+    const listener = async () => {
+      clearPendingInvite();
+      reset();
+    };
+    inviteNotifier.addListener('inviteAccountSettled', listener);
+    return () => {
+      inviteNotifier.removeListener('inviteAccountSettled', listener);
+    };
+  }, [clearPendingInvite, reset]);
 
   return (
     <InviteContext.Provider

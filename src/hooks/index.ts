@@ -15,6 +15,7 @@ export * from './useHttpClient';
 export * from './useMe';
 export * from './useNotifications';
 export * from './useOAuthFlow';
+export * from './usePendingInvite';
 export * from './Circles';
 export * from './useStyles';
 export * from './useSubjectProjects';
