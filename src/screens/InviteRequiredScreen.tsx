@@ -1,91 +1,31 @@
 import { t } from 'i18next';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Text, View } from 'react-native';
 import {
-  ActivityIndicatorView,
   OAuthLogoutButton,
   OAuthLogoutButtonStyles,
   createStyles,
 } from '../components';
 import { tID } from '../common/testID';
-import {
-  useActiveAccount,
-  useActiveProject,
-  useConsent,
-  useStyles,
-} from '../hooks';
-import { LoggedInRootScreenProps } from '../navigators/types';
+import { useStyles } from '../hooks';
 
-export const InviteRequiredScreen = ({
-  navigation,
-}: LoggedInRootScreenProps<'InviteRequired'>) => {
-  const {
-    account,
-    isLoading: isLoadingAccount,
-    isFetched: isFetchedAccount,
-  } = useActiveAccount();
-  const {
-    activeProject,
-    isLoading: isLoadingProject,
-    isFetched: isFetchedProject,
-  } = useActiveProject();
-
-  const loadingProject = !isFetchedProject || isLoadingProject;
-  const loadingAccount = !isFetchedAccount || isLoadingAccount;
-  const loadingAccountOrProject = loadingProject || loadingAccount;
-  const hasAccountAndProject = !!(activeProject?.id && account?.id);
-
-  const { useShouldRenderConsentScreen } = useConsent();
-  const { shouldRenderConsentScreen, isLoading: loadingConsents } =
-    useShouldRenderConsentScreen();
-
+export const InviteRequiredScreen = () => {
   const { styles } = useStyles(defaultStyles);
 
-  useEffect(() => {
-    if (!loadingAccountOrProject && !loadingConsents && hasAccountAndProject) {
-      if (shouldRenderConsentScreen) {
-        navigation.replace('screens/ConsentScreen');
-      } else {
-        navigation.replace('app');
-      }
-    }
-  }, [
-    account,
-    activeProject,
-    navigation,
-    shouldRenderConsentScreen,
-    loadingConsents,
-    loadingAccountOrProject,
-    hasAccountAndProject,
-  ]);
-
-  if (!loadingAccountOrProject && !hasAccountAndProject) {
-    if (__DEV__) {
-      console.info(
-        `Invite required! User is not part of both an account AND project. \n Account: ${account?.id} Project: ${activeProject?.id}`,
-      );
-    }
-    return (
-      <View style={styles.containerView}>
-        <Text style={styles.invitationLabel} testID={tID('invite-only-text')}>
-          {t(
-            'invite-required-text',
-            'This app is only available to use by invitation. Please contact your administrator for access.',
-          )}
-        </Text>
-        <OAuthLogoutButton
-          label={t('settings-logout', 'Logout')}
-          mode="contained"
-          style={styles.oAuthLogout}
-        />
-      </View>
-    );
-  }
-
   return (
-    <ActivityIndicatorView
-      message={t('root-stack-waiting-for-queries', 'Loading')}
-    />
+    <View style={styles.containerView}>
+      <Text style={styles.invitationLabel} testID={tID('invite-only-text')}>
+        {t(
+          'invite-required-text',
+          'This app is only available to use by invitation. Please contact your administrator for access.',
+        )}
+      </Text>
+      <OAuthLogoutButton
+        label={t('settings-logout', 'Logout')}
+        mode="contained"
+        style={styles.oAuthLogout}
+      />
+    </View>
   );
 };
 

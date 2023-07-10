@@ -17,15 +17,22 @@ export function useSubjectProjects() {
   const { data: subjects } = useMe();
   const { httpClient } = useHttpClient();
 
-  return useQuery(
+  return useQuery<Project[]>(
     [`${account?.id}-projects`, subjects],
-    () =>
-      httpClient
-        .get<ProjectsResponse>(
+    async () => {
+      if (subjects?.length) {
+        const res = await httpClient.get<ProjectsResponse>(
           `/v1/projects?id=${subjects?.map((s) => s.projectId).join(',')}`,
           { headers: accountHeaders },
-        )
-        .then((res) => res.data.items),
+        );
+        return res.data.items;
+      } else {
+        // Having no subjects is a supported state.
+        // Instead of disabling the query to wait for subjects we are
+        // returning a mock response to keep downstream queries moving
+        return [];
+      }
+    },
     {
       enabled: !!accountHeaders,
     },
