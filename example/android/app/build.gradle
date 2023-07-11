@@ -149,11 +149,6 @@ android {
 
         }
     }
-
-    if (enablePushNotifications.toBoolean()) {
-        include ':react-native-notifications'
-        project(':react-native-notifications').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-notifications/lib/android/app')
-    }
 }
 
 dependencies {
@@ -174,14 +169,10 @@ dependencies {
         implementation jscFlavor
     }
 
-    if (enablePushNotifications.toBoolean()) {
-        implementation 'com.google.firebase:firebase-common:20.1.0'
-        implementation project(':react-native-notifications')
-    }
+    implementation("com.google.firebase:firebase-common:20.1.0")
+    implementation project(':react-native-notifications')
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 
-if (enablePushNotifications.toBoolean()) {
-    apply plugin: 'com.google.gms.google-services'
-}
+apply plugin:("com.google.gms.google-services")
