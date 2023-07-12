@@ -1,4 +1,4 @@
-import { ComponentType } from 'react';
+import React, { ComponentType } from 'react';
 import { getBundleId } from 'react-native-device-info';
 import { AppTile } from '../hooks/useAppConfig';
 import { SvgProps } from 'react-native-svg';
@@ -13,6 +13,7 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import { NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/typescript/src/types';
+import { PointBreakdownProps } from '../components/SocialShare/renderers/point-breakdown';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -82,6 +83,9 @@ export type DeveloperConfig = {
     HomeStack: Navigator<ParamList, NativeStackNavigatorProps>,
   ) => JSX.Element[];
   renderCustomLoginScreen?: () => JSX.Element;
+  sharingRenderers?: {
+    pointBreakdown: (props: PointBreakdownProps) => React.JSX.Element;
+  };
 };
 
 export type AppTileScreens = {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, act } from '@testing-library/react-native';
 import { LineChart } from './index';
 import { useChartData } from './useChartData';
 import { addDays, startOfDay, format } from 'date-fns';
@@ -224,5 +224,98 @@ describe('LineChart', () => {
     fireEvent.press(await getByTestId('selection-bar-1'));
 
     expect(await queryByTestId(`${mockDateLabel}-5`)).toBeNull();
+  });
+
+  it('calls share when the share button is pressed', async () => {
+    mockUseChartData.mockReturnValue({
+      trace1Data: [{ x: Number(mockDate), y: 5, trace: {} }],
+      trace2Data: [],
+    });
+
+    const start = mockDate;
+    const end = addDays(mockDate, 2);
+    const onShare = jest.fn();
+
+    const { getByTestId } = render(
+      <LineChart
+        dateRange={{ start, end }}
+        onShare={onShare}
+        title="Test Title"
+        trace1={{
+          type: 'Observation',
+          label: 'Trace1Label',
+          coding: [
+            {
+              code: 'c',
+              system: 's',
+            },
+          ],
+        }}
+      />,
+    );
+
+    await act(async () => fireEvent.press(await getByTestId('share-button')));
+
+    expect(onShare).toHaveBeenCalledWith({
+      dataUri: 'mockImageData',
+      dateRange: [start, end],
+      selectedPoints: [],
+      title: 'Test Title',
+    });
+  });
+
+  it('calls share when the share button is pressed with point data', async () => {
+    const points = [
+      { x: Number(mockDate), y: 5, trace: {} },
+      { x: Number(addDays(mockDate, 1)), y: 10, trace: {} },
+      { x: Number(mockDate), y: 6, trace: {} },
+    ];
+    mockUseChartData.mockReturnValue({
+      trace1Data: points.slice(0, 2),
+      trace2Data: points.slice(2),
+    });
+
+    const start = mockDate;
+    const end = addDays(mockDate, 2);
+    const onShare = jest.fn();
+
+    const { getByTestId } = render(
+      <LineChart
+        dateRange={{ start, end }}
+        onShare={onShare}
+        title="Test Title"
+        trace1={{
+          type: 'Observation',
+          label: 'Trace1Label',
+          coding: [
+            {
+              code: 'c',
+              system: 's',
+            },
+          ],
+        }}
+        trace2={{
+          type: 'Observation',
+          label: 'Trace2Label',
+          coding: [
+            {
+              code: 'c2',
+              system: 's',
+            },
+          ],
+        }}
+      />,
+    );
+
+    fireEvent.press(await getByTestId('selection-bar-0'));
+
+    await act(async () => fireEvent.press(await getByTestId('share-button')));
+
+    expect(onShare).toHaveBeenCalledWith({
+      dataUri: 'mockImageData',
+      dateRange: [start, end],
+      selectedPoints: [points[0], points[2]],
+      title: 'Test Title',
+    });
   });
 });
