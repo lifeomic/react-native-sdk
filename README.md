@@ -274,36 +274,7 @@ mobile app UI.
 Push notifications require `react-native-notifications` and Firebase services.
 To integrate with your example app, follow the steps below:
 
-##### 1. Modify MainApplication.java
-
-Uncomment the following imports in the `MainApplication.java` file:
-
-```
-import com.google.firebase.FirebaseApp;
-import com.wix.reactnativenotifications.RNNotificationsPackage;
-```
-
-Uncomment the line that initializes Firebase in the `MainApplication.java` file:
-
-```
-FirebaseApp.initializeApp(this);
-```
-
-##### 2. Update package.json
-
-In the example folder, add `react-native-notifications` to the dependencies
-section the the package.json file:
-
-```
-"dependencies": {
-  "react-native-notifications": "^4.3.5",
-  // other dependencies...
-}
-```
-
-example: `cd example && yarn add react-native-notifications`
-
-##### 3. Add google-services.json
+##### 1. Add google-services.json
 
 Please bring in your own `google-services.json` file and add it to the
 appropriate location in your project. The `google-services.json` file is
