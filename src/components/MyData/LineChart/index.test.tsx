@@ -39,7 +39,7 @@ describe('LineChart', () => {
 
     const { findByText, findAllByText } = render(
       <LineChart
-        dateRange={[mockDate, mockDate]}
+        dateRange={{ start: mockDate, end: mockDate }}
         title="Test Title"
         trace1={{
           type: 'Observation',
@@ -71,7 +71,7 @@ describe('LineChart', () => {
 
     const { findAllByText } = render(
       <LineChart
-        dateRange={[mockDate, mockDate]}
+        dateRange={{ start: mockDate, end: mockDate }}
         title="Test Title"
         trace1={{
           type: 'Observation',
@@ -107,7 +107,7 @@ describe('LineChart', () => {
 
     const { findAllByText } = render(
       <LineChart
-        dateRange={[mockDate, mockDate]}
+        dateRange={{ start: mockDate, end: mockDate }}
         title="Test Title"
         trace1={{
           type: 'Observation',
@@ -133,7 +133,7 @@ describe('LineChart', () => {
 
     const { getByTestId } = render(
       <LineChart
-        dateRange={[mockDate, mockDate]}
+        dateRange={{ start: mockDate, end: mockDate }}
         title="Test Title"
         trace1={{
           type: 'Observation',
@@ -148,7 +148,7 @@ describe('LineChart', () => {
       />,
     );
 
-    fireEvent.press(await getByTestId('selection-bar-data-0'));
+    fireEvent.press(await getByTestId('selection-bar-0'));
 
     expect(await getByTestId(`${mockDateLabel}-5`)).toBeDefined();
   });
@@ -164,7 +164,7 @@ describe('LineChart', () => {
 
     const { getByTestId } = render(
       <LineChart
-        dateRange={[mockDate, addDays(mockDate, 3)]}
+        dateRange={{ start: mockDate, end: mockDate }}
         title="Test Title"
         trace1={{
           type: 'Observation',
@@ -189,7 +189,7 @@ describe('LineChart', () => {
       />,
     );
 
-    fireEvent.press(await getByTestId('selection-bar-data-0'));
+    fireEvent.press(await getByTestId('selection-bar-0'));
 
     expect(await getByTestId(`${mockDateLabel}-5-6`)).toBeDefined();
   });
@@ -202,7 +202,7 @@ describe('LineChart', () => {
 
     const { getByTestId, queryByTestId } = render(
       <LineChart
-        dateRange={[mockDate, addDays(mockDate, 2)]}
+        dateRange={{ start: mockDate, end: addDays(mockDate, 2) }}
         title="Test Title"
         trace1={{
           type: 'Observation',
@@ -217,11 +217,11 @@ describe('LineChart', () => {
       />,
     );
 
-    fireEvent.press(await getByTestId('selection-bar-data-0'));
+    fireEvent.press(await getByTestId('selection-bar-0'));
 
     expect(await getByTestId(`${mockDateLabel}-5`)).toBeDefined();
 
-    fireEvent.press(await getByTestId('selection-bar-data-1'));
+    fireEvent.press(await getByTestId('selection-bar-1'));
 
     expect(await queryByTestId(`${mockDateLabel}-5`)).toBeNull();
   });

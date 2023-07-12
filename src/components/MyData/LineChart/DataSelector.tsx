@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { VictoryBar } from 'victory-native';
 import { useCommonChartProps } from '../useCommonChartProps';
 import { eachDayOfInterval, format, isSameDay } from 'date-fns';
 import { sortBy } from 'lodash';
 import { PointData } from './useChartData';
-import { G, Text, Circle, Rect } from 'react-native-svg';
+import { G, Text, Circle, Rect, Svg } from 'react-native-svg';
 import { useStyles } from '../../../hooks';
 import { defaultChartStyles } from '../styles';
 
@@ -14,9 +14,11 @@ type Props = {
   dateRange: [Date, Date];
   trace1: PointData[];
   trace2: PointData[];
+  selection: Selection | undefined;
+  onChange: (selection?: Selection) => void;
 };
 
-type Selection = {
+export type Selection = {
   date: Date;
   chartWidth: number;
   point1: PointData;
@@ -28,14 +30,9 @@ type Selection = {
 };
 
 export const DataSelector = (props: Props) => {
-  const { trace1, trace2, xDomain } = props;
+  const { trace1, trace2, xDomain, selection, onChange } = props;
   const { styles } = useStyles(defaultChartStyles);
   const common = useCommonChartProps();
-  const [selection, setSelection] = useState<Selection>();
-
-  useEffect(() => {
-    setSelection(undefined);
-  }, [xDomain]);
 
   const handleDataSelection = useCallback(
     (date: Date, chartWidth: number) => {
@@ -49,7 +46,7 @@ export const DataSelector = (props: Props) => {
       )[0];
 
       if (!point1 && !point2) {
-        return setSelection(undefined);
+        return onChange(undefined);
       }
 
       const trace1Domain = domain(trace1);
@@ -77,7 +74,7 @@ export const DataSelector = (props: Props) => {
         highestPointMeta.point.y = 0.5;
       }
 
-      setSelection({
+      onChange({
         date,
         chartWidth,
         point1,
@@ -85,7 +82,7 @@ export const DataSelector = (props: Props) => {
         highestPointMeta,
       });
     },
-    [trace1, trace2],
+    [trace1, trace2, onChange],
   );
 
   const data = useMemo(
@@ -97,56 +94,56 @@ export const DataSelector = (props: Props) => {
     [xDomain],
   );
 
-  const barWidth = common.width ? common.width / data.length : undefined;
+  const paddingHorizontal = common.padding.left + common.padding.right;
+  const chartWidth = common.width - paddingHorizontal;
+  const barWidth = (chartWidth + chartWidth / data.length) / data.length;
 
   return (
     <>
       {selection && (
-        <VictoryBar
-          {...common}
-          domain={{ x: xDomain, y: selection.highestPointMeta.domain }}
-          data={[selection.highestPointMeta.point]}
-          labels={[selection.highestPointMeta.point.y]}
-          labelComponent={<CustomLabel selection={selection} />}
-          alignment="middle"
-          barWidth={StyleSheet.hairlineWidth}
+        <Svg
+          width={common.width}
+          height={common.height}
           style={{
-            data: {
-              fill: styles.dataSelectionTooltip?.lineColor,
-            },
+            position: 'absolute',
+            bottom: 0,
           }}
-        />
+        >
+          <VictoryBar
+            {...common}
+            domain={{ x: xDomain, y: selection.highestPointMeta.domain }}
+            data={[selection.highestPointMeta.point]}
+            labels={[selection.highestPointMeta.point.y]}
+            labelComponent={<CustomLabel selection={selection} />}
+            alignment="middle"
+            barWidth={StyleSheet.hairlineWidth}
+            style={{
+              data: {
+                fill: styles.dataSelectionTooltip?.lineColor,
+              },
+            }}
+          />
+        </Svg>
       )}
 
-      <VictoryBar
-        {...common}
-        standalone={false}
-        data={data}
-        barWidth={barWidth}
-        domain={{ x: xDomain }}
-        alignment="middle"
-        style={{
-          data: {
-            fill: 'transparent',
-          },
-        }}
-        events={[
-          {
-            target: 'data',
-            eventHandlers: {
-              onPress: () => [
-                {
-                  target: 'data',
-                  mutation: (d) => {
-                    handleDataSelection(new Date(d.datum.x), d.width);
-                    return {};
-                  },
-                },
-              ],
-            },
-          },
-        ]}
-      />
+      {data.map(({ x }, i) => (
+        <TouchableWithoutFeedback
+          key={x}
+          onPress={() => handleDataSelection(new Date(x), common.width)}
+          testID={`selection-bar-${i}`}
+        >
+          <View
+            key={i}
+            style={{
+              position: 'absolute',
+              top: common.padding.top / 2,
+              bottom: common.padding.bottom / 2,
+              left: common.padding.left + i * barWidth - barWidth / 2,
+              width: barWidth,
+            }}
+          />
+        </TouchableWithoutFeedback>
+      ))}
     </>
   );
 };
@@ -162,17 +159,25 @@ type CustomLabelProps = {
   x?: number;
   y?: number;
   selection: Selection;
+  offsetY?: number;
+  offsetX?: number;
+  flagWidth?: number;
 };
 
-const CustomLabel = ({ selection, x = 0, y = 0 }: CustomLabelProps) => {
+const CustomLabel = (props: CustomLabelProps) => {
+  const { selection, x = 0, y = 0 } = props;
+  const { offsetY = -25, offsetX = -12, flagWidth = 115 } = props;
   const { styles } = useStyles(defaultChartStyles);
 
   const decreaseBy = !selection.point1 || !selection.point2 ? 25 : 0;
-  const shiftX = Math.min(selection.chartWidth - (x + 115 - decreaseBy), 0);
+  const shiftX = Math.min(
+    selection.chartWidth - (x + flagWidth + offsetX - decreaseBy),
+    0,
+  );
   const dateString = format(selection.date, 'MMM dd');
 
   return (
-    <G x={x + shiftX} y={y - 25}>
+    <G x={x + shiftX} y={y + offsetY}>
       <View
         testID={`${dateString}-${[selection.point1?.y, selection.point2?.y]
           .filter((data) => data)
@@ -181,12 +186,12 @@ const CustomLabel = ({ selection, x = 0, y = 0 }: CustomLabelProps) => {
       <Rect
         x={-shiftX}
         y={0}
-        height={25}
+        height={-offsetY}
         strokeWidth={styles.dataSelectionTooltip?.lineWidth}
         stroke={styles.dataSelectionTooltip?.lineColor}
       />
       <Rect
-        x={-12}
+        x={offsetX}
         y={-20}
         width={115 - decreaseBy}
         height={30}

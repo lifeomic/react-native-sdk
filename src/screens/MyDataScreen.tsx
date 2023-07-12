@@ -145,7 +145,7 @@ export const MyDataScreen = () => {
             {index > 0 && <Divider style={styles.divider} />}
             <LineChart
               {...component}
-              dateRange={[range.start, range.end]}
+              dateRange={range}
               padding={Number(styles.container?.paddingHorizontal) * 2}
             />
           </React.Fragment>
