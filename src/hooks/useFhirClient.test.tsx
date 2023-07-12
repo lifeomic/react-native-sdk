@@ -44,6 +44,7 @@ const axiosMock = new MockAdapter(axiosInstance);
 beforeEach(() => {
   useActiveAccountMock.mockReturnValue({
     accountHeaders: { 'LifeOmic-Account': 'acct1' },
+    account: { id: 'acct1' },
   });
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
@@ -402,6 +403,114 @@ describe('useCreateResourceMutation', () => {
           { system: 'http://lifeomic.com/fhir/dataset', code: 'projectId' },
         ],
       },
+    });
+    await waitFor(() => {
+      expect(result.current.data).toEqual(resultBundle);
+    });
+  });
+});
+
+describe('useUpsertMutation', () => {
+  test('creates a FHIR bundle', async () => {
+    const resultBundle = {
+      resource: {
+        id: 'o1',
+      },
+    };
+    axiosMock
+      .onPost('https://fhir.us.lifeomic.com/acct1/dstu3')
+      .reply(200, resultBundle);
+
+    function useTestHook() {
+      const { useUpsertBundleMutation } = useFhirClient();
+      return useUpsertBundleMutation();
+    }
+    const { result } = renderHookInContext(useTestHook);
+
+    const observation1: fhir3.Observation = {
+      resourceType: 'Observation',
+      status: 'final',
+      code: {
+        coding: [
+          {
+            system: 'http://loinc.org',
+            code: '29463-7',
+            display: 'Body weight',
+          },
+        ],
+      },
+      valueQuantity: {
+        code: 'kg',
+        system: 'http://unitsofmeasure.org',
+        value: 73.5,
+      },
+    };
+    const observation2: fhir3.Observation = {
+      resourceType: 'Observation',
+      status: 'final',
+      code: {
+        coding: [
+          {
+            system: 'http://loinc.org',
+            code: '8302-2',
+            display: 'Body Height',
+          },
+        ],
+      },
+      valueQuantity: {
+        code: 'm',
+        system: 'http://unitsofmeasure.org',
+        value: 1.8,
+      },
+    };
+    await act(async () => {
+      await result.current.mutateAsync([observation1, observation2]);
+    });
+
+    expect(axiosMock.history.post[0].url).toBe(
+      'https://fhir.us.lifeomic.com/acct1/dstu3',
+    );
+    expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({
+      type: 'collection',
+      resourceType: 'Bundle',
+      entry: [
+        {
+          resource: {
+            ...observation1,
+            // Verifying population of these default props:
+            subject: {
+              reference: 'Patient/subjectId',
+            },
+            effectiveDateTime: expect.anything(),
+            meta: {
+              tag: [
+                {
+                  system: 'http://lifeomic.com/fhir/dataset',
+                  code: 'projectId',
+                },
+              ],
+            },
+          },
+        },
+        {
+          resource: {
+            ...observation2,
+            // Verifying population of these default props:
+            subject: {
+              reference: 'Patient/subjectId',
+            },
+            effectiveDateTime: expect.anything(),
+            meta: {
+              tag: [
+                {
+                  system: 'http://lifeomic.com/fhir/dataset',
+                  code: 'projectId',
+                },
+              ],
+            },
+          },
+        },
+      ],
     });
     await waitFor(() => {
       expect(result.current.data).toEqual(resultBundle);
