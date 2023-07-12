@@ -422,8 +422,8 @@ describe('useUpsertMutation', () => {
       .reply(200, resultBundle);
 
     function useTestHook() {
-      const { useUpsertBundleMutation } = useFhirClient();
-      return useUpsertBundleMutation();
+      const { useCreateBundleMutation } = useFhirClient();
+      return useCreateBundleMutation();
     }
     const { result } = renderHookInContext(useTestHook);
 

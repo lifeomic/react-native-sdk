@@ -190,7 +190,7 @@ export function useFhirClient() {
     });
   };
 
-  const useUpsertBundleMutation = () => {
+  const useCreateBundleMutation = () => {
     return useMutation({
       mutationFn: async (resources: ResourceType[]) => {
         if (!accountHeaders || !activeProject?.id || !activeSubjectId) {
@@ -211,7 +211,6 @@ export function useFhirClient() {
           entry.resource = toResource(entry.resource);
         }
 
-        console.log('account', account?.id);
         return httpClient
           .post<Bundle<ResourceType>>(
             // TODO: Update once the bundle endpoint is exposed behind `/v1/fhir`
@@ -246,6 +245,6 @@ export function useFhirClient() {
     useSearchResourcesQuery,
     useCreateResourceMutation,
     useDeleteResourceMutation,
-    useUpsertBundleMutation,
+    useCreateBundleMutation,
   };
 }
