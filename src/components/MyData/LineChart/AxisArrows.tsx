@@ -1,7 +1,6 @@
 import React from 'react';
 import { Path } from 'react-native-svg';
 import { useCommonChartProps } from '../useCommonChartProps';
-import { BlockProps } from 'victory-core';
 import { useTheme } from '../../../hooks';
 import { Trace } from './TraceLine';
 import { useVictoryTheme } from '../useVictoryTheme';
@@ -16,15 +15,9 @@ export const AxisArrows = ({ trace1, trace2 }: Props) => {
   const trace1Theme = useVictoryTheme(trace1, 'trace1');
   const trace2Theme = useVictoryTheme(trace2, 'trace2');
 
-  const width = commonProps.width ?? 0;
-  const height = commonProps.height ?? 0;
-  const padding: Required<BlockProps> = new Proxy({} as any, {
-    get(_, key: keyof BlockProps) {
-      if (typeof commonProps.padding === 'number') return commonProps.padding;
-
-      return commonProps.padding?.[key] ?? 50;
-    },
-  });
+  const width = commonProps.width;
+  const height = commonProps.height;
+  const padding = commonProps.padding;
 
   return (
     <>

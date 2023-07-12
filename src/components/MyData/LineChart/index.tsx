@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { VictoryChart, VictoryAxis } from 'victory-native';
 import {
   format,
@@ -18,7 +18,7 @@ import {
   CommonChartPropsProvider,
   useCommonChartProps,
 } from '../useCommonChartProps';
-import { DataSelector } from './DataSelector';
+import { DataSelector, Selection } from './DataSelector';
 import { useChartData } from './useChartData';
 import { AxisArrows } from './AxisArrows';
 import { defaultChartStyles } from '../styles';
@@ -27,14 +27,21 @@ type Props = {
   title: string;
   trace1: Trace;
   trace2?: Trace;
-  dateRange: [Date, Date];
+  dateRange: {
+    start: Date;
+    end: Date;
+  };
 };
 
 const LineChart = (props: Props) => {
   const { trace1, trace2, dateRange: incomingDateRange } = props;
+  const [selection, setSelection] = useState<Selection>();
   const dateRange = useMemo<[Date, Date]>(
-    () => [startOfDay(incomingDateRange[0]), startOfDay(incomingDateRange[1])],
-    [incomingDateRange],
+    () => [
+      startOfDay(incomingDateRange.start),
+      startOfDay(incomingDateRange.end),
+    ],
+    [incomingDateRange.start, incomingDateRange.end],
   );
   const common = useCommonChartProps();
   const { styles } = useStyles(defaultStyles);
@@ -43,6 +50,10 @@ const LineChart = (props: Props) => {
     trace2,
     dateRange,
   });
+
+  useEffect(() => {
+    setSelection(undefined);
+  }, [dateRange]);
 
   const tickValues = useMemo(() => {
     let domain = dateRange;
@@ -55,40 +66,48 @@ const LineChart = (props: Props) => {
     return scaleTime().domain([domain[0], domain[1]]).nice().ticks(ticks);
   }, [dateRange]);
 
-  const domain: [number, number] = [
-    +dateRange[0],
-    +dateRange[dateRange.length - 1],
-  ];
+  const domain: [number, number] = useMemo(
+    () => [+dateRange[0], +dateRange[1]],
+    [dateRange],
+  );
 
   return (
     <View style={styles.container}>
       <Title {...props} />
-      <VictoryChart {...common}>
-        <VictoryAxis
-          {...common}
-          standalone={false}
-          tickValues={tickValues}
-          tickFormat={(tick: number, index: number) =>
-            format(new Date(tick), index === 0 ? 'MMM dd' : 'dd')
-          }
-        />
-        <AxisArrows trace1={trace1} trace2={trace2} />
-        <TraceLine trace={trace1} data={trace1Data} xDomain={domain} />
-        {trace2 && (
-          <TraceLine
-            trace={trace2}
-            data={trace2Data}
-            xDomain={domain}
-            variant="trace2"
+
+      <View style={styles.chartWrapper}>
+        <VictoryChart {...common}>
+          <VictoryAxis
+            {...common}
+            standalone={false}
+            tickValues={tickValues}
+            tickFormat={(tick: number, index: number) =>
+              format(new Date(tick), index === 0 ? 'MMM dd' : 'dd')
+            }
           />
-        )}
-        <DataSelector
-          xDomain={domain}
-          dateRange={dateRange}
-          trace1={trace1Data}
-          trace2={trace2Data}
-        />
-      </VictoryChart>
+          <AxisArrows trace1={trace1} trace2={trace2} />
+          <TraceLine trace={trace1} data={trace1Data} xDomain={domain} />
+          {trace2 && (
+            <TraceLine
+              trace={trace2}
+              data={trace2Data}
+              xDomain={domain}
+              variant="trace2"
+            />
+          )}
+        </VictoryChart>
+
+        <View style={styles.dataSelectorContainer}>
+          <DataSelector
+            xDomain={domain}
+            dateRange={dateRange}
+            trace1={trace1Data}
+            trace2={trace2Data}
+            selection={selection}
+            onChange={setSelection}
+          />
+        </View>
+      </View>
     </View>
   );
 };
@@ -107,7 +126,7 @@ const LineChartWrapper = (props: Props & { padding?: number }) => {
       padding={{
         left: padding + 10,
         right: padding + 10,
-        top: 30,
+        top: 20,
         bottom: 40,
       }}
     >
@@ -120,6 +139,16 @@ export { LineChartWrapper as LineChart };
 
 const defaultStyles = createStyles('LineChart', () => ({
   container: {},
+  chartWrapper: {
+    position: 'relative',
+  },
+  dataSelectorContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+  },
 }));
 
 declare module '@styles' {

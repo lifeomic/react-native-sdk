@@ -55,13 +55,13 @@ storiesOf('LineChart', module)
       <CenterView>
         <LineChart
           title="Example Chart"
-          dateRange={[
-            addDays(
+          dateRange={{
+            start: addDays(
               new Date(),
               -select('Number of Days', [1, 31, 365], 31) + 1,
             ),
-            new Date(),
-          ]}
+            end: new Date(),
+          }}
           trace1={{
             type: 'Observation',
             label: 'Trace 1',
