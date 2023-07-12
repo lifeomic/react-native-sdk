@@ -129,7 +129,7 @@ export const DataSelector = (props: Props) => {
       {data.map(({ x }, i) => (
         <TouchableWithoutFeedback
           key={x}
-          onPress={() => handleDataSelection(new Date(x), chartWidth)}
+          onPress={() => handleDataSelection(new Date(x), common.width)}
           testID={`selection-bar-${i}`}
         >
           <View
@@ -159,17 +159,25 @@ type CustomLabelProps = {
   x?: number;
   y?: number;
   selection: Selection;
+  offsetY?: number;
+  offsetX?: number;
+  flagWidth?: number;
 };
 
-const CustomLabel = ({ selection, x = 0, y = 0 }: CustomLabelProps) => {
+const CustomLabel = (props: CustomLabelProps) => {
+  const { selection, x = 0, y = 0 } = props;
+  const { offsetY = -25, offsetX = -12, flagWidth = 115 } = props;
   const { styles } = useStyles(defaultChartStyles);
 
   const decreaseBy = !selection.point1 || !selection.point2 ? 25 : 0;
-  const shiftX = Math.min(selection.chartWidth - (x + 15 - decreaseBy), 0);
+  const shiftX = Math.min(
+    selection.chartWidth - (x + flagWidth + offsetX - decreaseBy),
+    0,
+  );
   const dateString = format(selection.date, 'MMM dd');
 
   return (
-    <G x={x + shiftX} y={y - 25}>
+    <G x={x + shiftX} y={y + offsetY}>
       <View
         testID={`${dateString}-${[selection.point1?.y, selection.point2?.y]
           .filter((data) => data)
@@ -178,12 +186,12 @@ const CustomLabel = ({ selection, x = 0, y = 0 }: CustomLabelProps) => {
       <Rect
         x={-shiftX}
         y={0}
-        height={25}
+        height={-offsetY}
         strokeWidth={styles.dataSelectionTooltip?.lineWidth}
         stroke={styles.dataSelectionTooltip?.lineColor}
       />
       <Rect
-        x={-12}
+        x={offsetX}
         y={-20}
         width={115 - decreaseBy}
         height={30}
