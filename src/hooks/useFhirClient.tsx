@@ -28,8 +28,40 @@ type DeleteParams = {
 
 export function useFhirClient() {
   const { httpClient } = useHttpClient();
-  const { accountHeaders } = useActiveAccount();
+  const { accountHeaders, account } = useActiveAccount();
   const { activeProject, activeSubjectId } = useActiveProject();
+
+  const toResource = (source: ResourceType) => {
+    let resource = merge<ResourceType>({}, source);
+
+    // Subject
+    resource.subject = {
+      reference: `Patient/${activeSubjectId}`,
+    };
+
+    // Project/dataset
+    if (
+      !resource.meta?.tag?.find(
+        (t) => t.system === 'http://lifeomic.com/fhir/dataset',
+      )
+    ) {
+      resource = merge(resource, { meta: { tag: [] } });
+      resource.meta!.tag!.push({
+        system: 'http://lifeomic.com/fhir/dataset',
+        code: activeProject?.id,
+      });
+    }
+
+    // Date/time
+    if (resource.resourceType === 'Observation') {
+      const observation = resource as fhir3.Observation;
+      if (!observation.effectiveDateTime) {
+        observation.effectiveDateTime = formatISO(Date.now());
+      }
+    }
+
+    return resource;
+  };
 
   const useSearchResourcesQuery = (queryParams: QueryParams) => {
     const [next, setNext] = useState(0);
@@ -142,38 +174,48 @@ export function useFhirClient() {
         if (!accountHeaders || !activeProject?.id || !activeSubjectId) {
           throw new Error('Cannot mutate resource in current state');
         }
-        let resource = merge<ResourceType>({}, resourceToUpsert);
 
-        // Subject
-        resource.subject = {
-          reference: `Patient/${activeSubjectId}`,
-        };
-
-        // Project/dataset
-        if (
-          !resource.meta?.tag?.find(
-            (t) => t.system === 'http://lifeomic.com/fhir/dataset',
-          )
-        ) {
-          resource = merge(resource, { meta: { tag: [] } });
-          resource.meta!.tag!.push({
-            system: 'http://lifeomic.com/fhir/dataset',
-            code: activeProject?.id,
-          });
-        }
-
-        // Date/time
-        if (resource.resourceType === 'Observation') {
-          const observation = resource as fhir3.Observation;
-          if (!observation.effectiveDateTime) {
-            observation.effectiveDateTime = formatISO(Date.now());
-          }
-        }
+        const resource = toResource(resourceToUpsert);
 
         return httpClient
           .post<ResourceType>(
             `/v1/fhir/dstu3/${resource.resourceType}`,
             resource,
+            {
+              headers: accountHeaders,
+            },
+          )
+          .then((res) => res.data);
+      },
+    });
+  };
+
+  const useCreateBundleMutation = () => {
+    return useMutation({
+      mutationFn: async (resources: ResourceType[]) => {
+        if (!accountHeaders || !activeProject?.id || !activeSubjectId) {
+          throw new Error('Cannot mutate resource in current state');
+        }
+
+        const bundle: Bundle<ResourceType> = {
+          resourceType: 'Bundle',
+          type: 'collection',
+          entry: resources.map((resource) => ({ resource })),
+        };
+
+        for (const entry of bundle.entry!) {
+          if (!entry.resource) {
+            throw new Error('A resource on every bundle entry is required.');
+          }
+
+          entry.resource = toResource(entry.resource);
+        }
+
+        return httpClient
+          .post<Bundle<ResourceType>>(
+            // TODO: Update once the bundle endpoint is exposed behind `/v1/fhir`
+            `https://fhir.us.lifeomic.com/${account?.id}/dstu3`,
+            bundle,
             {
               headers: accountHeaders,
             },
@@ -203,5 +245,6 @@ export function useFhirClient() {
     useSearchResourcesQuery,
     useCreateResourceMutation,
     useDeleteResourceMutation,
+    useCreateBundleMutation,
   };
 }
