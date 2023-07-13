@@ -347,6 +347,10 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
     (enabledWearable: WearableIntegration) => {
       const backgroundSyncEnabled = _isBackgroundSyncEnabled(enabledWearable);
 
+      if (!onToggleBackgroundSync) {
+        return null;
+      }
+
       return (
         <WearableRowDetailSection
           icon={<Info />}
@@ -392,6 +396,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
       styles.backgroundSyncDescription,
       switchProps,
       toggleBackgroundSync,
+      onToggleBackgroundSync,
       wearableProp,
     ],
   );
