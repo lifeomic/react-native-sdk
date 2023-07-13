@@ -23,6 +23,7 @@ import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { Divider, Text } from 'react-native-paper';
 import { createStyles } from '../components';
 import { useStyles, useTheme } from '../hooks';
+import { SocialShareExporter } from '../components/SocialShare/SocialShareExporter';
 
 type Period = {
   label: 'DAY' | 'WEEK' | 'MONTH' | 'YEAR';
@@ -41,6 +42,7 @@ export const MyDataScreen = () => {
   const theme = useTheme();
   const { data: config, isLoading: loadingAppConfig } = useAppConfig();
   const { styles } = useStyles(defaultStyles);
+  const [exportData, setExportData] = useState<any>();
   const [period, setPeriod] = useState(PERIODS[1]);
   const [range, setRange] = useState(() => {
     const start = startOfWeek(startOfToday());
@@ -53,6 +55,7 @@ export const MyDataScreen = () => {
   });
 
   const handlePeriodChange = (newPeriod: Period) => {
+    setExportData(undefined);
     setRange((current) => ({
       start: newPeriod.startOfPeriodFn(current.start),
       end: endOfDay(
@@ -147,9 +150,12 @@ export const MyDataScreen = () => {
               {...component}
               dateRange={range}
               padding={Number(styles.container?.paddingHorizontal) * 2}
+              onShare={setExportData}
             />
           </React.Fragment>
         ))}
+
+        <SocialShareExporter type="pointBreakdown" metadata={exportData} />
       </View>
     </ScreenSurface>
   );

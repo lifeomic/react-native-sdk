@@ -1,4 +1,10 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+} from 'react';
 import { VictoryChart, VictoryAxis } from 'victory-native';
 import {
   format,
@@ -7,6 +13,7 @@ import {
   startOfDay,
   isSameDay,
 } from 'date-fns';
+import ViewShot from 'react-native-view-shot';
 import { Trace, TraceLine } from './TraceLine';
 import { useVictoryTheme } from '../useVictoryTheme';
 import { scaleTime } from 'd3-scale';
@@ -19,9 +26,10 @@ import {
   useCommonChartProps,
 } from '../useCommonChartProps';
 import { DataSelector, Selection } from './DataSelector';
-import { useChartData } from './useChartData';
+import { PointData, useChartData } from './useChartData';
 import { AxisArrows } from './AxisArrows';
 import { defaultChartStyles } from '../styles';
+import { Legend } from './Legend';
 
 type Props = {
   title: string;
@@ -31,11 +39,25 @@ type Props = {
     start: Date;
     end: Date;
   };
+  onShare?: (config: {
+    selectedPoints: PointData[];
+    title: string;
+    dataUri?: string;
+    dateRange: [Date, Date];
+  }) => void;
 };
 
 const LineChart = (props: Props) => {
-  const { trace1, trace2, dateRange: incomingDateRange } = props;
+  const {
+    title,
+    trace1,
+    trace2,
+    dateRange: incomingDateRange,
+    onShare,
+  } = props;
+  const viewShotRef = useRef<ViewShot>(null);
   const [selection, setSelection] = useState<Selection>();
+  const [showSelection, setShowSelection] = useState(false);
   const dateRange = useMemo<[Date, Date]>(
     () => [
       startOfDay(incomingDateRange.start),
@@ -66,6 +88,18 @@ const LineChart = (props: Props) => {
     return scaleTime().domain([domain[0], domain[1]]).nice().ticks(ticks);
   }, [dateRange]);
 
+  const handleExport = useCallback(async () => {
+    setShowSelection(true);
+    const dataUri = await viewShotRef.current?.capture?.();
+    onShare?.({
+      selectedPoints: selection?.points ?? [],
+      title,
+      dataUri,
+      dateRange,
+    });
+    setShowSelection(false);
+  }, [title, selection?.points, dateRange, onShare]);
+
   const domain: [number, number] = useMemo(
     () => [+dateRange[0], +dateRange[1]],
     [dateRange],
@@ -73,29 +107,42 @@ const LineChart = (props: Props) => {
 
   return (
     <View style={styles.container}>
-      <Title {...props} />
+      <Title {...props} onShare={handleExport} />
 
       <View style={styles.chartWrapper}>
-        <VictoryChart {...common}>
-          <VictoryAxis
-            {...common}
-            standalone={false}
-            tickValues={tickValues}
-            tickFormat={(tick: number, index: number) =>
-              format(new Date(tick), index === 0 ? 'MMM dd' : 'dd')
-            }
-          />
-          <AxisArrows trace1={trace1} trace2={trace2} />
-          <TraceLine trace={trace1} data={trace1Data} xDomain={domain} />
-          {trace2 && (
-            <TraceLine
-              trace={trace2}
-              data={trace2Data}
-              xDomain={domain}
-              variant="trace2"
+        <ViewShot ref={viewShotRef} options={{ format: 'png' }}>
+          <Legend {...props} />
+          <VictoryChart {...common}>
+            <VictoryAxis
+              {...common}
+              standalone={false}
+              tickValues={tickValues}
+              tickFormat={(tick: number, index: number) =>
+                format(new Date(tick), index === 0 ? 'MMM dd' : 'dd')
+              }
             />
-          )}
-        </VictoryChart>
+            <AxisArrows trace1={trace1} trace2={trace2} />
+            <TraceLine
+              trace={trace1}
+              data={selectPoints(
+                trace1Data,
+                showSelection ? selection?.points : [],
+              )}
+              xDomain={domain}
+            />
+            {trace2 && (
+              <TraceLine
+                trace={trace2}
+                data={selectPoints(
+                  trace2Data,
+                  showSelection ? selection?.points : [],
+                )}
+                xDomain={domain}
+                variant="trace2"
+              />
+            )}
+          </VictoryChart>
+        </ViewShot>
 
         <View style={styles.dataSelectorContainer}>
           <DataSelector
@@ -111,6 +158,18 @@ const LineChart = (props: Props) => {
     </View>
   );
 };
+
+const selectPoints = (data: PointData[], selectedPoints: PointData[] = []) =>
+  selectedPoints.length
+    ? data.map((d) => ({
+        ...d,
+        size: selectedPoints.some(
+          (p) => p.x === d.x && p.y === d.y && p.trace === d.trace,
+        )
+          ? 8
+          : d.size,
+      }))
+    : data;
 
 const LineChartWrapper = (props: Props & { padding?: number }) => {
   const { padding = 0, ...lineChartProps } = props;

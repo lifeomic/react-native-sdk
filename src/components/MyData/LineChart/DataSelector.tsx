@@ -3,7 +3,7 @@ import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { VictoryBar } from 'victory-native';
 import { useCommonChartProps } from '../useCommonChartProps';
 import { eachDayOfInterval, format, isSameDay } from 'date-fns';
-import { sortBy } from 'lodash';
+import { sortBy, compact } from 'lodash';
 import { PointData } from './useChartData';
 import { G, Text, Circle, Rect, Svg } from 'react-native-svg';
 import { useStyles } from '../../../hooks';
@@ -23,6 +23,7 @@ export type Selection = {
   chartWidth: number;
   point1: PointData;
   point2: PointData;
+  points: PointData[];
   highestPointMeta: {
     point: PointData;
     domain: [number, number];
@@ -79,6 +80,7 @@ export const DataSelector = (props: Props) => {
         chartWidth,
         point1,
         point2,
+        points: compact([point1, point2]),
         highestPointMeta,
       });
     },
