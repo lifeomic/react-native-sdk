@@ -163,6 +163,8 @@ export const getDisplayValueForSyncType = (
       return t('blood-pressure', 'Blood Pressure');
     case WearableStateSyncType.BodyMass:
       return t('weight', 'Weight');
+    case WearableStateSyncType.BodyMassIndex:
+      return t('body-mass-infex', 'BMI');
     case WearableStateSyncType.BreathKetones:
       return t('breath-ketones', 'Breath Ketones');
     case WearableStateSyncType.Immunization:
