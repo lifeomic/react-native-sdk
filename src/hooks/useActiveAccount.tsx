@@ -62,7 +62,6 @@ export const ActiveAccountContextProvider = ({
   const accountsResult = useAccounts();
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
   const [activeAccount, setActiveAccount] = useState<ActiveAccountProps>({});
-  const { data } = useUser();
   const { data: userData } = useUser();
   const userId = userData?.id;
   const [previousUserId, setPreviousUserId] = useState(userId);
@@ -75,7 +74,7 @@ export const ActiveAccountContextProvider = ({
    */
   useEffect(() => {
     if (
-      !data?.id || // require user id before reading/writing to storage
+      !userId || // require user id before reading/writing to storage
       storedAccountIdResult.isLoading || // wait for async storage result
       activeAccount?.account?.id || // activeAccount already set
       accountsWithProduct.length < 1 // no valid accounts found server side
@@ -105,7 +104,7 @@ export const ActiveAccountContextProvider = ({
     setStoredAccountId,
     storedAccountIdResult.data,
     storedAccountIdResult.isLoading,
-    data?.id,
+    userId,
   ]);
 
   // Clear selected account when

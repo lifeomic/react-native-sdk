@@ -28,7 +28,7 @@ import { pick, merge, pickBy, omit, fromPairs } from 'lodash';
 import { useHttpClient } from '../../../hooks/useHttpClient';
 import { useActiveAccount } from './../../../hooks/useActiveAccount';
 import { useActiveProject } from './../../../hooks/useActiveProject';
-import { useUser } from '../../../hooks';
+import { useUser } from '../../../hooks/useUser';
 
 const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
   headers: {
