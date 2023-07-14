@@ -94,7 +94,7 @@ const Example = () => {
 
 const ExportPreview = ({ data }: { data: any }) => {
   const { sharingRenderers } = useDeveloperConfig();
-  const Renderer = sharingRenderers?.['pointBreakdown'] ?? PointBreakdown;
+  const Renderer = sharingRenderers?.pointBreakdown ?? PointBreakdown;
 
   return (
     <View style={{ flex: 1 }}>
