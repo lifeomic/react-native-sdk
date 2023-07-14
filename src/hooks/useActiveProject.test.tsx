@@ -2,6 +2,7 @@ import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useSubjectProjects } from './useSubjectProjects';
 import { useMe } from './useMe';
+import { useUser } from './useUser';
 import {
   ActiveProjectContextProvider,
   useActiveProject,
@@ -18,9 +19,13 @@ jest.mock('./useSubjectProjects', () => ({
 jest.mock('./useMe', () => ({
   useMe: jest.fn(),
 }));
+jest.mock('./useUser', () => ({
+  useUser: jest.fn(),
+}));
 
 const useSubjectProjectsMock = useSubjectProjects as jest.Mock;
 const useMeMock = useMe as jest.Mock;
+const useUserMock = useUser as jest.Mock;
 let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 
 const mockSubjectProjects = [
@@ -64,6 +69,9 @@ beforeEach(() => {
     data: mockMe,
     isLoading: false,
     isFetched: true,
+  });
+  useUserMock.mockReturnValue({
+    data: { id: 'mockUser' },
   });
 
   useAsyncStorageSpy.mockReturnValue([
@@ -172,7 +180,7 @@ test('uses projectId from async storage', async () => {
   const { result, rerender } = await renderHookInContext();
   await waitFor(() => result.current.isLoading === false);
   rerender({});
-  expect(AsyncStorage.getItem).toBeCalledWith('selectedProjectIdKey');
+  expect(AsyncStorage.getItem).toBeCalledWith('selectedProjectIdKey:mockUser');
   expect(result.current).toMatchObject({
     activeProject: mockSubjectProjects[0],
     activeSubjectId: mockMe[0].subjectId,

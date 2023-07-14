@@ -3,6 +3,7 @@ import { renderHook, act } from '@testing-library/react-native';
 import { authorize, refresh, revoke } from 'react-native-app-auth';
 import { OAuthContextProvider, useOAuthFlow } from './useOAuthFlow';
 import { AuthResult, useAuth } from './useAuth';
+import { QueryClientProvider, QueryClient } from 'react-query';
 
 jest.mock('react-native-app-auth', () => ({
   authorize: jest.fn(),
@@ -44,9 +45,11 @@ const authResult: AuthResult = {
 const renderHookInContext = async () => {
   return renderHook(() => useOAuthFlow(), {
     wrapper: ({ children }) => (
-      <OAuthContextProvider authConfig={authConfig}>
-        {children}
-      </OAuthContextProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        <OAuthContextProvider authConfig={authConfig}>
+          {children}
+        </OAuthContextProvider>
+      </QueryClientProvider>
     ),
   });
 };
@@ -81,9 +84,11 @@ test('overrides usePKCE to true', async () => {
   };
   const { result } = await renderHook(() => useOAuthFlow(), {
     wrapper: ({ children }) => (
-      <OAuthContextProvider authConfig={newAuthConfig}>
-        {children}
-      </OAuthContextProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        <OAuthContextProvider authConfig={newAuthConfig}>
+          {children}
+        </OAuthContextProvider>
+      </QueryClientProvider>
     ),
   });
   expect(result.current.authConfig).toEqual(authConfig);
