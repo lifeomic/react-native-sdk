@@ -10,6 +10,7 @@ import { QueryObserverResult } from 'react-query';
 import { useAsyncStorage } from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
+import { useUser } from './useUser';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -61,14 +62,18 @@ export const ActiveAccountContextProvider = ({
   const accountsResult = useAccounts();
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
   const [activeAccount, setActiveAccount] = useState<ActiveAccountProps>({});
-  const [storedAccountIdResult, setStoredAccountId] =
-    useAsyncStorage(selectedAccountIdKey);
+  const { data } = useUser();
+  const [userId, setUserId] = useState(data?.id);
+  const [storedAccountIdResult, setStoredAccountId] = useAsyncStorage(
+    `${selectedAccountIdKey}:${data?.id}`,
+  );
 
   /**
    * Initial setting of activeAccount
    */
   useEffect(() => {
     if (
+      !data?.id || // require user id before reading/writing to storage
       storedAccountIdResult.isLoading || // wait for async storage result
       activeAccount?.account?.id || // activeAccount already set
       accountsWithProduct.length < 1 // no valid accounts found server side
@@ -98,7 +103,17 @@ export const ActiveAccountContextProvider = ({
     setStoredAccountId,
     storedAccountIdResult.data,
     storedAccountIdResult.isLoading,
+    data?.id,
   ]);
+
+  // Clear selected account when
+  // we've detected that the userId has changed
+  useEffect(() => {
+    if (data?.id !== userId) {
+      setActiveAccount({});
+      setUserId(data?.id);
+    }
+  }, [data?.id, userId]);
 
   const setActiveAccountId = useCallback(
     async (accountId: string) => {

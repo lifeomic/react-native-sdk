@@ -8,6 +8,7 @@ import React, {
 import { Subject, useMe } from './useMe';
 import { Project, useSubjectProjects } from './useSubjectProjects';
 import { useAsyncStorage } from './useAsyncStorage';
+import { useUser } from './useUser';
 
 const selectedProjectIdKey = 'selectedProjectIdKey';
 
@@ -70,15 +71,19 @@ export const ActiveProjectContextProvider = ({
   const [hookReturnValue, setHookReturnValue] = useState<ActiveProjectProps>(
     {},
   );
+  const { data } = useUser();
+  const [userId, setUserId] = useState(data?.id);
   const [isFetched, setIsFetched] = useState<boolean>(false);
-  const [storedProjectIdResult, setStoredProjectId] =
-    useAsyncStorage(selectedProjectIdKey);
+  const [storedProjectIdResult, setStoredProjectId] = useAsyncStorage(
+    `${selectedProjectIdKey}:${data?.id}`,
+  );
 
   /**
    * Initial setting of activeProject
    */
   useEffect(() => {
     if (
+      !data?.id || // wait for user id before reading and writing to storage
       hookReturnValue.activeProject?.id || // active project already set
       projectLoading || // wait for projects endpoint
       useMeLoading || // wait for subjects endpoint
@@ -111,7 +116,17 @@ export const ActiveProjectContextProvider = ({
     setStoredProjectId,
     projectLoading,
     useMeLoading,
+    data?.id,
   ]);
+
+  // Clear selected project when
+  // we've detected that the userId has changed
+  useEffect(() => {
+    if (data?.id !== userId) {
+      setHookReturnValue({});
+      setUserId(data?.id);
+    }
+  }, [data?.id, userId]);
 
   const setActiveProjectId = useCallback(
     async (projectId: string) => {

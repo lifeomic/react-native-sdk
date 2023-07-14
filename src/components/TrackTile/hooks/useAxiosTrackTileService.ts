@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   InstalledMetric,
   TrackTileService,
@@ -28,6 +28,7 @@ import { pick, merge, pickBy, omit, fromPairs } from 'lodash';
 import { useHttpClient } from '../../../hooks/useHttpClient';
 import { useActiveAccount } from './../../../hooks/useActiveAccount';
 import { useActiveProject } from './../../../hooks/useActiveProject';
+import { useUser } from '../../../hooks';
 
 const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
   headers: {
@@ -40,6 +41,8 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   const { httpClient } = useHttpClient();
   const { activeSubjectId: patientId, activeProject } = useActiveProject();
   const { account } = useActiveAccount();
+  const { data } = useUser();
+  const [userId, setUserId] = useState(data?.id);
 
   const accountId = account?.id || '';
   const projectId = activeProject?.id || '';
@@ -49,6 +52,17 @@ export const useAxiosTrackTileService = (): TrackTileService => {
     trackerValues: ContextTrackerValues;
     ontologies: Record<string, CodedRelationship[]>;
   }>({ trackerValues: {}, ontologies: {} });
+
+  // Clear cached trackers when
+  // we've detected that the userId has changed
+  useEffect(() => {
+    if (userId !== data?.id) {
+      cache.trackers = undefined;
+      cache.trackerValues = {};
+      cache.ontologies = {};
+      setUserId(data?.id);
+    }
+  }, [userId, data?.id, cache]);
 
   const updateSettingsInCache = (settings: BulkInstalledMetricSettings) => {
     const tracker = cache.trackers?.find(
@@ -84,6 +98,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
 
     fetchTrackers: async () => {
       if (cache.trackers) {
+        console.log('Returning cached trackers!!!');
         return cache.trackers;
       }
 
