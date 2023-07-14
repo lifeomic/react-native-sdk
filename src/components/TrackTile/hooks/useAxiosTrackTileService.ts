@@ -42,7 +42,8 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   const { activeSubjectId: patientId, activeProject } = useActiveProject();
   const { account } = useActiveAccount();
   const { data: userData } = useUser();
-  const [userId, setUserId] = useState(userData?.id);
+  const userId = userData?.id;
+  const [previousUserId, setPreviousUserId] = useState(userId);
 
   const accountId = account?.id || '';
   const projectId = activeProject?.id || '';
@@ -56,13 +57,13 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   // Clear cached trackers when
   // we've detected that the userId has changed
   useEffect(() => {
-    if (userId !== userData?.id) {
+    if (userId !== previousUserId) {
       cache.trackers = undefined;
       cache.trackerValues = {};
       cache.ontologies = {};
-      setUserId(userData?.id);
+      setPreviousUserId(userId);
     }
-  }, [userId, userData?.id, cache]);
+  }, [userId, cache, previousUserId]);
 
   const updateSettingsInCache = (settings: BulkInstalledMetricSettings) => {
     const tracker = cache.trackers?.find(

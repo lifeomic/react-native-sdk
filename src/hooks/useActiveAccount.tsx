@@ -63,9 +63,11 @@ export const ActiveAccountContextProvider = ({
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
   const [activeAccount, setActiveAccount] = useState<ActiveAccountProps>({});
   const { data } = useUser();
-  const [userId, setUserId] = useState(data?.id);
+  const { data: userData } = useUser();
+  const userId = userData?.id;
+  const [previousUserId, setPreviousUserId] = useState(userId);
   const [storedAccountIdResult, setStoredAccountId] = useAsyncStorage(
-    `${selectedAccountIdKey}:${data?.id}`,
+    `${selectedAccountIdKey}:${userId}`,
   );
 
   /**
@@ -109,11 +111,11 @@ export const ActiveAccountContextProvider = ({
   // Clear selected account when
   // we've detected that the userId has changed
   useEffect(() => {
-    if (data?.id !== userId) {
+    if (userId !== previousUserId) {
       setActiveAccount({});
-      setUserId(data?.id);
+      setPreviousUserId(userId);
     }
-  }, [data?.id, userId]);
+  }, [previousUserId, userId]);
 
   const setActiveAccountId = useCallback(
     async (accountId: string) => {
