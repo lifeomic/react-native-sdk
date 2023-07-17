@@ -8,10 +8,12 @@ import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
+import { useActiveProject } from '../hooks';
 
 export const ProfileScreen = () => {
   const { styles } = useStyles(defaultStyles);
   const { isLoading, data } = useUser();
+  const { activeProject } = useActiveProject();
 
   const userProfile = data?.profile;
 
@@ -44,6 +46,9 @@ export const ProfileScreen = () => {
           value={userProfile.familyName}
         />
         <Field label={t('profile-email', 'Email')} value={userProfile.email} />
+        {__DEV__ && (
+          <Field label="Active Project" value={activeProject?.name} />
+        )}
       </ScrollView>
     </SafeAreaView>
   );

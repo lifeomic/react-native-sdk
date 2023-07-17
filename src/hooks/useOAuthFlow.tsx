@@ -13,6 +13,7 @@ import {
 } from 'react-native-app-auth';
 import { AuthResult, useAuth } from './useAuth';
 import { usePendingInvite } from './usePendingInvite';
+import { useQueryClient } from 'react-query';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
@@ -52,6 +53,7 @@ export const OAuthContextProvider = ({
   const {
     inviteParams: { inviteId, evc },
   } = usePendingInvite();
+  const queryClient = useQueryClient();
 
   // PKCE is required
   if (!authConfig.usePKCE) {
@@ -83,6 +85,10 @@ export const OAuthContextProvider = ({
   const logout = useCallback(
     async (params: LogoutParams) => {
       const { onSuccess, onFail } = params;
+
+      // Clear cached query results on logout
+      // to support switching user accounts
+      queryClient.clear();
       if (!isLoggedIn || !authResult?.refreshToken) {
         await clearAuthResult();
         onSuccess?.();
@@ -100,7 +106,13 @@ export const OAuthContextProvider = ({
         onFail?.(error);
       }
     },
-    [isLoggedIn, authConfig, authResult, clearAuthResult],
+    [
+      queryClient,
+      isLoggedIn,
+      authResult?.refreshToken,
+      clearAuthResult,
+      authConfig,
+    ],
   );
 
   const login = useCallback(

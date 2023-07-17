@@ -71,6 +71,12 @@ jest.mock('../../../../hooks/useActiveProject', () => ({
   }),
 }));
 
+jest.mock('../../../../hooks/useUser', () => ({
+  useUser: () => ({
+    data: { id: 'mockUser' },
+  }),
+}));
+
 describe('useAxiosTrackTileService', () => {
   it('should return the same values for accountSettings', () => {
     const { result } = renderHook(() => useAxiosTrackTileService());
