@@ -65,9 +65,8 @@ export const PointBreakdown = (props: PointBreakdownProps) => {
                 style={[
                   {
                     backgroundColor:
-                      point.trace.color ?? i === 0
-                        ? theme.colors.primary
-                        : theme.colors.secondary,
+                      point.trace.color ??
+                      (i === 0 ? theme.colors.primary : theme.colors.secondary),
                   },
                   styles.pointDataCircleView,
                 ]}
@@ -90,7 +89,7 @@ export const PointBreakdown = (props: PointBreakdownProps) => {
   );
 };
 
-export const customPointBreakdown =
+export const createPointBreakdown =
   (customProps?: Partial<PointBreakdownProps>) =>
   (props: PointBreakdownProps) =>
     <PointBreakdown {...props} {...customProps} />;

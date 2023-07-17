@@ -7,6 +7,7 @@ import './NoInternetToastProvider.stories';
 import './Notifications/NotificationsScreen.stories';
 import './OAuth.stories';
 import './ActivityIndicatorView.stories';
+import './SharingRenderers';
 import './TrackTile/AdvancedTrackerDetails.stories';
 import './TrackTile/Indicator.stories';
 import './TrackTile/AdvancedTrackerEditor.stories';

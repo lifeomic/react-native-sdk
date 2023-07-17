@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { render } from '@testing-library/react-native';
-import { PointBreakdown, customPointBreakdown } from './point-breakdown';
+import { PointBreakdown, createPointBreakdown } from './point-breakdown';
 import { startOfDay, format, endOfDay, addDays } from 'date-fns';
 
 const mockDate = startOfDay(new Date(0));
@@ -77,7 +77,7 @@ describe('PointBreakdown', () => {
   });
 
   it('should render the component with a custom footer', async () => {
-    const CustomPointBreakDown = customPointBreakdown({
+    const CustomPointBreakDown = createPointBreakdown({
       Footer: <Text>Custom Footer</Text>,
     });
     const { getByText } = render(
