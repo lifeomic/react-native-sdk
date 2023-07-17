@@ -98,6 +98,7 @@ export const OAuthContextProvider = ({
       try {
         await revoke(authConfig, {
           tokenToRevoke: authResult.refreshToken,
+          sendClientId: true,
         });
         await clearAuthResult();
         onSuccess?.();
