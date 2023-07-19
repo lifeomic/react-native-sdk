@@ -1,9 +1,10 @@
 import React, { FC, useState } from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
 import { useStyles, useDeveloperConfig } from '../hooks/';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
+import LaunchScreen from '../components/LaunchScreen';
 import { Dialog, Portal, Text } from 'react-native-paper';
 
 export const LoginScreen: FC = () => {
@@ -12,6 +13,7 @@ export const LoginScreen: FC = () => {
   const [visible, setVisible] = useState(false);
   const [errorText, setErrorText] = useState('');
   const { AlertTriangle } = useIcons();
+
   const hideDialog = () => {
     setVisible(false);
     setErrorText('');
@@ -41,10 +43,13 @@ export const LoginScreen: FC = () => {
   ) : (
     <>
       <View style={styles.containerView}>
-        <OAuthLoginButton
-          label={t('login-button-title', 'Login')}
-          onFail={onFail}
-        />
+        <LaunchScreen key="launch-screen" style={StyleSheet.absoluteFill} />
+        <View style={styles.buttonContainer}>
+          <OAuthLoginButton
+            label={t('login-button-title', 'Login')}
+            onFail={onFail}
+          />
+        </View>
       </View>
       <Portal>
         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -64,8 +69,13 @@ export const LoginScreen: FC = () => {
 const defaultStyles = createStyles('LoginScreen', () => ({
   containerView: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  buttonContainer: {
+    height: '20%',
+    width: '100%',
+    paddingHorizontal: 30,
   },
 }));
 

@@ -219,6 +219,163 @@ export default function App() {
 }
 ```
 
+### Customizing the Default Login Screen with a Native View
+
+The default login screen adds a long button to a native view with the name
+`RNTLaunchScreen`.
+
+1- To define an iOS launch screen, use an existing Storyboard, or create a new
+one, and then create a module according to the
+[official docs](https://reactnative.dev/docs/native-components-ios) that creates
+an `RNTLaunchScreen` native view.
+
+Example creating the native view for the `LaunchScreen` storyboard:
+
+```objectivec
+#import <React/RCTViewManager.h>
+
+@interface RNTLaunchScreen : RCTViewManager
+@end
+
+@implementation RNTLaunchScreen
+
+RCT_EXPORT_MODULE(RNTLaunchScreen)
+
+- (UIView *)view
+{
+  UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"LaunchScreen" bundle:nil];
+  UIViewController *controller = [storyboard instantiateInitialViewController];
+
+  return controller.view;
+}
+
+@end
+```
+
+2- To define an android launch screen, use an existing View, or create a new
+one, and then create a module according to the
+[official docs](https://reactnative.dev/docs/native-components-android) that
+registers an `RNTLaunchScreen` native view with the application.
+
+Example creating a launch screen view from a layout and then registering the
+launch screen `ReactPackage` with the `ReactApplication`:
+
+<details>
+  <summary>Create a layout at <code>res/layout/splash_screen.xml</code></summary>
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:background="#FFFFFF"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".30"
+        android:gravity="bottom|center"
+        android:text="example"
+        android:textColor="#000000"
+        android:textSize="35dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".64"
+        android:gravity="bottom|center"
+        android:textSize="16dp"
+        android:textColor="#000000"
+        android:text="Powered by React Native" />
+</LinearLayout>
+```
+
+</details>
+
+<details>
+  <summary>Create a <code>RNTLaunchScreen</code> class</summary>
+
+```java
+package com.example;
+
+import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.uimanager.SimpleViewManager;
+import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewManager;
+import android.view.View;
+import java.util.Arrays;
+import java.util.List;
+
+public class RNTLaunchScreen extends SimpleViewManager<View> implements ReactPackage {
+    public static final String REACT_CLASS = "RNTLaunchScreen";
+
+    @Override
+    public String getName() {
+        return REACT_CLASS;
+    }
+
+    @Override
+    public View createViewInstance(ThemedReactContext context) {
+        return View.inflate(context, R.layout.splash_screen, null);
+    }
+
+    @Overrides
+    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
+        return Arrays.<ViewManager>asList(new RNTLaunchScreen());
+    }
+
+    @Override
+    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
+        return Arrays.<NativeModule>asList();
+    }
+}
+```
+
+</details>
+
+<details>
+  <summary>Register the <code>RNTLaunchScreen</code> package with the <code>ReactApplication</code></summary>
+
+```java
+package com.example;
+
+import android.app.Application;
+import com.facebook.react.PackageList;
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactPackage;
+import com.facebook.react.defaults.DefaultReactNativeHost;
+import java.util.List;
+import com.example.RNTLaunchScreen;
+
+public class MainApplication extends Application implements ReactApplication {
+
+  private final ReactNativeHost mReactNativeHost =
+      new DefaultReactNativeHost(this) {
+        @Override
+        protected List<ReactPackage> getPackages() {
+          List<ReactPackage> packages = new PackageList(this).getPackages();
+          packages.add(new RNTLaunchScreen());
+          return packages;
+        }
+      };
+
+  @Override
+  public ReactNativeHost getReactNativeHost() {
+    return mReactNativeHost;
+  }
+}
+```
+
+</details>
+
 ### Peer dependencies
 
 We may have more peer dependencies than is typical. We have run into a number of

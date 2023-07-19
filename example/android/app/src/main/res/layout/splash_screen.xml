@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:background="#FFFFFF"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".30"
+        android:gravity="bottom|center"
+        android:textSize="35dp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:text="example" />
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".64"
+        android:gravity="bottom|center"
+        android:textSize="16dp"
+        android:textColor="#000000"
+        android:text="Powered by React Native" />
+</LinearLayout>
