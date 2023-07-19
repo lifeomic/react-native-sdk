@@ -4,6 +4,7 @@ import {
   ImageSourcePropType,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import i18n, { Trans, t } from '../../../../../lib/i18n';
 import { Text, useFontOverrides } from '../../styles';
@@ -16,7 +17,6 @@ import {
   Code,
 } from '../../services/TrackTileService';
 import { TrackerHistoryChart } from '../TrackerHistoryChart';
-import { ScrollView } from 'react-native-gesture-handler';
 import HorizontalScrollLayout from './HorizontalScrollLayout';
 import { useTrackerValues } from '../../hooks/useTrackerValues';
 import {
