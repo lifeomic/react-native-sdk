@@ -57,16 +57,18 @@ export const useWearableBackfill = (
         ehrTypes.length > 0 &&
         !!isBackfillEnabled,
       select(data) {
-        return Object.fromEntries(
-          Object.entries(data).map(([type, patientData]) => {
-            return [
-              type,
-              patientData !== null &&
-                !patientData.observationsConnection?.edges?.length &&
-                !patientData.proceduresConnection?.edges?.length,
-            ];
-          }),
-        ) as Record<DeviceSourceType, boolean>;
+        const statuses: Record<string, boolean> = {};
+
+        Object.entries(data.patient).forEach(([key, resources]) => {
+          const type = key.split('_')[0];
+
+          statuses[type] =
+            (statuses[type] ?? true) &&
+            resources !== null &&
+            !resources?.edges?.length;
+        });
+
+        return statuses;
       },
     },
   );
@@ -122,45 +124,40 @@ export const useWearableBackfill = (
 
 const buildEHRRecordsQueryDocument = (types: EHRType[]) => gql`
   query GetEHRRecords($patientId: String) {
-    ${types.map((type) => {
-      if (!(type in deviceSourceTypes)) {
-        return '';
-      }
+    patient(id: $patientId) {
+      ${types.map((type) => {
+        if (!(type in deviceSourceTypes)) {
+          return '';
+        }
 
-      const ehrType = type as any as DeviceSourceType;
+        const ehrType = type as any as DeviceSourceType;
 
-      return `
-      ${type}: patient(id: $patientId) {
-        observationsConnection(tag: "${deviceSourceTypes[ehrType]}", first: 1) {
-          edges {
-            node {
-              id
+        return `
+          ${type}_Observations: observationsConnection(tag: "${deviceSourceTypes[ehrType]}", first: 1) {
+            edges {
+              node {
+                id
+              }
             }
           }
-        }
-        proceduresConnection(tag: "${deviceSourceTypes[ehrType]}", first: 1) {
-          edges {
-            node {
-              id
+          ${type}_Procedures: proceduresConnection(tag: "${deviceSourceTypes[ehrType]}", first: 1) {
+            edges {
+              node {
+                id
+              }
             }
           }
-        }
-      }
-      `;
-    })}
+        `;
+      })}
+    }
   }
 `;
 
+type WithSuffix<T extends string, Suffix extends string> = `${T}${Suffix}`;
+
 type Response = {
-  [K in DeviceSourceType]: {
-    observationsConnection: {
-      edges: {
-        node: {
-          id: string;
-        };
-      }[];
-    };
-    proceduresConnection: {
+  patient: {
+    [K in WithSuffix<DeviceSourceType, '_Observations' | '_Procedures'>]: {
       edges: {
         node: {
           id: string;
