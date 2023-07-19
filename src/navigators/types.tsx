@@ -55,6 +55,8 @@ export type HomeStackParamList = {
   'Home/AuthedAppTile': {
     appTile: AppTile;
     searchParams?: { [key: string]: string };
+    blockBackNavigation?: boolean;
+    webViewRefGoBack?: () => void;
   };
   'Home/CustomAppTile': { appTile: AppTile };
   'Home/Circle/Discussion': { circleTile: CircleTile };

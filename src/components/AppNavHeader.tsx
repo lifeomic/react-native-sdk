@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { Appbar, Text } from 'react-native-paper';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { createStyles, useIcons } from './BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
-import { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import {
+  BackHandler,
+  Platform,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
 import { useDeveloperConfig, useTheme } from '../hooks';
 import { RouteColor } from '../common/DeveloperConfig';
+import { HomeStackParamList } from '../navigators';
 
 export function AppNavHeader({
   back,
@@ -32,19 +39,47 @@ export function AppNavHeader({
   );
   const statusBarHeight = config.AppNavHeader?.statusBarHeight;
 
+  const backNavigationHandler = useCallback(() => {
+    const routeName = route.name;
+    if (routeName === 'Home/AuthedAppTile') {
+      const { blockBackNavigation, webViewRefGoBack } =
+        route.params as HomeStackParamList['Home/AuthedAppTile'];
+
+      if (blockBackNavigation) {
+        webViewRefGoBack?.();
+        return true;
+      }
+    }
+
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+      return true;
+    }
+
+    return false;
+  }, [navigation, route]);
+
+  useEffect(() => {
+    const handler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backNavigationHandler,
+    );
+    return () => handler.remove();
+  }, [backNavigationHandler]);
+
   return (
     <Appbar.Header statusBarHeight={statusBarHeight} style={headerStyles}>
       {back ? (
         <Appbar.Action
           icon={ChevronLeft}
           color={styles.backActionIcon?.color}
-          onPress={navigation.goBack}
+          onPress={backNavigationHandler}
           style={styles.backAction}
         />
       ) : null}
       <Appbar.Content
         title={<Title text={title} style={titleStyles} />}
-        style={styles.contentView}
+        style={[styles.contentView, back && styles.contentViewWithBackButton]}
       />
     </Appbar.Header>
   );
@@ -87,6 +122,9 @@ const defaultStyles = createStyles('AppNavHeader', (theme) => ({
   },
   contentView: {
     alignItems: 'center',
+  },
+  contentViewWithBackButton: {
+    paddingRight: Platform.OS === 'android' ? 40 : 0,
   },
   titleText: {
     color: theme.colors.onSurfaceVariant,

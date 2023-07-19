@@ -37,6 +37,7 @@ const openURLMock = Linking.openURL as jest.Mock;
 const popMock = jest.fn();
 const canGoBack = jest.fn();
 const pushMock = jest.fn();
+const setParamsMock = jest.fn();
 
 const surveysAppTile = { id: 'surveys', url: 'surveys.com' };
 
@@ -51,6 +52,7 @@ beforeEach(() => {
     canGoBack: canGoBack,
     push: pushMock,
     pop: popMock,
+    setParams: setParamsMock,
   });
 
   useAppConfigMock.mockReturnValue({
@@ -316,5 +318,31 @@ describe('handleAppTileNavigationStateChange', () => {
       event as WebViewNavigation,
     );
     expect(popMock).not.toBeCalled();
+  });
+
+  it('should set the navigation back settings if the webview ref exists', () => {
+    const event = { url: 'www.hello.world', canGoBack: true };
+    const webView: any = { goBack: jest.fn() };
+    const { result } = renderHook(() => useHandleAppTileEvents(webView));
+    result.current.handleAppTileNavigationStateChange(
+      event as WebViewNavigation,
+    );
+    expect(setParamsMock).toHaveBeenCalledWith({
+      blockBackNavigation: true,
+      webViewRefGoBack: webView.goBack,
+    });
+  });
+
+  it('should not block navigation back if webapp canGoBack is false', () => {
+    const event = { url: 'www.hello.world', canGoBack: false };
+    const webView: any = { goBack: jest.fn() };
+    const { result } = renderHook(() => useHandleAppTileEvents(webView));
+    result.current.handleAppTileNavigationStateChange(
+      event as WebViewNavigation,
+    );
+    expect(setParamsMock).toHaveBeenCalledWith({
+      blockBackNavigation: false,
+      webViewRefGoBack: undefined,
+    });
   });
 });

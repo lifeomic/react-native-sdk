@@ -18,7 +18,7 @@ export const AuthedAppTileScreen = ({
   const { appTile, searchParams = {} } = route.params;
   const webViewRef = useRef<WebView>(null);
   const { handleAppTileMessage, handleAppTileNavigationStateChange } =
-    useHandleAppTileEvents();
+    useHandleAppTileEvents(webViewRef.current);
 
   useLayoutEffect(() => {
     navigation.setOptions({

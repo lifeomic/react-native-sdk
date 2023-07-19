@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Linking } from 'react-native';
 import type {
+  WebView,
   WebViewMessageEvent,
   WebViewNavigation,
 } from 'react-native-webview';
@@ -52,7 +53,7 @@ export type OpenUrlAppletMessage = {
 
 export type AppTileMessage = DeepLinkAppletMessage | OpenUrlAppletMessage;
 
-export const useHandleAppTileEvents = () => {
+export const useHandleAppTileEvents = (webView: WebView | null = null) => {
   const { data } = useAppConfig();
   const { pillarTrackers } = useTrackers();
   const { todayTileSettings, tiles } = data?.homeTab || {};
@@ -152,6 +153,13 @@ export const useHandleAppTileEvents = () => {
       if (navigation.canGoBack()) {
         navigation.pop();
       }
+    }
+
+    if (webView) {
+      navigation.setParams({
+        blockBackNavigation: event.canGoBack,
+        webViewRefGoBack: event.canGoBack ? webView?.goBack : undefined,
+      });
     }
   };
 
