@@ -32,11 +32,11 @@ const queryClient = new QueryClient({
 });
 
 const defaultResponse = {
-  fitbit: {
-    observationsConnection: {
+  patient: {
+    fitbit_Observations: {
       edges: [],
     },
-    proceduresConnection: {
+    fitbit_Procedures: {
       edges: [],
     },
   },
@@ -88,8 +88,11 @@ describe('useWearableBackfill', () => {
 
   it('should not add ehr to enabledBackfillWearables when data exists', async () => {
     const scope1 = mockGraphQLResponse(`${baseURL}/v1/graphql`, undefined, {
-      ...defaultResponse,
-      googleFit: defaultResponse.fitbit,
+      patient: {
+        ...defaultResponse.patient,
+        googleFit_Observations: defaultResponse.patient.fitbit_Observations,
+        googleFit_Procedures: defaultResponse.patient.fitbit_Procedures,
+      },
     });
 
     const { result, rerender } = renderHookWithInjectedClient({
@@ -114,9 +117,9 @@ describe('useWearableBackfill', () => {
     });
 
     const scope2 = mockGraphQLResponse(`${baseURL}/v1/graphql`, undefined, {
-      fitbit: {
-        ...defaultResponse.fitbit,
-        proceduresConnection: {
+      patient: {
+        ...defaultResponse.patient,
+        fitbit_Procedures: {
           edges: [
             {
               id: 'mockProcedureId',
