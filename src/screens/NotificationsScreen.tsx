@@ -79,13 +79,13 @@ export const NotificationsScreen = () => {
   );
 };
 
-const defaultStyles = createStyles('NotificationsScreen', () => ({
+const defaultStyles = createStyles('NotificationsScreen', (theme) => ({
   view: {},
   scrollView: {},
   listItemView: {},
   listItemContentsView: {},
   dividerView: {},
-  iconView: { paddingLeft: 16 },
+  iconView: { paddingLeft: theme.spacing.medium },
 }));
 
 declare module '@styles' {
