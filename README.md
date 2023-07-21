@@ -229,7 +229,8 @@ one, and then create a module according to the
 [official docs](https://reactnative.dev/docs/native-components-ios) that creates
 an `RNTLaunchScreen` native view.
 
-Example creating the native view for the `LaunchScreen` storyboard:
+Example creating the native view for the `LaunchScreen` storyboard
+(`RNTLaunchScreen.m`):
 
 ```objectivec
 #import <React/RCTViewManager.h>
@@ -326,7 +327,7 @@ public class RNTLaunchScreen extends SimpleViewManager<View> implements ReactPac
         return View.inflate(context, R.layout.splash_screen, null);
     }
 
-    @Overrides
+    @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         return Arrays.<ViewManager>asList(new RNTLaunchScreen());
     }
