@@ -70,9 +70,9 @@ export const NotificationsScreen = () => {
       : noNotifications;
 
   return (
-    <View testID="notifications-screen">
-      <ScrollView>
-        <Divider />
+    <View testID="notifications-screen" style={styles.rootView}>
+      <ScrollView style={styles.scrollView}>
+        <Divider style={styles.dividerView} />
         {notificationsAreaContent}
       </ScrollView>
     </View>
@@ -80,8 +80,11 @@ export const NotificationsScreen = () => {
 };
 
 const defaultStyles = createStyles('NotificationsScreen', () => ({
+  rootView: {},
+  scrollView: {},
   listItemView: {},
   listItem: {},
+  dividerView: {},
   icon: { paddingLeft: 16 },
 }));
 
