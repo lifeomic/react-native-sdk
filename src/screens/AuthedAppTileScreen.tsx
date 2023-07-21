@@ -111,6 +111,7 @@ export const AuthedAppTileScreen = ({
 
   return (
     <WebView
+      key={source.uri}
       geolocationEnabled
       source={source}
       ref={webViewRef}

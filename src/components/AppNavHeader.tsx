@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { useDeveloperConfig, useTheme } from '../hooks';
 import { RouteColor } from '../common/DeveloperConfig';
-import { HomeStackParamList } from '../navigators';
 
 export function AppNavHeader({
   back,
@@ -40,24 +39,13 @@ export function AppNavHeader({
   const statusBarHeight = config.AppNavHeader?.statusBarHeight;
 
   const backNavigationHandler = useCallback(() => {
-    const routeName = route.name;
-    if (routeName === 'Home/AuthedAppTile') {
-      const { blockBackNavigation, webViewRefGoBack } =
-        route.params as HomeStackParamList['Home/AuthedAppTile'];
-
-      if (blockBackNavigation) {
-        webViewRefGoBack?.();
-        return true;
-      }
-    }
-
     if (navigation.canGoBack()) {
       navigation.goBack();
       return true;
     }
 
     return false;
-  }, [navigation, route]);
+  }, [navigation]);
 
   useEffect(() => {
     const handler = BackHandler.addEventListener(

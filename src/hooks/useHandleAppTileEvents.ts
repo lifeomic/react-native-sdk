@@ -1,4 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
+import {
+  EventListenerCallback,
+  EventMapCore,
+  useNavigation,
+} from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Linking } from 'react-native';
 import type {
@@ -53,11 +58,30 @@ export type OpenUrlAppletMessage = {
 
 export type AppTileMessage = DeepLinkAppletMessage | OpenUrlAppletMessage;
 
+type BeforeRemoveListener = EventListenerCallback<
+  EventMapCore<any>,
+  'beforeRemove'
+>;
+
 export const useHandleAppTileEvents = (webView: WebView | null = null) => {
   const { data } = useAppConfig();
   const { pillarTrackers } = useTrackers();
   const { todayTileSettings, tiles } = data?.homeTab || {};
   const navigation = useNavigation<StackNavigationProp<HomeStackParamList>>();
+  const [blockGoBack, setBlockGoBack] = useState(false);
+
+  useEffect(() => {
+    const listener: BeforeRemoveListener = (e) => {
+      if (blockGoBack) {
+        e.preventDefault();
+        webView?.goBack();
+      }
+    };
+
+    navigation.addListener('beforeRemove', listener);
+
+    return () => navigation.removeListener('beforeRemove', listener);
+  }, [navigation, webView, blockGoBack]);
 
   const openSurveyAppTile = (responseId: string | undefined) => {
     if (!todayTileSettings?.surveysTile || !responseId) {
@@ -155,12 +179,7 @@ export const useHandleAppTileEvents = (webView: WebView | null = null) => {
       }
     }
 
-    if (webView) {
-      navigation.setParams({
-        blockBackNavigation: event.canGoBack,
-        webViewRefGoBack: event.canGoBack ? webView?.goBack : undefined,
-      });
-    }
+    setBlockGoBack(event.canGoBack && !!webView);
   };
 
   return { handleAppTileMessage, handleAppTileNavigationStateChange };
