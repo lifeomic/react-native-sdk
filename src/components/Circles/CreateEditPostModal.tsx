@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Platform, View, Modal } from 'react-native';
+import { KeyboardAvoidingView, View, Modal } from 'react-native';
 import {
   Appbar,
   Button,
@@ -94,28 +94,28 @@ export const CreateEditPostModal = () => {
                 title={t('create-post-modal-title', 'Create Post')}
               />
             </Appbar.Header>
-            <TextInput
-              autoFocus
-              testID={tID('post-text-input')}
-              multiline
-              numberOfLines={12}
-              defaultValue={postToEdit?.message}
-              placeholder={t(
-                'create-post-placeholder-text',
-                'What do you want to share?',
-              )}
-              style={styles.textArea}
-              onChangeText={(text: string) => {
-                setPostText(text);
-                setCharacterCount(text.length);
-              }}
-            />
+
             <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 40}
-              style={styles.toolbarContainer}
+              behavior="padding"
+              style={styles.contentContainer}
             >
-              <View style={styles.rightToolbarContainer}>
+              <TextInput
+                autoFocus
+                testID={tID('post-text-input')}
+                multiline
+                numberOfLines={12}
+                defaultValue={postToEdit?.message}
+                placeholder={t(
+                  'create-post-placeholder-text',
+                  'What do you want to share?',
+                )}
+                style={styles.textArea}
+                onChangeText={(text: string) => {
+                  setPostText(text);
+                  setCharacterCount(text.length);
+                }}
+              />
+              <View style={styles.toolbarContainer}>
                 <Text
                   style={
                     overCharacterLimit
@@ -179,18 +179,16 @@ const defaultStyles = createStyles('CreateEditPostModal', (theme) => ({
   header: {},
   textArea: {
     width: '100%',
-    flexGrow: 1,
+    flex: 1,
   },
-  toolbarContainer: {
+  contentContainer: {
     backgroundColor: theme.colors.surface,
     width: '100%',
-    height: 60,
     flex: 1,
-    flexGrow: 0.1,
     paddingBottom: 8,
   },
-  rightToolbarContainer: {
-    paddingTop: theme.spacing.medium,
+  toolbarContainer: {
+    paddingVertical: theme.spacing.medium,
     columnGap: theme.spacing.medium,
     flexDirection: 'row',
     alignItems: 'center',

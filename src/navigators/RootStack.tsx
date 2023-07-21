@@ -37,9 +37,7 @@ export function RootStack() {
 
   const loadingProject = !isFetchedProject || isLoadingProject;
   const loadingAccount = !isFetchedAccount || isLoadingAccount;
-  const hasAccount = !loadingAccount && account?.id;
-  const loadingAccountOrProject =
-    loadingAccount || (hasAccount && loadingProject);
+  const loadingAccountOrProject = loadingAccount || loadingProject;
 
   if (!isLoggedIn && loadingAuth) {
     return (

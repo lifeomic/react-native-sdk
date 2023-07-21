@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, ScrollView } from 'react-native';
 import { Divider, Text } from 'react-native-paper';
 import { t } from '../../../../lib/i18n';
 import { UnitPicker } from './UnitPicker';
@@ -16,7 +16,6 @@ import debounce from 'lodash/debounce';
 import { notifier } from '../services/EmitterService';
 import { toFhirResource } from './to-fhir-resource';
 import { TrackerHistoryChart } from './TrackerHistoryChart';
-import { ScrollView } from 'react-native-gesture-handler';
 import {
   convertToISONumber,
   convertToPreferredUnit,
