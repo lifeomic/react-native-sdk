@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { renderHook } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { Linking } from 'react-native';
 import { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import { useTrackers } from '../components/TrackTile/hooks/useTrackers';
@@ -37,6 +37,8 @@ const openURLMock = Linking.openURL as jest.Mock;
 const popMock = jest.fn();
 const canGoBack = jest.fn();
 const pushMock = jest.fn();
+const addListenerMock = jest.fn();
+const removeListenerMock = jest.fn();
 
 const surveysAppTile = { id: 'surveys', url: 'surveys.com' };
 
@@ -51,6 +53,8 @@ beforeEach(() => {
     canGoBack: canGoBack,
     push: pushMock,
     pop: popMock,
+    addListener: addListenerMock,
+    removeListener: removeListenerMock,
   });
 
   useAppConfigMock.mockReturnValue({
@@ -316,5 +320,71 @@ describe('handleAppTileNavigationStateChange', () => {
       event as WebViewNavigation,
     );
     expect(popMock).not.toBeCalled();
+  });
+
+  it('should prevent navigation goBack and use webView goBack when possible', async () => {
+    const event = { url: 'www.hello.world', canGoBack: true };
+    const webView: any = { goBack: jest.fn() };
+    const preventDefault = jest.fn();
+    const { result } = renderHook(() => useHandleAppTileEvents(webView));
+
+    result.current.handleAppTileNavigationStateChange(
+      event as WebViewNavigation,
+    );
+
+    await waitFor(() => expect(addListenerMock.mock.calls).toHaveLength(2)); // Initial & Event Triggered Rerender
+
+    const handler = addListenerMock.mock.lastCall?.[1];
+
+    expect(handler).toBeDefined();
+
+    act(() => {
+      handler({ preventDefault });
+    });
+
+    expect(preventDefault).toHaveBeenCalled();
+    expect(webView.goBack).toHaveBeenCalled();
+  });
+
+  it('should not block navigation back if webapp canGoBack is false', () => {
+    const event = { url: 'www.hello.world', canGoBack: false };
+    const webView: any = { goBack: jest.fn() };
+    const preventDefault = jest.fn();
+    const { result } = renderHook(() => useHandleAppTileEvents(webView));
+
+    result.current.handleAppTileNavigationStateChange(
+      event as WebViewNavigation,
+    );
+
+    const handler = addListenerMock.mock.lastCall?.[1];
+
+    expect(handler).toBeDefined();
+
+    act(() => {
+      handler({ preventDefault });
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
+    expect(webView.goBack).not.toHaveBeenCalled();
+  });
+
+  it('should not block navigation back if webapp canGoBack is true and webview is null', () => {
+    const event = { url: 'www.hello.world', canGoBack: true };
+    const preventDefault = jest.fn();
+    const { result } = renderHook(() => useHandleAppTileEvents(null));
+
+    result.current.handleAppTileNavigationStateChange(
+      event as WebViewNavigation,
+    );
+
+    const handler = addListenerMock.mock.lastCall?.[1];
+
+    expect(handler).toBeDefined();
+
+    act(() => {
+      handler({ preventDefault });
+    });
+
+    expect(preventDefault).not.toHaveBeenCalled();
   });
 });
