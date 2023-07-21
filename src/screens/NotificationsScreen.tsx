@@ -3,7 +3,7 @@ import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { useNotifications } from '../hooks/useNotifications';
 import { Divider, List } from 'react-native-paper';
-import { SafeAreaView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import formatRelative from 'date-fns/formatRelative';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
@@ -15,12 +15,12 @@ export const NotificationsScreen = () => {
   const { styles } = useStyles(defaultStyles);
 
   const surveyIcon = useMemo(
-    () => <List.Icon style={styles.icon} icon={Bell} />,
-    [styles.icon, Bell],
+    () => <List.Icon style={styles.iconView} icon={Bell} />,
+    [styles.iconView, Bell],
   );
   const noNotificationsIcon = useMemo(
-    () => <List.Icon style={styles.icon} icon={BellOff} />,
-    [styles.icon, BellOff],
+    () => <List.Icon style={styles.iconView} icon={BellOff} />,
+    [styles.iconView, BellOff],
   );
 
   if (isLoading) {
@@ -37,17 +37,16 @@ export const NotificationsScreen = () => {
   const notificationEntries = data?.notificationsForUser.edges.map(
     (edge, index) => {
       return (
-        <View key={edge.node.id}>
+        <View key={edge.node.id} style={styles.listItemView}>
           <List.Item
             title={edge.node.fullText}
             titleNumberOfLines={4}
-            style={styles.listItem}
-            // TODO: switch to i18next formatter when available
+            style={styles.listItemContentsView}
             description={formatRelative(new Date(edge.node.time), new Date())}
             left={() => surveyIcon}
             testID={tID(`notification-${index}`)}
           />
-          <Divider />
+          <Divider style={styles.dividerView} />
         </View>
       );
     },
@@ -60,7 +59,7 @@ export const NotificationsScreen = () => {
         'You have no notifications to display!',
       )}
       testID={tID('no-notifications-message')}
-      style={styles.listItem}
+      style={styles.listItemContentsView}
       left={() => noNotificationsIcon}
     />
   );
@@ -71,18 +70,22 @@ export const NotificationsScreen = () => {
       : noNotifications;
 
   return (
-    <View testID="notifications-screen">
-      <SafeAreaView>
-        <Divider />
+    <View testID="notifications-screen" style={styles.view}>
+      <ScrollView style={styles.scrollView}>
+        <Divider style={styles.dividerView} />
         {notificationsAreaContent}
-      </SafeAreaView>
+      </ScrollView>
     </View>
   );
 };
 
-const defaultStyles = createStyles('NotificationsScreen', () => ({
-  listItem: {},
-  icon: { paddingLeft: 16 },
+const defaultStyles = createStyles('NotificationsScreen', (theme) => ({
+  view: {},
+  scrollView: {},
+  listItemView: {},
+  listItemContentsView: {},
+  dividerView: {},
+  iconView: { paddingLeft: theme.spacing.medium },
 }));
 
 declare module '@styles' {
