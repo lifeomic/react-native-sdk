@@ -57,7 +57,7 @@ export function useInfinitePosts({ circleId }: useInfinitePostsProps) {
     error: postsError,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteQuery('posts', queryPosts, {
+  } = useInfiniteQuery(`posts-${circleId}`, queryPosts, {
     enabled: !!accountHeaders?.['LifeOmic-Account'] && !!circleId,
     getNextPageParam: (lastPage) => {
       return lastPage.postsV2.pageInfo.hasNextPage

@@ -10,21 +10,26 @@ import { cloneDeep } from 'lodash';
 interface OptimisticallyUpdatePosts {
   queryClient: QueryClient;
   id: string;
+  circleId?: string;
   transformFn: (post: Post) => Post;
 }
 
 export const optimisticallyUpdatePosts = ({
   queryClient,
   id,
+  circleId,
   transformFn,
 }: OptimisticallyUpdatePosts) => {
-  queryClient.setQueryData<InfinitePostsData>(['posts'], (currentData) => {
-    const newData = cloneDeep(currentData);
-    forEach(newData?.pages, (page) => {
-      transformEdgesById(page.postsV2?.edges, id, transformFn);
-    });
-    return newData!;
-  });
+  queryClient.setQueryData<InfinitePostsData>(
+    `posts-${circleId}`,
+    (currentData) => {
+      const newData = cloneDeep(currentData);
+      forEach(newData?.pages, (page) => {
+        transformEdgesById(page.postsV2?.edges, id, transformFn);
+      });
+      return newData!;
+    },
+  );
 
   queryClient
     .getQueryCache()

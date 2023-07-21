@@ -20,6 +20,9 @@ type CreatePostInput = {
       type: AttachmentType;
       subType: string;
     }[];
+    circle: {
+      id: string;
+    };
   };
 };
 
@@ -31,7 +34,7 @@ export function useCreatePost() {
 
   const createPostMutation = async (input: CreatePostInput) => {
     const variables = {
-      input,
+      input: omit(input, 'post.circle'),
     };
 
     return graphQLClient.request(
@@ -45,10 +48,14 @@ export function useCreatePost() {
     onMutate: async (newPost) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['posts'] });
+      await queryClient.cancelQueries({
+        queryKey: `posts-${newPost.post.circle.id}`,
+      });
 
       // Snapshot the previous value
-      const previousPosts = queryClient.getQueryData(['posts']);
+      const previousPosts = queryClient.getQueryData([
+        `posts-${newPost.post.circle.id}`,
+      ]);
 
       // Optimistically update to the new value
       const optimisticPost: Post = {
@@ -71,7 +78,7 @@ export function useCreatePost() {
 
       if (newPost.post.parentType === ParentType.CIRCLE) {
         queryClient.setQueryData(
-          ['posts'],
+          `posts-${newPost.post.circle.id}`,
           (currentData?: InfinitePostsData) => {
             const newData: InfinitePostsData = cloneDeep(currentData) ?? {
               pages: [
@@ -93,6 +100,7 @@ export function useCreatePost() {
         optimisticallyUpdatePosts({
           queryClient,
           id: newPost.post.parentId,
+          circleId: newPost.post.circle.id,
           transformFn: (post) => {
             post.replyCount++;
             post.replies = post.replies || { edges: [] };

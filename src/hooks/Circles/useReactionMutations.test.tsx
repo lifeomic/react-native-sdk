@@ -75,7 +75,7 @@ const getDataWithCount = ({
 
 test('useCreateReaction mutation', async () => {
   queryClient.setQueryData(
-    'posts',
+    'posts-someCircleId',
     getDataWithCount({ count: 0, userHasReacted: false }),
   );
 
@@ -91,7 +91,7 @@ test('useCreateReaction mutation', async () => {
   const onSuccessMock = jest.fn();
   const { result } = await renderCreateReactionHook();
   result.current.mutate(
-    { postId: 'somePostId', type: '(-_-)' },
+    { postId: 'somePostId', type: '(-_-)', circleId: 'someCircleId' },
     { onSuccess: onSuccessMock },
   );
 
@@ -100,7 +100,7 @@ test('useCreateReaction mutation', async () => {
     expect(onSuccessMock).toBeCalled();
   });
 
-  expect(queryClient.getQueryData('posts')).toEqual(
+  expect(queryClient.getQueryData('posts-someCircleId')).toEqual(
     getDataWithCount({ count: 1, userHasReacted: true }),
   );
 });
@@ -144,7 +144,7 @@ test('useCreateReaction mutation updates postDetails', async () => {
 
 test('useUndoReaction mutation', async () => {
   queryClient.setQueryData(
-    'posts',
+    'posts-someCircleId',
     getDataWithCount({ count: 1, userHasReacted: true }),
   );
 
@@ -160,7 +160,12 @@ test('useUndoReaction mutation', async () => {
   const onSuccessMock = jest.fn();
   const { result } = await renderUndoReactionHook();
   result.current.mutate(
-    { postId: 'somePostId', type: '(-_-)', userId: 'someUser' },
+    {
+      postId: 'somePostId',
+      type: '(-_-)',
+      userId: 'someUser',
+      circleId: 'someCircleId',
+    },
     { onSuccess: onSuccessMock },
   );
 
@@ -169,7 +174,7 @@ test('useUndoReaction mutation', async () => {
     expect(onSuccessMock).toBeCalled();
   });
 
-  expect(queryClient.getQueryData('posts')).toEqual(
+  expect(queryClient.getQueryData('posts-someCircleId')).toEqual(
     getDataWithCount({ count: 0, userHasReacted: false }),
   );
 });

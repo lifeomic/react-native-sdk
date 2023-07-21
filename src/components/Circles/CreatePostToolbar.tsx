@@ -10,6 +10,7 @@ import uuid from 'react-native-uuid';
 
 type CreatePostToolbarProps = {
   parentId?: string;
+  circleId?: string;
   parentType?: ParentType;
   onSubmit?: ({ shouldScroll }: { shouldScroll: boolean }) => void;
   textInputRef?: Ref<any>;
@@ -19,6 +20,7 @@ type CreatePostToolbarProps = {
 export const CreatePostToolbar = ({
   parentId,
   parentType,
+  circleId,
   onSubmit,
   textInputRef,
   rootPostId,
@@ -74,6 +76,7 @@ export const CreatePostToolbar = ({
                 message: postText,
                 parentId: parentId!,
                 parentType: parentType!,
+                circle: { id: circleId! },
               },
             });
             // only scroll to end when commenting on the root post

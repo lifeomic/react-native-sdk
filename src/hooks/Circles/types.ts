@@ -51,6 +51,9 @@ export type Post = {
       hasNextPage?: boolean;
     };
   };
+  circle?: {
+    id: string;
+  };
 };
 
 export const postDetailsFragment = gql`
@@ -76,6 +79,9 @@ export const postDetailsFragment = gql`
         url
         count
         userHasReacted
+      }
+      circle {
+        id
       }
     }
   }

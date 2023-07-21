@@ -14,6 +14,7 @@ export const useLoadReplies = () => {
   const [queryVariables, setQueryVariables] = useState({
     after: undefined as string | undefined,
     id: '',
+    circleId: undefined as string | undefined,
   });
 
   const queryForPostReplies = useCallback(async () => {
@@ -27,7 +28,11 @@ export const useLoadReplies = () => {
   }, [accountHeaders, graphQLClient, queryVariables]);
 
   const repliesRes = useQuery(
-    ['loadReplies', queryVariables.id, queryVariables.after],
+    [
+      `loadReplies-${queryVariables.circleId}`,
+      queryVariables.id,
+      queryVariables.after,
+    ],
     queryForPostReplies,
     {
       enabled: isFetched && !!accountHeaders && !!queryVariables.id,
@@ -39,6 +44,7 @@ export const useLoadReplies = () => {
         optimisticallyUpdatePosts({
           queryClient,
           id: queryVariables.id,
+          circleId: queryVariables.circleId,
           transformFn: (post) => {
             post.replies = post.replies ?? { edges: [] };
             post.replies.edges.push(...data.post.replies.edges);
@@ -55,6 +61,7 @@ export const useLoadReplies = () => {
     setQueryVariables({
       id: post.id,
       after: post.replies?.pageInfo?.endCursor,
+      circleId: post.circle?.id,
     });
   };
 

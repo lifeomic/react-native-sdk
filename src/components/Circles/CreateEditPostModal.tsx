@@ -29,6 +29,7 @@ const eventEmitter = new NativeEventEmitter({
 const showCreateEditPostModelEvent = 'showCreateEditPostModelEvent';
 
 type EmitEventProps = {
+  circleId?: string;
   parentId?: string;
   parentType?: ParentType;
   onModalClose?: (createdNewPost?: boolean) => void;
@@ -76,7 +77,8 @@ export const CreateEditPostModal = () => {
     return null;
   }
 
-  const { parentId, parentType, postToEdit, onModalClose } = emitProps;
+  const { parentId, parentType, postToEdit, circleId, onModalClose } =
+    emitProps;
 
   return (
     <Provider>
@@ -139,6 +141,7 @@ export const CreateEditPostModal = () => {
                       updatePost.mutate({
                         id: postToEdit.id,
                         newMessage: postText,
+                        circleId: postToEdit.circle?.id,
                       });
                       hideModal(false);
                     } else {
@@ -148,6 +151,9 @@ export const CreateEditPostModal = () => {
                           message: postText,
                           parentId: parentId!,
                           parentType: parentType!,
+                          circle: {
+                            id: circleId!,
+                          },
                         },
                       });
                       hideModal(true);

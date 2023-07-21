@@ -35,13 +35,21 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
 
       // if the reaction type doesn't exist locally
       if (reactionIndex < 0) {
-        createReaction.mutate({ postId: post.id, type: emojiType });
+        createReaction.mutate({
+          postId: post.id,
+          type: emojiType,
+          circleId: post.circle?.id,
+        });
         return;
       }
 
       // reaction exists locally but current user has not reacted
       if (!post.reactionTotals[reactionIndex].userHasReacted) {
-        createReaction.mutate({ postId: post.id, type: emojiType });
+        createReaction.mutate({
+          postId: post.id,
+          type: emojiType,
+          circleId: post.circle?.id,
+        });
         return;
       }
 
@@ -51,11 +59,19 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
           userId: data.id,
           postId: post.id,
           type: emojiType,
+          circleId: post.circle?.id,
         });
         return;
       }
     },
-    [post.id, post.reactionTotals, data?.id, createReaction, undoReaction],
+    [
+      post.id,
+      post.reactionTotals,
+      post.circle?.id,
+      data?.id,
+      createReaction,
+      undoReaction,
+    ],
   );
 
   return (

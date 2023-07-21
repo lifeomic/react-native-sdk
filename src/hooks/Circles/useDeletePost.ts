@@ -3,15 +3,19 @@ import { useQueryClient, useMutation } from 'react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { optimisticallyDeletePosts } from './utils/optimisticallyDeletePosts';
+import omit from 'lodash/omit';
 
 export function useDeletePost() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
 
-  const deletePostMutation = async (input: { id: string }) => {
+  const deletePostMutation = async (input: {
+    id: string;
+    circleId?: string;
+  }) => {
     const variables = {
-      input,
+      input: omit(input, 'circleId'),
     };
 
     return graphQLClient.request(
@@ -33,6 +37,7 @@ export function useDeletePost() {
       optimisticallyDeletePosts({
         queryClient,
         postId: deletedPost.id,
+        circleId: deletedPost.circleId,
       });
 
       // Return a context object with the snapshotted value

@@ -66,7 +66,7 @@ describe('useCreatePost', () => {
       }
     } as any;
 
-    queryClient.setQueryData('posts', getDataWithPosts([]));
+    queryClient.setQueryData('posts-someCircleId', getDataWithPosts([]));
     const scope = nock(`${baseURL}/v1/graphql`)
       .post('')
       .times(2)
@@ -94,6 +94,9 @@ describe('useCreatePost', () => {
           picture: '',
         },
       },
+      circle: {
+        id: 'someCircleId',
+      },
     };
 
     const createPostInput = {
@@ -101,6 +104,7 @@ describe('useCreatePost', () => {
       id: '123',
       parentId: '456',
       parentType: ParentType.CIRCLE,
+      circle: { id: 'someCircleId' },
     };
 
     onSuccessMock.mockReset();
@@ -114,7 +118,7 @@ describe('useCreatePost', () => {
       expect(onSuccessMock).toBeCalled();
     });
 
-    expect(queryClient.getQueryData('posts')).toEqual(
+    expect(queryClient.getQueryData('posts-someCircleId')).toEqual(
       getDataWithPosts([{ node: expectedPost }]),
     );
 
@@ -123,6 +127,7 @@ describe('useCreatePost', () => {
       id: '789',
       parentId: createPostInput.id,
       parentType: ParentType.POST,
+      circle: { id: 'someCircleId' },
     };
 
     result.current.mutate(
@@ -151,13 +156,16 @@ describe('useCreatePost', () => {
           picture: '',
         },
       },
+      circle: {
+        id: 'someCircleId',
+      },
     };
 
     expectedPost.replyCount = 1;
     expectedPost.replies.edges.push({
       node: expectedCommentPost,
     });
-    expect(queryClient.getQueryData('posts')).toEqual(
+    expect(queryClient.getQueryData('posts-someCircleId')).toEqual(
       getDataWithPosts([{ node: expectedPost }]),
     );
     global.Date = RealDate;

@@ -38,7 +38,7 @@ export const ShowPostMenuButton = ({
             ? t('delete-post', 'Delete Post')
             : t('delete-comment', 'Delete Comment'),
         action: () => {
-          deletePost.mutate({ id: post?.id });
+          deletePost.mutate({ id: post?.id, circleId: post.circle?.id });
         },
       },
       {
@@ -48,6 +48,7 @@ export const ShowPostMenuButton = ({
             : t('edit-comment', 'Edit Comment'),
         action: () =>
           showCreateEditPostModal({
+            circleId: post.circle?.id,
             parentId: post.id,
             parentType: parentType,
             postToEdit: post,

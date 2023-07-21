@@ -151,6 +151,7 @@ export const Thread = (props: ThreadProps) => {
         parentId={commentPost}
         parentType={ParentType.POST}
         rootPostId={postIn.id}
+        circleId={postIn.circle?.id}
         onSubmit={handleNewReply}
         textInputRef={textInputRef}
       />

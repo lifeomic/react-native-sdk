@@ -9,6 +9,7 @@ interface CreateReactionMutationProps {
   type: string;
   postId: string;
   parentId?: string;
+  circleId?: string;
 }
 
 interface UndoReactionMutationProps {
@@ -16,6 +17,7 @@ interface UndoReactionMutationProps {
   type: string;
   postId: string;
   parentId?: string;
+  circleId?: string;
 }
 
 export function useCreateReactionMutation() {
@@ -45,15 +47,20 @@ export function useCreateReactionMutation() {
     onMutate: async (newReaction) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['posts'] });
+      await queryClient.cancelQueries({
+        queryKey: `posts-${newReaction.circleId}`,
+      });
 
       // Snapshot the previous value
-      const previousPosts = queryClient.getQueryData(['posts']);
+      const previousPosts = queryClient.getQueryData([
+        `posts-${newReaction.circleId}`,
+      ]);
 
       // Optimistically update to the new value
       optimisticallyUpdatePosts({
         queryClient,
         id: newReaction.postId,
+        circleId: newReaction.circleId,
         transformFn: (post) => optimisticUpdatePost(post, newReaction)!,
       });
 
@@ -92,15 +99,20 @@ export function useUndoReactionMutation() {
     onMutate: async (newReaction) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['posts'] });
+      await queryClient.cancelQueries({
+        queryKey: `posts-${newReaction.circleId}`,
+      });
 
       // Snapshot the previous value
-      const previousPosts = queryClient.getQueryData(['posts']);
+      const previousPosts = queryClient.getQueryData([
+        `posts-${newReaction.circleId}`,
+      ]);
 
       // Optimistically update to the new value
       optimisticallyUpdatePosts({
         queryClient,
         id: newReaction.postId,
+        circleId: newReaction.circleId,
         transformFn: (post) => optimisticUpdatePost(post, newReaction, true)!,
       });
 

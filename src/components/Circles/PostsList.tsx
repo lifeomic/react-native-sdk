@@ -114,6 +114,7 @@ export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
         style={styles.fabView}
         onPress={() => {
           showCreateEditPostModal({
+            circleId: circleTile.circleId,
             parentType: ParentType.CIRCLE,
             parentId: circleTile.circleId,
           });
