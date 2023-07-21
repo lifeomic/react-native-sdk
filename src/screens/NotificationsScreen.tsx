@@ -15,12 +15,12 @@ export const NotificationsScreen = () => {
   const { styles } = useStyles(defaultStyles);
 
   const surveyIcon = useMemo(
-    () => <List.Icon style={styles.icon} icon={Bell} />,
-    [styles.icon, Bell],
+    () => <List.Icon style={styles.iconView} icon={Bell} />,
+    [styles.iconView, Bell],
   );
   const noNotificationsIcon = useMemo(
-    () => <List.Icon style={styles.icon} icon={BellOff} />,
-    [styles.icon, BellOff],
+    () => <List.Icon style={styles.iconView} icon={BellOff} />,
+    [styles.iconView, BellOff],
   );
 
   if (isLoading) {
@@ -41,12 +41,12 @@ export const NotificationsScreen = () => {
           <List.Item
             title={edge.node.fullText}
             titleNumberOfLines={4}
-            style={styles.listItem}
+            style={styles.listItemContentsView}
             description={formatRelative(new Date(edge.node.time), new Date())}
             left={() => surveyIcon}
             testID={tID(`notification-${index}`)}
           />
-          <Divider />
+          <Divider style={styles.dividerView} />
         </View>
       );
     },
@@ -59,7 +59,7 @@ export const NotificationsScreen = () => {
         'You have no notifications to display!',
       )}
       testID={tID('no-notifications-message')}
-      style={styles.listItem}
+      style={styles.listItemContentsView}
       left={() => noNotificationsIcon}
     />
   );
@@ -70,7 +70,7 @@ export const NotificationsScreen = () => {
       : noNotifications;
 
   return (
-    <View testID="notifications-screen" style={styles.rootView}>
+    <View testID="notifications-screen" style={styles.view}>
       <ScrollView style={styles.scrollView}>
         <Divider style={styles.dividerView} />
         {notificationsAreaContent}
@@ -80,12 +80,12 @@ export const NotificationsScreen = () => {
 };
 
 const defaultStyles = createStyles('NotificationsScreen', () => ({
-  rootView: {},
+  view: {},
   scrollView: {},
   listItemView: {},
-  listItem: {},
+  listItemContentsView: {},
   dividerView: {},
-  icon: { paddingLeft: 16 },
+  iconView: { paddingLeft: 16 },
 }));
 
 declare module '@styles' {
