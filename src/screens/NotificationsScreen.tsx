@@ -3,7 +3,7 @@ import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { useNotifications } from '../hooks/useNotifications';
 import { Divider, List } from 'react-native-paper';
-import { SafeAreaView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import formatRelative from 'date-fns/formatRelative';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
@@ -37,12 +37,11 @@ export const NotificationsScreen = () => {
   const notificationEntries = data?.notificationsForUser.edges.map(
     (edge, index) => {
       return (
-        <View key={edge.node.id}>
+        <View key={edge.node.id} style={styles.listItemView}>
           <List.Item
             title={edge.node.fullText}
             titleNumberOfLines={4}
             style={styles.listItem}
-            // TODO: switch to i18next formatter when available
             description={formatRelative(new Date(edge.node.time), new Date())}
             left={() => surveyIcon}
             testID={tID(`notification-${index}`)}
@@ -72,15 +71,16 @@ export const NotificationsScreen = () => {
 
   return (
     <View testID="notifications-screen">
-      <SafeAreaView>
+      <ScrollView>
         <Divider />
         {notificationsAreaContent}
-      </SafeAreaView>
+      </ScrollView>
     </View>
   );
 };
 
 const defaultStyles = createStyles('NotificationsScreen', () => ({
+  listItemView: {},
   listItem: {},
   icon: { paddingLeft: 16 },
 }));
