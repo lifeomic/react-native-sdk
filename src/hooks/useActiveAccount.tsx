@@ -61,6 +61,7 @@ export const ActiveAccountContextProvider = ({
 }) => {
   const accountsResult = useAccounts();
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
+  const [isSettled, setIsSettled] = useState(false);
   const [activeAccount, setActiveAccount] = useState<ActiveAccountProps>({});
   const { data: userData } = useUser();
   const userId = userData?.id;
@@ -73,6 +74,14 @@ export const ActiveAccountContextProvider = ({
    * Initial setting of activeAccount
    */
   useEffect(() => {
+    if (
+      accountsResult.isFetched &&
+      !accountsResult.isLoading &&
+      accountsWithProduct.length < 1
+    ) {
+      setIsSettled(true);
+    }
+
     if (
       !userId || // require user id before reading/writing to storage
       storedAccountIdResult.isLoading || // wait for async storage result
@@ -97,6 +106,7 @@ export const ActiveAccountContextProvider = ({
       trialExpired: getTrialExpired(selectedAccount),
     });
     setStoredAccountId(selectedAccount.id);
+    setIsSettled(true);
   }, [
     accountsWithProduct,
     activeAccount?.account?.id,
@@ -104,6 +114,8 @@ export const ActiveAccountContextProvider = ({
     setStoredAccountId,
     storedAccountIdResult.data,
     storedAccountIdResult.isLoading,
+    accountsResult.isFetched,
+    accountsResult.isLoading,
     userId,
   ]);
 
@@ -171,7 +183,7 @@ export const ActiveAccountContextProvider = ({
         accountsWithProduct,
         refetch,
         setActiveAccountId,
-        isLoading: accountsResult.isLoading,
+        isLoading: accountsResult.isLoading || !isSettled,
         isFetched: accountsResult.isFetched,
         error: accountsResult.error,
       }}
