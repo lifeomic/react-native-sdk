@@ -77,6 +77,7 @@ export type HomeStackParamList = {
     valuesContext: TrackerValuesContext;
   };
   'Home/MyData': undefined;
+  'Home/YoutubePlayer': { youtubeVideoId: string; videoName?: string };
 };
 
 export type NotificationsStackParamList = {

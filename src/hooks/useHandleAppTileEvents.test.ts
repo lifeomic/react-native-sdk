@@ -171,6 +171,35 @@ describe('handleAppTileMessage', () => {
     });
   });
 
+  it('should handle deep link message and call openYoutubePlayer', () => {
+    const youtubeVideoId = '123';
+    const videoName = 'video name';
+    const youtubePlayerMessage = {
+      type: AppTileMessageType.deepLink,
+      data: {
+        routeName: 'Home/YoutubePlayer',
+        params: { youtubeVideoId, videoName },
+      },
+    };
+    const { result } = renderHook(() => useHandleAppTileEvents());
+    const event = {
+      nativeEvent: {
+        data: JSON.stringify(youtubePlayerMessage),
+        canGoBack: true,
+        canGoForward: false,
+        loading: false,
+        title: 'Video',
+        url: 'video.com',
+        lockIdentifier: 1234442,
+      },
+    };
+    result.current.handleAppTileMessage(event as WebViewMessageEvent);
+    expect(pushMock).toBeCalledWith('Home/YoutubePlayer', {
+      youtubeVideoId,
+      videoName,
+    });
+  });
+
   it('should no-op if the tracker cannot be found', () => {
     const metricId = 'random-id';
     const appTileMessage = {

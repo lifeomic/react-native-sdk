@@ -21,6 +21,7 @@ import { HomeStackParamList } from './types';
 import { CircleDiscussionScreen } from '../screens/CircleDiscussionScreen';
 import { useDeveloperConfig } from '../hooks';
 import { MyDataScreen } from '../screens/MyDataScreen';
+import { YoutubePlayerScreen } from '../screens/YoutubePlayerScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -58,6 +59,11 @@ export function HomeStack() {
         name="Home/MyData"
         component={MyDataScreen}
         options={{ title: t('My Data') }}
+      />
+      <Stack.Screen
+        name="Home/YoutubePlayer"
+        component={YoutubePlayerScreen}
+        options={({ route }) => ({ title: route.params.videoName || ' ' })}
       />
       {getAdditionalHomeScreens?.(Stack)}
     </Stack.Navigator>
