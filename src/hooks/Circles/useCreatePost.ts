@@ -7,6 +7,7 @@ import { ParentType, Priority, AttachmentType, Post } from './types';
 import { InfinitePostsData } from './useInfinitePosts';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
 import { gql } from 'graphql-request';
+import { useActiveCircleTile } from './useActiveCircleTile';
 
 type CreatePostInput = {
   post: {
@@ -28,6 +29,7 @@ export function useCreatePost() {
   const { accountHeaders } = useActiveAccount();
   const { data } = useUser();
   const queryClient = useQueryClient();
+  const { circleTile } = useActiveCircleTile();
 
   const createPostMutation = async (input: CreatePostInput) => {
     const variables = {
@@ -45,10 +47,14 @@ export function useCreatePost() {
     onMutate: async (newPost) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['posts'] });
+      await queryClient.cancelQueries({
+        queryKey: ['posts', circleTile?.circleId],
+      });
 
       // Snapshot the previous value
-      const previousPosts = queryClient.getQueryData(['posts']);
+      const previousPosts = queryClient.getQueryData([
+        ['posts', circleTile?.circleId],
+      ]);
 
       // Optimistically update to the new value
       const optimisticPost: Post = {
@@ -71,7 +77,7 @@ export function useCreatePost() {
 
       if (newPost.post.parentType === ParentType.CIRCLE) {
         queryClient.setQueryData(
-          ['posts'],
+          ['posts', circleTile?.circleId],
           (currentData?: InfinitePostsData) => {
             const newData: InfinitePostsData = cloneDeep(currentData) ?? {
               pages: [
@@ -93,6 +99,7 @@ export function useCreatePost() {
         optimisticallyUpdatePosts({
           queryClient,
           id: newPost.post.parentId,
+          circleId: circleTile?.circleId,
           transformFn: (post) => {
             post.replyCount++;
             post.replies = post.replies || { edges: [] };

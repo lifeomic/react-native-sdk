@@ -10,26 +10,31 @@ import { cloneDeep } from 'lodash';
 type DeletePostsConfig = {
   queryClient: QueryClient;
   postId: string;
+  circleId?: string;
 };
 
 export const optimisticallyDeletePosts = ({
   queryClient,
   postId,
+  circleId,
 }: DeletePostsConfig) => {
-  queryClient.setQueryData<InfinitePostsData>(['posts'], (currentData) => {
-    if (!currentData) {
-      return currentData!;
-    }
-    const newData = cloneDeep(currentData);
-    for (const page of newData?.pages) {
-      const result = deletePostById(page.postsV2.edges, postId);
-      if (result) {
-        break;
+  queryClient.setQueryData<InfinitePostsData>(
+    ['posts', circleId],
+    (currentData) => {
+      if (!currentData) {
+        return currentData!;
       }
-    }
+      const newData = cloneDeep(currentData);
+      for (const page of newData?.pages) {
+        const result = deletePostById(page.postsV2.edges, postId);
+        if (result) {
+          break;
+        }
+      }
 
-    return newData!;
-  });
+      return newData!;
+    },
+  );
 
   queryClient
     .getQueryCache()

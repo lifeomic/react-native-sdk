@@ -11,6 +11,18 @@ import { CreateEditPostModal } from '../CreateEditPostModal';
 jest.mock('../../../hooks/Circles/useInfinitePosts');
 jest.mock('../../../hooks/Circles/useCreatePost');
 jest.mock('../ReactionsToolbar');
+const circleTile: CircleTile = {
+  circleName: 'Some Circle',
+  circleId: 'Some CircleId',
+  isMember: true,
+  buttonText: 'Some Text',
+};
+
+jest.mock('../../../hooks/Circles/useActiveCircleTile', () => ({
+  useActiveCircleTile: jest.fn().mockImplementation(() => ({
+    circleTile: circleTile,
+  })),
+}));
 
 const useInfinitePostsMock = useInfinitePosts as jest.Mock;
 const useCreatePostMock = useCreatePost as jest.Mock;
@@ -28,16 +40,7 @@ test('renders no post text when no posts are returned', () => {
     },
   });
 
-  const circleTile: CircleTile = {
-    circleName: 'Some Circle',
-    circleId: 'Some CircleId',
-    isMember: true,
-    buttonText: 'Some Text',
-  };
-
-  const postsList = render(
-    <PostsList circleTile={circleTile} onOpenPost={jest.fn()} />,
-  );
+  const postsList = render(<PostsList onOpenPost={jest.fn()} />);
   expect(postsList.getByText('No posts yet.')).toBeDefined();
 });
 
@@ -67,15 +70,7 @@ test('renders a post', () => {
     },
   });
 
-  const circleTile: CircleTile = {
-    circleName: 'Some Circle',
-    circleId: 'Some CircleId',
-    isMember: true,
-    buttonText: 'Some Text',
-  };
-  const postsList = render(
-    <PostsList circleTile={circleTile} onOpenPost={jest.fn()} />,
-  );
+  const postsList = render(<PostsList onOpenPost={jest.fn()} />);
   expect(postsList.getByText('Hello!')).toBeDefined();
   expect(postsList.getByText('Joe Shmoe')).toBeDefined();
 });
@@ -98,17 +93,10 @@ test('FAB shows the new post modal', () => {
     mutate: mutateMock,
   });
 
-  const circleTile: CircleTile = {
-    circleName: 'Some Circle',
-    circleId: 'Some CircleId',
-    isMember: true,
-    buttonText: 'Some Text',
-  };
-
   const postsList = render(
     <>
       <CreateEditPostModal />
-      <PostsList circleTile={circleTile} onOpenPost={jest.fn()} />
+      <PostsList onOpenPost={jest.fn()} />
     </>,
   );
   expect(postsList.queryByPlaceholderText('What do you want to share?')).toBe(
@@ -146,16 +134,8 @@ test('clicking post or comment calls onOpenPost with correct data', () => {
     },
   });
 
-  const circleTile: CircleTile = {
-    circleName: 'Some Circle',
-    circleId: 'Some CircleId',
-    isMember: true,
-    buttonText: 'Some Text',
-  };
   const onOpenPost = jest.fn();
-  const postsList = render(
-    <PostsList circleTile={circleTile} onOpenPost={onOpenPost} />,
-  );
+  const postsList = render(<PostsList onOpenPost={onOpenPost} />);
 
   fireEvent.press(postsList.getByText('Hello!'));
 

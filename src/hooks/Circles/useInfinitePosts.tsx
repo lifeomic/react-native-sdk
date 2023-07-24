@@ -3,6 +3,7 @@ import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useActiveAccount } from '../useActiveAccount';
 import { ParentType, Post, postDetailsFragment } from './types';
+import { useActiveCircleTile } from './useActiveCircleTile';
 
 export type InfinitePostsData = InfiniteData<PostsData>;
 export type PostsData = {
@@ -32,6 +33,7 @@ type useInfinitePostsProps = {
 export function useInfinitePosts({ circleId }: useInfinitePostsProps) {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
+  const { circleTile } = useActiveCircleTile();
 
   const queryPosts = async ({ pageParam }: { pageParam?: string }) => {
     const variables = {
@@ -57,7 +59,7 @@ export function useInfinitePosts({ circleId }: useInfinitePostsProps) {
     error: postsError,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteQuery('posts', queryPosts, {
+  } = useInfiniteQuery(['posts', circleTile?.circleId], queryPosts, {
     enabled: !!accountHeaders?.['LifeOmic-Account'] && !!circleId,
     getNextPageParam: (lastPage) => {
       return lastPage.postsV2.pageInfo.hasNextPage

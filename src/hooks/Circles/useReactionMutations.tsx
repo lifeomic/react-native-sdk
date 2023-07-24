@@ -4,6 +4,7 @@ import { useGraphQLClient } from '../useGraphQLClient';
 import { useActiveAccount } from '../useActiveAccount';
 import { Post } from './types';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
+import { useActiveCircleTile } from './useActiveCircleTile';
 
 interface CreateReactionMutationProps {
   type: string;
@@ -22,6 +23,7 @@ export function useCreateReactionMutation() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
+  const { circleTile } = useActiveCircleTile();
 
   const createReactionMutation = async ({
     type,
@@ -45,15 +47,20 @@ export function useCreateReactionMutation() {
     onMutate: async (newReaction) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['posts'] });
+      await queryClient.cancelQueries({
+        queryKey: ['posts', circleTile?.circleId],
+      });
 
       // Snapshot the previous value
-      const previousPosts = queryClient.getQueryData(['posts']);
+      const previousPosts = queryClient.getQueryData([
+        ['posts', circleTile?.circleId],
+      ]);
 
       // Optimistically update to the new value
       optimisticallyUpdatePosts({
         queryClient,
         id: newReaction.postId,
+        circleId: circleTile?.circleId,
         transformFn: (post) => optimisticUpdatePost(post, newReaction)!,
       });
 
@@ -67,6 +74,7 @@ export function useUndoReactionMutation() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
+  const { circleTile } = useActiveCircleTile();
 
   const undoReactionMutation = async ({
     userId,
@@ -92,15 +100,20 @@ export function useUndoReactionMutation() {
     onMutate: async (newReaction) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['posts'] });
+      await queryClient.cancelQueries({
+        queryKey: ['posts', circleTile?.circleId],
+      });
 
       // Snapshot the previous value
-      const previousPosts = queryClient.getQueryData(['posts']);
+      const previousPosts = queryClient.getQueryData([
+        ['posts', circleTile?.circleId],
+      ]);
 
       // Optimistically update to the new value
       optimisticallyUpdatePosts({
         queryClient,
         id: newReaction.postId,
+        circleId: circleTile?.circleId,
         transformFn: (post) => optimisticUpdatePost(post, newReaction, true)!,
       });
 

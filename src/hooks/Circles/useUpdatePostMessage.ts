@@ -3,11 +3,13 @@ import { useQueryClient, useMutation } from 'react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
+import { useActiveCircleTile } from './useActiveCircleTile';
 
 export function useUpdatePostMessage() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
+  const { circleTile } = useActiveCircleTile();
 
   const updatePostMessageMutation = async (input: {
     id: string;
@@ -28,7 +30,9 @@ export function useUpdatePostMessage() {
     onMutate: async (updatedPost) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['posts'] });
+      await queryClient.cancelQueries({
+        queryKey: ['posts', circleTile?.circleId],
+      });
 
       // Snapshot the previous value
       const previousPosts = queryClient.getQueryData(['posts']);
@@ -36,6 +40,7 @@ export function useUpdatePostMessage() {
       optimisticallyUpdatePosts({
         queryClient,
         id: updatedPost.id,
+        circleId: circleTile?.circleId,
         transformFn: (post) => {
           post.message = updatedPost.newMessage;
           return post;
