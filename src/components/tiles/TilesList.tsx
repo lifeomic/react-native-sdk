@@ -24,7 +24,8 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const pillarsTileEnabled = data?.homeTab?.tiles?.includes?.('pillarsTile');
   const pillarSettings = data?.homeTab?.pillarSettings;
   const trackTileEnabled = data?.homeTab?.tiles?.includes?.('trackTile');
-  const trackTileTitle = data?.homeTab?.trackTileSettings?.title;
+  const trackerSettings = data?.homeTab?.trackTileSettings;
+  const trackTileTitle = trackerSettings?.title;
   const todayTileEnabled = data?.homeTab?.tiles?.includes?.('todayTile');
   const myDataTileEnabled = data?.homeTab?.tiles?.includes?.('myDataTile');
   const todayTile = data?.homeTab?.todayTile;
@@ -80,12 +81,18 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
               valuesContext,
             })
           }
-          onOpenTracker={(tracker, valuesContext) =>
-            navigation.navigate('Home/TrackTile', {
+          onOpenTracker={(tracker, valuesContext) => {
+            const screenName =
+              trackerSettings?.advancedScreenTrackers?.includes(
+                tracker.metricId || tracker.id,
+              )
+                ? 'Home/AdvancedTrackerDetails'
+                : 'Home/TrackTile';
+            navigation.navigate(screenName, {
               tracker,
               valuesContext,
-            })
-          }
+            });
+          }}
           title={trackTileTitle}
         />
       )}
