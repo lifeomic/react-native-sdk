@@ -1,7 +1,6 @@
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import {
@@ -15,18 +14,48 @@ import {
   HomeStackParamList,
   HomeStackScreenProps,
 } from '../../../src/navigators/types';
+import { DataProviderDecorator } from '../helpers/DataProviderDecorator';
+import { ScreenSurface } from '../../../src/components/ScreenSurface';
 
-storiesOf('Custom App Tile Screen', module).add('demo', () => (
-  <DeveloperConfigProvider
-    developerConfig={{
-      appTileScreens: {
-        'https://lifeomic.com/custom-app-tile-1': MyCustomAppTileScreen1,
-      },
-    }}
-  >
-    <HomeStack />
-  </DeveloperConfigProvider>
-));
+storiesOf('Custom App Tile Screen', module)
+  .addDecorator(
+    DataProviderDecorator((mock) => {
+      mock.onGet().reply(() => [
+        200,
+        {
+          homeTab: {
+            appTiles: [
+              {
+                id: 'custom-app-tile-1',
+                title: 'Working',
+                source: {
+                  url: 'https://lifeomic.com/custom-app-tile-1',
+                },
+              },
+              {
+                id: 'custom-app-tile-2',
+                title: 'Error 1',
+                source: {
+                  url: 'https://lifeomic.com/custom-app-tile-2',
+                },
+              },
+            ],
+          },
+        },
+      ]);
+    }),
+  )
+  .add('demo', () => (
+    <DeveloperConfigProvider
+      developerConfig={{
+        appTileScreens: {
+          'https://lifeomic.com/custom-app-tile-1': MyCustomAppTileScreen1,
+        },
+      }}
+    >
+      <HomeStack />
+    </DeveloperConfigProvider>
+  ));
 
 function MyCustomAppTileScreen1() {
   return (
@@ -39,46 +68,46 @@ function MyCustomAppTileScreen1() {
 
 function HomeScreen({ navigation, route }: HomeStackScreenProps<'Home'>) {
   return (
-    <View style={{ flex: 1 }}>
-      <SafeAreaView>
-        <ScrollView
-          overScrollMode="always"
-          showsVerticalScrollIndicator={false}
+    <>
+      <ScreenSurface testID="home-screen">
+        <TilesList navigation={navigation} route={route} />
+        <View
+          style={{
+            marginHorizontal: 24,
+            marginBottom: 24,
+          }}
         >
-          <TilesList navigation={navigation} route={route} />
-          <View style={{ padding: 8 }}>
-            <Tile
-              id="app-tile-invalid"
-              title="Error 2"
-              onPress={() => {
-                navigation.navigate('Home/CustomAppTile', {
-                  appTile: {
-                    id: 'app-tile-invalid',
-                    title: 'Title 3',
-                    source: {
-                      url: 'https://lifeomic.com/custom-app-tile-3',
-                    },
+          <Tile
+            id="app-tile-invalid"
+            title="Error 2"
+            onPress={() => {
+              navigation.navigate('Home/CustomAppTile', {
+                appTile: {
+                  id: 'app-tile-invalid',
+                  title: 'Title 3',
+                  source: {
+                    url: 'https://lifeomic.com/custom-app-tile-3',
                   },
-                });
-              }}
-            />
+                },
+              });
+            }}
+          />
+          <View>
+            <Text>
+              Error 1 is an issue where the app is configured with an app tile
+              whose URL is meant to be overridden via DeveloperConfigProvider,
+              but is not. In this case, the real URL is navigated to in a
+              browser, so a friendly error message could be displayed there for
+              this edge case.
+            </Text>
+            <Text>
+              Error 2 is an edge case where Home/CustomAppTile is manually
+              navigated to with a bogus appTile configuration
+            </Text>
           </View>
-        </ScrollView>
-        <View>
-          <Text>
-            Error 1 is an issue where the app is configured with an app tile
-            whose URL is meant to be overridden via DeveloperConfigProvider, but
-            is not. In this case, the real URL is navigated to in a browser, so
-            a friendly error message could be displayed there for this edge
-            case.
-          </Text>
-          <Text>
-            Error 2 is an edge case where Home/CustomAppTile is manually
-            navigated to with a bogus appTile configuration
-          </Text>
         </View>
-      </SafeAreaView>
-    </View>
+      </ScreenSurface>
+    </>
   );
 }
 
