@@ -69,6 +69,7 @@ export const postDetailsFragment = gql`
       author {
         profile {
           displayName
+          picture
         }
       }
       reactionTotals {
