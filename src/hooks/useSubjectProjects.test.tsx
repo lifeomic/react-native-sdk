@@ -57,7 +57,7 @@ test('fetches and returns projects related to useMe', async () => {
   axiosMock.onGet().reply(200, projectsResponse);
   const { result } = await renderHookInContext();
   await waitFor(() => result.current.isSuccess);
-  expect(axiosMock.history.get[0].url).toBe('/v1/projects?id=proj1,proj2');
+  expect(axiosMock.history.get[0].url).toBe('/v1/projects?id=proj1&id=proj2');
   await waitFor(() => expect(result.current.data).toEqual([{}, {}]));
 });
 
