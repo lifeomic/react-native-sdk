@@ -10,7 +10,6 @@ import {
 } from '../../../../src/components/TrackTile/services/TrackTileService';
 import { nutrition, activity, mindful, sleep } from './util/ontologies';
 import { withKnobs, select, boolean } from '@storybook/addon-knobs';
-// import { createStackNavigator } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import {
@@ -211,16 +210,6 @@ storiesOf('AdvancedTrackerEditor', module)
                       alert(`Saved!\nNew Tracker Value: ${value?.value}`);
                     }}
                   />
-                </HeaderButtons>
-              ),
-
-              headerLeft: () => (
-                <HeaderButtons
-                  HeaderButtonComponent={(props) => (
-                    <HeaderButton {...props} color={'#02BFF1'} />
-                  )}
-                >
-                  <Item title="Cancel" onPress={() => alert('Go Back')} />
                 </HeaderButtons>
               ),
             }}

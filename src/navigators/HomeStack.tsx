@@ -6,16 +6,9 @@ import { CustomAppTileScreen } from '../screens/CustomAppTileScreen';
 import { TrackTileTrackerScreen } from '../screens/TrackTileTrackerScreen';
 import { AppNavHeader } from '../components/AppNavHeader';
 import { t } from '../../lib/i18n';
-import { notifySaveEditTrackerValue } from '../components/TrackTile/main';
 import TrackTileSettingsScreen from '../screens/TrackTileSettingsScreen';
 import TrackTileAdvancedDetailsScreen from '../screens/TrackTileAdvancedDetailsScreen';
 import TrackTileAdvancedEditorScreen from '../screens/TrackTileAdvancedEditorScreen';
-import { useNavigation } from '@react-navigation/native';
-import {
-  HeaderButton,
-  HeaderButtons,
-  Item,
-} from 'react-navigation-header-buttons';
 import { AuthedAppTileScreen } from '../screens/AuthedAppTileScreen';
 import { HomeStackParamList } from './types';
 import { CircleDiscussionScreen } from '../screens/CircleDiscussionScreen';
@@ -50,9 +43,6 @@ export function HomeStack() {
       <Stack.Screen
         name="Home/AdvancedTrackerEditor"
         component={TrackTileAdvancedEditorScreen}
-        options={() => ({
-          headerRight: SaveEditorButton,
-        })}
       />
       <Stack.Screen
         name="Home/MyData"
@@ -63,23 +53,3 @@ export function HomeStack() {
     </Stack.Navigator>
   );
 }
-
-const HeaderButtonComponent = (props: any) => (
-  <HeaderButton {...props} color={'#02BFF1'} />
-);
-
-const SaveEditorButton = () => {
-  const navigation = useNavigation();
-
-  return (
-    <HeaderButtons HeaderButtonComponent={HeaderButtonComponent}>
-      <Item
-        title="Save"
-        onPress={async () => {
-          await new Promise(notifySaveEditTrackerValue);
-          navigation.goBack();
-        }}
-      />
-    </HeaderButtons>
-  );
-};
