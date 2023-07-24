@@ -290,6 +290,7 @@ describe('useAxiosTrackTileService', () => {
     expect(patchMock).toHaveBeenCalledWith(
       '/v1/track-tiles/metrics/installs',
       updatedSettings,
+      ACCOUNT_HEADERS,
     );
     expect(cachedResult).toEqual(updatedSettings);
   });
@@ -313,6 +314,7 @@ describe('useAxiosTrackTileService', () => {
 
     expect(deleteMock).toHaveBeenCalledWith(
       `/v1/track-tiles/metrics/installs/${tracker.metricId}`,
+      ACCOUNT_HEADERS,
     );
     expect(initialCacheValue.every(isInstalledMetric)).toEqual(true);
     expect(cachedResult.every(isInstalledMetric)).toEqual(false);
