@@ -10,12 +10,13 @@ export const CircleDiscussionScreen = ({
 }: HomeStackScreenProps<'Home/Circle/Discussion'>) => {
   const { setCircleTile } = useActiveCircleTile();
   const { circleTile } = route.params;
-  setCircleTile?.(circleTile);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: circleTile?.circleName,
     });
-  }, [navigation, circleTile?.circleName]);
+    setCircleTile?.(circleTile);
+  }, [navigation, circleTile, setCircleTile]);
 
   const openPost = useCallback(
     (post: Post, createNewComment: boolean) => {
