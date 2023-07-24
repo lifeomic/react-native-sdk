@@ -27,7 +27,8 @@ type NavigationParams = {
 type DeepLinkRouteName =
   | 'tiles/Today/Survey'
   | 'tiles/TrackTile'
-  | 'social/PostDetails';
+  | 'social/PostDetails'
+  | 'Home/YoutubePlayer';
 
 export enum AppTileMessageType {
   deepLink = 'deepLink',
@@ -103,6 +104,10 @@ export const useHandleAppTileEvents = (webView: WebView | null = null) => {
     navigation.push('Home/Circle/Discussion', { circleTile });
   };
 
+  const openYoutubePlayer = (youtubeVideoId: string, videoName?: string) => {
+    navigation.push('Home/YoutubePlayer', { youtubeVideoId, videoName });
+  };
+
   const openPillarTracker = (params: NavigationParams) => {
     const tracker = pillarTrackers.find((t) => t.metricId === params.metricId);
     if (!tiles?.includes('pillarsTile') || !tracker) {
@@ -137,6 +142,15 @@ export const useHandleAppTileEvents = (webView: WebView | null = null) => {
 
       case 'tiles/TrackTile':
         openPillarTracker(params);
+        break;
+
+      case 'Home/YoutubePlayer':
+        const { youtubeVideoId, videoName } = params;
+        openYoutubePlayer(
+          youtubeVideoId as string,
+          videoName as string | undefined,
+        );
+
         break;
 
       default:
