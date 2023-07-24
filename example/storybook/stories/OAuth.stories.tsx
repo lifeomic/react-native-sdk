@@ -11,10 +11,11 @@ import { AuthContextProvider, useAuth } from '../../../src/hooks/useAuth';
 import { CenterView } from '../helpers/CenterView';
 import { BrandConfigProvider } from '../../../src/components/BrandConfigProvider';
 import { authConfig } from '../helpers/oauthConfig';
+import { DataProviderDecorator } from '../helpers/DataProviderDecorator';
 
 storiesOf('OAuth', module)
   .addDecorator((story) => <CenterView>{story()}</CenterView>)
-
+  .addDecorator(DataProviderDecorator())
   .add('demo', () => {
     // Actions:
     const loginOnSuccess = (result: AuthorizeResult) => {

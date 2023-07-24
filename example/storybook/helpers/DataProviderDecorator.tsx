@@ -7,12 +7,14 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ActiveAccountContext, ActiveProjectContext } from '../../../src/hooks';
 
 export const DataProviderDecorator = (
-  builder: (adapter: MockAdapter) => void,
+  builder?: (adapter: MockAdapter) => void,
 ) => {
   const axiosInstance = axios.create();
   const mock = new MockAdapter(axiosInstance);
 
-  builder(mock);
+  if (builder) {
+    builder(mock);
+  }
 
   const EnvironmentDecorator: DecoratorFunction<any> = (StoryFn, storyCtx) => {
     return (

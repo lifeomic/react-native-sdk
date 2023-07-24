@@ -13,6 +13,7 @@ import {
 } from '../../../../../src/components/TrackTile/hooks/useAxiosTrackTileService';
 import { nutrition } from './ontologies';
 import { HttpClientContextProvider } from '../../../../../src/hooks/useHttpClient';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const axiosInstance = axios.create();
 const mock = new MockAdapter(axiosInstance);
@@ -52,9 +53,11 @@ export const MockEnvironmentDecorator = ({
 
   const EnvironmentDecorator: DecoratorFunction<any> = (StoryFn, storyCtx) => {
     return (
-      <HttpClientContextProvider injectedAxiosInstance={axiosInstance}>
-        <Provider>{StoryFn(storyCtx)}</Provider>
-      </HttpClientContextProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        <HttpClientContextProvider injectedAxiosInstance={axiosInstance}>
+          <Provider>{StoryFn(storyCtx)}</Provider>
+        </HttpClientContextProvider>
+      </QueryClientProvider>
     );
   };
 
