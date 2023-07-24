@@ -3,33 +3,39 @@ import { Text, View } from 'react-native';
 import { formatDistanceToNow, isValid } from 'date-fns';
 import { t } from 'i18next';
 import { ParentType, Post, useStyles, useTheme } from '../../hooks';
-import { Avatar, Button } from 'react-native-paper';
-import { initials } from './initials';
-import { createStyles } from '../BrandConfigProvider';
+import { Button } from 'react-native-paper';
+import { createStyles, useIcons } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
 import { ShowPostMenuButton } from './ShowPostMenuButton';
+import { AvatarIcon } from './AvatarIcon';
 
 type Props = { post: Post; style?: ThreadCommentStyles; onReply: () => void };
 
 export const ThreadComment = ({ post, style, onReply }: Props) => {
   const { styles } = useStyles(defaultStyles, style);
   const theme = useTheme();
-
+  const { UserX } = useIcons();
   const created = new Date(post?.createdAt!);
   const size =
-    Math.min(Number(styles.avatar?.width), Number(styles.avatar?.height)) ||
-    theme.spacing.large;
+    Math.min(
+      Number(styles.avatarView?.width),
+      Number(styles.avatarView?.height),
+    ) || theme.spacing.large;
 
   return (
     <View style={styles.container}>
-      <Avatar.Text
+      <AvatarIcon
         size={size}
-        style={styles.avatar}
-        label={initials(post?.author?.profile?.displayName)}
+        style={styles.avatarView}
+        fallbackIcon={(props) => {
+          return UserX({ ...props, height: 12 });
+        }}
+        post={post}
       />
       <View style={styles.details}>
         <Text style={styles.usernameText}>
-          {post?.author?.profile?.displayName}
+          {post?.author?.profile?.displayName ??
+            t('circles.user-removed', '[User Removed]')}
         </Text>
         {isValid(created) && (
           <Text style={styles.responseTimeText}>
@@ -69,7 +75,7 @@ const defaultStyles = createStyles('Circles.ThreadComment', (theme) => ({
     paddingBottom: theme.spacing.extraSmall,
   },
   details: { flex: 1 },
-  avatar: {
+  avatarView: {
     marginRight: theme.spacing.extraSmall,
     width: theme.spacing.large,
     height: theme.spacing.large,
