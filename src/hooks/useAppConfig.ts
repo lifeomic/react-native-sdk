@@ -30,7 +30,7 @@ export interface AppConfig {
     appTiles?: AppTile[];
     circleTiles?: CircleTile[];
     tiles?: Tile[];
-    trackTileSettings?: { title: string };
+    trackTileSettings?: { title: string; advancedScreenTrackers: string[] };
     pillarSettings?: { advancedScreenTrackers: string[] };
     myDataSettings?: {
       components: {
