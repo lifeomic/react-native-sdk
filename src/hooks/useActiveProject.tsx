@@ -4,6 +4,7 @@ import React, {
   useState,
   useContext,
   useCallback,
+  useMemo,
 } from 'react';
 import { Subject, useMe } from './useMe';
 import { Project, useSubjectProjects } from './useSubjectProjects';
@@ -18,7 +19,7 @@ export type ActiveProjectProps = {
 };
 
 export type ActiveProjectContextProps = ActiveProjectProps & {
-  setActiveProjectId: (projectId: string) => Promise<void>;
+  setActiveProjectId: (projectId: string) => void;
   isLoading: boolean;
   isFetched: boolean;
   error?: any;
@@ -68,13 +69,10 @@ export const ActiveProjectContextProvider = ({
 
   const useMeResult = useMe();
   const useMeLoading = useMeResult.isLoading || !useMeResult.isFetched;
-  const [hookReturnValue, setHookReturnValue] = useState<ActiveProjectProps>(
-    {},
-  );
   const { data: userData } = useUser();
   const userId = userData?.id;
+  const [selectedId, setSelectedId] = useState<string>();
   const [previousUserId, setPreviousUserId] = useState(userId);
-  const [isFetched, setIsFetched] = useState<boolean>(false);
   const [storedProjectIdResult, setStoredProjectId] = useAsyncStorage(
     `${selectedProjectIdKey}:${userId}`,
   );
@@ -82,71 +80,71 @@ export const ActiveProjectContextProvider = ({
   /**
    * Initial setting of activeProject
    */
-  useEffect(() => {
+  const hookReturnValue = useMemo<ActiveProjectProps>(() => {
     if (
       !userId || // wait for user id before reading and writing to storage
-      hookReturnValue.activeProject?.id || // active project already set
       projectLoading || // wait for projects endpoint
       useMeLoading || // wait for subjects endpoint
-      (storedProjectIdResult.isLoading && !storedProjectIdResult.isError) // wait for async storage result or error
+      storedProjectIdResult.isLoading ||
+      storedProjectIdResult.isError // wait for async storage result or error
     ) {
-      return;
+      return {};
     }
 
     const { selectedProject, selectedSubject } = findProjectAndSubjectById(
-      storedProjectIdResult.data,
+      selectedId ?? storedProjectIdResult.data,
       projectsResult.data,
       useMeResult.data,
     );
 
     if (selectedProject && selectedSubject) {
-      setHookReturnValue({
+      return {
         activeProject: selectedProject,
         activeSubjectId: selectedSubject.subjectId,
-      });
-      setStoredProjectId(selectedProject.id);
+      };
     }
-    setIsFetched(true);
+
+    return {};
   }, [
     storedProjectIdResult.data,
     storedProjectIdResult.isLoading,
     storedProjectIdResult.isError,
     projectsResult.data,
     useMeResult.data,
-    hookReturnValue.activeProject?.id,
-    setStoredProjectId,
     projectLoading,
     useMeLoading,
     userId,
+    selectedId,
   ]);
+
+  useEffect(() => {
+    if (hookReturnValue?.activeProject?.id) {
+      setStoredProjectId(hookReturnValue?.activeProject?.id);
+    }
+  }, [hookReturnValue, setStoredProjectId]);
 
   // Clear selected project when
   // we've detected that the userId has changed
   useEffect(() => {
     if (userId !== previousUserId) {
-      setHookReturnValue({});
+      projectsResult.refetch();
       setPreviousUserId(userId);
     }
-  }, [previousUserId, userId]);
+  }, [previousUserId, userId, projectsResult]);
 
   const setActiveProjectId = useCallback(
-    async (projectId: string) => {
-      const { selectedProject, selectedSubject } = findProjectAndSubjectById(
+    (projectId: string) => {
+      const { selectedProject } = findProjectAndSubjectById(
         projectId,
         projectsResult.data,
         useMeResult.data,
       );
 
-      if (selectedProject && selectedSubject) {
-        setHookReturnValue({
-          activeProject: selectedProject,
-          activeSubjectId: selectedSubject.subjectId,
-        });
-        await setStoredProjectId(selectedProject.id);
+      if (selectedProject) {
+        setSelectedId(selectedProject.id);
       }
-      setIsFetched(true);
     },
-    [projectsResult.data, useMeResult.data, setStoredProjectId],
+    [projectsResult.data, useMeResult.data],
   );
 
   return (
@@ -154,11 +152,15 @@ export const ActiveProjectContextProvider = ({
       value={{
         ...hookReturnValue,
         setActiveProjectId,
-        isLoading: !!(projectsResult.isLoading || useMeResult.isLoading),
+        isLoading: !!(
+          projectsResult.isLoading ||
+          useMeResult.isLoading ||
+          storedProjectIdResult.isLoading
+        ),
         isFetched: !!(
           projectsResult.isFetched &&
           useMeResult.isFetched &&
-          isFetched
+          storedProjectIdResult.isFetched
         ),
         error: projectsResult.error || useMeResult.error,
       }}

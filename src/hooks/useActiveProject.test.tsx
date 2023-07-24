@@ -76,7 +76,10 @@ beforeEach(() => {
 
   useAsyncStorageSpy.mockReturnValue([
     {
-      ...mockDeep<UseQueryResult<string | null>>(),
+      ...mockDeep<UseQueryResult<string | null>>({
+        isLoading: false,
+        isFetched: true,
+      }),
     },
     (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
   ]);
@@ -102,6 +105,11 @@ test('exposes some props from useSubjectProjects and useMe', async () => {
   useSubjectProjectsMock.mockReturnValue({
     isLoading: true,
     isFetched: true,
+    error,
+  });
+  useMeMock.mockReturnValue({
+    isLoading: false,
+    isFetched: false,
     error,
   });
   const { result, rerender } = await renderHookInContext();
@@ -159,10 +167,11 @@ test('setActiveProjectId ignores invalid projectId', async () => {
   });
 
   useMeMock.mockReturnValue({
+    isFetched: true,
     data: [mockMe[0]], // NOTE: mockMe[1] not there - weird edge case
   });
   await rerender({});
-  await act(async () => {
+  act(() => {
     result.current.setActiveProjectId(mockSubjectProjects[1].id);
   });
   expect(result.current).toMatchObject({
