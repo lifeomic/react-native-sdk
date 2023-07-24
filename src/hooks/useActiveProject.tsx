@@ -121,7 +121,7 @@ export const ActiveProjectContextProvider = ({
     if (hookReturnValue?.activeProject?.id) {
       setStoredProjectId(hookReturnValue?.activeProject?.id);
     }
-  }, [hookReturnValue, setStoredProjectId]);
+  }, [hookReturnValue?.activeProject?.id, setStoredProjectId]);
 
   // Clear selected project when
   // we've detected that the userId has changed

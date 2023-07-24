@@ -108,7 +108,7 @@ export const ActiveAccountContextProvider = ({
     if (activeAccount?.account?.id) {
       setStoredAccountId(activeAccount.account.id);
     }
-  }, [activeAccount, setStoredAccountId]);
+  }, [activeAccount?.account?.id, setStoredAccountId]);
 
   // Clear selected account when
   // we've detected that the userId has changed
