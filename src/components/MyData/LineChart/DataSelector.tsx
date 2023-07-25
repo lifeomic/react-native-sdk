@@ -154,7 +154,7 @@ type TooltipProps = {
 const Tooltip = (props: TooltipProps) => {
   const { xDomain, dimensions, selection } = props;
   const { plotArea } = dimensions;
-  const { point1: p1, point2: p2 } = selection;
+  const { point1: p1, point2: p2, date } = selection;
   const { styles } = useStyles(defaultChartStyles);
   const lineStyles = styles.dataSelectionTooltip?.line;
 
@@ -175,9 +175,7 @@ const Tooltip = (props: TooltipProps) => {
     lowestPoint = highestPoint;
   }
 
-  let x =
-    plotArea.width *
-    calcPercentOfDomain(highestPoint && { ...p1, domain: xDomain }, 'x');
+  let x = plotArea.width * calcPercentOfDomain({ x: +date, domain: xDomain });
 
   if (xDomain[0] === xDomain[1]) {
     x = plotArea.width * 0.5;
@@ -196,7 +194,7 @@ const Tooltip = (props: TooltipProps) => {
 
 const calcPercentOfDomain = (
   data?: Partial<PointData> & { domain?: [number, number] },
-  dimension: 'x' | 'y' = 'y',
+  dimension: 'x' | 'y' = 'x',
 ) => {
   const { domain = [0, 1], [dimension]: value = 0 } = data ?? {};
   return (value - domain[0]) / (domain[1] - domain[0]);
