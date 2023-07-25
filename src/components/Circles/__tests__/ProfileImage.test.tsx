@@ -32,9 +32,7 @@ describe('ProfileImage', () => {
     );
 
     expect(pictureMock).toHaveBeenCalled();
-
-    // Called once by setting up the callback
-    expect(displayNameMock).toHaveBeenCalledTimes(1);
+    expect(displayNameMock).not.toHaveBeenCalled();
     expect(fallbackIconMock).not.toHaveBeenCalled();
   });
   it('renders initials on picture load error', async () => {
@@ -56,9 +54,7 @@ describe('ProfileImage', () => {
     );
     const image = await findByTestId('profile-image');
     fireEvent(image, 'error');
-    // Called twice by setting up the callback twice
-    // and once during the actual error scenario
-    expect(displayNameMock).toHaveBeenCalledTimes(3);
+    expect(displayNameMock).toHaveBeenCalled();
   });
   it('renders name (initials) if picture is not present', () => {
     const displayNameMock = jest.fn();

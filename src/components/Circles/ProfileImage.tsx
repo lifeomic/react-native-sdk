@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { ViewStyle } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { initials } from './initials';
@@ -18,34 +18,27 @@ type Props = {
 export const ProfileImage = ({ post, size, fallbackIcon, style }: Props) => {
   const { styles } = useStyles(defaultStyles);
   const [imageError, setImageError] = useState(false);
-  const profileInitials = useCallback(
-    () => (
-      <Avatar.Text
-        testID={tID('profile-image')}
-        size={size}
-        style={style}
-        label={initials(post?.author?.profile?.displayName)}
-      />
-    ),
-    [post?.author?.profile?.displayName, size, style],
-  );
-
-  if (post.author?.profile.picture) {
+  if (post.author?.profile.picture && !imageError) {
     return (
       <Avatar.Image
         testID={tID('profile-image')}
         size={size}
         style={style}
-        source={
-          imageError ? profileInitials : { uri: post.author.profile.picture }
-        }
+        source={{ uri: post.author.profile.picture }}
         onError={() => {
           setImageError(true);
         }}
       />
     );
   } else if (post.author?.profile.displayName) {
-    return profileInitials();
+    return (
+      <Avatar.Text
+        testID={tID('profile-image')}
+        size={size}
+        style={style}
+        label={initials(post?.author?.profile?.displayName)}
+      />
+    );
   } else {
     return (
       <Avatar.Icon
