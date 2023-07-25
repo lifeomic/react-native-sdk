@@ -9,7 +9,7 @@ import { ReactionsToolbar } from './ReactionsToolbar';
 import { t } from 'i18next';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { ShowPostMenuButton } from './ShowPostMenuButton';
-import { AvatarIcon } from './AvatarIcon';
+import { ProfileImage } from './ProfileImage';
 
 interface PostProps {
   post: Post;
@@ -28,7 +28,7 @@ export const PostItem = ({ post, onComment }: PostProps) => {
 
   const avatarIcon = useMemo(
     () => (
-      <AvatarIcon
+      <ProfileImage
         size={size}
         post={post}
         fallbackIcon={UserX}

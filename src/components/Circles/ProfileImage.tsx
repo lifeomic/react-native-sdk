@@ -1,4 +1,5 @@
-import React, { ViewStyle } from 'react-native';
+import React from 'react';
+import { ViewStyle } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { initials } from './initials';
 import type { Post } from '../../hooks/Circles/types';
@@ -11,7 +12,7 @@ type Props = {
   style?: ViewStyle;
 };
 
-export const AvatarIcon = ({ post, size, fallbackIcon, style }: Props) => {
+export const ProfileImage = ({ post, size, fallbackIcon, style }: Props) => {
   if (post.author?.profile.picture) {
     return (
       <Avatar.Image

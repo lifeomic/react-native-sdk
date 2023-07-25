@@ -7,7 +7,7 @@ import { Button } from 'react-native-paper';
 import { createStyles, useIcons } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
 import { ShowPostMenuButton } from './ShowPostMenuButton';
-import { AvatarIcon } from './AvatarIcon';
+import { ProfileImage } from './ProfileImage';
 
 type Props = { post: Post; style?: ThreadCommentStyles; onReply: () => void };
 
@@ -24,7 +24,7 @@ export const ThreadComment = ({ post, style, onReply }: Props) => {
 
   return (
     <View style={styles.container}>
-      <AvatarIcon
+      <ProfileImage
         size={size}
         style={styles.avatarView}
         fallbackIcon={(props) => {
