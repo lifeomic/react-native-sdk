@@ -19,7 +19,7 @@ interface PostProps {
 export const PostItem = ({ post, onComment }: PostProps) => {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
-  const { UserX } = useIcons();
+  const { User } = useIcons();
   const size =
     Math.min(
       Number(styles.avatarView?.width),
@@ -31,11 +31,11 @@ export const PostItem = ({ post, onComment }: PostProps) => {
       <ProfileImage
         size={size}
         post={post}
-        fallbackIcon={UserX}
+        fallbackIcon={User}
         style={styles.avatarView}
       />
     ),
-    [size, post, styles.avatarView, UserX],
+    [size, post, styles.avatarView, User],
   );
 
   const created = new Date(post?.createdAt!);
@@ -56,7 +56,7 @@ export const PostItem = ({ post, onComment }: PostProps) => {
       <List.Item
         title={
           post.author?.profile.displayName ??
-          t('circles.user-removed', '[User Removed]')
+          t('circles.user-unavailable', 'User Unavailable')
         }
         description={
           isValid(created) &&
@@ -68,6 +68,7 @@ export const PostItem = ({ post, onComment }: PostProps) => {
         style={styles.listItem}
         left={() => avatarIcon}
         right={() => showPostMenuButton}
+        titleStyle={styles.titleText}
       />
       <Text variant="titleMedium" style={styles.messageText}>
         {post.message}
@@ -121,6 +122,9 @@ const defaultStyles = createStyles('Post', (theme) => ({
   showPostMenuButton: {
     paddingLeft: theme.spacing.medium,
     marginTop: 0,
+  },
+  titleText: {
+    ...theme.fonts.titleMedium,
   },
 }));
 

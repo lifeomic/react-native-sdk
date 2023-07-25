@@ -14,7 +14,7 @@ type Props = { post: Post; style?: ThreadCommentStyles; onReply: () => void };
 export const ThreadComment = ({ post, style, onReply }: Props) => {
   const { styles } = useStyles(defaultStyles, style);
   const theme = useTheme();
-  const { UserX } = useIcons();
+  const { User } = useIcons();
   const created = new Date(post?.createdAt!);
   const size =
     Math.min(
@@ -28,14 +28,14 @@ export const ThreadComment = ({ post, style, onReply }: Props) => {
         size={size}
         style={styles.avatarView}
         fallbackIcon={(props) => {
-          return UserX({ ...props, height: 12 });
+          return User({ ...props, height: 12 });
         }}
         post={post}
       />
       <View style={styles.details}>
         <Text style={styles.usernameText}>
           {post?.author?.profile?.displayName ??
-            t('circles.user-removed', '[User Removed]')}
+            t('circles.user-unavailable', 'User Unavailable')}
         </Text>
         {isValid(created) && (
           <Text style={styles.responseTimeText}>
@@ -89,7 +89,9 @@ const defaultStyles = createStyles('Circles.ThreadComment', (theme) => ({
     flex: 1,
   },
   messageText: {},
-  usernameText: {},
+  usernameText: {
+    ...theme.fonts.titleSmall,
+  },
   responseTimeText: {},
   toolbarContainer: {
     flex: 1,
