@@ -1,6 +1,6 @@
 import React from 'react';
 import { ProfileImage } from '../ProfileImage';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 
 describe('ProfileImage', () => {
   it('renders picture first', () => {
@@ -13,7 +13,7 @@ describe('ProfileImage', () => {
         profile: {
           get picture() {
             pictureMock();
-            return 'someUri';
+            return 'someUrl';
           },
           get displayName() {
             displayNameMock();
@@ -32,8 +32,33 @@ describe('ProfileImage', () => {
     );
 
     expect(pictureMock).toHaveBeenCalled();
-    expect(displayNameMock).not.toHaveBeenCalled();
+
+    // Called once by setting up the callback
+    expect(displayNameMock).toHaveBeenCalledTimes(1);
     expect(fallbackIconMock).not.toHaveBeenCalled();
+  });
+  it('renders initials on picture load error', async () => {
+    const displayNameMock = jest.fn();
+    const post = {
+      author: {
+        profile: {
+          picture: 'some.invalid.url',
+          get displayName() {
+            displayNameMock();
+            return 'John Doe';
+          },
+        },
+      },
+    };
+
+    const { findByTestId } = render(
+      <ProfileImage post={post as any} size={24} fallbackIcon={jest.fn()} />,
+    );
+    const image = await findByTestId('profile-image');
+    fireEvent(image, 'error');
+    // Called twice by setting up the callback twice
+    // and once during the actual error scenario
+    expect(displayNameMock).toHaveBeenCalledTimes(3);
   });
   it('renders name (initials) if picture is not present', () => {
     const displayNameMock = jest.fn();
