@@ -22,7 +22,7 @@ export function useSubjectProjects() {
     async () => {
       if (subjects?.length) {
         const res = await httpClient.get<ProjectsResponse>(
-          `/v1/projects?id=${subjects?.map((s) => s.projectId).join(',')}`,
+          `/v1/projects?${subjects?.map((s) => `id=${s.projectId}`).join('&')}`,
           { headers: accountHeaders },
         );
         return res.data.items;

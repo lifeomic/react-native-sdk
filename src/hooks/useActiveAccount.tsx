@@ -4,6 +4,7 @@ import React, {
   useState,
   useContext,
   useCallback,
+  useMemo,
 } from 'react';
 import { Account, useAccounts } from './useAccounts';
 import { QueryObserverResult } from 'react-query';
@@ -61,10 +62,9 @@ export const ActiveAccountContextProvider = ({
 }) => {
   const accountsResult = useAccounts();
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
-  const [isSettled, setIsSettled] = useState(false);
-  const [activeAccount, setActiveAccount] = useState<ActiveAccountProps>({});
   const { data: userData } = useUser();
   const userId = userData?.id;
+  const [selectedId, setSelectedId] = useState(accountIdToSelect);
   const [previousUserId, setPreviousUserId] = useState(userId);
   const [storedAccountIdResult, setStoredAccountId] = useAsyncStorage(
     `${selectedAccountIdKey}:${userId}`,
@@ -73,60 +73,51 @@ export const ActiveAccountContextProvider = ({
   /**
    * Initial setting of activeAccount
    */
-  useEffect(() => {
-    if (
-      accountsResult.isFetched &&
-      !accountsResult.isLoading &&
-      accountsWithProduct.length < 1
-    ) {
-      setIsSettled(true);
-    }
-
+  const activeAccount = useMemo<ActiveAccountProps>(() => {
     if (
       !userId || // require user id before reading/writing to storage
       storedAccountIdResult.isLoading || // wait for async storage result
-      activeAccount?.account?.id || // activeAccount already set
       accountsWithProduct.length < 1 // no valid accounts found server side
     ) {
-      return;
+      return {};
     }
 
     const accountToSelect =
-      accountIdToSelect ?? storedAccountIdResult.data ?? undefined;
+      selectedId ?? storedAccountIdResult.data ?? undefined;
 
     const selectedAccount =
       getValidAccount(accountsWithProduct, accountToSelect) ??
       accountsWithProduct[0];
 
-    setActiveAccount({
+    return {
       account: selectedAccount,
       accountHeaders: {
         'LifeOmic-Account': selectedAccount.id,
       },
       trialExpired: getTrialExpired(selectedAccount),
-    });
-    setStoredAccountId(selectedAccount.id);
-    setIsSettled(true);
+    };
   }, [
     accountsWithProduct,
-    activeAccount?.account?.id,
-    accountIdToSelect,
-    setStoredAccountId,
+    selectedId,
     storedAccountIdResult.data,
     storedAccountIdResult.isLoading,
-    accountsResult.isFetched,
-    accountsResult.isLoading,
     userId,
   ]);
+
+  useEffect(() => {
+    if (activeAccount?.account?.id) {
+      setStoredAccountId(activeAccount.account.id);
+    }
+  }, [activeAccount?.account?.id, setStoredAccountId]);
 
   // Clear selected account when
   // we've detected that the userId has changed
   useEffect(() => {
     if (userId !== previousUserId) {
-      setActiveAccount({});
+      accountsResult.refetch();
       setPreviousUserId(userId);
     }
-  }, [previousUserId, userId]);
+  }, [previousUserId, userId, accountsResult]);
 
   const setActiveAccountId = useCallback(
     async (accountId: string) => {
@@ -142,21 +133,14 @@ export const ActiveAccountContextProvider = ({
           return;
         }
 
-        setActiveAccount({
-          account: selectedAccount,
-          accountHeaders: {
-            'LifeOmic-Account': selectedAccount.id,
-          },
-          trialExpired: getTrialExpired(selectedAccount),
-        });
-        await setStoredAccountId(selectedAccount.id);
+        setSelectedId(selectedAccount.id);
       } catch (error) {
         if (process.env.NODE_ENV !== 'test') {
           console.warn('Unable to set active account', error);
         }
       }
     },
-    [accountsWithProduct, setStoredAccountId],
+    [accountsWithProduct],
   );
 
   const refetch = useCallback(async () => {
@@ -183,8 +167,8 @@ export const ActiveAccountContextProvider = ({
         accountsWithProduct,
         refetch,
         setActiveAccountId,
-        isLoading: accountsResult.isLoading || !isSettled,
-        isFetched: accountsResult.isFetched,
+        isLoading: accountsResult.isLoading || storedAccountIdResult.isLoading,
+        isFetched: accountsResult.isFetched && storedAccountIdResult.isFetched,
         error: accountsResult.error,
       }}
     >
