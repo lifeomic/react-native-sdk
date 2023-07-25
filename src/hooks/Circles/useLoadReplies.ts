@@ -6,6 +6,7 @@ import { useGraphQLClient } from '../useGraphQLClient';
 import { Post, postDetailsFragment } from './types';
 import { PostRepliesQueryResponse } from './useInfinitePosts';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
+import { useActiveCircleTile } from './useActiveCircleTile';
 
 export const useLoadReplies = () => {
   const { graphQLClient } = useGraphQLClient();
@@ -15,6 +16,7 @@ export const useLoadReplies = () => {
     after: undefined as string | undefined,
     id: '',
   });
+  const { circleTile } = useActiveCircleTile();
 
   const queryForPostReplies = useCallback(async () => {
     if (!queryVariables?.id) {
@@ -27,7 +29,12 @@ export const useLoadReplies = () => {
   }, [accountHeaders, graphQLClient, queryVariables]);
 
   const repliesRes = useQuery(
-    ['loadReplies', queryVariables.id, queryVariables.after],
+    [
+      'loadReplies',
+      circleTile?.circleId,
+      queryVariables.id,
+      queryVariables.after,
+    ],
     queryForPostReplies,
     {
       enabled: isFetched && !!accountHeaders && !!queryVariables.id,
@@ -39,6 +46,7 @@ export const useLoadReplies = () => {
         optimisticallyUpdatePosts({
           queryClient,
           id: queryVariables.id,
+          circleId: circleTile?.circleId,
           transformFn: (post) => {
             post.replies = post.replies ?? { edges: [] };
             post.replies.edges.push(...data.post.replies.edges);

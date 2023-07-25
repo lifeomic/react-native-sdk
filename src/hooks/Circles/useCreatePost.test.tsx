@@ -7,6 +7,14 @@ import nock from 'nock';
 import { Post, ParentType } from './types';
 import { useCreatePost } from './useCreatePost';
 
+jest.mock('./useActiveCircleTile', () => ({
+  useActiveCircleTile: jest.fn().mockImplementation(() => ({
+    circleTile: {
+      circleId: 'someCircleId',
+    },
+  })),
+}));
+
 jest.mock('../useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));
@@ -66,7 +74,7 @@ describe('useCreatePost', () => {
       }
     } as any;
 
-    queryClient.setQueryData('posts', getDataWithPosts([]));
+    queryClient.setQueryData(['posts', 'someCircleId'], getDataWithPosts([]));
     const scope = nock(`${baseURL}/v1/graphql`)
       .post('')
       .times(2)
@@ -114,7 +122,7 @@ describe('useCreatePost', () => {
       expect(onSuccessMock).toBeCalled();
     });
 
-    expect(queryClient.getQueryData('posts')).toEqual(
+    expect(queryClient.getQueryData(['posts', 'someCircleId'])).toEqual(
       getDataWithPosts([{ node: expectedPost }]),
     );
 
@@ -157,7 +165,7 @@ describe('useCreatePost', () => {
     expectedPost.replies.edges.push({
       node: expectedCommentPost,
     });
-    expect(queryClient.getQueryData('posts')).toEqual(
+    expect(queryClient.getQueryData(['posts', 'someCircleId'])).toEqual(
       getDataWithPosts([{ node: expectedPost }]),
     );
     global.Date = RealDate;

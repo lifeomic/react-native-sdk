@@ -18,6 +18,14 @@ const queryClient = new QueryClient({
 
 const baseURL = 'https://some-domain/unit-test';
 
+jest.mock('./useActiveCircleTile', () => ({
+  useActiveCircleTile: jest.fn().mockImplementation(() => ({
+    circleTile: {
+      circleId: 'someCircleId',
+    },
+  })),
+}));
+
 const renderCreateReactionHook = async () => {
   return renderHook(() => useCreateReactionMutation(), {
     wrapper: ({ children }) => (
@@ -75,7 +83,7 @@ const getDataWithCount = ({
 
 test('useCreateReaction mutation', async () => {
   queryClient.setQueryData(
-    'posts',
+    ['posts', 'someCircleId'],
     getDataWithCount({ count: 0, userHasReacted: false }),
   );
 
@@ -100,7 +108,7 @@ test('useCreateReaction mutation', async () => {
     expect(onSuccessMock).toBeCalled();
   });
 
-  expect(queryClient.getQueryData('posts')).toEqual(
+  expect(queryClient.getQueryData(['posts', 'someCircleId'])).toEqual(
     getDataWithCount({ count: 1, userHasReacted: true }),
   );
 });
@@ -144,7 +152,7 @@ test('useCreateReaction mutation updates postDetails', async () => {
 
 test('useUndoReaction mutation', async () => {
   queryClient.setQueryData(
-    'posts',
+    ['posts', 'someCircleId'],
     getDataWithCount({ count: 1, userHasReacted: true }),
   );
 
@@ -169,7 +177,7 @@ test('useUndoReaction mutation', async () => {
     expect(onSuccessMock).toBeCalled();
   });
 
-  expect(queryClient.getQueryData('posts')).toEqual(
+  expect(queryClient.getQueryData(['posts', 'someCircleId'])).toEqual(
     getDataWithCount({ count: 0, userHasReacted: false }),
   );
 });

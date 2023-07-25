@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { Divider, FAB, Text } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
-import { CircleTile } from '../../hooks/useAppConfig';
 import { Post, useInfinitePosts, ParentType } from '../../hooks';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { createStyles } from '../BrandConfigProvider/styles/createStyles';
@@ -19,13 +18,14 @@ import { tID } from '../../common';
 import { showCreateEditPostModal } from './CreateEditPostModal';
 import { ThreadComment } from './ThreadComment';
 import { useIcons } from '../BrandConfigProvider';
+import { useActiveCircleTile } from '../../hooks/Circles/useActiveCircleTile';
 
 interface PostsListProps {
-  circleTile?: CircleTile;
   onOpenPost: (post: Post, openComment: boolean) => void;
 }
 
-export const PostsList = ({ circleTile, onOpenPost }: PostsListProps) => {
+export const PostsList = ({ onOpenPost }: PostsListProps) => {
+  const { circleTile } = useActiveCircleTile();
   const { Edit2 } = useIcons();
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useInfinitePosts({

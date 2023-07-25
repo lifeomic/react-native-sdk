@@ -2,16 +2,21 @@ import React, { useCallback, useLayoutEffect } from 'react';
 import { PostsList } from '../components/Circles/PostsList';
 import { HomeStackScreenProps } from '../navigators/types';
 import { Post } from '../hooks';
+import { useActiveCircleTile } from '../hooks/Circles/useActiveCircleTile';
 
 export const CircleDiscussionScreen = ({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/Circle/Discussion'>) => {
+  const { setCircleTile } = useActiveCircleTile();
+  const { circleTile } = route.params;
+
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: route.params.circleTile.circleName,
+      title: circleTile?.circleName,
     });
-  }, [navigation, route.params.circleTile.circleName]);
+    setCircleTile?.(circleTile);
+  }, [navigation, circleTile, setCircleTile]);
 
   const openPost = useCallback(
     (post: Post, createNewComment: boolean) => {
@@ -20,7 +25,5 @@ export const CircleDiscussionScreen = ({
     [navigation],
   );
 
-  return (
-    <PostsList circleTile={route.params.circleTile} onOpenPost={openPost} />
-  );
+  return <PostsList onOpenPost={openPost} />;
 };
