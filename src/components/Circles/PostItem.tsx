@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-import { Avatar, Button, List, Text } from 'react-native-paper';
+import { Button, List, Text } from 'react-native-paper';
 import { formatDistanceToNow, isValid } from 'date-fns';
 import { useStyles, useTheme } from '../../hooks';
 import { ParentType, Post, Priority } from '../../hooks';
-import { createStyles } from '../BrandConfigProvider';
+import { createStyles, useIcons } from '../BrandConfigProvider';
 import { ReactionsToolbar } from './ReactionsToolbar';
-import { initials } from './initials';
 import { t } from 'i18next';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { ShowPostMenuButton } from './ShowPostMenuButton';
+import { ProfileImage } from './ProfileImage';
 
 interface PostProps {
   post: Post;
@@ -19,30 +19,23 @@ interface PostProps {
 export const PostItem = ({ post, onComment }: PostProps) => {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
+  const { User } = useIcons();
   const size =
-    Math.min(Number(styles.avatar?.width), Number(styles.avatar?.height)) ||
-    theme.spacing.large;
+    Math.min(
+      Number(styles.avatarView?.width),
+      Number(styles.avatarView?.height),
+    ) || theme.spacing.large;
+
   const avatarIcon = useMemo(
-    () =>
-      post.author?.profile.picture ? (
-        <Avatar.Image
-          size={size}
-          style={styles.avatar}
-          source={{ uri: post.author?.profile.picture }}
-        />
-      ) : (
-        <Avatar.Text
-          size={size}
-          style={styles.avatar}
-          label={initials(post?.author?.profile?.displayName)}
-        />
-      ),
-    [
-      post.author?.profile?.displayName,
-      post.author?.profile.picture,
-      size,
-      styles.avatar,
-    ],
+    () => (
+      <ProfileImage
+        size={size}
+        post={post}
+        fallbackIcon={User}
+        style={styles.avatarView}
+      />
+    ),
+    [size, post, styles.avatarView, User],
   );
 
   const created = new Date(post?.createdAt!);
@@ -61,7 +54,10 @@ export const PostItem = ({ post, onComment }: PostProps) => {
     <View style={styles.container}>
       {post.priority === Priority.ANNOUNCEMENT && <AnnouncementBanner />}
       <List.Item
-        title={post.author?.profile.displayName}
+        title={
+          post.author?.profile.displayName ??
+          t('circles.user-unavailable', 'User Unavailable')
+        }
         description={
           isValid(created) &&
           t('circles.thread-post.responseTime', '{{responseTime}} ago', {
@@ -72,6 +68,7 @@ export const PostItem = ({ post, onComment }: PostProps) => {
         style={styles.listItem}
         left={() => avatarIcon}
         right={() => showPostMenuButton}
+        titleStyle={styles.titleText}
       />
       <Text variant="titleMedium" style={styles.messageText}>
         {post.message}
@@ -98,7 +95,7 @@ export const PostItem = ({ post, onComment }: PostProps) => {
 const defaultStyles = createStyles('Post', (theme) => ({
   container: {},
   listItem: { paddingLeft: theme.spacing.small },
-  avatar: {
+  avatarView: {
     marginRight: theme.spacing.extraSmall,
     width: theme.spacing.huge,
     height: theme.spacing.huge,
@@ -125,6 +122,9 @@ const defaultStyles = createStyles('Post', (theme) => ({
   showPostMenuButton: {
     paddingLeft: theme.spacing.medium,
     marginTop: 0,
+  },
+  titleText: {
+    ...theme.fonts.titleMedium,
   },
 }));
 
