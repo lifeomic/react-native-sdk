@@ -173,16 +173,25 @@ export const useHandleAppTileEvents = (webView: WebView | null = null) => {
   };
 
   const handleAppTileMessage = (event: WebViewMessageEvent) => {
-    const appTileMessage: AppTileMessage = JSON.parse(event.nativeEvent.data);
-    switch (appTileMessage.type) {
-      case AppTileMessageType.deepLink:
-        handleDeepLinkMessage(appTileMessage);
-        break;
-      case AppTileMessageType.openUrl:
-        handleOpenUrlMessage(appTileMessage);
-        break;
+    const eventData = event.nativeEvent.data;
+    if (!eventData) {
+      return;
+    }
 
-      // no default
+    try {
+      const appTileMessage: AppTileMessage = JSON.parse(eventData);
+      switch (appTileMessage.type) {
+        case AppTileMessageType.deepLink:
+          handleDeepLinkMessage(appTileMessage);
+          break;
+        case AppTileMessageType.openUrl:
+          handleOpenUrlMessage(appTileMessage);
+          break;
+
+        // no default
+      }
+    } catch (error) {
+      console.warn('Error parsing app tile message', { eventData, error });
     }
   };
 
