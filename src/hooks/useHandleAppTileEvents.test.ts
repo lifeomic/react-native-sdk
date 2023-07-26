@@ -416,4 +416,22 @@ describe('handleAppTileNavigationStateChange', () => {
 
     expect(preventDefault).not.toHaveBeenCalled();
   });
+
+  it('should handle events with undefined data', () => {
+    const { result } = renderHook(() => useHandleAppTileEvents());
+    const event = {
+      nativeEvent: {
+        data: undefined,
+        canGoBack: true,
+        canGoForward: false,
+        loading: false,
+        title: 'event',
+        url: 'event.com',
+        lockIdentifier: 1234442,
+      },
+    };
+    expect(() =>
+      result.current.handleAppTileMessage(event as any),
+    ).not.toThrowError();
+  });
 });
