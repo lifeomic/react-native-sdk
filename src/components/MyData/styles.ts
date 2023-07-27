@@ -66,4 +66,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultChartStyles> {}
 }
 
-export type LogoHeaderStyles = NamedStylesProp<typeof defaultChartStyles>;
+export type MyDataStyles = NamedStylesProp<typeof defaultChartStyles>;

@@ -69,6 +69,9 @@ export function AppNavHeader({
         title={<Title text={title} style={titleStyles} />}
         style={[styles.contentView, back && styles.contentViewWithBackButton]}
       />
+      {options.headerRight?.({
+        canGoBack: !!back,
+      })}
     </Appbar.Header>
   );
 }
