@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery } from 'react-query';
 
@@ -6,10 +7,16 @@ export function useAsyncStorage(key: string) {
     AsyncStorage.getItem(key),
   );
 
-  const setItem = (value: string) =>
-    AsyncStorage.setItem(key, value).catch((error) =>
-      console.error(`[LifeOmicSDK]:${error}`),
-    );
+  const setItem = useCallback(
+    (value: string) => {
+      if (value !== itemResult.data) {
+        AsyncStorage.setItem(key, value).catch((error) =>
+          console.error(`[LifeOmicSDK]:${error}`),
+        );
+      }
+    },
+    [key, itemResult.data],
+  );
 
   return [itemResult, setItem] as [typeof itemResult, typeof setItem];
 }
