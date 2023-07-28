@@ -9,7 +9,6 @@ import {
   Platform,
   StyleProp,
   TextStyle,
-  View,
   ViewStyle,
 } from 'react-native';
 import { useDeveloperConfig, useTheme } from '../hooks';
@@ -25,12 +24,9 @@ export function AppNavHeader({
   const { ChevronLeft } = useIcons();
   const { headerTitle } = options;
   const { headerString, headerFunction } =
-    typeof headerTitle === 'string'
-      ? { headerString: headerTitle, headerFunction: undefined }
-      : typeof headerTitle === 'function'
-      ? { headerFunction: headerTitle, headerString: undefined }
-      : { headerFunction: undefined, headerString: undefined };
-
+    typeof headerTitle === 'function'
+      ? { headerString: undefined, headerFunction: headerTitle }
+      : { headerString: headerTitle, headerFunction: undefined };
   const title = options.title || headerString || route.name;
   const config = useDeveloperConfig();
   const headerStyles = useColorMapping(
@@ -70,43 +66,31 @@ export function AppNavHeader({
 
   return (
     <Appbar.Header statusBarHeight={statusBarHeight} style={headerStyles}>
-      {back ? (
-        <Appbar.Action
-          icon={ChevronLeft}
-          color={styles.backActionIcon?.color}
-          onPress={backNavigationHandler}
-          style={styles.backAction}
-        />
-      ) : null}
-      {options.headerLeft && (
-        <View>
-          {options?.headerLeft?.({
-            tintColor: options.headerTintColor,
-            canGoBack: !!back,
-          })}
-        </View>
-      )}
+      {options.headerLeft?.({
+        tintColor: options.headerTintColor,
+        canGoBack: !!back,
+      }) ??
+        (back && (
+          <Appbar.Action
+            icon={ChevronLeft}
+            color={styles.backActionIcon?.color}
+            onPress={backNavigationHandler}
+            style={styles.backAction}
+          />
+        ))}
       <Appbar.Content
         title={
-          headerFunction ? (
-            headerFunction({
-              children: title,
-              tintColor: options.headerTintColor,
-            })
-          ) : (
-            <Title text={title} style={titleStyles} />
-          )
+          headerFunction?.({
+            children: title,
+            tintColor: options.headerTintColor,
+          }) ?? <Title text={title} style={titleStyles} />
         }
         style={[styles.contentView, back && styles.contentViewWithBackButton]}
       />
-      {options.headerRight && (
-        <View>
-          {options?.headerRight?.({
-            tintColor: options.headerTintColor,
-            canGoBack: !!back,
-          })}
-        </View>
-      )}
+      {options?.headerRight?.({
+        tintColor: options.headerTintColor,
+        canGoBack: !!back,
+      })}
     </Appbar.Header>
   );
 }
