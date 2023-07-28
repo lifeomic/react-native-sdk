@@ -9,6 +9,7 @@ import {
   Platform,
   StyleProp,
   TextStyle,
+  View,
   ViewStyle,
 } from 'react-native';
 import { useDeveloperConfig, useTheme } from '../hooks';
@@ -22,7 +23,15 @@ export function AppNavHeader({
 }: NativeStackHeaderProps) {
   const { styles } = useStyles(defaultStyles);
   const { ChevronLeft } = useIcons();
-  const title = options.title || route.name;
+  const { headerTitle } = options;
+  const { headerString, headerFunction } =
+    typeof headerTitle === 'string'
+      ? { headerString: headerTitle, headerFunction: undefined }
+      : typeof headerTitle === 'function'
+      ? { headerFunction: headerTitle, headerString: undefined }
+      : { headerFunction: undefined, headerString: undefined };
+
+  const title = options.title || headerString || route.name;
   const config = useDeveloperConfig();
   const headerStyles = useColorMapping(
     'backgroundColor',
@@ -55,6 +64,10 @@ export function AppNavHeader({
     return () => handler.remove();
   }, [backNavigationHandler]);
 
+  if (options.headerShown === false) {
+    return null;
+  }
+
   return (
     <Appbar.Header statusBarHeight={statusBarHeight} style={headerStyles}>
       {back ? (
@@ -65,13 +78,35 @@ export function AppNavHeader({
           style={styles.backAction}
         />
       ) : null}
+      {options.headerLeft && (
+        <View>
+          {options?.headerLeft?.({
+            tintColor: options.headerTintColor,
+            canGoBack: !!back,
+          })}
+        </View>
+      )}
       <Appbar.Content
-        title={<Title text={title} style={titleStyles} />}
+        title={
+          headerFunction ? (
+            headerFunction({
+              children: title,
+              tintColor: options.headerTintColor,
+            })
+          ) : (
+            <Title text={title} style={titleStyles} />
+          )
+        }
         style={[styles.contentView, back && styles.contentViewWithBackButton]}
       />
-      {options.headerRight?.({
-        canGoBack: !!back,
-      })}
+      {options.headerRight && (
+        <View>
+          {options?.headerRight?.({
+            tintColor: options.headerTintColor,
+            canGoBack: !!back,
+          })}
+        </View>
+      )}
     </Appbar.Header>
   );
 }
