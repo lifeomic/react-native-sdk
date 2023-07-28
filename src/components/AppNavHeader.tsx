@@ -22,7 +22,12 @@ export function AppNavHeader({
 }: NativeStackHeaderProps) {
   const { styles } = useStyles(defaultStyles);
   const { ChevronLeft } = useIcons();
-  const title = options.title || route.name;
+  const { headerTitle } = options;
+  const { headerString, headerFunction } =
+    typeof headerTitle === 'function'
+      ? { headerString: undefined, headerFunction: headerTitle }
+      : { headerString: headerTitle, headerFunction: undefined };
+  const title = options.title || headerString || route.name;
   const config = useDeveloperConfig();
   const headerStyles = useColorMapping(
     'backgroundColor',
@@ -55,21 +60,35 @@ export function AppNavHeader({
     return () => handler.remove();
   }, [backNavigationHandler]);
 
+  if (options.headerShown === false) {
+    return null;
+  }
+
   return (
     <Appbar.Header statusBarHeight={statusBarHeight} style={headerStyles}>
-      {back ? (
-        <Appbar.Action
-          icon={ChevronLeft}
-          color={styles.backActionIcon?.color}
-          onPress={backNavigationHandler}
-          style={styles.backAction}
-        />
-      ) : null}
+      {options.headerLeft?.({
+        tintColor: options.headerTintColor,
+        canGoBack: !!back,
+      }) ??
+        (back && (
+          <Appbar.Action
+            icon={ChevronLeft}
+            color={styles.backActionIcon?.color}
+            onPress={backNavigationHandler}
+            style={styles.backAction}
+          />
+        ))}
       <Appbar.Content
-        title={<Title text={title} style={titleStyles} />}
+        title={
+          headerFunction?.({
+            children: title,
+            tintColor: options.headerTintColor,
+          }) ?? <Title text={title} style={titleStyles} />
+        }
         style={[styles.contentView, back && styles.contentViewWithBackButton]}
       />
-      {options.headerRight?.({
+      {options?.headerRight?.({
+        tintColor: options.headerTintColor,
         canGoBack: !!back,
       })}
     </Appbar.Header>
