@@ -20,7 +20,7 @@ const renderHookInContext = async (key: string) => {
 };
 
 describe('useAsyncStorage', () => {
-  test('configured appTiles are returned', async () => {
+  test('can fetch and update the stored value', async () => {
     queryClient.setQueryData(['async-storage-get', 'key'], () => 'test');
 
     const { result } = await renderHookInContext('key');
