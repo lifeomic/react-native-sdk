@@ -92,6 +92,94 @@ export const useAxiosTrackTileService = (): TrackTileService => {
     return cache.trackerValues[valuesContextKey];
   };
 
+  const hasCodeInOntology = (
+    relationship: CodedRelationship,
+    code: string,
+  ): boolean => {
+    return relationship.specializedBy.some(
+      (r) => r.code === code || hasCodeInOntology(r, code),
+    );
+  };
+
+  const extractMetricCoding = (
+    codings: Observation['node']['code']['coding'],
+  ) => {
+    // If the record has a tracker system, short-circuit this lookup.
+    const trackerCoding = codings.find(
+      ({ system }) =>
+        system === TRACKER_CODE_SYSTEM || system === TRACKER_PILLAR_CODE_SYSTEM,
+    );
+    if (trackerCoding) {
+      return trackerCoding;
+    }
+
+    const relationshipGroups = Object.values(cache.ontologies);
+    for (const coding of codings) {
+      for (const relationships of relationshipGroups) {
+        const trackerMatch = relationships.find((r) => {
+          return hasCodeInOntology(r, coding.code);
+        });
+        if (trackerMatch) {
+          return trackerMatch;
+        }
+      }
+    }
+  };
+
+  const extractMetricId = (codes: Observation['node']['code']['coding']) =>
+    extractMetricCoding(codes)?.code;
+
+  const extractTrackerValues = (data: FetchTrackerResponse) => {
+    const patient = data.data.patient;
+    const observations = patient?.observationsConnection?.edges ?? [];
+    const procedures = patient?.proceduresConnection?.edges ?? [];
+
+    const trackerValues: TrackerValues = {};
+
+    observations.forEach(({ node: observation }) => {
+      const observationDateKey = toDateKey(observation.effectiveDateTime);
+
+      trackerValues[observationDateKey] =
+        trackerValues[observationDateKey] ?? {};
+
+      const metricId = extractMetricId(observation.code.coding);
+
+      if (metricId) {
+        trackerValues[observationDateKey][metricId] =
+          trackerValues[observationDateKey][metricId] ?? [];
+
+        trackerValues[observationDateKey][metricId].push({
+          id: observation.id,
+          createdDate: new Date(observation.effectiveDateTime),
+          value: observation.valueQuantity.value,
+          code: observation.code,
+        });
+      }
+    });
+
+    procedures.forEach(({ node: procedure }) => {
+      const procedureDateKey = toDateKey(procedure.performedPeriod.end);
+
+      trackerValues[procedureDateKey] = trackerValues[procedureDateKey] ?? {};
+
+      const metricId = extractMetricId(procedure.code.coding);
+
+      if (metricId) {
+        trackerValues[procedureDateKey][metricId] =
+          trackerValues[procedureDateKey][metricId] ?? [];
+
+        trackerValues[procedureDateKey][metricId].push({
+          id: procedure.id,
+          createdDate: new Date(procedure.performedPeriod.end),
+          value: performedPeriodToTimeInSeconds(procedure.performedPeriod),
+          code: procedure.code,
+        });
+      }
+    });
+
+    return trackerValues;
+  };
+
   return {
     accountId,
     projectId,
@@ -334,67 +422,6 @@ export const useAxiosTrackTileService = (): TrackTileService => {
     },
   };
 };
-
-export const extractTrackerValues = (data: FetchTrackerResponse) => {
-  const patient = data.data.patient;
-  const observations = patient?.observationsConnection?.edges ?? [];
-  const procedures = patient?.proceduresConnection?.edges ?? [];
-
-  const trackerValues: TrackerValues = {};
-
-  observations.forEach(({ node: observation }) => {
-    const observationDateKey = toDateKey(observation.effectiveDateTime);
-
-    trackerValues[observationDateKey] = trackerValues[observationDateKey] ?? {};
-
-    const metricId = extractMetricId(observation.code.coding);
-
-    if (metricId) {
-      trackerValues[observationDateKey][metricId] =
-        trackerValues[observationDateKey][metricId] ?? [];
-
-      trackerValues[observationDateKey][metricId].push({
-        id: observation.id,
-        createdDate: new Date(observation.effectiveDateTime),
-        value: observation.valueQuantity.value,
-        code: observation.code,
-      });
-    }
-  });
-
-  procedures.forEach(({ node: procedure }) => {
-    const procedureDateKey = toDateKey(procedure.performedPeriod.end);
-
-    trackerValues[procedureDateKey] = trackerValues[procedureDateKey] ?? {};
-
-    const metricId = extractMetricId(procedure.code.coding);
-
-    if (metricId) {
-      trackerValues[procedureDateKey][metricId] =
-        trackerValues[procedureDateKey][metricId] ?? [];
-
-      trackerValues[procedureDateKey][metricId].push({
-        id: procedure.id,
-        createdDate: new Date(procedure.performedPeriod.end),
-        value: performedPeriodToTimeInSeconds(procedure.performedPeriod),
-        code: procedure.code,
-      });
-    }
-  });
-
-  return trackerValues;
-};
-
-export const extractMetricId = (codes: Observation['node']['code']['coding']) =>
-  extractMetricCoding(codes)?.code;
-
-export const extractMetricCoding = (
-  codes: Observation['node']['code']['coding'],
-) =>
-  codes.find(
-    ({ system }) =>
-      system === TRACKER_CODE_SYSTEM || system === TRACKER_PILLAR_CODE_SYSTEM,
-  );
 
 const toDateKeys = (dates: Date[]) => dates.map(toDateKey);
 export const toDateKey = (date: string | Date) =>

@@ -27,17 +27,20 @@ export type PillarsTileProps = {
   ) => void;
   background?: ReactNode;
   styles?: PillarsTileStyles;
+  shouldUseOntology?: boolean;
 };
 
 export const PillarsTile = ({
   onOpenDetails,
   onSaveNewValueOverride,
   styles: instanceStyles,
+  shouldUseOntology,
 }: PillarsTileProps) => {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const valuesContext: TrackerValuesContext = {
     system: TRACKER_PILLAR_CODE_SYSTEM,
     codeBelow: TRACKER_PILLAR_CODE,
+    shouldUseOntology,
   };
 
   const { pillarTrackers, loading: trackersLoading } = useTrackers();

@@ -125,6 +125,7 @@ export type CodedRelationship = Code & {
 export type TrackerValuesContext = {
   system: string;
   codeBelow: string;
+  shouldUseOntology?: boolean;
 };
 
 export const TRACK_TILE_CAPABILITIES_VERSION = 2;
