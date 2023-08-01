@@ -11,6 +11,9 @@ RCT_EXPORT_MODULE(RNTLaunchScreen)
 {
   UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"LaunchScreen" bundle:nil];
   UIViewController *controller = [storyboard instantiateInitialViewController];
+
+  [controller.view setAutoresizingMask:UIViewAutoresizingFlexibleWidth &
+                                       UIViewAutoresizingFlexibleHeight];
   
   return controller.view;
 }
