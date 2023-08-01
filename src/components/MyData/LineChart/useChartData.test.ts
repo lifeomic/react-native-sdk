@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-native';
-import { startOfDay } from 'date-fns';
+import { startOfDay, addDays } from 'date-fns';
 import { useFhirClient } from '../../../hooks';
 import { useChartData } from './useChartData';
 import { Trace } from './TraceLine';
@@ -58,6 +58,7 @@ describe('useChartData', () => {
       resourceType: 'Observation',
       coding: [{ code: 'code', system: 'system' }],
       dateRange: [new Date(0), new Date(0)],
+      pageSize: 10,
     });
     expect(useSearchResourcesQuery).toHaveBeenNthCalledWith(
       2,
@@ -142,6 +143,7 @@ describe('useChartData', () => {
         resourceType: 'Observation',
         coding: [{ code: 'code2', system: 'system2' }],
         dateRange: [new Date(0), new Date(0)],
+        pageSize: 10,
       }),
     );
 
@@ -165,5 +167,37 @@ describe('useChartData', () => {
         trace: trace2,
       },
     ]);
+  });
+
+  it('should fetch the data with a pageSize based on the dateRange', () => {
+    useSearchResourcesQuery
+      .mockReturnValueOnce({ data: { entry: [] } })
+      .mockReturnValueOnce({ data: undefined });
+
+    const trace1: Trace = {
+      label: 'Label',
+      type: 'Observation',
+      coding: [
+        { code: 'code', system: 'system' },
+        { code: 'code2', system: 'system' },
+      ],
+    };
+
+    renderHook(() =>
+      useChartData({
+        dateRange: [new Date(0), addDays(new Date(0), 16)],
+        trace1,
+      }),
+    );
+
+    expect(useSearchResourcesQuery).toHaveBeenNthCalledWith(1, {
+      resourceType: 'Observation',
+      coding: [
+        { code: 'code', system: 'system' },
+        { code: 'code2', system: 'system' },
+      ],
+      dateRange: [new Date(0), addDays(new Date(0), 16)],
+      pageSize: 32, // 16 days * 2 codes
+    });
   });
 });
