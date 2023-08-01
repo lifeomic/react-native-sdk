@@ -6,6 +6,7 @@ import {
   useActiveProject,
   useAuth,
   useConsent,
+  useOnboardingCourse,
   usePendingInvite,
 } from '../hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -16,6 +17,7 @@ import { LoggedInRootParamList, NotLoggedInRootParamList } from './types';
 import { ConsentScreen } from '../screens/ConsentScreen';
 import { CircleThreadScreen } from '../screens/CircleThreadScreen';
 import { InviteRequiredScreen } from '../screens/InviteRequiredScreen';
+import { OnboardingCourseScreen } from '../screens/OnboardingCourseScreen';
 
 export function RootStack() {
   const { isLoggedIn, loading: loadingAuth } = useAuth();
@@ -34,12 +36,19 @@ export function RootStack() {
   const { useShouldRenderConsentScreen } = useConsent();
   const { shouldRenderConsentScreen, isLoading: loadingConsents } =
     useShouldRenderConsentScreen();
+  const {
+    shouldLaunchOnboardingCourse,
+    isLoading: onboardingCourseIsLoading,
+    isFetched: onboardingCourseIsFetched,
+  } = useOnboardingCourse();
 
   const loadingProject = !isFetchedProject || isLoadingProject;
   const loadingAccount = !isFetchedAccount || isLoadingAccount;
   const hasAccount = !loadingAccount && !!account?.id;
   const loadingAccountOrProject =
     loadingAccount || (hasAccount && loadingProject);
+  const loadingOnboardingCourse =
+    !onboardingCourseIsFetched || onboardingCourseIsLoading;
 
   if (!isLoggedIn && loadingAuth) {
     return (
@@ -72,6 +81,17 @@ export function RootStack() {
       );
     }
 
+    if (hasAccountAndProject && loadingOnboardingCourse) {
+      return (
+        <ActivityIndicatorView
+          message={t(
+            'root-stack-waiting-for-app-config',
+            'Loading onboarding course data',
+          )}
+        />
+      );
+    }
+
     if (inviteParams?.inviteId) {
       return (
         <ActivityIndicatorView
@@ -84,6 +104,8 @@ export function RootStack() {
       ? 'InviteRequired'
       : shouldRenderConsentScreen
       ? 'screens/ConsentScreen'
+      : shouldLaunchOnboardingCourse
+      ? 'screens/OnboardingCourseScreen'
       : 'app';
 
     return (
@@ -108,6 +130,13 @@ export function RootStack() {
             options={{
               presentation: 'fullScreenModal',
               title: t('consent', 'Consent'),
+            }}
+          />
+          <Stack.Screen
+            name="screens/OnboardingCourseScreen"
+            component={OnboardingCourseScreen}
+            options={{
+              presentation: 'fullScreenModal',
             }}
           />
           <Stack.Screen name="Circle/Thread" component={CircleThreadScreen} />

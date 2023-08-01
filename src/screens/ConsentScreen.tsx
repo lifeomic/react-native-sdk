@@ -4,7 +4,12 @@ import { t } from 'i18next';
 import Markdown from 'react-native-markdown-display';
 import { Button } from 'react-native-paper';
 import { ActivityIndicatorView, createStyles } from '../components';
-import { useStyles, useConsent, useOAuthFlow } from '../hooks';
+import {
+  useStyles,
+  useConsent,
+  useOAuthFlow,
+  useOnboardingCourse,
+} from '../hooks';
 import { LoggedInRootScreenProps } from '../navigators/types';
 
 export const ConsentScreen = ({
@@ -17,6 +22,7 @@ export const ConsentScreen = ({
     useShouldRenderConsentScreen();
   const updateConsentDirectiveMutation = useUpdateProjectConsentDirective();
   const { logout } = useOAuthFlow();
+  const { shouldLaunchOnboardingCourse } = useOnboardingCourse();
 
   // TODO: If needed, allow for accepting multiple consents in a row.
   const consentToPresent = useMemo(
@@ -39,8 +45,11 @@ export const ConsentScreen = ({
 
   const acceptConsent = useCallback(async () => {
     await updateConsentDirective(true);
-    navigation.replace('app');
-  }, [updateConsentDirective, navigation]);
+    const route = shouldLaunchOnboardingCourse
+      ? 'screens/OnboardingCourseScreen'
+      : 'app';
+    navigation.replace(route);
+  }, [updateConsentDirective, navigation, shouldLaunchOnboardingCourse]);
 
   const declineConsent = useCallback(() => {
     Alert.alert(

@@ -46,6 +46,10 @@ export interface AppConfig {
       surveysTile: AppTile;
     };
   };
+  onboardingCourse?: {
+    url: string;
+    title?: string;
+  };
 }
 
 export function useAppConfig() {

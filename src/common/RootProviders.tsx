@@ -20,6 +20,7 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { InviteProvider } from '../components/Invitations/InviteProvider';
 import { PushNotificationsProvider } from '../hooks/usePushNotifications';
 import { CircleTileContextProvider } from '../hooks/Circles/useActiveCircleTile';
+import { OnboardingCourseContextProvider } from '../hooks/useOnboardingCourse';
 
 const queryClient = new QueryClient();
 
@@ -45,21 +46,23 @@ export function RootProviders({
                       <WearableLifecycleProvider>
                         <CircleTileContextProvider>
                           <BrandConfigProvider theme={theme}>
-                            <NoInternetToastProvider>
-                              <ActionSheetProvider>
-                                <SafeAreaProvider>
-                                  <ThemedNavigationContainer>
-                                    <PushNotificationsProvider
-                                      config={pushNotificationsConfig}
-                                    >
-                                      {children}
-                                    </PushNotificationsProvider>
-                                  </ThemedNavigationContainer>
-                                  <CreateEditPostModal />
-                                  <Toast />
-                                </SafeAreaProvider>
-                              </ActionSheetProvider>
-                            </NoInternetToastProvider>
+                            <OnboardingCourseContextProvider>
+                              <NoInternetToastProvider>
+                                <ActionSheetProvider>
+                                  <SafeAreaProvider>
+                                    <ThemedNavigationContainer>
+                                      <PushNotificationsProvider
+                                        config={pushNotificationsConfig}
+                                      >
+                                        {children}
+                                      </PushNotificationsProvider>
+                                    </ThemedNavigationContainer>
+                                    <CreateEditPostModal />
+                                    <Toast />
+                                  </SafeAreaProvider>
+                                </ActionSheetProvider>
+                              </NoInternetToastProvider>
+                            </OnboardingCourseContextProvider>
                           </BrandConfigProvider>
                         </CircleTileContextProvider>
                       </WearableLifecycleProvider>
