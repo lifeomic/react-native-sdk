@@ -19,6 +19,7 @@ export type TrackTileProps = {
   onOpenTracker: (metric: Tracker, valuesContext: TrackerValuesContext) => void;
   hideSettingsButton?: boolean;
   styles?: TrackTileStyles;
+  shouldUseOntology?: boolean;
 };
 
 export function TrackTile({

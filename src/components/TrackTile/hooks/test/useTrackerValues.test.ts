@@ -28,7 +28,7 @@ const valuesContext: TrackerValuesContext = {
 };
 
 describe('useTrackerValues', () => {
-  it('should fetch the tracker values for today on mount', () => {
+  it('should fetch the tracker values for today on mount', async () => {
     const fetchTrackerValues = jest
       .fn()
       .mockReturnValue(new Promise(jest.fn()));
@@ -36,16 +36,20 @@ describe('useTrackerValues', () => {
       fetchTrackerValues,
     } as any);
 
-    const { result } = renderHook(() => useTrackerValues(valuesContext));
+    const { result, waitFor } = renderHook(() =>
+      useTrackerValues(valuesContext),
+    );
 
-    expect(fetchTrackerValues).toHaveBeenCalledWith(valuesContext, {
-      start: startOfToday(),
-      end: endOfToday(),
+    await waitFor(() => {
+      expect(fetchTrackerValues).toHaveBeenCalledWith(valuesContext, {
+        start: startOfToday(),
+        end: endOfToday(),
+      });
+      expect(result.current.loading).toBe(true);
     });
-    expect(result.current.loading).toBe(true);
   });
 
-  it('should fetch the tracker values for provided date range', () => {
+  it('should fetch the tracker values for provided date range', async () => {
     const fetchTrackerValues = jest
       .fn()
       .mockReturnValue(new Promise(jest.fn()));
@@ -56,18 +60,20 @@ describe('useTrackerValues', () => {
     const start = new Date(1);
     const end = new Date(2);
 
-    const { result } = renderHook(() =>
+    const { result, waitFor } = renderHook(() =>
       useTrackerValues(valuesContext, { start, end }),
     );
 
-    expect(fetchTrackerValues).toHaveBeenCalledWith(valuesContext, {
-      start,
-      end,
+    waitFor(() => {
+      expect(fetchTrackerValues).toHaveBeenCalledWith(valuesContext, {
+        start,
+        end,
+      });
+      expect(result.current.loading).toBe(true);
     });
-    expect(result.current.loading).toBe(true);
   });
 
-  it('should fetch the tracker values for provided codeBelow', () => {
+  it('should fetch the tracker values for provided codeBelow', async () => {
     const fetchTrackerValues = jest
       .fn()
       .mockReturnValue(new Promise(jest.fn()));
@@ -82,18 +88,20 @@ describe('useTrackerValues', () => {
       codeBelow: 'custom-code-below',
     };
 
-    const { result } = renderHook(() =>
+    const { result, waitFor } = renderHook(() =>
       useTrackerValues(customValuesContext, {
         start,
         end,
       }),
     );
 
-    expect(fetchTrackerValues).toHaveBeenCalledWith(customValuesContext, {
-      start,
-      end,
+    await waitFor(() => {
+      expect(fetchTrackerValues).toHaveBeenCalledWith(customValuesContext, {
+        start,
+        end,
+      });
+      expect(result.current.loading).toBe(true);
     });
-    expect(result.current.loading).toBe(true);
   });
 
   it('should return an array of the returned tracker values for the date range', async () => {
@@ -127,7 +135,9 @@ describe('useTrackerValues', () => {
       fetchTrackerValues: jest.fn().mockRejectedValue('Some Error'),
     } as any);
 
-    const { result, waitForNextUpdate } = renderHook(useTrackerValues);
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useTrackerValues(valuesContext),
+    );
 
     await waitForNextUpdate();
 
@@ -316,18 +326,51 @@ describe('useTrackerValues', () => {
     }));
     mockUseTrackTileService.mockReturnValue({ fetchTrackerValues } as any);
 
-    const { waitFor } = renderHook(useTrackerValues);
+    renderHook(() => useTrackerValues(valuesContext));
 
-    await waitFor(() => expect(fetchTrackerValues).toHaveBeenCalledTimes(1));
+    // Promise.resolve & .then progression:
+    await act(() => jest.advanceTimersByTime(1));
 
-    act(() => {
+    expect(fetchTrackerValues).toHaveBeenCalledTimes(1);
+
+    await act(() => {
       jest.setSystemTime(tomorrow);
       jest.advanceTimersByTime(60 * 1000);
     });
+    await act(() => jest.advanceTimersByTime(1000));
 
-    await waitFor(() => expect(fetchTrackerValues).toHaveBeenCalledTimes(2));
+    expect(fetchTrackerValues).toHaveBeenCalledTimes(2);
 
     jest.useRealTimers();
+  });
+
+  it('should fetch ontologies if shouldUseOntology set to true', async () => {
+    const fetchTrackerValues = jest
+      .fn()
+      .mockReturnValue(new Promise(jest.fn()));
+    const fetchOntology = jest.fn().mockResolvedValue({});
+    mockUseTrackTileService.mockReturnValue({
+      fetchTrackerValues,
+      fetchOntology,
+    } as any);
+
+    const valuesContext: TrackerValuesContext = {
+      system: TRACKER_CODE_SYSTEM,
+      codeBelow: TRACKER_CODE,
+      shouldUseOntology: true,
+    };
+    const { result, waitFor } = renderHook(() =>
+      useTrackerValues(valuesContext),
+    );
+
+    await waitFor(() => {
+      expect(fetchTrackerValues).toHaveBeenCalledWith(valuesContext, {
+        start: startOfToday(),
+        end: endOfToday(),
+      });
+      expect(result.current.loading).toBe(true);
+      expect(fetchOntology).toHaveBeenCalledWith(TRACKER_CODE);
+    });
   });
 });
 

@@ -93,9 +93,17 @@ export const useTrackerValues = (
     if (!loading && !_.isEqual(prevDateRange, dateRange)) {
       setLoading(true);
 
-      svc
-        .fetchTrackerValues(valuesContext, dateRange)
-        .then((fetchedTrackerValues) => {
+      Promise.resolve()
+        .then(async () => {
+          if (valuesContext.shouldUseOntology) {
+            // NOTE: The service uses ontology for values roll-up.  We don't need
+            // to anything with the result here; we just need the service to fetch.
+            await svc.fetchOntology(valuesContext.codeBelow);
+          }
+          const fetchedTrackerValues = await svc.fetchTrackerValues(
+            valuesContext,
+            dateRange,
+          );
           setTrackerValues(fetchedTrackerValues);
           setLoading(false);
         })

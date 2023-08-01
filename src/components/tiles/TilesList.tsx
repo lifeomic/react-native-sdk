@@ -61,6 +61,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
     <View testID={tID('tiles-list')} style={styles.view}>
       {pillarsTileEnabled && (
         <PillarsTile
+          shouldUseOntology={!!pillarSettings?.advancedScreenTrackers?.length}
           onOpenDetails={(tracker, valuesContext) => {
             const screenName = pillarSettings?.advancedScreenTrackers?.includes(
               tracker.metricId || tracker.id,
@@ -76,6 +77,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
       )}
       {trackTileEnabled && (
         <TrackTile
+          shouldUseOntology={!!trackerSettings?.advancedScreenTrackers?.length}
           onOpenSettings={(valuesContext) =>
             navigation.navigate('Home/TrackTileSettings', {
               valuesContext,
