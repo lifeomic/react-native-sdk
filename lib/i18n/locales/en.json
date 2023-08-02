@@ -1,4 +1,5 @@
 {
+  "onboarding-course.done": "Done",
   "track-tile.go-to-tracker": "Go to tracker",
   "track-tile.my-target": "My Target",
   "track-tile.plus-symbol": "+",
@@ -10,6 +11,7 @@
   "track-tile.previous-weeks-data": "Previous week's data",
   "track-tile.problem-occurred-while-reordering-items": "A problem occurred while reordering the items",
   "track-tile.your-active-items": "Your active items",
+  "track-tile.save": "Save",
   "track-tile.save-tracker-order": "Save tracker order",
   "track-tile.open-tracker-settings": "Open Tracker Settings",
   "track-tile.track-it": "Track It!",

@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
-import { useOAuthFlow, useConsent } from '../hooks';
+import { useOAuthFlow, useConsent, useOnboardingCourse } from '../hooks';
 import { ConsentScreen } from './ConsentScreen';
 
 jest.unmock('i18next');
@@ -12,12 +12,16 @@ jest.mock('../hooks/useOAuthFlow', () => ({
 jest.mock('../hooks/useConsent', () => ({
   useConsent: jest.fn(),
 }));
+jest.mock('../hooks/useOnboardingCourse', () => ({
+  useOnboardingCourse: jest.fn(),
+}));
 
 const useOAuthFlowMock = useOAuthFlow as jest.Mock;
 const logoutMock = jest.fn();
 const useConsentMock = useConsent as jest.Mock;
 const useShouldRenderConsentScreenMock = jest.fn();
 const useUpdateProjectConsentDirectiveMock = jest.fn();
+const useOnboardingCourseMock = useOnboardingCourse as jest.Mock;
 const updateConsentDirectiveMutationMock = {
   mutateAsync: jest.fn().mockResolvedValue({}),
 };
@@ -62,6 +66,9 @@ beforeEach(() => {
     useShouldRenderConsentScreen: useShouldRenderConsentScreenMock,
     useUpdateProjectConsentDirective: useUpdateProjectConsentDirectiveMock,
   });
+  useOnboardingCourseMock.mockReturnValue({
+    shouldLaunchOnboardingCourse: false,
+  });
 });
 
 test('render the activity indicator when loading', () => {
@@ -87,6 +94,25 @@ test('should accept the consent and navigate to the home screen', async () => {
       },
     );
     expect(navigateMock.replace).toHaveBeenCalledWith('app');
+  });
+});
+
+test('should accept the consent and navigate to the onboarding course screen', async () => {
+  useOnboardingCourseMock.mockReturnValue({
+    shouldLaunchOnboardingCourse: true,
+  });
+  const { getByText } = render(consentScreen);
+  fireEvent.press(getByText('Agree'));
+  await waitFor(() => {
+    expect(updateConsentDirectiveMutationMock.mutateAsync).toHaveBeenCalledWith(
+      {
+        directiveId: defaultConsentDirective.id,
+        accept: true,
+      },
+    );
+    expect(navigateMock.replace).toHaveBeenCalledWith(
+      'screens/OnboardingCourseScreen',
+    );
   });
 });
 

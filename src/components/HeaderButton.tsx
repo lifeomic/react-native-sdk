@@ -4,12 +4,13 @@ import { HeaderButtonComponent } from './HeaderButtonComponent';
 
 interface Props {
   onPress: () => void;
+  title: string;
 }
 
-export const HeaderSaveButton = ({ onPress }: Props) => {
+export const HeaderButton = ({ onPress, title }: Props) => {
   return (
     <HeaderButtons HeaderButtonComponent={HeaderButtonComponent}>
-      <Item title="Save" onPress={onPress} />
+      <Item title={title} onPress={onPress} />
     </HeaderButtons>
   );
 };

@@ -26,6 +26,7 @@ export type LoggedInRootParamList = {
   'screens/ConsentScreen': undefined;
   InviteRequired: undefined;
   'Circle/Thread': { post: Post; createNewComment?: boolean };
+  'screens/OnboardingCourseScreen': undefined;
 };
 
 export type LoggedInRootScreenProps<T extends keyof LoggedInRootParamList> =
