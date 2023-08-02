@@ -34,7 +34,7 @@ export const SaveEditorButton = () => {
   const navigation = useNavigation();
   return (
     <HeaderButton
-      title="Save"
+      title={t('track-tile.save', 'Save')}
       onPress={async () => {
         navigation.goBack();
         await new Promise(notifySaveEditTrackerValue);

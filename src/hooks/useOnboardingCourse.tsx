@@ -42,7 +42,7 @@ export const OnboardingCourseContextProvider = ({
 
   /* Render the onboarding course if the following conditions are met:
     1. The onboarding course url is defined
-    3. The onboarding course has not been launched
+    2. The onboarding course has not been launched
   */
   const shouldLaunchOnboardingCourse =
     !!onboardingCourseUrl && !didLaunchCourse;

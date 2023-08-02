@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import WebView from 'react-native-webview';
-import { useOnboardingCourse } from '../hooks/useOnboardingCourse';
+import { t } from '../../lib/i18n';
+import { useStyles, useOnboardingCourse } from '../hooks';
 import {
   LoggedInRootParamList,
   LoggedInRootScreenProps,
@@ -9,6 +10,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { HeaderButton } from '../components/HeaderButton';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { createStyles } from '../components/BrandConfigProvider';
 
 type Props = LoggedInRootScreenProps<'screens/OnboardingCourseScreen'>;
 
@@ -23,7 +25,7 @@ export const DoneHeaderButton = () => {
 
   return (
     <HeaderButton
-      title="Done"
+      title={t('onboarding-course.done', 'Done')}
       onPress={() => {
         navigation.replace('app');
       }}
@@ -32,6 +34,7 @@ export const DoneHeaderButton = () => {
 };
 
 export const OnboardingCourseScreen = ({ navigation }: Props) => {
+  const { styles } = useStyles(defaultStyles);
   const { onboardingCourseUrl, onOnboardingCourseOpen, onboardingCourseTitle } =
     useOnboardingCourse();
 
@@ -62,9 +65,18 @@ export const OnboardingCourseScreen = ({ navigation }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({
+const defaultStyles = createStyles('OnboardingCourseScreen', () => ({
   container: {
     flex: 1,
     margin: 0,
   },
-});
+}));
+
+declare module '@styles' {
+  interface ComponentStyles
+    extends ComponentNamedStyles<typeof defaultStyles> {}
+}
+
+export type OnboardingCourseScreenStyles = NamedStylesProp<
+  typeof defaultStyles
+>;
