@@ -24,7 +24,12 @@ export const OnboardingCourseContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { data, isLoading, isFetched, error } = useAppConfig();
+  const {
+    data,
+    isLoading: isAppConfigLoading,
+    isFetched: isAppConfigFetched,
+    error,
+  } = useAppConfig();
   const onboardingCourseUrl = data?.onboardingCourse?.url;
   const onboardingCourseTitle = data?.onboardingCourse?.title;
   const { activeProject } = useActiveProject();
@@ -32,7 +37,12 @@ export const OnboardingCourseContextProvider = ({
   const [storedDidLaunchResult, storeDidLaunch] = useAsyncStorage(
     `${activeProject?.id}-didLaunchOnboardingCourse`,
   );
-  const [didLaunchCourse, setDidLaunchCourse] = useState(false);
+  const [didLaunchCourse, setDidLaunchCourse] = useState<boolean | undefined>(
+    undefined,
+  );
+
+  const isLoading = isAppConfigLoading || storedDidLaunchResult.isLoading;
+  const isFetched = isAppConfigFetched && storedDidLaunchResult.isFetched;
 
   useEffect(() => {
     if (storedDidLaunchResult.isFetched && activeProject?.id) {
@@ -41,11 +51,12 @@ export const OnboardingCourseContextProvider = ({
   }, [storedDidLaunchResult, activeProject?.id]);
 
   /* Render the onboarding course if the following conditions are met:
-    1. The onboarding course url is defined
-    2. The onboarding course has not been launched
+    1. The app config and the async storage value have been fetched
+    2. The onboarding course url is defined
+    3. The onboarding course has not been launched
   */
   const shouldLaunchOnboardingCourse =
-    !!onboardingCourseUrl && !didLaunchCourse;
+    isFetched && !!onboardingCourseUrl && !didLaunchCourse;
 
   const onOnboardingCourseOpen = useCallback(() => {
     setDidLaunchCourse(true);
