@@ -3,13 +3,14 @@ import { storiesOf } from '@storybook/react-native';
 import { withKnobs } from '@storybook/addon-knobs';
 import { SafeView } from '../../helpers/SafeView';
 import { Button } from 'react-native-paper';
-import { DeveloperConfigProvider, useDeveloperConfig } from '../../../../src';
 import {
+  DeveloperConfigProvider,
+  useDeveloperConfig,
+  SocialShareExporter,
   PointBreakdown,
   PointBreakdownProps,
   createPointBreakdown,
-} from '../../../../src/components/SocialShare/renderers/point-breakdown';
-import { SocialShareExporter } from '../../../../src/components/SocialShare/SocialShareExporter';
+} from '../../../../src';
 import { View, Text } from 'react-native';
 
 storiesOf('SharingRenderers', module)
