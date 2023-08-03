@@ -1,18 +1,15 @@
-import { useQuery } from 'react-query';
 import { useActiveAccount } from './useActiveAccount';
-import { useAuth } from './useAuth';
-import { useHttpClient } from './useHttpClient';
+import { useAuth, useAuthenticatedQuery } from './useAuth';
 
 export type ExchangeResult = {
   code: string;
 };
 
 export function useExchangeToken(appTileId: string, clientId?: string) {
-  const { httpClient } = useHttpClient();
   const { authResult } = useAuth();
   const { accountHeaders } = useActiveAccount();
 
-  return useQuery(
+  return useAuthenticatedQuery(
     [
       'client-tokens',
       {
@@ -21,8 +18,8 @@ export function useExchangeToken(appTileId: string, clientId?: string) {
         appTileId,
       },
     ],
-    () => {
-      return httpClient
+    (client) =>
+      client
         .post<ExchangeResult>(
           '/v1/client-tokens',
           {
@@ -33,10 +30,9 @@ export function useExchangeToken(appTileId: string, clientId?: string) {
             headers: { ...accountHeaders },
           },
         )
-        .then((res) => res.data);
-    },
+        .then((res) => res.data),
     {
-      enabled: !!accountHeaders && !!authResult?.accessToken && !!clientId,
+      enabled: !!accountHeaders && !!clientId,
     },
   );
 }

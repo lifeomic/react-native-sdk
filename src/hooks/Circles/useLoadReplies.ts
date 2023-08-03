@@ -1,12 +1,13 @@
 import { gql } from 'graphql-request';
 import { useState, useCallback } from 'react';
-import { useQueryClient, useQuery } from 'react-query';
+import { useQueryClient } from 'react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { Post, postDetailsFragment } from './types';
 import { PostRepliesQueryResponse } from './useInfinitePosts';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
 import { useActiveCircleTile } from './useActiveCircleTile';
+import { useAuthenticatedQuery } from '../useAuth';
 
 export const useLoadReplies = () => {
   const { graphQLClient } = useGraphQLClient();
@@ -28,7 +29,7 @@ export const useLoadReplies = () => {
     >(postRepliesQueryDocument, queryVariables, accountHeaders);
   }, [accountHeaders, graphQLClient, queryVariables]);
 
-  const repliesRes = useQuery(
+  const repliesRes = useAuthenticatedQuery(
     [
       'loadReplies',
       circleTile?.circleId,

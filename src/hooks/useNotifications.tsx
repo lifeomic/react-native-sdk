@@ -1,8 +1,8 @@
-import { useQuery } from 'react-query';
 import { gql } from 'graphql-request';
 import { useUser } from './useUser';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
+import { useAuthenticatedQuery } from './useAuth';
 
 export type NotificationBase = {
   __typename: string;
@@ -130,7 +130,7 @@ export function useNotifications() {
     isFetched: notificationsFetched,
     data: notificationsData,
     error: notificationsError,
-  } = useQuery('notifications', queryForNotifications, {
+  } = useAuthenticatedQuery('notifications', queryForNotifications, {
     enabled: !!userData?.id && !!accountHeaders?.['LifeOmic-Account'],
     select: selectNotifications,
   });

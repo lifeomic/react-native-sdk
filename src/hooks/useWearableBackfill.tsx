@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import { addDays } from 'date-fns';
 import { gql } from 'graphql-request';
-import { useQuery } from 'react-query';
 import { EHRType, WearablesSyncState } from '../components';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useHttpClient } from './useHttpClient';
 import { useFeature } from './useFeature';
+import { useAuthenticatedQuery } from './useAuth';
 
 const deviceSourceTypes = {
   [EHRType.Fitbit]: 'Fitbit',
@@ -47,7 +47,7 @@ export const useWearableBackfill = (
     [graphQLClient, activeSubjectId, ehrTypes, accountHeaders],
   );
 
-  const { data: syncStatus } = useQuery(
+  const { data: syncStatus } = useAuthenticatedQuery(
     ['backfill-sync-status', ...ehrTypes],
     queryEHRSyncStatus,
     {

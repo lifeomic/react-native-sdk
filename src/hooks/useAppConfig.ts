@@ -1,8 +1,7 @@
-import { useQuery } from 'react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
-import { useHttpClient } from './useHttpClient';
 import { Trace } from '../components/MyData/LineChart/TraceLine';
+import { useAuthenticatedQuery } from './useAuth';
 
 export interface AppTile {
   id: string;
@@ -54,13 +53,12 @@ export interface AppConfig {
 
 export function useAppConfig() {
   const { accountHeaders } = useActiveAccount();
-  const { httpClient } = useHttpClient();
   const { activeProject } = useActiveProject();
 
-  return useQuery(
+  return useAuthenticatedQuery(
     `/v1/life-research/projects/${activeProject?.id}/app-config`,
-    () =>
-      httpClient
+    (client) =>
+      client
         .get<AppConfig>(
           `/v1/life-research/projects/${activeProject?.id}/app-config`,
           { headers: accountHeaders },

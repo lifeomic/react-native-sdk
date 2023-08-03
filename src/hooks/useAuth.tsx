@@ -6,8 +6,11 @@ import React, {
   useState,
 } from 'react';
 import { RefreshResult } from 'react-native-app-auth';
+import { QueryKey, UseQueryOptions, useQuery } from 'react-query';
+import { AxiosInstance } from 'axios';
 import { SecureStore } from '../common/SecureStore';
 import { useCurrentAppState } from './useCurrentAppState';
+import { useHttpClient } from './useHttpClient';
 
 export interface AuthStatus {
   loading: boolean;
@@ -183,3 +186,21 @@ export const AuthContextProvider = ({
 };
 
 export const useAuth = () => useContext(AuthContext);
+
+export const useAuthenticatedQuery = <
+  TQueryFnData = unknown,
+  TError = unknown,
+  TData = TQueryFnData,
+>(
+  key: QueryKey,
+  queryFn: (client: AxiosInstance) => TQueryFnData | Promise<TQueryFnData>,
+  options?: UseQueryOptions<TQueryFnData, TError, TData>,
+) => {
+  const auth = useAuth();
+  const { httpClient } = useHttpClient();
+
+  return useQuery(key, () => queryFn(httpClient), {
+    ...options,
+    enabled: !!auth.authResult?.accessToken && options?.enabled !== false,
+  });
+};

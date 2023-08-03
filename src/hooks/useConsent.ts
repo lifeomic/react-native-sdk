@@ -1,16 +1,18 @@
-import { useQuery, useMutation } from 'react-query';
+import { useMutation } from 'react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 import { useActiveProject } from './useActiveProject';
 import { Consent, Questionnaire } from 'fhir/r3';
+import { useAuth, useAuthenticatedQuery } from './useAuth';
 
 export const useConsent = () => {
   const { accountHeaders, account } = useActiveAccount();
   const { activeProject } = useActiveProject();
   const { httpClient } = useHttpClient();
+  const auth = useAuth();
 
   const useConsentDirectives = () => {
-    return useQuery(
+    return useAuthenticatedQuery(
       [
         '/v1/consent/directives/me',
         {
@@ -26,7 +28,12 @@ export const useConsent = () => {
             headers: { ...accountHeaders },
           })
           .then((res) => res.data),
-      { enabled: !!accountHeaders && !!activeProject?.id },
+      {
+        enabled:
+          !!accountHeaders &&
+          !!activeProject?.id &&
+          !!auth.authResult?.accessToken,
+      },
     );
   };
 

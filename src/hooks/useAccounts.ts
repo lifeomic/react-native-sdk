@@ -1,6 +1,4 @@
-import { useQuery } from 'react-query';
-import { useHttpClient } from './useHttpClient';
-import { useAuth } from './useAuth';
+import { useAuthenticatedQuery } from './useAuth';
 
 export interface Account {
   id: string;
@@ -19,17 +17,9 @@ interface AccountsResponse {
 }
 
 export function useAccounts() {
-  const { authResult } = useAuth();
-  const { httpClient } = useHttpClient();
-
-  return useQuery(
-    'accounts',
-    () =>
-      httpClient
-        .get<AccountsResponse>('/v1/accounts')
-        .then((res) => res.data.accounts),
-    {
-      enabled: !!authResult?.accessToken,
-    },
+  return useAuthenticatedQuery('accounts', (client) =>
+    client
+      .get<AccountsResponse>('/v1/accounts')
+      .then((res) => res.data.accounts),
   );
 }

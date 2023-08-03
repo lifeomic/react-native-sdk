@@ -1,6 +1,5 @@
-import { useQuery } from 'react-query';
 import { useActiveAccount } from './useActiveAccount';
-import { useHttpClient } from './useHttpClient';
+import { useAuthenticatedQuery } from './useAuth';
 
 export interface Subject {
   subjectId: string;
@@ -28,12 +27,11 @@ interface MeResponse {
 
 export function useMe() {
   const { accountHeaders } = useActiveAccount();
-  const { httpClient } = useHttpClient();
 
-  return useQuery(
+  return useAuthenticatedQuery(
     'fhir/dstu3/$me',
-    () =>
-      httpClient
+    (client) =>
+      client
         .get<MeResponse>('/v1/fhir/dstu3/$me', { headers: accountHeaders })
         .then((res) =>
           res.data.entry?.map(

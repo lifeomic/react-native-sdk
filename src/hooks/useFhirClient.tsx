@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from 'react-query';
+import { useMutation } from 'react-query';
 import { Bundle, Observation, Coding } from 'fhir/r3';
 import formatISO from 'date-fns/formatISO';
 import { useHttpClient } from './useHttpClient';
@@ -7,6 +7,7 @@ import { useActiveProject } from './useActiveProject';
 import merge from 'deepmerge';
 import { useState, useEffect, useCallback } from 'react';
 import queryString from 'query-string';
+import { useAuthenticatedQuery } from './useAuth';
 
 type ResourceTypes = {
   Observation: Observation;
@@ -123,10 +124,10 @@ export function useFhirClient() {
       [hasMoreData, next],
     );
 
-    const queryResult = useQuery(
+    const queryResult = useAuthenticatedQuery(
       [`${resourceType}/_search`, params],
-      () => {
-        return httpClient
+      (client) => {
+        return client
           .post<Bundle<ResourceTypes[typeof resourceType]>>(
             `/v1/fhir/dstu3/${resourceType}/_search`,
             params,

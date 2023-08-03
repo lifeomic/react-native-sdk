@@ -1,6 +1,4 @@
-import { useQuery } from 'react-query';
-import { useHttpClient } from './useHttpClient';
-import { useAuth } from './useAuth';
+import { useAuthenticatedQuery } from './useAuth';
 
 export interface User {
   id: string;
@@ -14,14 +12,7 @@ export interface User {
 }
 
 export function useUser() {
-  const { authResult } = useAuth();
-  const { httpClient } = useHttpClient();
-
-  return useQuery(
-    'user',
-    () => httpClient.get<User>('/v1/user').then((res) => res.data),
-    {
-      enabled: !!authResult?.accessToken,
-    },
+  return useAuthenticatedQuery('user', (client) =>
+    client.get<User>('/v1/user').then((res) => res.data),
   );
 }

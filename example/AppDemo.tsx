@@ -1,6 +1,11 @@
 import React from 'react';
 import { authConfig, baseURL } from './storybook/helpers/oauthConfig';
-import { DeveloperConfigProvider, RootProviders, RootStack } from '../src';
+import {
+  DeveloperConfigProvider,
+  RootProviders,
+  RootStack,
+  inviteNotifier,
+} from '../src';
 import { FhirExampleScreen } from './src/screens/FhirExampleScreen';
 
 if (__DEV__) {
@@ -8,6 +13,10 @@ if (__DEV__) {
 }
 
 function App() {
+  React.useEffect(() => {
+    inviteNotifier.emit('inviteDetected', { inviteId: 'TODO', evc: 'TODO' });
+  }, []);
+
   return (
     <DeveloperConfigProvider
       developerConfig={{

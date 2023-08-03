@@ -1,17 +1,15 @@
-import { useQuery } from 'react-query';
 import { useActiveAccount } from './useActiveAccount';
-import { useHttpClient } from './useHttpClient';
+import { useAuthenticatedQuery } from './useAuth';
 
 type Response<T extends string> = Record<T, boolean>;
 
 export function useFeature<T extends string>(feature: T) {
   const { accountHeaders } = useActiveAccount();
-  const { httpClient } = useHttpClient();
 
-  return useQuery(
+  return useAuthenticatedQuery(
     ['Features', feature],
-    () =>
-      httpClient.get<Response<T>>(`/v1/features/${feature}`, {
+    (client) =>
+      client.get<Response<T>>(`/v1/features/${feature}`, {
         headers: accountHeaders,
       }),
     {

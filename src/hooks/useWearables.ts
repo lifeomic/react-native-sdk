@@ -1,5 +1,4 @@
 import { getBundleId } from 'react-native-device-info';
-import { useQuery } from 'react-query';
 import {
   SyncTypeSettings,
   ToggleWearableResult,
@@ -9,6 +8,7 @@ import {
 } from '../components/Wearables/WearableTypes';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
+import { useAuthenticatedQuery } from './useAuth';
 
 /**
  *
@@ -92,20 +92,20 @@ export const useWearables = () => {
     });
 
   const useWearableIntegrationQuery = (ehrId: string) =>
-    useQuery(
+    useAuthenticatedQuery(
       'get-wearable',
-      () =>
-        httpClient.get(`/v1/wearables/${ehrId}`, { headers: accountHeaders }),
+      (client) =>
+        client.get(`/v1/wearables/${ehrId}`, { headers: accountHeaders }),
       {
         enabled: !!accountHeaders,
       },
     );
 
   const useWearableIntegrationsQuery = () =>
-    useQuery(
+    useAuthenticatedQuery(
       'get-wearables',
-      () =>
-        httpClient
+      (client) =>
+        client
           .get<WearablesSyncState>('/v1/wearables', {
             params: { appId: getBundleId().toLowerCase() },
             headers: accountHeaders,
