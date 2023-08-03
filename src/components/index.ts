@@ -9,3 +9,4 @@ export * from './tiles/TilesList';
 export * from './Wearables';
 export * from './AppNavHeader';
 export * from './LogoHeader';
+export * from './SocialShare';
