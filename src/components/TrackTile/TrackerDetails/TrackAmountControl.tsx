@@ -14,15 +14,12 @@ type Props = {
   value: number;
   onChange: (value: number) => void;
   saveInProgress: boolean;
+  styles?: TrackAmountControlStyles;
 };
 const { numberFormat } = numberFormatters;
-const TrackAmountControl: FC<Props> = ({
-  color,
-  value,
-  onChange,
-  saveInProgress,
-}) => {
-  const { styles } = useStyles(defaultStyles);
+const TrackAmountControl: FC<Props> = (props) => {
+  const { color, value, onChange, saveInProgress } = props;
+  const { styles } = useStyles(defaultStyles, props.styles);
 
   const [currentValue, setCurrentValue] = useState(numberFormat(value));
 
@@ -73,26 +70,28 @@ const TrackAmountControl: FC<Props> = ({
           {t('track-tile.dash-symbol', '-')}
         </Text>
       </TouchableOpacity>
-      <TextInput
-        testID={tID('current-tracker-value')}
-        accessibilityLabel={t('track-tile.tracker-value-value', {
-          defaultValue: 'Tracker value, {{value}}',
-          value,
-        })}
-        style={[
-          { color },
-          styles.valueInputView,
-          fontWeights.bold,
-          { fontSize },
-        ]}
-        keyboardType="numeric"
-        value={currentValue}
-        returnKeyType="done"
-        selectTextOnFocus
-        onBlur={submitChange}
-        onSubmitEditing={submitChange}
-        onChangeText={setCurrentValue}
-      />
+      <View style={styles.valueInputContainer}>
+        <TextInput
+          testID={tID('current-tracker-value')}
+          accessibilityLabel={t('track-tile.tracker-value-value', {
+            defaultValue: 'Tracker value, {{value}}',
+            value,
+          })}
+          style={[
+            { color },
+            styles.valueInputView,
+            fontWeights.bold,
+            { fontSize },
+          ]}
+          keyboardType="numeric"
+          value={currentValue}
+          returnKeyType="done"
+          selectTextOnFocus
+          onBlur={submitChange}
+          onSubmitEditing={submitChange}
+          onChangeText={setCurrentValue}
+        />
+      </View>
       <TouchableOpacity
         testID={tID('increment-tracker-value-button')}
         accessibilityLabel={t(
@@ -153,6 +152,7 @@ const defaultStyles = createStyles('TrackAmountControl', (theme) => ({
     fontSize: 30,
     fontWeight: 'bold',
   },
+  valueInputContainer: {},
   valueInputView: {
     flex: 1,
     textAlign: 'center',
@@ -172,5 +172,7 @@ declare module '@styles' {
   interface ComponentStyles
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
+
+export type TrackAmountControlStyles = NamedStylesProp<typeof defaultStyles>;
 
 export default TrackAmountControl;
