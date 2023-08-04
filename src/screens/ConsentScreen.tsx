@@ -79,9 +79,17 @@ export const ConsentScreen = ({
   const consentText = consentToPresent?.form?.item?.find(
     (f) => f.linkId === 'terms',
   )?.text;
-  const acceptText = consentToPresent?.form?.item?.find(
-    (f) => f.linkId === 'acceptance',
-  )?.text;
+  const acceptanceItems = consentToPresent?.form?.item?.filter((f) => {
+    if (f.code) {
+      return f.code.find(
+        (c) =>
+          c.system === 'http://lifeomic.com/fhir/consent-form-item' &&
+          c.code === 'Acceptance',
+      );
+    }
+    return false;
+  });
+
   if (loadingDirectives || !consentText) {
     return (
       <ActivityIndicatorView
@@ -100,7 +108,14 @@ export const ConsentScreen = ({
         </View>
       </ScrollView>
       <View style={styles.buttonsContainer}>
-        {acceptText && <Text style={styles.acceptText}>{acceptText}</Text>}
+        {acceptanceItems?.map(
+          (item) =>
+            item.text && (
+              <Text style={styles.acceptText} key={item.linkId}>
+                {item.text}
+              </Text>
+            ),
+        )}
         <Button
           mode="contained"
           onPress={acceptConsent}
