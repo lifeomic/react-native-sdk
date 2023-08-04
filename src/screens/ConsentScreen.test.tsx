@@ -39,8 +39,24 @@ const defaultConsentDirective = {
         text: 'Consent body',
       },
       {
+        code: [
+          {
+            system: 'http://lifeomic.com/fhir/consent-form-item',
+            code: 'Acceptance',
+          },
+        ],
         linkId: 'acceptance',
         text: 'I accept',
+      },
+      {
+        code: [
+          {
+            system: 'http://lifeomic.com/fhir/consent-form-item',
+            code: 'Acceptance',
+          },
+        ],
+        linkId: 'acceptance-2',
+        text: 'I most definitely accept',
       },
     ],
   },
@@ -81,6 +97,7 @@ test('renders the consent body and acceptance verbiage', () => {
   const { getByText } = render(consentScreen);
   expect(getByText(defaultConsentDirective.form.item[0].text)).toBeDefined();
   expect(getByText(defaultConsentDirective.form.item[1].text)).toBeDefined();
+  expect(getByText(defaultConsentDirective.form.item[2].text)).toBeDefined();
 });
 
 test('should accept the consent and navigate to the home screen', async () => {
