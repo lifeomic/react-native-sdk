@@ -187,7 +187,7 @@ storiesOf('Example App', module)
       >
         <RootProviders authConfig={authConfig}>
           <BrandConfigProvider {...brand}>
-            <LogoHeader imageSource={logo} />
+            <LogoHeader visible={true} imageSource={logo} />
             <RootStack />
           </BrandConfigProvider>
         </RootProviders>
