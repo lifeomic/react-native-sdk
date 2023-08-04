@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { AppConfig, useActiveAccount, useAppConfig } from '../hooks';
 import { HomeScreen } from './HomeScreen';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -18,6 +18,7 @@ const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useAppConfigMock = useAppConfig as jest.Mock;
 const navigateMock = {
   navigate: jest.fn(),
+  setOptions: jest.fn(),
 };
 
 const exampleAppConfig: AppConfig = {
@@ -38,6 +39,9 @@ const exampleAppConfig: AppConfig = {
         },
       },
     ],
+    screenHeader: {
+      title: 'Custom Screen Title',
+    },
   },
 };
 
@@ -82,6 +86,15 @@ test('renders loading indicator while app config fetching', async () => {
   });
   const { getByTestId } = render(homeScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
+});
+
+test('sets the custom header title', async () => {
+  render(homeScreen);
+  await waitFor(() => {
+    expect(navigateMock.setOptions).toHaveBeenCalledWith({
+      title: 'Custom Screen Title',
+    });
+  });
 });
 
 test('renders app tiles', async () => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { t } from 'i18next';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useAppConfig } from '../hooks/useAppConfig';
@@ -10,8 +10,18 @@ import { useJoinCircles } from '../hooks';
 
 export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
   const { isLoading: loadingAccount } = useActiveAccount();
-  const { isLoading: loadingAppConfig } = useAppConfig();
+  const { isLoading: loadingAppConfig, data: appConfig } = useAppConfig();
   const { isLoading: loadingJoinCircles } = useJoinCircles();
+  const { navigation } = navProps;
+  const customHeaderTitle = appConfig?.homeTab?.screenHeader?.title;
+
+  useEffect(() => {
+    if (customHeaderTitle) {
+      navigation.setOptions({
+        title: customHeaderTitle,
+      });
+    }
+  }, [navigation, customHeaderTitle]);
 
   if (loadingAccount) {
     return (
