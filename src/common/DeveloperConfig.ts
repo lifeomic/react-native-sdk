@@ -27,7 +27,7 @@ import { PointBreakdownProps } from '../components/SocialShare/renderers/point-b
  * @param appTileScreens Allows for custom screens to be registered to be launched
  * when an app tile with a matching URL is tapped.
  *
- * @param simpleTheme Allows for configuring a theme via a primary and accent color.
+ * @param simpleTheme Allows for configuring a theme via a primary color.
  *
  * @param apiBaseURL Allows for configuring a custom base API URL. This is only
  * needed when performing advanced debugging involving a dev mock server.
