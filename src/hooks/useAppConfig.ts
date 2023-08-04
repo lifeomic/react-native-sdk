@@ -45,6 +45,9 @@ export interface AppConfig {
       todayTile: AppTile;
       surveysTile: AppTile;
     };
+    screenHeader?: {
+      title?: string;
+    };
   };
   onboardingCourse?: {
     url: string;
