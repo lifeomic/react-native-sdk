@@ -8,7 +8,7 @@ import {
   TRACKER_CODE_SYSTEM,
   Tracker,
 } from '../../services/TrackTileService';
-import { add, addDays, endOfWeek, format, startOfWeek } from 'date-fns';
+import { add, addDays, format } from 'date-fns';
 import { useRecentCodedValues } from '../../hooks/useRecentCodedValues';
 import { notifier } from '../../services/EmitterService';
 
@@ -324,7 +324,7 @@ describe('Tracker Advanced Details', () => {
     );
 
     await findByText('Friday, March 17');
-    await findByText('Mar 13-Mar 19');
+    await findByText('Mar 11-Mar 17');
   });
 
   it('should NOT render from referenceDate in the future', async () => {
@@ -359,10 +359,7 @@ describe('Tracker Advanced Details', () => {
 
     await findByText("Today's Servings");
     await findByText(
-      `${format(startOfWeek(now, { weekStartsOn: 1 }), 'MMM d')}-${format(
-        endOfWeek(now, { weekStartsOn: 1 }),
-        'MMM d',
-      )}`,
+      `${format(add(now, { days: -6 }), 'MMM d')}-${format(now, 'MMM d')}`,
     );
   });
 
