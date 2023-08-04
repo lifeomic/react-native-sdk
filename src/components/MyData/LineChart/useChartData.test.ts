@@ -58,7 +58,7 @@ describe('useChartData', () => {
       resourceType: 'Observation',
       coding: [{ code: 'code', system: 'system' }],
       dateRange: [new Date(0), new Date(0)],
-      pageSize: 10,
+      pageSize: 200,
     });
     expect(useSearchResourcesQuery).toHaveBeenNthCalledWith(
       2,
@@ -143,7 +143,7 @@ describe('useChartData', () => {
         resourceType: 'Observation',
         coding: [{ code: 'code2', system: 'system2' }],
         dateRange: [new Date(0), new Date(0)],
-        pageSize: 10,
+        pageSize: 200,
       }),
     );
 
@@ -177,27 +177,21 @@ describe('useChartData', () => {
     const trace1: Trace = {
       label: 'Label',
       type: 'Observation',
-      coding: [
-        { code: 'code', system: 'system' },
-        { code: 'code2', system: 'system' },
-      ],
+      coding: [{ code: 'code', system: 'system' }],
     };
 
     renderHook(() =>
       useChartData({
-        dateRange: [new Date(0), addDays(new Date(0), 16)],
+        dateRange: [new Date(0), addDays(new Date(0), 500)],
         trace1,
       }),
     );
 
     expect(useSearchResourcesQuery).toHaveBeenNthCalledWith(1, {
       resourceType: 'Observation',
-      coding: [
-        { code: 'code', system: 'system' },
-        { code: 'code2', system: 'system' },
-      ],
-      dateRange: [new Date(0), addDays(new Date(0), 16)],
-      pageSize: 32, // 16 days * 2 codes
+      coding: [{ code: 'code', system: 'system' }],
+      dateRange: [new Date(0), addDays(new Date(0), 500)],
+      pageSize: 500,
     });
   });
 });

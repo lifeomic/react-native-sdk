@@ -19,7 +19,7 @@ export const useChartData = (props: Props) => {
     resourceType: trace1.type,
     coding: trace1.coding,
     dateRange,
-    pageSize: Math.max(days * trace1.coding.length, 10),
+    pageSize: Math.max(200, days),
   });
 
   const trace2Res = useSearchResourcesQuery({
@@ -27,7 +27,7 @@ export const useChartData = (props: Props) => {
     coding: trace2?.coding ?? [],
     dateRange,
     enabled: !!trace2,
-    pageSize: Math.max(days * (trace2?.coding?.length ?? 1), 10),
+    pageSize: Math.max(200, days),
   });
 
   const trace1Data = sortBy(extractPointData(trace1Res, trace1), 'x');
