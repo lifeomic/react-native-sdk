@@ -69,16 +69,18 @@ export type TrackerValues = Record<string, Record<string, TrackerValue[]>>;
  */
 export type ContextTrackerValues = Record<string, TrackerValues>;
 
+export type EducationContent = {
+  description?: string;
+  thumbnail?: string;
+  url?: string;
+};
+
 export type Code = {
   system: string;
   code: string;
   display: string;
   id?: string;
-  educationContent?: {
-    description?: string;
-    thumbnail?: string;
-    url?: string;
-  };
+  educationContent?: EducationContent;
 };
 
 export type TrackerResource = {
