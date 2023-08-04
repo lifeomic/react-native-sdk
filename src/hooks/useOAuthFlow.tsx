@@ -135,7 +135,9 @@ export const OAuthContextProvider = ({
   const refreshHandler = useCallback(
     async function (storedResult: AuthResult) {
       if (!storedResult?.refreshToken) {
-        throw new Error('No refreshToken');
+        throw new Error(
+          'No refreshToken! The app can NOT function properly without a refreshToken. Expect to be logged out immediately.',
+        );
       }
       return await refresh(authConfig, {
         refreshToken: storedResult.refreshToken,
