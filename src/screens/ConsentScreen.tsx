@@ -79,16 +79,13 @@ export const ConsentScreen = ({
   const consentText = consentToPresent?.form?.item?.find(
     (f) => f.linkId === 'terms',
   )?.text;
-  const acceptanceItems = consentToPresent?.form?.item?.filter((f) => {
-    if (f.code) {
-      return f.code.find(
-        (c) =>
-          c.system === 'http://lifeomic.com/fhir/consent-form-item' &&
-          c.code === 'Acceptance',
-      );
-    }
-    return false;
-  });
+  const acceptanceItems = consentToPresent?.form?.item?.filter((f) =>
+    f.code?.find(
+      (c) =>
+        c.system === 'http://lifeomic.com/fhir/consent-form-item' &&
+        c.code === 'Acceptance',
+    ),
+  );
 
   if (loadingDirectives || !consentText) {
     return (
