@@ -14,6 +14,7 @@ import {
 } from '@react-navigation/native-stack';
 import { NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { PointBreakdownProps } from '../components/SocialShare/renderers/point-breakdown';
+import { ImageSourcePropType } from 'react-native';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -82,6 +83,10 @@ export type DeveloperConfig = {
       radialProgressStrokeWidth?: number;
       radialProgressRadius?: number;
       radialProgressStrokeLinecap?: 'round' | 'square' | 'butt';
+      radialProgressRotation?: number;
+      metricOverrides?: (
+        theme: Theme,
+      ) => Record<string, { image?: ImageSourcePropType; color?: string }>;
     };
   };
   pushNotificationsConfig?: PushNotificationsConfig;
