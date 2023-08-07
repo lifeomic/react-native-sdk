@@ -28,9 +28,10 @@ import { numberFormatters } from '../formatters';
 import { endOfDay, isBefore, isToday, startOfDay } from 'date-fns';
 import { NumberPicker } from './NumberPicker';
 import { createStyles } from '../../../components/BrandConfigProvider';
-import { useStyles } from '../../../hooks';
+import { useDeveloperConfig, useStyles } from '../../../hooks';
 import { unitDisplay } from './unit-display';
 import { DayPicker } from './DayPicker';
+import { RadialProgress } from '../TrackerRow/RadialProgress';
 
 export type TrackerDetailsProps = {
   tracker: Tracker;
@@ -50,6 +51,13 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     onError,
     canEditUnit,
   } = props;
+  const { componentProps } = useDeveloperConfig();
+  const {
+    showSimpleTargetMessage,
+    radialProgressStrokeWidth,
+    radialProgressRadius,
+    radialProgressStrokeLinecap,
+  } = componentProps?.TrackerDetails || {};
   const defaultUnit = getStoredUnitType(tracker);
   const { styles } = useStyles(defaultStyles);
   const svc = useTrackTileService();
@@ -188,6 +196,9 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     [saveNewValue],
   );
 
+  const trackerImage =
+    typeof tracker.image === 'string' ? { uri: tracker.image } : tracker.image;
+
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -199,9 +210,26 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           unit={selectedUnit}
           color={tracker.color}
         />
-        {tracker.image && (
-          <View style={styles.imageContainer}>
-            <Image source={{ uri: tracker.image }} style={styles.image} />
+        {trackerImage && (
+          <View style={styles.imageProgressContainer}>
+            <View style={styles.radialProgressContainer}>
+              <RadialProgress
+                disabled={false}
+                color={tracker.color}
+                target={currentTarget ?? 0}
+                value={currentValue}
+                strokeWidth={radialProgressStrokeWidth}
+                radius={radialProgressRadius}
+                strokeLinecap={radialProgressStrokeLinecap}
+                rotation={-90}
+                styles={{
+                  borderView: styles.radialProgressBorderView,
+                }}
+              />
+            </View>
+            <View style={styles.imageContainer}>
+              <Image source={trackerImage} style={styles.image} />
+            </View>
           </View>
         )}
         <TrackAmountControl
@@ -209,36 +237,55 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           onChange={onValueChange}
           color={tracker.color}
           saveInProgress={saveInProgress}
+          styles={{
+            valueInputContainer: styles.trackAmountControlValueInputContainer,
+            valueLargeSizeText: styles.trackAmountControlValueLargeSizeText,
+            valueMediumSizeText: styles.trackAmountControlValueMediumSizeText,
+            valueSmallSizeText: styles.trackAmountControlValueSmallSizeText,
+          }}
         />
         <View style={styles.targetContainer}>
-          <Text
-            accessible={false}
-            style={styles.myTargetText}
-            numberOfLines={1}
-          >
-            {t('track-tile.my-target', 'My Target')}
-          </Text>
-          <View style={styles.targetTextContainer}>
-            <Text style={[styles.targetText, { color: tracker.color }]}>
-              [{target}]
+          {showSimpleTargetMessage && (
+            <Text
+              accessible={false}
+              style={styles.myTargetText}
+              numberOfLines={1}
+            >
+              {selectedUnit.display}
             </Text>
-            {tracker.units.length > 1 && canEditUnit ? (
-              <UnitPicker
-                value={selectedUnit.unit}
-                onChange={onSelectUnit}
-                units={tracker.units}
-              />
-            ) : (
-              <Text accessible={false} style={styles.singleUnitText}>
-                {unitDisplay({
-                  tracker,
-                  unit: selectedUnit,
-                  value: Number.parseFloat(target),
-                  skipInterpolation: true,
-                }).toLocaleLowerCase()}
+          )}
+          {!showSimpleTargetMessage && (
+            <>
+              <Text
+                accessible={false}
+                style={styles.myTargetText}
+                numberOfLines={1}
+              >
+                {t('track-tile.my-target', 'My Target')}
               </Text>
-            )}
-          </View>
+              <View style={styles.targetTextContainer}>
+                <Text style={[styles.targetText, { color: tracker.color }]}>
+                  [{target}]
+                </Text>
+                {tracker.units.length > 1 && canEditUnit ? (
+                  <UnitPicker
+                    value={selectedUnit.unit}
+                    onChange={onSelectUnit}
+                    units={tracker.units}
+                  />
+                ) : (
+                  <Text accessible={false} style={styles.singleUnitText}>
+                    {unitDisplay({
+                      tracker,
+                      unit: selectedUnit,
+                      value: Number.parseFloat(target),
+                      skipInterpolation: true,
+                    }).toLocaleLowerCase()}
+                  </Text>
+                )}
+              </View>
+            </>
+          )}
         </View>
         <NumberPicker
           selectedUnit={selectedUnit}
@@ -273,6 +320,13 @@ const defaultStyles = createStyles('TrackerDetails', (theme) => ({
     flex: 1,
     resizeMode: 'contain',
   },
+  radialProgressBorderView: {},
+  radialProgressContainer: {},
+  imageProgressContainer: {},
+  trackAmountControlValueInputContainer: {},
+  trackAmountControlValueLargeSizeText: {},
+  trackAmountControlValueMediumSizeText: {},
+  trackAmountControlValueSmallSizeText: {},
   container: {
     backgroundColor: theme.colors.elevation.level1,
     alignItems: 'center',

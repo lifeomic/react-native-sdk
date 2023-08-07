@@ -16,8 +16,50 @@ import {
   UnitPicker,
   UnitPickerProps,
 } from '../../../../src/components/TrackTile/TrackerDetails/UnitPicker';
-import { IconProvider } from '../../../../src';
+import {
+  BrandConfigProvider,
+  DeveloperConfigProvider,
+  IconProvider,
+} from '../../../../src';
 import { SafeView } from '../../helpers/SafeView';
+import BottleImage from './assets/bottle.png';
+
+const referenceDate = date('Reference Date', undefined);
+
+const defaultTracker = {
+  id: 'id',
+  name: 'Example',
+  color: '#5F9EA0',
+  resourceType: 'Observation',
+  description: t(
+    'track-tile.example-description',
+    'This is an example description for the track tile that is to be added',
+  ),
+  units: [
+    {
+      unit: 'unit-1',
+      display: 'steps',
+      target: 10,
+      default: true,
+    },
+    {
+      unit: 'unit-2',
+      display: 'skips',
+      target: 75,
+    },
+    {
+      unit: 'unit-3',
+      display: 'jumps',
+      target: 50,
+    },
+  ],
+  system: TRACKER_CODE_SYSTEM,
+} as Partial<MetricType> as any;
+
+const valuesContext = {
+  system: TRACKER_CODE_SYSTEM,
+  codeBelow: TRACKER_CODE,
+};
 
 storiesOf('TrackerDetails', module)
   .addDecorator(withKnobs)
@@ -34,8 +76,8 @@ storiesOf('TrackerDetails', module)
     })(storyFn, context),
   )
   .addDecorator((story) => <SafeView>{story()}</SafeView>)
+
   .add('default', () => {
-    const referenceDate = date('Reference Date', undefined);
     return (
       <IconProvider
         icons={
@@ -47,41 +89,8 @@ storiesOf('TrackerDetails', module)
         }
       >
         <TrackerDetails
-          tracker={
-            {
-              id: 'id',
-              name: 'Example',
-              color: '#5F9EA0',
-              resourceType: 'Observation',
-              description: t(
-                'track-tile.example-description',
-                'This is an example description for the track tile that is to be added',
-              ),
-              units: [
-                {
-                  unit: 'unit-1',
-                  display: 'steps',
-                  target: 100,
-                  default: true,
-                },
-                {
-                  unit: 'unit-2',
-                  display: 'skips',
-                  target: 75,
-                },
-                {
-                  unit: 'unit-3',
-                  display: 'jumps',
-                  target: 50,
-                },
-              ],
-              system: TRACKER_CODE_SYSTEM,
-            } as Partial<MetricType> as any
-          }
-          valuesContext={{
-            system: TRACKER_CODE_SYSTEM,
-            codeBelow: TRACKER_CODE,
-          }}
+          tracker={defaultTracker}
+          valuesContext={valuesContext}
           referenceDate={new Date(referenceDate)}
           // NOTE: This should not be necessary in production apps where the referenceDate prop does not change on the fly.
           // https://react.dev/learn/you-might-not-need-an-effect#resetting-all-state-when-a-prop-changes
@@ -90,6 +99,85 @@ storiesOf('TrackerDetails', module)
       </IconProvider>
     );
   })
+
+  .add('Image with Radial Progress', () => {
+    const tracker = {
+      ...defaultTracker,
+      image: BottleImage,
+    };
+
+    return (
+      <DeveloperConfigProvider
+        developerConfig={{
+          componentProps: {
+            TrackerDetails: {
+              showSimpleTargetMessage: true,
+              radialProgressStrokeLinecap: 'butt',
+              radialProgressRadius: 100,
+              radialProgressStrokeWidth: 15,
+            },
+          },
+        }}
+      >
+        <BrandConfigProvider
+          styles={{
+            TrackerDetails: {
+              imageContainer: {
+                height: 150,
+                alignItems: 'center',
+              },
+              myTargetText: {
+                color: 'black',
+                fontSize: 26,
+                lineHeight: 24,
+                fontWeight: '700',
+                paddingTop: 10,
+                textTransform: 'capitalize',
+              },
+              trackAmountControlValueInputContainer: {
+                marginTop: -10,
+              },
+              trackAmountControlValueLargeSizeText: {
+                fontSize: 70,
+              },
+              trackAmountControlValueMediumSizeText: {
+                fontSize: 40,
+              },
+              trackAmountControlValueSmallSizeText: {
+                fontSize: 30,
+              },
+              radialProgressBorderView: {
+                borderWidth: 2,
+                opacity: 1,
+                borderColor: 'black',
+              },
+              radialProgressContainer: {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+              },
+              imageProgressContainer: {
+                height: 265,
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'relative',
+              },
+            },
+          }}
+        >
+          <TrackerDetails
+            tracker={tracker}
+            valuesContext={valuesContext}
+            referenceDate={new Date(referenceDate)}
+            key={referenceDate}
+          />
+        </BrandConfigProvider>
+      </DeveloperConfigProvider>
+    );
+  })
+
   .add('UnitPicker', () => {
     const units: UnitPickerProps['units'] = object('units', [
       {

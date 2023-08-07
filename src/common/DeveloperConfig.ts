@@ -77,6 +77,12 @@ export type DeveloperConfig = {
         svgPropsInactive?: (theme: Theme) => SvgProps;
       }[];
     };
+    TrackerDetails?: {
+      showSimpleTargetMessage: boolean;
+      radialProgressStrokeWidth?: number;
+      radialProgressRadius?: number;
+      radialProgressStrokeLinecap?: 'round' | 'square' | 'butt';
+    };
   };
   pushNotificationsConfig?: PushNotificationsConfig;
   getAdditionalHomeScreens?: <ParamList extends ParamListBase>(
