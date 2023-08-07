@@ -59,7 +59,6 @@ export const navigationScreenListeners = (
   focus: (e: any) => {
     // Coerce unique route event target to route name
     const routeName = e.target?.split('-')?.[0] as Route | undefined;
-    console.log('Found routeName', routeName);
     if (typeof routeName === 'undefined') {
       return;
     }
