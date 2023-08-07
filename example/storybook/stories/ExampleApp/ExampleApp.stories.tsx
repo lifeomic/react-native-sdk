@@ -15,6 +15,7 @@ import { t } from 'i18next';
 import { Home, Bell, Settings, Menu } from '@lifeomic/chromicons-native';
 import { HelloWorldScreen } from '../../../src/screens/HelloWorldScreen';
 import { IconButton } from 'react-native-paper';
+import { navigationRef } from '../../../../src/common/ThemedNavigationContainer';
 
 storiesOf('Example App', module)
   .addDecorator(withKnobs)
@@ -147,7 +148,15 @@ storiesOf('Example App', module)
     const alignItemValue = number('Align Item', 85, options);
 
     const visibleValue = boolean('Visible', true);
-    const iconButton = <IconButton icon={Bell} />;
+    const iconButton = (
+      <IconButton
+        icon={Settings}
+        onPress={() => {
+          navigationRef.navigate('app', { screen: 'SettingsTab' });
+        }}
+      />
+    );
+
     const brand = {
       styles: {
         AppNavHeader: {
