@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react-native';
-import { authConfig } from '../../helpers/oauthConfig';
+import { authConfig, baseURL } from '../../helpers/oauthConfig';
 import {
   DeveloperConfigProvider,
   RootProviders,
@@ -8,12 +8,13 @@ import {
   LogoHeader,
   BrandConfigProvider,
 } from '../../../../src';
-import { withKnobs, color, boolean } from '@storybook/addon-knobs';
+import { withKnobs, color, boolean, number } from '@storybook/addon-knobs';
 import Color from 'color';
 import logo from './header-logo.png';
 import { t } from 'i18next';
 import { Home, Bell, Settings, Menu } from '@lifeomic/chromicons-native';
 import { HelloWorldScreen } from '../../../src/screens/HelloWorldScreen';
+import { IconButton } from 'react-native-paper';
 
 storiesOf('Example App', module)
   .addDecorator(withKnobs)
@@ -27,6 +28,7 @@ storiesOf('Example App', module)
           simpleTheme: {
             primaryColor,
           },
+          apiBaseURL: baseURL,
         }}
       >
         <RootProviders authConfig={authConfig}>
@@ -55,6 +57,7 @@ storiesOf('Example App', module)
               },
             },
           ],
+          apiBaseURL: baseURL,
         }}
       >
         <RootProviders authConfig={authConfig}>
@@ -119,6 +122,7 @@ storiesOf('Example App', module)
               ],
             },
           },
+          apiBaseURL: baseURL,
         }}
       >
         <RootProviders authConfig={authConfig}>
@@ -128,6 +132,22 @@ storiesOf('Example App', module)
     );
   })
   .add('Customized AppNavHeader with LogoHeader', () => {
+    const options = {
+      range: true,
+      min: 0,
+      max: 100,
+      step: 1,
+    };
+
+    const alignImageValue = number(
+      'Align Image (Re-navigate to screen to take effect)',
+      30,
+      options,
+    );
+    const alignItemValue = number('Align Item', 85, options);
+
+    const visibleValue = boolean('Visible', true);
+    const iconButton = <IconButton icon={Bell} />;
     const brand = {
       styles: {
         AppNavHeader: {
@@ -183,6 +203,15 @@ storiesOf('Example App', module)
             ],
             statusBarHeight: 0,
           },
+          logoHeaderConfig: {
+            Home: {
+              alignImage: `${alignImageValue}%`,
+              visible: visibleValue,
+              item: iconButton,
+              alignItem: `${alignItemValue}%`,
+            },
+          },
+          apiBaseURL: baseURL,
         }}
       >
         <RootProviders authConfig={authConfig}>

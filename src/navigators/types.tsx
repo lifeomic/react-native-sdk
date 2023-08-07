@@ -98,6 +98,12 @@ export type SettingsStackParamList = {
   'Settings/Wearables': undefined;
 };
 
+export type Route =
+  | keyof LoggedInRootParamList
+  | keyof SettingsStackParamList
+  | keyof NotificationsStackParamList
+  | keyof HomeStackParamList;
+
 declare global {
   namespace ReactNavigation {
     interface RootParamList extends RootStackParamList {}
