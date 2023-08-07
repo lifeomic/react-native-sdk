@@ -1,8 +1,11 @@
 import * as React from 'react';
 
-import { NavigationContainer, Theme } from '@react-navigation/native';
+import {
+  createNavigationContainerRef,
+  NavigationContainer,
+  Theme,
+} from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
-import { createNavigationContainerRef } from '@react-navigation/native';
 
 export const navigationRef = createNavigationContainerRef();
 

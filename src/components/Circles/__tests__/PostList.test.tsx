@@ -8,6 +8,7 @@ import { CircleTile } from '../../../hooks/useAppConfig';
 import { useInfinitePosts, useCreatePost } from '../../../hooks';
 import { CreateEditPostModal } from '../CreateEditPostModal';
 
+jest.unmock('@react-navigation/native');
 jest.mock('../../../hooks/Circles/useInfinitePosts');
 jest.mock('../../../hooks/Circles/useCreatePost');
 jest.mock('../ReactionsToolbar');

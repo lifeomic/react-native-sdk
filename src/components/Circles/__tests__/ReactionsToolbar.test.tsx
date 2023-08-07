@@ -10,6 +10,7 @@ import {
 } from '../../../hooks';
 import { useUser } from '../../../hooks/useUser';
 
+jest.unmock('@react-navigation/native');
 jest.useFakeTimers();
 jest.mock('../../../hooks/Circles/useReactionMutations', () => ({
   useCreateReactionMutation: jest.fn(),

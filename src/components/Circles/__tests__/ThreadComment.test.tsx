@@ -6,6 +6,7 @@ import {
 import { ThreadComment } from '../ThreadComment';
 import { Post } from '../../../hooks';
 
+jest.unmock('@react-navigation/native');
 jest.mock('date-fns', () => ({
   ...jest.requireActual('date-fns'),
   formatDistanceToNow: jest.fn(() => '5 minutes'),

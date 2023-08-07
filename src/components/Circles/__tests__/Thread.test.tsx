@@ -8,6 +8,7 @@ import { Thread } from '../Thread';
 import { usePost, Post, useLoadReplies } from '../../../hooks';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
+jest.unmock('@react-navigation/native');
 jest.mock('../../../hooks/Circles/usePost');
 jest.mock('../../../hooks/Circles/useLoadReplies');
 jest.mock('../ReactionsToolbar');
