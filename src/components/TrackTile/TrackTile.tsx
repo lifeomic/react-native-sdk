@@ -28,11 +28,13 @@ export function TrackTile({
   hideSettingsButton = false,
   title = '',
   styles: instanceStyles,
+  shouldUseOntology,
 }: TrackTileProps) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const valuesContext: TrackerValuesContext = {
     system: TRACKER_CODE_SYSTEM,
     codeBelow: TRACKER_CODE,
+    shouldUseOntology: shouldUseOntology,
   };
 
   const { trackers, loading: trackersLoading } = useTrackers();

@@ -16,6 +16,7 @@ import { NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/ty
 import { PointBreakdownProps } from '../components/SocialShare/renderers/point-breakdown';
 import { Route } from '../navigators/types';
 import { LogoHeaderOptions } from '../hooks/useLogoHeaderOptions';
+import { EducationContent } from '../components/TrackTile/services/TrackTileService';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -38,6 +39,11 @@ import { LogoHeaderOptions } from '../hooks/useLogoHeaderOptions';
  * bottom navigation tab (in addition to Home, Notifications, and Settings.
  *
  * @param renderCustomLoggingScreen Allows for configuring a custom login screen
+ *
+ * @param ontology.educationContentOverrides Allows for providing overrides
+ * for the `educationContent` property of terminology responses.  This enables
+ * showing a custom thumbnail image in AdvancedTrackerDetails. The key provided
+ * must be the `coding.code` value, e.g. '41950-7' for steps.
  */
 
 export interface RouteColor {
@@ -95,6 +101,9 @@ export type DeveloperConfig = {
     pointBreakdown: (props: PointBreakdownProps) => React.JSX.Element;
   };
   logoHeaderConfig?: LogoHeaderConfig;
+  ontology?: {
+    educationContentOverrides?: Record<string, EducationContent>;
+  };
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };
