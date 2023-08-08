@@ -10,7 +10,13 @@ import {
   TRACKER_CODE_SYSTEM,
 } from '../../../../src/components/TrackTile/services/TrackTileService';
 import { t } from '../../../../lib/i18n';
-import { boolean, withKnobs, object, date } from '@storybook/addon-knobs';
+import {
+  boolean,
+  withKnobs,
+  object,
+  date,
+  select,
+} from '@storybook/addon-knobs';
 import { Anchor } from '@lifeomic/chromicons-native';
 import {
   UnitPicker,
@@ -107,7 +113,20 @@ storiesOf('TrackerDetails', module)
         developerConfig={{
           componentProps: {
             TrackerDetails: {
-              showSimpleTargetMessage: true,
+              showSimpleTargetMessage: boolean('showSimpleTargetMessage', true),
+              dayPickerShowTodaysUnits: boolean(
+                'dayPickerShowTodaysUnits',
+                true,
+              ),
+              dayPickerDateFormat: select(
+                'dayPickerDateFormat',
+                {
+                  'iiii, MMMM d': 'iiii, MMMM d',
+                  'MMMM d': 'MMMM d',
+                  'MMMM d, yyyy': 'MMMM d, yyyy',
+                },
+                'iiii, MMMM d',
+              ),
               radialProgressStrokeLinecap: 'butt',
               radialProgressRadius: 100,
               radialProgressStrokeWidth: 15,

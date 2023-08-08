@@ -59,6 +59,8 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     radialProgressStrokeLinecap,
     radialProgressRotation,
     metricOverrides,
+    dayPickerShowTodaysUnits,
+    dayPickerDateFormat,
   } = componentProps?.TrackerDetails || {};
   const defaultUnit = getStoredUnitType(tracker);
   const { styles } = useStyles(defaultStyles);
@@ -217,6 +219,8 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           tracker={tracker}
           unit={selectedUnit}
           color={trackerColor}
+          showTodaysUnits={dayPickerShowTodaysUnits}
+          dateFormat={dayPickerDateFormat}
         />
         {trackerImage && (
           <View style={styles.imageProgressContainer}>

@@ -23,10 +23,22 @@ export type DayPickerProps = {
     }>
   >;
   style?: DayPickerStyles;
+  dateFormat?: string;
+  showTodaysUnits?: boolean;
 };
 
 export const DayPicker: FC<DayPickerProps> = (props) => {
-  const { tracker, dateRange, unit, target, onChange, color, style } = props;
+  const {
+    tracker,
+    dateRange,
+    unit,
+    target,
+    onChange,
+    color,
+    style,
+    dateFormat = 'iiii, MMMM d',
+    showTodaysUnits = true,
+  } = props;
   const { styles } = useStyles(defaultStyles, style);
 
   const shiftRangeByDays = useCallback(
@@ -38,6 +50,19 @@ export const DayPicker: FC<DayPickerProps> = (props) => {
     },
     [onChange],
   );
+
+  const dateText =
+    showTodaysUnits && isToday(dateRange.start)
+      ? t('track-tile.todays-units', {
+          defaultValue: "Today's {{unit}}",
+          unit: unitDisplay({
+            tracker,
+            unit,
+            value: target,
+            skipInterpolation: true,
+          }),
+        })
+      : format(dateRange.start, dateFormat);
 
   return (
     <DatePicker
@@ -51,19 +76,7 @@ export const DayPicker: FC<DayPickerProps> = (props) => {
       )}
       backValue={-1}
       forwardValue={1}
-      dateText={
-        isToday(dateRange.start)
-          ? t('track-tile.todays-units', {
-              defaultValue: "Today's {{unit}}",
-              unit: unitDisplay({
-                tracker,
-                unit,
-                value: target,
-                skipInterpolation: true,
-              }),
-            })
-          : format(dateRange.start, 'iiii, MMMM d')
-      }
+      dateText={dateText}
       color={color}
       onChange={shiftRangeByDays}
       iconDisabledCondition={isToday(dateRange.start)}
