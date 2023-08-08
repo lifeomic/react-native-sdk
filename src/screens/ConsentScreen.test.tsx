@@ -5,7 +5,7 @@ import { useOAuthFlow, useConsent, useOnboardingCourse } from '../hooks';
 import { ConsentScreen } from './ConsentScreen';
 
 jest.unmock('i18next');
-
+jest.unmock('@react-navigation/native');
 jest.mock('../hooks/useOAuthFlow', () => ({
   useOAuthFlow: jest.fn(),
 }));

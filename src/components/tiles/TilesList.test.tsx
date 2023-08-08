@@ -7,7 +7,10 @@ import { useAppConfig } from '../../hooks/useAppConfig';
 import { useIcons } from '../BrandConfigProvider';
 
 jest.unmock('i18next');
-
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: jest.fn(),
+}));
 jest.mock('../TrackTile', () => ({
   TrackTile: ({ title }: { title: string }) => <Text>{title}</Text>,
 }));

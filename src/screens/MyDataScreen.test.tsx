@@ -15,6 +15,7 @@ import { MyDataScreen } from './MyDataScreen';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
+jest.unmock('@react-navigation/native');
 jest.unmock('i18next');
 
 jest.mock('../hooks/useAppConfig', () => ({

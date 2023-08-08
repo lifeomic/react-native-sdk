@@ -14,6 +14,8 @@ import {
 } from '@react-navigation/native-stack';
 import { NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { PointBreakdownProps } from '../components/SocialShare/renderers/point-breakdown';
+import { Route } from '../navigators/types';
+import { LogoHeaderOptions } from '../hooks/useLogoHeaderOptions';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -92,7 +94,10 @@ export type DeveloperConfig = {
   sharingRenderers?: {
     pointBreakdown: (props: PointBreakdownProps) => React.JSX.Element;
   };
+  logoHeaderConfig?: LogoHeaderConfig;
 };
+
+export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };
 
 export type AppTileScreens = {
   [key: string]: ComponentType;

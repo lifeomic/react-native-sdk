@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
 jest.unmock('i18next');
-
+jest.unmock('@react-navigation/native');
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));

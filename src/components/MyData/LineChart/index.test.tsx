@@ -5,6 +5,7 @@ import { LineChart } from './index';
 import { useChartData } from './useChartData';
 import { addDays, startOfDay, format } from 'date-fns';
 
+jest.unmock('@react-navigation/native');
 jest.mock('./useChartData', () => ({
   useChartData: jest.fn(),
 }));
