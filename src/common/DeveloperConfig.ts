@@ -66,7 +66,8 @@ export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
-  additionalNavigationTabs?: AdditionalNavigationTab[];
+  navigationTabs?: NavigationTab[];
+  additionalNavigationTabs?: NavigationTab[];
   AppNavHeader?: {
     headerColors?: RouteColor[];
     onHeaderColors?: RouteColor[];
@@ -127,7 +128,7 @@ export function getCustomAppTileComponent(
   );
 }
 
-export type AdditionalNavigationTab = {
+export type NavigationTab = {
   name: string;
   component: () => JSX.Element;
   options: {

@@ -18,7 +18,8 @@ export function TabNavigator() {
   const { Home, Bell, Settings } = useIcons();
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
-  const { additionalNavigationTabs, componentProps } = useDeveloperConfig();
+  const { additionalNavigationTabs, componentProps, navigationTabs } =
+    useDeveloperConfig();
   const { useTabBar } = componentProps?.TabNavigator || {};
 
   const Tab = useTabBar
@@ -29,15 +30,8 @@ export function TabNavigator() {
     return useTabBar ? <TabBar {...props} /> : null;
   };
 
-  return (
-    <Tab.Navigator
-      tabBar={tabBar}
-      shifting={true}
-      barStyle={styles.barStyle}
-      activeColor={theme.colors.onSurface}
-      inactiveColor={theme.colors.onSurfaceDisabled}
-      labeled
-    >
+  const defaultTabs = (
+    <>
       <Tab.Screen
         name="HomeTab"
         component={HomeStack}
@@ -69,6 +63,32 @@ export function TabNavigator() {
           headerShown: false,
         }}
       />
+    </>
+  );
+
+  return (
+    <Tab.Navigator
+      tabBar={tabBar}
+      shifting={true}
+      barStyle={styles.barStyle}
+      activeColor={theme.colors.onSurface}
+      inactiveColor={theme.colors.onSurfaceDisabled}
+      labeled
+    >
+      {navigationTabs
+        ? navigationTabs?.map((tab) => (
+            <Tab.Screen
+              name={tab.name}
+              component={tab.component}
+              key={tab.name}
+              options={{
+                tabBarLabel: tab.options.tabBarLabel,
+                tabBarIcon: tab.options.tabBarIcon,
+                headerShown: false,
+              }}
+            />
+          ))
+        : defaultTabs}
       {!useTabBar &&
         additionalNavigationTabs?.map((tab) => (
           <Tab.Screen
