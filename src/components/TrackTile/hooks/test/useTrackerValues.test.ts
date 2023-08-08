@@ -354,17 +354,17 @@ describe('useTrackerValues', () => {
       fetchOntology,
     } as any);
 
-    const valuesContext: TrackerValuesContext = {
+    const customValuesContext: TrackerValuesContext = {
       system: TRACKER_CODE_SYSTEM,
       codeBelow: TRACKER_CODE,
       shouldUseOntology: true,
     };
     const { result, waitFor } = renderHook(() =>
-      useTrackerValues(valuesContext),
+      useTrackerValues(customValuesContext),
     );
 
     await waitFor(() => {
-      expect(fetchTrackerValues).toHaveBeenCalledWith(valuesContext, {
+      expect(fetchTrackerValues).toHaveBeenCalledWith(customValuesContext, {
         start: startOfToday(),
         end: endOfToday(),
       });
