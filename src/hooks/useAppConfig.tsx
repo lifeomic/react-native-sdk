@@ -38,7 +38,11 @@ export interface AppConfig {
     appTiles?: AppTile[];
     circleTiles?: CircleTile[];
     tiles?: Tile[];
-    trackTileSettings?: { title: string; advancedScreenTrackers: string[] };
+    trackTileSettings?: {
+      title: string;
+      advancedScreenTrackers: string[];
+      includePublic?: boolean;
+    };
     messageTiles?: MessageTile[];
     pillarSettings?: { advancedScreenTrackers: string[] };
     myDataSettings?: {

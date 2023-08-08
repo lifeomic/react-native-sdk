@@ -15,6 +15,7 @@ const tracker: Tracker = {
   system: 'system',
   code: '1',
   target: 3,
+  installed: true,
 } as Partial<Tracker> as any;
 
 const renderWithProviders = (children: React.ReactNode) => {
@@ -60,6 +61,7 @@ describe('Tracker Row', () => {
         system: 'system',
         code: '1',
         target: 3,
+        installed: true,
       } as Partial<Tracker> as any,
     ];
     const { findByText } = renderWithProviders(

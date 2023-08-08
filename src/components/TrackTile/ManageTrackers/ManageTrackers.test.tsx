@@ -101,6 +101,7 @@ describe('Manage Trackers', () => {
       unit: 'A',
       target: 1,
       metricId: 'A',
+      units: [],
       order: 0,
     };
     const trackerB = {
@@ -108,11 +109,13 @@ describe('Manage Trackers', () => {
       unit: 'B',
       target: 1,
       metricId: 'B',
+      units: [],
       order: 1,
     };
     const upsertTrackers = jest.fn();
 
-    const { findByLabelText, findByText } = renderManageTrackers({
+    const { findByText, findByTestId, rerender } = renderManageTrackers({
+      editingState: 'editing',
       trackTileService: {
         upsertTrackers,
       },
@@ -122,20 +125,30 @@ describe('Manage Trackers', () => {
     });
 
     await act(async () => {
-      fireEvent(await findByLabelText('Reorder trackers'), 'valueChange', true);
-
-      fireEvent(await findByText(trackerB.name), 'pressIn');
+      fireEvent(
+        await findByTestId(`drag-handle-${trackerB.metricId}`),
+        'pressIn',
+      );
 
       fireEvent(await findByText(trackerB.name), 'dragEnd', {
         data: [trackerB, trackerA],
       });
-
-      fireEvent(
-        await findByLabelText('Save tracker order'),
-        'valueChange',
-        false,
-      );
     });
+
+    rerender(
+      <ManageTrackersProvider
+        {...({
+          onOpenTracker: jest.fn(),
+          editingState: 'done',
+          trackTileService: {
+            upsertTrackers,
+          },
+          trackerRequestMeta: {
+            trackers: [trackerA, trackerB],
+          },
+        } as any as ManageTrackersProviderProps)}
+      />,
+    );
 
     expect(upsertTrackers).toHaveBeenCalledWith(
       expect.arrayContaining([

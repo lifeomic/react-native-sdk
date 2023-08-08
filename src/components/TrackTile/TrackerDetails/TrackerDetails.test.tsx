@@ -111,6 +111,7 @@ describe('Tracker Details', () => {
             target: 4,
             unit: 'unit',
             order: 0,
+            installed: true,
             units: [
               {
                 display: '',

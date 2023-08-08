@@ -1,7 +1,6 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useTrackers } from '../useTrackers';
 import {
-  isInstalledMetric,
   TRACKER_PILLAR_CODE_SYSTEM,
   useTrackTileService,
 } from '../../services/TrackTileService';
@@ -95,18 +94,22 @@ describe('useTrackers', () => {
 
   it('should modify the metric metadata (by id) when notifyTrackerRemoved is called so that it is not installed', async () => {
     mockUseTrackTileService.mockReturnValue({
-      fetchTrackers: jest
-        .fn()
-        .mockResolvedValue([
-          { id: 'tracker-id', metricId: '1', unit: 'u', target: 1 },
-        ]),
+      fetchTrackers: jest.fn().mockResolvedValue([
+        {
+          id: 'tracker-id',
+          metricId: '1',
+          unit: 'u',
+          target: 1,
+          installed: true,
+        },
+      ]),
     } as any);
 
     const { result, waitForNextUpdate } = renderHook(() => useTrackers());
 
     await waitForNextUpdate();
 
-    expect(isInstalledMetric(result.current.trackers[0])).toBe(true);
+    expect(result.current.trackers[0].installed).toBe(true);
 
     act(() => {
       notifyTrackerRemoved({
@@ -117,7 +120,7 @@ describe('useTrackers', () => {
       } as any);
     });
 
-    expect(isInstalledMetric(result.current.trackers[0])).toBe(false);
+    expect(result.current.trackers[0].installed).toBe(false);
   });
 
   it('sort the trackers correctly when updating settings', async () => {
