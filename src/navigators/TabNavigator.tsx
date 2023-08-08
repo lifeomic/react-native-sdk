@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { t } from 'i18next';
@@ -30,40 +30,43 @@ export function TabNavigator() {
     return useTabBar ? <TabBar {...props} /> : null;
   };
 
-  const defaultTabs = (
-    <>
-      <Tab.Screen
-        name="HomeTab"
-        component={HomeStack}
-        key="HomeTab"
-        options={{
-          tabBarLabel: t('tabs-home', 'Home'),
-          tabBarIcon: Home,
-          tabBarColor: 'red',
-          headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="NotificationsTab"
-        component={NotificationsStack}
-        key="NotificationsTab"
-        options={{
-          tabBarLabel: t('tabs-notifications', 'Notifications'),
-          tabBarIcon: Bell,
-          headerShown: false,
-        }}
-      />
-      <Tab.Screen
-        name="SettingsTab"
-        key="SettingsTab"
-        component={SettingsStack}
-        options={{
-          tabBarLabel: t('tabs-settings', 'Settings'),
-          tabBarIcon: Settings,
-          headerShown: false,
-        }}
-      />
-    </>
+  const defaultTabs = useCallback(
+    () => (
+      <>
+        <Tab.Screen
+          name="HomeTab"
+          component={HomeStack}
+          key="HomeTab"
+          options={{
+            tabBarLabel: t('tabs-home', 'Home'),
+            tabBarIcon: Home,
+            tabBarColor: 'red',
+            headerShown: false,
+          }}
+        />
+        <Tab.Screen
+          name="NotificationsTab"
+          component={NotificationsStack}
+          key="NotificationsTab"
+          options={{
+            tabBarLabel: t('tabs-notifications', 'Notifications'),
+            tabBarIcon: Bell,
+            headerShown: false,
+          }}
+        />
+        <Tab.Screen
+          name="SettingsTab"
+          key="SettingsTab"
+          component={SettingsStack}
+          options={{
+            tabBarLabel: t('tabs-settings', 'Settings'),
+            tabBarIcon: Settings,
+            headerShown: false,
+          }}
+        />
+      </>
+    ),
+    [Bell, Home, Settings, Tab],
   );
 
   return (
@@ -88,7 +91,7 @@ export function TabNavigator() {
               }}
             />
           ))
-        : defaultTabs}
+        : defaultTabs()}
       {!useTabBar &&
         additionalNavigationTabs?.map((tab) => (
           <Tab.Screen
