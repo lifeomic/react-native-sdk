@@ -11,7 +11,6 @@ import {
 import { withKnobs, color, boolean, number } from '@storybook/addon-knobs';
 import Color from 'color';
 import logo from './header-logo.png';
-import { t } from 'i18next';
 import { Home, Bell, Settings, Menu } from '@lifeomic/chromicons-native';
 import { HelloWorldScreen } from '../../../src/screens/HelloWorldScreen';
 import { IconButton } from 'react-native-paper';
@@ -52,10 +51,8 @@ storiesOf('Example App', module)
             {
               name: 'AdditionalTab',
               component: HelloWorldScreen,
-              options: {
-                tabBarLabel: t('tabs-settings', 'Settings'),
-                tabBarIcon: Menu,
-              },
+              label: 'Hello World',
+              icon: Menu,
             },
           ],
           apiBaseURL: baseURL,

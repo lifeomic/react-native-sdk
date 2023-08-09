@@ -37,10 +37,8 @@ storiesOf('Custom Screen Injection', module)
             {
               name: 'CustomTab',
               component: NavigationPlaygroundScreen,
-              options: {
-                tabBarLabel: 'Navigation',
-                tabBarIcon: Navigation,
-              },
+              label: 'Navigation',
+              icon: Navigation,
             },
           ],
         }}

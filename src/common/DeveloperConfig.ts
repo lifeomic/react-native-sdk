@@ -66,7 +66,6 @@ export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
-  navigationTabs?: NavigationTab[];
   additionalNavigationTabs?: NavigationTab[];
   AppNavHeader?: {
     headerColors?: RouteColor[];
@@ -79,12 +78,11 @@ export type DeveloperConfig = {
     };
     TabBar?: {
       showLabels?: boolean;
-      tabs?: {
-        icon: (props: SvgProps) => JSX.Element;
-        svgProps?: (theme: Theme) => SvgProps;
-        svgPropsActive?: (theme: Theme) => SvgProps;
-        svgPropsInactive?: (theme: Theme) => SvgProps;
-      }[];
+      tabs?: [
+        Partial<NavigationTab>,
+        Partial<NavigationTab>,
+        Partial<NavigationTab>,
+      ];
     };
     TrackerDetails?: {
       showSimpleTargetMessage: boolean;
@@ -131,10 +129,13 @@ export function getCustomAppTileComponent(
 export type NavigationTab = {
   name: string;
   component: () => JSX.Element;
-  options: {
-    tabBarLabel: string;
-    tabBarIcon: (props: SvgProps) => JSX.Element;
-  };
+  label?: string;
+  icon: (props: SvgProps) => JSX.Element;
+  svgProps?: (theme: Theme) => SvgProps;
+  svgPropsActive?: (theme: Theme) => SvgProps;
+  svgPropsInactive?: (theme: Theme) => SvgProps;
+  headerShown?: boolean;
+  color?: string;
 };
 
 export type PushNotificationsConfig = {
