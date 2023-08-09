@@ -6,21 +6,22 @@ import { SettingsStack } from './SettingsStack';
 import { HomeStack } from './HomeStack';
 import { NotificationsStack } from './NotificationsStack';
 import { useStyles } from '../hooks/useStyles';
-import { createStyles, useIcons } from '../components/BrandConfigProvider';
+import { createStyles } from '../components/BrandConfigProvider';
 import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
 import { useDeveloperConfig } from '../hooks';
 import { TabBar } from './TabBar';
+import { NavigationTab } from '../common/DeveloperConfig';
+import { Bell, Home, Settings } from '@lifeomic/chromicons-native';
 
 export function TabNavigator() {
-  const { Home, Bell, Settings } = useIcons();
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
-  const { additionalNavigationTabs, componentProps } = useDeveloperConfig();
+  const { componentProps } = useDeveloperConfig();
   const { useTabBar } = componentProps?.TabNavigator || {};
-  const tabs = componentProps?.TabBar?.tabs;
+  const tabs = componentProps?.TabBar?.tabs ?? getDefaultTabs();
 
   const Tab = useTabBar
     ? createBottomTabNavigator<TabParamList>()
@@ -39,56 +40,49 @@ export function TabNavigator() {
       inactiveColor={theme.colors.onSurfaceDisabled}
       labeled
     >
-      <Tab.Screen
-        name={tabs?.[0].name ?? 'HomeTab'}
-        component={tabs?.[0].component ?? HomeStack}
-        key={tabs?.[0].name ?? 'HomeTab'}
-        options={{
-          tabBarLabel: tabs?.[0].label ?? t('tabs-home', 'Home'),
-          tabBarIcon: tabs?.[0].icon ?? Home,
-          tabBarColor: tabs?.[0].color ?? 'red',
-          headerShown: tabs?.[0].headerShown ?? false,
-        }}
-      />
-      <Tab.Screen
-        name={tabs?.[1].name ?? 'NotificationsTab'}
-        component={tabs?.[1].component ?? NotificationsStack}
-        key={tabs?.[1].name ?? 'NotificationsTab'}
-        options={{
-          tabBarLabel:
-            tabs?.[1].label ?? t('tabs-notifications', 'Notifications'),
-          tabBarIcon: tabs?.[1].icon ?? Bell,
-          tabBarColor: tabs?.[1].color,
-          headerShown: tabs?.[1].headerShown ?? false,
-        }}
-      />
-      <Tab.Screen
-        name={tabs?.[2].name ?? 'SettingsTab'}
-        component={tabs?.[2].component ?? SettingsStack}
-        key={tabs?.[2].name ?? 'SettingsTab'}
-        options={{
-          tabBarLabel: tabs?.[2].label ?? t('tabs-settings', 'Settings'),
-          tabBarIcon: tabs?.[2].icon ?? Settings,
-          tabBarColor: tabs?.[2].color,
-          headerShown: tabs?.[2].headerShown ?? false,
-        }}
-      />
-      {!useTabBar &&
-        additionalNavigationTabs?.map((tab) => (
-          <Tab.Screen
-            name={tab.name}
-            component={tab.component}
-            key={tab.name}
-            options={{
-              tabBarLabel: tab.label,
-              tabBarIcon: tab.icon,
-              headerShown: tab?.headerShown,
-              tabBarColor: tab?.color,
-            }}
-          />
-        ))}
+      {tabs?.map((tab) => (
+        <Tab.Screen
+          name={tab.name}
+          component={tab.component}
+          key={tab.name}
+          options={{
+            tabBarLabel: tab.label,
+            tabBarIcon: tab.icon,
+            headerShown: tab?.headerShown,
+            tabBarColor: tab?.color,
+          }}
+        />
+      ))}
     </Tab.Navigator>
   );
+}
+
+export function getDefaultTabs() {
+  const defaults: NavigationTab[] = [
+    {
+      name: 'HomeTab',
+      component: HomeStack,
+      label: t('tabs-home', 'Home'),
+      icon: Home,
+      color: 'red',
+      headerShown: false,
+    },
+    {
+      name: 'NotificationsTab',
+      component: NotificationsStack,
+      label: t('tabs-notifications', 'Notifications'),
+      icon: Bell,
+      headerShown: false,
+    },
+    {
+      name: 'SettingsTab',
+      component: SettingsStack,
+      label: t('tabs-settings', 'Settings'),
+      icon: Settings,
+      headerShown: false,
+    },
+  ];
+  return defaults;
 }
 
 const defaultStyles = createStyles('TabNavigator', (theme) => ({

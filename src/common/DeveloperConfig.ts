@@ -66,7 +66,6 @@ export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
-  additionalNavigationTabs?: NavigationTab[];
   AppNavHeader?: {
     headerColors?: RouteColor[];
     onHeaderColors?: RouteColor[];
@@ -78,11 +77,7 @@ export type DeveloperConfig = {
     };
     TabBar?: {
       showLabels?: boolean;
-      tabs?: [
-        Partial<NavigationTab>,
-        Partial<NavigationTab>,
-        Partial<NavigationTab>,
-      ];
+      tabs?: NavigationTab[];
     };
     TrackerDetails?: {
       showSimpleTargetMessage: boolean;

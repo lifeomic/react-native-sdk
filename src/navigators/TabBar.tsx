@@ -142,6 +142,10 @@ const TabBarButton = ({
 
   const bottomInset = inset.bottom || defaultBottomInset;
 
+  // Since we've only defined styles for the first 3 tabs
+  // any additional tabs will use the styles of the last tab
+  const limitedRouteIndex = Math.min(activeRouteIndex, 2);
+
   const tabViewStylesActive = [
     styles.tabActive0View,
     styles.tabActive1View,
@@ -168,14 +172,14 @@ const TabBarButton = ({
 
   const tabViewStyle = [
     isActive
-      ? [styles.tabActiveView, tabViewStylesActive[activeRouteIndex]]
-      : [styles.tabInactiveView, tabViewStylesInactive[activeRouteIndex]],
+      ? [styles.tabActiveView, tabViewStylesActive[limitedRouteIndex]]
+      : [styles.tabInactiveView, tabViewStylesInactive[limitedRouteIndex]],
     { width, paddingBottom: bottomInset },
   ];
 
   const labelTextStyle = isActive
-    ? [styles.labelActiveText, labelTextStylesActive[activeRouteIndex]]
-    : [styles.labelInactiveText, labelTextStylesInactive[activeRouteIndex]];
+    ? [styles.labelActiveText, labelTextStylesActive[limitedRouteIndex]]
+    : [styles.labelInactiveText, labelTextStylesInactive[limitedRouteIndex]];
 
   const hitSlop = {
     left: 15,
