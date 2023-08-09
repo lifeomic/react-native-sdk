@@ -7,11 +7,11 @@ import {
   RootStack,
   LogoHeader,
   BrandConfigProvider,
+  getDefaultTabs,
 } from '../../../../src';
 import { withKnobs, color, boolean, number } from '@storybook/addon-knobs';
 import Color from 'color';
 import logo from './header-logo.png';
-import { t } from 'i18next';
 import { Home, Bell, Settings, Menu } from '@lifeomic/chromicons-native';
 import { HelloWorldScreen } from '../../../src/screens/HelloWorldScreen';
 import { IconButton } from 'react-native-paper';
@@ -48,16 +48,19 @@ storiesOf('Example App', module)
           simpleTheme: {
             primaryColor,
           },
-          additionalNavigationTabs: [
-            {
-              name: 'AdditionalTab',
-              component: HelloWorldScreen,
-              options: {
-                tabBarLabel: t('tabs-settings', 'Settings'),
-                tabBarIcon: Menu,
-              },
+          componentProps: {
+            TabBar: {
+              tabs: [
+                ...getDefaultTabs(),
+                {
+                  name: 'AdditionalTab',
+                  component: HelloWorldScreen,
+                  label: 'Hello World',
+                  icon: Menu,
+                },
+              ],
             },
-          ],
+          },
           apiBaseURL: baseURL,
         }}
       >
@@ -68,6 +71,8 @@ storiesOf('Example App', module)
     );
   })
   .add('Customized TabBar', () => {
+    const defaultTabs = getDefaultTabs();
+
     return (
       <DeveloperConfigProvider
         developerConfig={{
@@ -79,6 +84,7 @@ storiesOf('Example App', module)
               showLabels: boolean('Show Labels', false),
               tabs: [
                 {
+                  ...defaultTabs[0],
                   icon: Home,
                   svgProps: () => ({
                     width: 42,
@@ -93,6 +99,7 @@ storiesOf('Example App', module)
                   }),
                 },
                 {
+                  ...defaultTabs[1],
                   icon: Bell,
                   svgProps: () => ({
                     width: 42,
@@ -107,6 +114,7 @@ storiesOf('Example App', module)
                   }),
                 },
                 {
+                  ...defaultTabs[2],
                   icon: Settings,
                   svgProps: () => ({
                     width: 42,
