@@ -6,6 +6,7 @@ import {
 import { PostItem } from '../PostItem';
 import { Post as PostType, Priority } from '../../../hooks';
 
+jest.unmock('@react-navigation/native');
 jest.mock('../ReactionsToolbar');
 
 const post: PostType = {

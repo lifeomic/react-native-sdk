@@ -1,7 +1,7 @@
 import { sortBy } from 'lodash';
 import { useFhirClient } from '../../../hooks';
 import { Trace } from './TraceLine';
-import { startOfDay } from 'date-fns';
+import { startOfDay, differenceInDays } from 'date-fns';
 
 type Props = {
   trace1: Trace;
@@ -13,10 +13,13 @@ export const useChartData = (props: Props) => {
   const { trace1, trace2, dateRange } = props;
   const { useSearchResourcesQuery } = useFhirClient();
 
+  const days = Math.abs(differenceInDays(...dateRange));
+
   const trace1Res = useSearchResourcesQuery({
     resourceType: trace1.type,
     coding: trace1.coding,
     dateRange,
+    pageSize: Math.max(200, days),
   });
 
   const trace2Res = useSearchResourcesQuery({
@@ -24,6 +27,7 @@ export const useChartData = (props: Props) => {
     coding: trace2?.coding ?? [],
     dateRange,
     enabled: !!trace2,
+    pageSize: Math.max(200, days),
   });
 
   const trace1Data = sortBy(extractPointData(trace1Res, trace1), 'x');

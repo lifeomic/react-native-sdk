@@ -5,6 +5,7 @@ import {
   DeveloperConfigProvider,
   RootProviders,
   RootStack,
+  getDefaultTabs,
 } from '../../../../src';
 import { withKnobs } from '@storybook/addon-knobs';
 import {
@@ -33,16 +34,19 @@ storiesOf('Custom Screen Injection', module)
               />,
             ];
           },
-          additionalNavigationTabs: [
-            {
-              name: 'CustomTab',
-              component: NavigationPlaygroundScreen,
-              options: {
-                tabBarLabel: 'Navigation',
-                tabBarIcon: Navigation,
-              },
+          componentProps: {
+            TabBar: {
+              tabs: [
+                ...getDefaultTabs(),
+                {
+                  name: 'CustomTab',
+                  component: NavigationPlaygroundScreen,
+                  label: 'Navigation',
+                  icon: Navigation,
+                },
+              ],
             },
-          ],
+          },
         }}
       >
         <RootProviders authConfig={authConfig}>

@@ -29,6 +29,7 @@ import { useHttpClient } from '../../../hooks/useHttpClient';
 import { useActiveAccount } from './../../../hooks/useActiveAccount';
 import { useActiveProject } from './../../../hooks/useActiveProject';
 import { useUser } from '../../../hooks/useUser';
+import { useDeveloperConfig } from '../../../hooks/useDeveloperConfig';
 
 const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
   headers: {
@@ -44,6 +45,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   const { data: userData } = useUser();
   const userId = userData?.id;
   const [previousUserId, setPreviousUserId] = useState(userId);
+  const { ontology: devConfigOntology } = useDeveloperConfig();
 
   const accountId = account?.id || '';
   const projectId = activeProject?.id || '';
@@ -407,10 +409,16 @@ export const useAxiosTrackTileService = (): TrackTileService => {
         }
 
         return relationship.edges.map(
-          ({ node: { relationshipConnection, ...rest } }) => ({
-            ...rest,
-            specializedBy: parseRelationship(relationshipConnection),
-          }),
+          ({ node: { relationshipConnection, ...rest } }) => {
+            const educationContentOverride =
+              devConfigOntology?.educationContentOverrides?.[rest.code];
+            return {
+              ...rest,
+              educationContent:
+                educationContentOverride ?? rest.educationContent,
+              specializedBy: parseRelationship(relationshipConnection),
+            };
+          },
         );
       };
 

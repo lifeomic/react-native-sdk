@@ -15,6 +15,9 @@ import {
 import { NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { PointBreakdownProps } from '../components/SocialShare/renderers/point-breakdown';
 import { ImageSourcePropType } from 'react-native';
+import { Route } from '../navigators/types';
+import { LogoHeaderOptions } from '../hooks/useLogoHeaderOptions';
+import { EducationContent } from '../components/TrackTile/services/TrackTileService';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -28,7 +31,7 @@ import { ImageSourcePropType } from 'react-native';
  * @param appTileScreens Allows for custom screens to be registered to be launched
  * when an app tile with a matching URL is tapped.
  *
- * @param simpleTheme Allows for configuring a theme via a primary and accent color.
+ * @param simpleTheme Allows for configuring a theme via a primary color.
  *
  * @param apiBaseURL Allows for configuring a custom base API URL. This is only
  * needed when performing advanced debugging involving a dev mock server.
@@ -37,6 +40,11 @@ import { ImageSourcePropType } from 'react-native';
  * bottom navigation tab (in addition to Home, Notifications, and Settings.
  *
  * @param renderCustomLoggingScreen Allows for configuring a custom login screen
+ *
+ * @param ontology.educationContentOverrides Allows for providing overrides
+ * for the `educationContent` property of terminology responses.  This enables
+ * showing a custom thumbnail image in AdvancedTrackerDetails. The key provided
+ * must be the `coding.code` value, e.g. '41950-7' for steps.
  */
 
 export interface RouteColor {
@@ -59,7 +67,6 @@ export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
   apiBaseURL?: string;
-  additionalNavigationTabs?: AdditionalNavigationTab[];
   AppNavHeader?: {
     headerColors?: RouteColor[];
     onHeaderColors?: RouteColor[];
@@ -71,12 +78,7 @@ export type DeveloperConfig = {
     };
     TabBar?: {
       showLabels?: boolean;
-      tabs?: {
-        icon: (props: SvgProps) => JSX.Element;
-        svgProps?: (theme: Theme) => SvgProps;
-        svgPropsActive?: (theme: Theme) => SvgProps;
-        svgPropsInactive?: (theme: Theme) => SvgProps;
-      }[];
+      tabs?: NavigationTab[];
     };
     TrackerDetails?: {
       showSimpleTargetMessage: boolean;
@@ -97,7 +99,13 @@ export type DeveloperConfig = {
   sharingRenderers?: {
     pointBreakdown: (props: PointBreakdownProps) => React.JSX.Element;
   };
+  logoHeaderConfig?: LogoHeaderConfig;
+  ontology?: {
+    educationContentOverrides?: Record<string, EducationContent>;
+  };
 };
+
+export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };
 
 export type AppTileScreens = {
   [key: string]: ComponentType;
@@ -118,13 +126,16 @@ export function getCustomAppTileComponent(
   );
 }
 
-export type AdditionalNavigationTab = {
+export type NavigationTab = {
   name: string;
   component: () => JSX.Element;
-  options: {
-    tabBarLabel: string;
-    tabBarIcon: (props: SvgProps) => JSX.Element;
-  };
+  label?: string;
+  icon: (props: SvgProps) => JSX.Element;
+  svgProps?: (theme: Theme) => SvgProps;
+  svgPropsActive?: (theme: Theme) => SvgProps;
+  svgPropsInactive?: (theme: Theme) => SvgProps;
+  headerShown?: boolean;
+  color?: string;
 };
 
 export type PushNotificationsConfig = {

@@ -11,15 +11,16 @@ jest.mock('../hooks/useActiveAccount', () => ({
 const useActiveAccountMock = useActiveAccount as jest.Mock;
 
 const setActiveAccountId = jest.fn();
-const useNavigationMock = useNavigation as jest.Mock;
 const goBackMock = jest.fn();
-
-beforeEach(() => {
-  useNavigationMock.mockReturnValue({
-    canGoBack: () => true,
-    goBack: goBackMock,
-  });
+const useNavigationMock = jest.fn().mockReturnValue({
+  canGoBack: () => true,
+  goBack: goBackMock,
 });
+
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: () => useNavigationMock(),
+}));
 
 test('renders buttons to select account', async () => {
   useActiveAccountMock.mockReturnValue({

@@ -418,17 +418,12 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
       </View>
       <View style={styles.chartContainer}>
         <TrackerHistoryChart
-          variant="flat"
-          stepperPosition="bottom"
-          color={tracker.color}
           metricId={metricId}
           target={targetAmount}
           unit={selectedUnit.display}
           tracker={tracker}
           valuesContext={valuesContext}
-          dateRangeType="calendarWeek"
           referenceDate={dateRange.start}
-          chartStyles={styles.chart}
         />
       </View>
     </ScrollView>
@@ -438,11 +433,6 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
 const defaultStyles = createStyles('AdvancedTrackerDetails', (theme) => ({
   container: {
     backgroundColor: theme.colors.elevation.level1,
-  },
-  chart: {
-    labelsContainer: {
-      flexBasis: 20,
-    },
   },
   dayPickerContainer: {
     alignItems: 'center',
@@ -487,7 +477,9 @@ const defaultStyles = createStyles('AdvancedTrackerDetails', (theme) => ({
     marginTop: 35,
   },
   chartContainer: {
-    marginTop: 10,
+    width: '100%',
+    paddingHorizontal: 8,
+    flex: 1,
   },
   recentHistoryContainer: {
     paddingHorizontal: 35,

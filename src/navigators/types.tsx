@@ -26,6 +26,7 @@ export type LoggedInRootParamList = {
   'screens/ConsentScreen': undefined;
   InviteRequired: undefined;
   'Circle/Thread': { post: Post; createNewComment?: boolean };
+  'screens/OnboardingCourseScreen': undefined;
 };
 
 export type LoggedInRootScreenProps<T extends keyof LoggedInRootParamList> =
@@ -96,6 +97,12 @@ export type SettingsStackParamList = {
   'Settings/AccountSelection': undefined;
   'Settings/Wearables': undefined;
 };
+
+export type Route =
+  | keyof LoggedInRootParamList
+  | keyof SettingsStackParamList
+  | keyof NotificationsStackParamList
+  | keyof HomeStackParamList;
 
 declare global {
   namespace ReactNavigation {

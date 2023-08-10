@@ -4,7 +4,12 @@ import { t } from 'i18next';
 import Markdown from 'react-native-markdown-display';
 import { Button } from 'react-native-paper';
 import { ActivityIndicatorView, createStyles } from '../components';
-import { useStyles, useConsent, useOAuthFlow } from '../hooks';
+import {
+  useStyles,
+  useConsent,
+  useOAuthFlow,
+  useOnboardingCourse,
+} from '../hooks';
 import { LoggedInRootScreenProps } from '../navigators/types';
 
 export const ConsentScreen = ({
@@ -17,6 +22,7 @@ export const ConsentScreen = ({
     useShouldRenderConsentScreen();
   const updateConsentDirectiveMutation = useUpdateProjectConsentDirective();
   const { logout } = useOAuthFlow();
+  const { shouldLaunchOnboardingCourse } = useOnboardingCourse();
 
   // TODO: If needed, allow for accepting multiple consents in a row.
   const consentToPresent = useMemo(
@@ -39,8 +45,11 @@ export const ConsentScreen = ({
 
   const acceptConsent = useCallback(async () => {
     await updateConsentDirective(true);
-    navigation.replace('app');
-  }, [updateConsentDirective, navigation]);
+    const route = shouldLaunchOnboardingCourse
+      ? 'screens/OnboardingCourseScreen'
+      : 'app';
+    navigation.replace(route);
+  }, [updateConsentDirective, navigation, shouldLaunchOnboardingCourse]);
 
   const declineConsent = useCallback(() => {
     Alert.alert(
@@ -70,9 +79,16 @@ export const ConsentScreen = ({
   const consentText = consentToPresent?.form?.item?.find(
     (f) => f.linkId === 'terms',
   )?.text;
-  const acceptText = consentToPresent?.form?.item?.find(
-    (f) => f.linkId === 'acceptance',
-  )?.text;
+  const acceptanceItems = consentToPresent?.form?.item
+    ?.filter((f) =>
+      f.code?.find(
+        (c) =>
+          c.system === 'http://lifeomic.com/fhir/consent-form-item' &&
+          c.code === 'Acceptance',
+      ),
+    )
+    .slice(0, 2);
+
   if (loadingDirectives || !consentText) {
     return (
       <ActivityIndicatorView
@@ -91,7 +107,14 @@ export const ConsentScreen = ({
         </View>
       </ScrollView>
       <View style={styles.buttonsContainer}>
-        {acceptText && <Text style={styles.acceptText}>{acceptText}</Text>}
+        {acceptanceItems?.map(
+          (item) =>
+            item.text && (
+              <Text style={styles.acceptText} key={item.linkId}>
+                {item.text}
+              </Text>
+            ),
+        )}
         <Button
           mode="contained"
           onPress={acceptConsent}

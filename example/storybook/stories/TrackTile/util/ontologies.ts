@@ -774,20 +774,7 @@ export const nutrition = {
                     code: 'e1368d74-8236-40cf-b3e7-a28e3293ead2',
                     display: 'Nuts/Seeds/Oils',
                     system: 'http://lifeomic.com/fhir/nutrition',
-                    educationContent: {
-                      id: 'c4cf78b9-7193-5feb-98e0-67b1a0899899',
-                      code: {
-                        code: 'e1368d74-8236-40cf-b3e7-a28e3293ead2',
-                      },
-                      description: 'Nuts/Seeds/Oils',
-                      publishedDate: '2019-06-28T13:05:37.000Z',
-                      thumbnail:
-                        'https://lifeapps.io/wp-content/uploads/2019/07/nuts-877188828-150x150.jpg?w=300',
-                      title: 'Nuts (walnuts, almonds, cashew nuts, hazelnuts)',
-                      type: 'article',
-                      url: 'https://lifeapps.io/ia/nuts/',
-                      status: 'active',
-                    },
+                    educationContent: null,
                     relationshipConnection: {
                       edges: [
                         {

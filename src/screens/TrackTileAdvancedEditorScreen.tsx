@@ -2,7 +2,7 @@ import React from 'react';
 import { t } from '../../lib/i18n';
 import { AdvancedTrackerEditor } from '../components/TrackTile/TrackerDetails/AdvancedTrackerEditor/AdvancedTrackerEditor';
 import { HomeStackScreenProps } from '../navigators/types';
-import { HeaderSaveButton } from '../components/HeaderSaveButton';
+import { HeaderButton } from '../components/HeaderButton';
 import { useNavigation } from '@react-navigation/native';
 import { notifySaveEditTrackerValue } from '../components/TrackTile/services/EmitterService';
 
@@ -33,7 +33,8 @@ export const AdvancedTrackerEditorScreen = ({
 export const SaveEditorButton = () => {
   const navigation = useNavigation();
   return (
-    <HeaderSaveButton
+    <HeaderButton
+      title={t('track-tile.save', 'Save')}
       onPress={async () => {
         navigation.goBack();
         await new Promise(notifySaveEditTrackerValue);

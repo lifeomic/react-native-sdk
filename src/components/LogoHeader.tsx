@@ -1,17 +1,24 @@
-import React from 'react';
-
-import { View, Image, ImageSourcePropType, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Image, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createStyles } from './BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
+import {
+  LogoHeaderOptions,
+  useHandleOptionEvents,
+} from '../hooks/useLogoHeaderOptions';
 
-interface Props {
-  imageSource: ImageSourcePropType;
-}
-
-export function LogoHeader({ imageSource }: Props) {
+export function LogoHeader(defaultOptions: LogoHeaderOptions) {
   const { styles } = useStyles(defaultStyles);
   const androidFix = Platform.OS === 'android' ? { marginTop: 12 } : {};
+  const [options, setOptions] = useState<LogoHeaderOptions>(defaultOptions);
+
+  // Subscribe to events to receive option updates
+  useHandleOptionEvents(setOptions, defaultOptions);
+
+  if (!options || !options?.visible) {
+    return null;
+  }
 
   return (
     <View style={styles.view}>
@@ -19,7 +26,22 @@ export function LogoHeader({ imageSource }: Props) {
         edges={['left', 'right', 'top']}
         style={[androidFix, styles.safeAreaView]}
       >
-        <Image source={imageSource} style={styles.image} />
+        <View style={styles.contentView}>
+          {options.imageSource && (
+            <Image
+              source={options.imageSource}
+              style={[
+                {
+                  left: options.alignImage,
+                },
+                styles.image,
+              ]}
+            />
+          )}
+          <View style={[{ left: options.alignItem }, styles.itemView]}>
+            {options.item}
+          </View>
+        </View>
       </SafeAreaView>
     </View>
   );
@@ -27,8 +49,10 @@ export function LogoHeader({ imageSource }: Props) {
 
 const defaultStyles = createStyles('LogoHeader', () => ({
   view: {},
-  safeAreaView: { alignItems: 'center' },
-  image: {},
+  safeAreaView: {},
+  image: { position: 'absolute' },
+  itemView: { position: 'absolute' },
+  contentView: { alignItems: 'center', minHeight: '20%', overflow: 'visible' },
 }));
 
 declare module '@styles' {

@@ -1,7 +1,13 @@
 import * as React from 'react';
 
-import { NavigationContainer, Theme } from '@react-navigation/native';
+import {
+  createNavigationContainerRef,
+  NavigationContainer,
+  Theme,
+} from '@react-navigation/native';
 import { useTheme } from 'react-native-paper';
+
+export const navigationRef = createNavigationContainerRef();
 
 interface Props {
   children?: React.ReactNode;
@@ -10,5 +16,9 @@ interface Props {
 export function ThemedNavigationContainer({ children }: Props) {
   const theme = useTheme<Theme>();
 
-  return <NavigationContainer theme={theme}>{children}</NavigationContainer>;
+  return (
+    <NavigationContainer theme={theme} ref={navigationRef}>
+      {children}
+    </NavigationContainer>
+  );
 }

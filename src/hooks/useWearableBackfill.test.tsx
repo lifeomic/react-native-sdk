@@ -9,6 +9,7 @@ import { useHttpClient } from './useHttpClient';
 import { WearablesSyncState } from '../components';
 import { useFeature } from './useFeature';
 
+jest.unmock('@react-navigation/native');
 jest.mock('./useActiveAccount', () => ({
   useActiveAccount: jest.fn(() => ({ isFetched: true, accountHeaders: {} })),
 }));
