@@ -28,7 +28,7 @@ import { numberFormatters } from '../formatters';
 import { endOfDay, isBefore, isToday, startOfDay } from 'date-fns';
 import { NumberPicker } from './NumberPicker';
 import { createStyles } from '../../../components/BrandConfigProvider';
-import { useDeveloperConfig, useStyles } from '../../../hooks';
+import { useDeveloperConfig, useStyles, useTheme } from '../../../hooks';
 import { unitDisplay } from './unit-display';
 import { DayPicker } from './DayPicker';
 import { RadialProgress } from '../TrackerRow/RadialProgress';
@@ -57,9 +57,12 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     radialProgressStrokeWidth,
     radialProgressRadius,
     radialProgressStrokeLinecap,
+    radialProgressRotation,
+    metricOverrides,
   } = componentProps?.TrackerDetails || {};
   const defaultUnit = getStoredUnitType(tracker);
   const { styles } = useStyles(defaultStyles);
+  const theme = useTheme();
   const svc = useTrackTileService();
   const [saveInProgress, setSaveInProgress] = useState(false);
   const [dateRange, setDateRange] = useState(() => {
@@ -196,8 +199,13 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     [saveNewValue],
   );
 
-  const trackerImage =
-    typeof tracker.image === 'string' ? { uri: tracker.image } : tracker.image;
+  const overrides =
+    metricOverrides && tracker.metricId
+      ? metricOverrides(theme)?.[tracker.metricId]
+      : {};
+  const image = overrides?.image ?? tracker.image;
+  const trackerImage = typeof image === 'string' ? { uri: image } : image;
+  const trackerColor = overrides?.color ?? tracker.color;
 
   return (
     <ScrollView>
@@ -208,20 +216,20 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           target={currentTarget}
           tracker={tracker}
           unit={selectedUnit}
-          color={tracker.color}
+          color={trackerColor}
         />
         {trackerImage && (
           <View style={styles.imageProgressContainer}>
             <View style={styles.radialProgressContainer}>
               <RadialProgress
                 disabled={false}
-                color={tracker.color}
+                color={trackerColor}
                 target={currentTarget ?? 0}
                 value={currentValue}
                 strokeWidth={radialProgressStrokeWidth}
                 radius={radialProgressRadius}
                 strokeLinecap={radialProgressStrokeLinecap}
-                rotation={-90}
+                rotation={radialProgressRotation}
                 styles={{
                   borderView: styles.radialProgressBorderView,
                 }}
@@ -235,7 +243,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
         <TrackAmountControl
           value={currentValue}
           onChange={onValueChange}
-          color={tracker.color}
+          color={trackerColor}
           saveInProgress={saveInProgress}
           styles={{
             valueInputContainer: styles.trackAmountControlValueInputContainer,

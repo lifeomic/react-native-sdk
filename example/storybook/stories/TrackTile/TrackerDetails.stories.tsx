@@ -5,7 +5,7 @@ import { storiesOf } from '@storybook/react-native';
 import { TrackerDetails } from '../../../../src/components/TrackTile/TrackerDetails/TrackerDetails';
 import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import {
-  MetricType,
+  InstalledMetric,
   TRACKER_CODE,
   TRACKER_CODE_SYSTEM,
 } from '../../../../src/components/TrackTile/services/TrackTileService';
@@ -28,6 +28,7 @@ const referenceDate = date('Reference Date', undefined);
 
 const defaultTracker = {
   id: 'id',
+  metricId: 'metric-id',
   name: 'Example',
   color: '#5F9EA0',
   resourceType: 'Observation',
@@ -54,7 +55,7 @@ const defaultTracker = {
     },
   ],
   system: TRACKER_CODE_SYSTEM,
-} as Partial<MetricType> as any;
+} as InstalledMetric;
 
 const valuesContext = {
   system: TRACKER_CODE_SYSTEM,
@@ -101,11 +102,6 @@ storiesOf('TrackerDetails', module)
   })
 
   .add('Image with Radial Progress', () => {
-    const tracker = {
-      ...defaultTracker,
-      image: BottleImage,
-    };
-
     return (
       <DeveloperConfigProvider
         developerConfig={{
@@ -115,6 +111,10 @@ storiesOf('TrackerDetails', module)
               radialProgressStrokeLinecap: 'butt',
               radialProgressRadius: 100,
               radialProgressStrokeWidth: 15,
+              radialProgressRotation: -90,
+              metricOverrides: () => ({
+                'metric-id': { image: BottleImage, color: 'red' },
+              }),
             },
           },
         }}
@@ -168,7 +168,7 @@ storiesOf('TrackerDetails', module)
           }}
         >
           <TrackerDetails
-            tracker={tracker}
+            tracker={defaultTracker}
             valuesContext={valuesContext}
             referenceDate={new Date(referenceDate)}
             key={referenceDate}

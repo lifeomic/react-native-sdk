@@ -14,6 +14,7 @@ import {
 } from '@react-navigation/native-stack';
 import { NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { PointBreakdownProps } from '../components/SocialShare/renderers/point-breakdown';
+import { ImageSourcePropType } from 'react-native';
 import { Route } from '../navigators/types';
 import { LogoHeaderOptions } from '../hooks/useLogoHeaderOptions';
 import { EducationContent } from '../components/TrackTile/services/TrackTileService';
@@ -84,6 +85,10 @@ export type DeveloperConfig = {
       radialProgressStrokeWidth?: number;
       radialProgressRadius?: number;
       radialProgressStrokeLinecap?: 'round' | 'square' | 'butt';
+      radialProgressRotation?: number;
+      metricOverrides?: (
+        theme: Theme,
+      ) => Record<string, { image?: ImageSourcePropType; color?: string }>;
     };
   };
   pushNotificationsConfig?: PushNotificationsConfig;
