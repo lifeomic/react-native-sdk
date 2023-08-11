@@ -430,6 +430,16 @@ mobile app UI.
 - `npx react-native start` (from `example` folder)
 - type `i` or `a` to run on either platform
 
+#### Development
+
+To try out changes to this codebase in the starter app, run:
+
+`yarn copyToStarter`
+
+Or in your own app, run:
+
+`yarn copyToProject my-custom-project`
+
 #### Push Notifications for Android and Firebase services Integration Guide
 
 Push notifications require `react-native-notifications` and Firebase services.
