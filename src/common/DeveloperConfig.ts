@@ -81,7 +81,9 @@ export type DeveloperConfig = {
       tabs?: NavigationTab[];
     };
     TrackerDetails?: {
-      showSimpleTargetMessage: boolean;
+      showSimpleTargetMessage?: boolean;
+      dayPickerShowTodaysUnits?: boolean;
+      dayPickerDateFormat?: string;
       radialProgressStrokeWidth?: number;
       radialProgressRadius?: number;
       radialProgressStrokeLinecap?: 'round' | 'square' | 'butt';
