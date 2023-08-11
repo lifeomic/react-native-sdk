@@ -6,10 +6,9 @@ import React, {
   useState,
 } from 'react';
 import { Animated, Easing, View, ViewStyle } from 'react-native';
-import { Svg, Circle } from 'react-native-svg';
+import { Svg, Circle, Linecap } from 'react-native-svg';
 import { usePrevious } from '../hooks/usePrevious';
 import { darkenHexColor } from '../util/darken-hex-color';
-import { useTheme } from '../../../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
@@ -18,28 +17,23 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 type Props = {
   color: string;
-  radius?: number;
-  strokeWidth?: number;
   target: number;
   value: number;
   disabled?: boolean;
-  strokeLinecap?: 'round' | 'square' | 'butt';
+  strokeLinecap?: string;
   rotation?: number;
   styles?: RadialProgressStyles;
 };
 
 export const RadialProgress: FC<Props> = (props) => {
   const { target: incomingTarget, value } = props;
-  const {
-    color = '',
-    radius = 25,
-    strokeWidth = 5,
-    disabled = false,
-    strokeLinecap = 'round',
-    rotation = 90,
-  } = props;
+  const { color = '', disabled = false } = props;
+  const { styles } = useStyles(defaultStyles, props.styles);
+  const radius = styles.circle?.radius || 25;
+  const rotation = styles.circle?.rotation || 90;
+  const strokeLinecap = styles.circle?.strokeLinecap || 'round';
   const circumference = Math.PI * 2 * radius;
-  const size = radius * 2 + strokeWidth;
+  const size = radius * 2 + (styles.animated?.strokeWidth || 5);
   const target = incomingTarget || 1;
 
   const ref = useRef(new Animated.Value(circumference));
@@ -48,8 +42,6 @@ export const RadialProgress: FC<Props> = (props) => {
   const hasChanged = lastValue !== value || lastTarget !== target;
   const [backgroundVisible, setBackgroundVisible] = useState(value > target);
   const [animationValue, setAnimationValue] = useState(circumference);
-  const { styles } = useStyles(defaultStyles, props.styles);
-  const theme = useTheme();
 
   const moveProgressTo = useCallback(
     (position: 'start' | 'end') => {
@@ -125,18 +117,20 @@ export const RadialProgress: FC<Props> = (props) => {
   ]);
 
   return (
-    <View style={[{ position: 'relative' }, shadow(3) as ViewStyle]}>
+    <View
+      style={[
+        { position: 'relative' },
+        shadow(styles.circle?.shadow) as ViewStyle,
+      ]}
+    >
       <Svg viewBox={`0 0 ${size} ${size}`}>
         <Circle
-          stroke={styles.borderView?.borderColor}
-          strokeWidth={styles.borderView?.borderWidth}
+          stroke={styles.circle?.stroke}
+          strokeWidth={styles.circle?.strokeWidth}
           strokeOpacity={
-            disabled
-              ? styles.disabledBorder?.opacity
-              : styles.borderView?.opacity
+            disabled ? styles.disabledBorder?.opacity : styles.circle?.opacity
           }
           r={radius}
-          fill={styles.borderView?.backgroundColor}
           cx={size / 2}
           cy={size / 2}
         />
@@ -148,8 +142,8 @@ export const RadialProgress: FC<Props> = (props) => {
             cy={size / 2}
             origin={[size / 2, size / 2]}
             rotation={rotation}
-            strokeWidth={strokeWidth}
-            strokeLinecap={strokeLinecap}
+            strokeWidth={styles.circle?.strokeWidth}
+            strokeLinecap={strokeLinecap as Linecap}
           />
         )}
       </Svg>
@@ -168,11 +162,11 @@ export const RadialProgress: FC<Props> = (props) => {
             cy={size / 2}
             origin={[size / 2, size / 2]}
             rotation={rotation}
-            strokeWidth={strokeWidth}
-            strokeLinecap={strokeLinecap}
+            strokeWidth={styles.animated?.strokeWidth}
+            strokeLinecap={strokeLinecap as Linecap}
             strokeDasharray={circumference}
             strokeDashoffset={ref.current}
-            fill={theme.colors.surface}
+            fill={styles.circle?.backgroundColor}
           />
         </Svg>
       )}
@@ -180,15 +174,22 @@ export const RadialProgress: FC<Props> = (props) => {
   );
 };
 
-const defaultStyles = createStyles('TrackerRadialProgress', () => ({
+const defaultStyles = createStyles('TrackerRadialProgress', (theme) => ({
   disabledBorder: {
     opacity: 0.3,
   },
-  borderView: {
-    borderWidth: 2,
+  circle: {
+    radius: 25,
+    rotation: 90,
+    strokeWidth: 5,
+    strokeLinecap: 'round',
+    shadow: 3,
+    backgroundColor: theme.colors.surface,
     opacity: 0.4,
-    borderColor: '#B2B9C0',
-    backgroundColor: undefined,
+    stroke: '#B2B9C0',
+  },
+  animated: {
+    strokeWidth: 5,
   },
   overflowContainer: {
     position: 'absolute',

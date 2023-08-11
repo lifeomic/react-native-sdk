@@ -28,7 +28,6 @@ import {
   IconProvider,
 } from '../../../../src';
 import { SafeView } from '../../helpers/SafeView';
-import BottleImage from './assets/bottle.png';
 
 const referenceDate = date('Reference Date', undefined);
 
@@ -37,6 +36,7 @@ const defaultTracker = {
   metricId: 'metric-id',
   name: 'Example',
   color: '#5F9EA0',
+  image: 'https://lifeapps.io/wp-content/uploads/2023/08/bottle.png',
   resourceType: 'Observation',
   description: t(
     'track-tile.example-description',
@@ -127,13 +127,6 @@ storiesOf('TrackerDetails', module)
                 },
                 'iiii, MMMM d',
               ),
-              radialProgressStrokeLinecap: 'butt',
-              radialProgressRadius: 100,
-              radialProgressStrokeWidth: 15,
-              radialProgressRotation: -90,
-              metricOverrides: () => ({
-                'metric-id': { image: BottleImage, color: 'red' },
-              }),
             },
           },
         }}
@@ -164,24 +157,6 @@ storiesOf('TrackerDetails', module)
               },
               trackAmountControlValueSmallSizeText: {
                 fontSize: 30,
-              },
-              radialProgressBorderView: {
-                borderWidth: 2,
-                opacity: 1,
-                borderColor: 'black',
-              },
-              radialProgressContainer: {
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-              },
-              imageProgressContainer: {
-                height: 265,
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'relative',
               },
             },
           }}

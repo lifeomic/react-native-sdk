@@ -28,7 +28,7 @@ import { numberFormatters } from '../formatters';
 import { endOfDay, isBefore, isToday, startOfDay } from 'date-fns';
 import { NumberPicker } from './NumberPicker';
 import { createStyles } from '../../../components/BrandConfigProvider';
-import { useDeveloperConfig, useStyles, useTheme } from '../../../hooks';
+import { useDeveloperConfig, useStyles } from '../../../hooks';
 import { unitDisplay } from './unit-display';
 import { DayPicker } from './DayPicker';
 import { RadialProgress } from '../TrackerRow/RadialProgress';
@@ -54,17 +54,11 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
   const { componentProps } = useDeveloperConfig();
   const {
     showSimpleTargetMessage,
-    radialProgressStrokeWidth,
-    radialProgressRadius,
-    radialProgressStrokeLinecap,
-    radialProgressRotation,
-    metricOverrides,
     dayPickerShowTodaysUnits,
     dayPickerDateFormat,
   } = componentProps?.TrackerDetails || {};
   const defaultUnit = getStoredUnitType(tracker);
   const { styles } = useStyles(defaultStyles);
-  const theme = useTheme();
   const svc = useTrackTileService();
   const [saveInProgress, setSaveInProgress] = useState(false);
   const [dateRange, setDateRange] = useState(() => {
@@ -201,14 +195,6 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
     [saveNewValue],
   );
 
-  const overrides =
-    metricOverrides && tracker.metricId
-      ? metricOverrides(theme)?.[tracker.metricId]
-      : {};
-  const image = overrides?.image ?? tracker.image;
-  const trackerImage = typeof image === 'string' ? { uri: image } : image;
-  const trackerColor = overrides?.color ?? tracker.color;
-
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -218,36 +204,33 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
           target={currentTarget}
           tracker={tracker}
           unit={selectedUnit}
-          color={trackerColor}
+          color={tracker.color}
           showTodaysUnits={dayPickerShowTodaysUnits}
           dateFormat={dayPickerDateFormat}
         />
-        {trackerImage && (
+        {tracker.image && (
           <View style={styles.imageProgressContainer}>
             <View style={styles.radialProgressContainer}>
               <RadialProgress
                 disabled={false}
-                color={trackerColor}
+                color={tracker.color}
                 target={currentTarget ?? 0}
                 value={currentValue}
-                strokeWidth={radialProgressStrokeWidth}
-                radius={radialProgressRadius}
-                strokeLinecap={radialProgressStrokeLinecap}
-                rotation={radialProgressRotation}
                 styles={{
-                  borderView: styles.radialProgressBorderView,
+                  circle: styles.radialProgressCircle,
+                  animated: styles.radialProgressAnimated,
                 }}
               />
             </View>
             <View style={styles.imageContainer}>
-              <Image source={trackerImage} style={styles.image} />
+              <Image source={{ uri: tracker.image }} style={styles.image} />
             </View>
           </View>
         )}
         <TrackAmountControl
           value={currentValue}
           onChange={onValueChange}
-          color={trackerColor}
+          color={tracker.color}
           saveInProgress={saveInProgress}
           styles={{
             valueInputContainer: styles.trackAmountControlValueInputContainer,
@@ -331,10 +314,22 @@ const defaultStyles = createStyles('TrackerDetails', (theme) => ({
   image: {
     flex: 1,
     resizeMode: 'contain',
+    width: 200,
   },
   radialProgressBorderView: {},
-  radialProgressContainer: {},
-  imageProgressContainer: {},
+  radialProgressContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  imageProgressContainer: {
+    height: 265,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
   trackAmountControlValueInputContainer: {},
   trackAmountControlValueLargeSizeText: {},
   trackAmountControlValueMediumSizeText: {},
@@ -387,6 +382,17 @@ const defaultStyles = createStyles('TrackerDetails', (theme) => ({
     width: '100%',
     paddingHorizontal: 8,
     flex: 1,
+  },
+  radialProgressCircle: {
+    stroke: 'black',
+    radius: 100,
+    strokeWidth: 2,
+    strokeLinecap: 'butt',
+    rotation: -90,
+    shadow: 0,
+  },
+  radialProgressAnimated: {
+    strokeWidth: 15,
   },
   firstDivider: { width: 326, backgroundColor: 'black', marginVertical: 24 },
   secondDivider: { width: 326, backgroundColor: 'black', marginTop: 24 },
