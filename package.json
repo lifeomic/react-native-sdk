@@ -14,8 +14,9 @@
     "test": "tsc --noEmit && yarn jest",
     "test:ci": "yarn lint && yarn jest --coverage --runInBand --silent --ci --logHeapUsage --forceExit",
     "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist && yarn copyAdditionalFiles && yarn buildDeclaredStyles",
-    "precopyToStarter": "yarn build",
-    "copyToStarter": "cp -r ./dist/ ../react-native-starter/node_modules/@lifeomic/react-native-sdk",
+    "precopyToProject": "yarn build",
+    "copyToProject": "sh -c 'cp -r ./dist/ ../${0}/node_modules/@lifeomic/react-native-sdk'",
+    "copyToStarter": "yarn copyToProject react-native-starter",
     "copyAdditionalFiles": "./bin/scripts/copyAdditionalFiles",
     "buildDeclaredStyles": "node ./bin/scripts/buildDeclaredStyles.js"
   },
