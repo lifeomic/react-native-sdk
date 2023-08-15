@@ -14,7 +14,7 @@ module.exports = {
     '<rootDir>[/\\\\](|coverage|node_modules)[/\\\\]',
     'src/components/TrackTile/TrackerDetails/AdvancedTrackerEditor/AdvancedTrackerEditor.test.tsx',
   ],
-  preset: 'react-native',
+  preset: 'jest-expo',
   setupFilesAfterEnv: [
     '@testing-library/jest-native/extend-expect',
     '<rootDir>/jest.setup.ts'
@@ -40,6 +40,6 @@ module.exports = {
     },
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?@?react-native|query-string|decode-uri-component|split-on-first|filter-obj|victory)',
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|expo-router|query-string|decode-uri-component|split-on-first|filter-obj|victory)',
   ]
 };
