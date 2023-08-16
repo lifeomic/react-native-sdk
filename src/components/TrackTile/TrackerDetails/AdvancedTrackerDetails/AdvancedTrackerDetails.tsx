@@ -387,7 +387,7 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
           hasBorderTop={index === 0}
           color={color}
           title={value.code.coding[0]?.display ?? tracker.name}
-          subTitle={unitDisplay(value.value)}
+          subTitle={unitDisplay(convertToPreferredUnit(value.value, tracker))}
           image={extractCodeImage(value.code?.coding?.[0], codings, icons)}
         />
       ))}
