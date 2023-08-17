@@ -5,7 +5,6 @@ import { TouchableOpacity } from 'react-native';
 import { ScrollView, View } from 'react-native';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
-import { ActivityIndicatorViewStyles } from '../components';
 import { t } from 'i18next';
 
 export function MessageScreen({
@@ -71,26 +70,10 @@ export function MessageScreen({
   );
 }
 
-const defaultStyles = createStyles('Messages', (theme) => {
-  const activityIndicatorStyle: ActivityIndicatorViewStyles = {
-    view: { paddingTop: theme.spacing.medium },
-  };
-
+const defaultStyles = createStyles('Messages', () => {
   return {
     rootView: { minHeight: '100%', maxHeight: '100%' },
     scrollView: { minHeight: '100%' },
-    morePostsIndicator: activityIndicatorStyle,
-    noPostsText: {},
-    fabView: {
-      position: 'absolute',
-      margin: theme.spacing.medium,
-      right: 0,
-      bottom: 0,
-      borderRadius: 32,
-    },
-    repliesContainer: {
-      marginLeft: theme.spacing.medium,
-    },
   };
 });
 
