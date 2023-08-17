@@ -16,6 +16,7 @@ import { useDeveloperConfig } from '../hooks';
 import { MyDataScreen } from '../screens/MyDataScreen';
 import { YoutubePlayerScreen } from '../screens/YoutubePlayerScreen';
 import { navigationScreenListeners } from '../hooks/useLogoHeaderOptions';
+import { DirectMessagesScreen } from '../screens/DirectMessagesScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -58,6 +59,10 @@ export function HomeStack() {
         name="Home/YoutubePlayer"
         component={YoutubePlayerScreen}
         options={({ route }) => ({ title: route.params.videoName || ' ' })}
+      />
+      <Stack.Screen
+        name="Home/DirectMessage"
+        component={DirectMessagesScreen}
       />
       {getAdditionalHomeScreens?.(Stack)}
     </Stack.Navigator>

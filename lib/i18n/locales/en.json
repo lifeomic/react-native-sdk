@@ -69,5 +69,6 @@
   "post-replies_zero": "REPLY",
   "post-replies_one": "1 REPLY",
   "post-replies_other": "{{count}} REPLIES",
-  "post-character-limit": "{{count}}/1200"
+  "post-character-limit": "{{count}}/1200",
+  "direct-messages-title": "{{userId}}"
 }
