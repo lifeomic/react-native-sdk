@@ -37,13 +37,13 @@ export type PostRepliesQueryResponse = {
 };
 
 export const postToMessage = (post: Partial<Post>): IMessage => ({
-  _id: post.id!,
+  _id: post.id ?? uuid.v4().toString(),
   text: post.message || '',
   createdAt: post.createdAt ? new Date(post.createdAt) : new Date(),
   user: {
-    _id: post.authorId!,
-    name: post.author?.profile.displayName! ?? 'Test?',
-    avatar: post.author?.profile.picture!,
+    _id: post.authorId ?? uuid.v4().toString(),
+    name: post.author?.profile.displayName,
+    avatar: post.author?.profile.picture,
   },
 });
 
