@@ -7,13 +7,26 @@ import React, {
 import {
   authorize,
   AuthConfiguration,
-  AuthorizeResult,
+  // AuthorizeResult,
   refresh,
   revoke,
 } from 'react-native-app-auth';
 import { AuthResult, useAuth } from './useAuth';
 import { usePendingInvite } from './usePendingInvite';
 import { useQueryClient } from 'react-query';
+
+// Should we re-use the `AuthorizeResult` type exported from `'react-native-app-auth'` as a dev/type dep
+// import type { AuthorizeResult } from 'react-native-app-auth';
+// type ProvidedAuthorizeResult = AuthorizeResult;
+export type ProvidedAuthorizeResult = {
+  accessToken: string;
+  accessTokenExpirationDate: string;
+  idToken: string;
+  refreshToken: string;
+  tokenType: string;
+};
+
+type ProvidedAuthorize = () => Promise<ProvidedAuthorizeResult>;
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
@@ -22,7 +35,7 @@ export interface OAuthConfig {
 }
 
 export interface LoginParams {
-  onSuccess?: (result: AuthorizeResult) => void;
+  onSuccess?: (result: ProvidedAuthorizeResult) => void;
   onFail?: (error?: any) => void;
 }
 
@@ -39,9 +52,11 @@ const OAuthContext = createContext<OAuthConfig>({
 export const OAuthContextProvider = ({
   authConfig,
   children,
+  providedAuthorize = () => authorize(authConfig),
 }: {
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
+  providedAuthorize?: ProvidedAuthorize;
 }) => {
   const {
     isLoggedIn,
@@ -50,6 +65,7 @@ export const OAuthContextProvider = ({
     storeAuthResult,
     clearAuthResult,
   } = useAuth();
+
   const {
     inviteParams: { inviteId, evc },
   } = usePendingInvite();
@@ -121,15 +137,16 @@ export const OAuthContextProvider = ({
       const { onSuccess, onFail } = params;
 
       try {
-        const result = await authorize(authConfig);
+        const result = await providedAuthorize();
         await storeAuthResult(result);
+
         onSuccess?.(result);
       } catch (error) {
         await clearAuthResult();
         onFail?.(error);
       }
     },
-    [authConfig, clearAuthResult, storeAuthResult],
+    [clearAuthResult, storeAuthResult, providedAuthorize],
   );
 
   const refreshHandler = useCallback(

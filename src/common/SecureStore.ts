@@ -36,6 +36,7 @@ export class SecureStore<Stored> {
    * @param object
    */
   async setObject(object: Stored) {
+    console.log('Expo app Throws'); // [TypeError: Cannot read property 'resetGenericPasswordForOptions' of null]
     return Keychain.setGenericPassword(
       unusedUsername,
       JSON.stringify(object),
