@@ -360,7 +360,11 @@ export const AdvancedTrackerDetails = (props: AdvancedTrackerDetailsProps) => {
                           {t('track-tile.recent-item-text', {
                             defaultValue: '{{codeDisplay}} {{unit}}',
                             codeDisplay: display,
-                            unit: isProcedure ? unitDisplay(value) : '',
+                            unit: isProcedure
+                              ? unitDisplay(
+                                  convertToPreferredUnit(value, tracker),
+                                )
+                              : '',
                           }).trim()}
                         </Text>
                       </TouchableOpacity>
