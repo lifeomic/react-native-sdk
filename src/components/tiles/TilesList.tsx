@@ -30,8 +30,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const todayTileEnabled = data?.homeTab?.tiles?.includes?.('todayTile');
   const myDataTileEnabled = data?.homeTab?.tiles?.includes?.('myDataTile');
   const todayTile = data?.homeTab?.todayTile;
-  // const messagesTileEnabled = data?.homeTab?.tiles?.includes?.('messagesTile');
-  const messagesTileEnabled = true; // TODO: Switch with above on commit
+  const messagesTileEnabled = data?.homeTab?.tiles?.includes?.('messagesTile');
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
       navigation.navigate('Home/Circle/Discussion', { circleTile });
