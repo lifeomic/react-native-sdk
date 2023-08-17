@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect } from 'react';
 import { Bubble, GiftedChat, IMessage } from 'react-native-gifted-chat';
 import {
   useInfinitePrivatePosts,
@@ -10,26 +10,36 @@ import { createStyles } from '../components';
 import { ActivityIndicator } from 'react-native-paper';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
+import { useAsyncStorage } from '../hooks/useAsyncStorage';
 
 export function DirectMessagesScreen({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/DirectMessage'>) {
   const { recipientUserId } = route.params;
+  const { styles } = useStyles(defaultStyles);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: t('direct-messages-title', { userId: recipientUserId }),
     });
   }, [navigation, recipientUserId]);
-  const { styles } = useStyles(defaultStyles);
 
   const { data: userData } = useUser();
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useInfinitePrivatePosts(recipientUserId);
-  const incomingMessages = data?.pages?.flatMap((page) =>
-    page.privatePosts.edges.flatMap((edge) => postToMessage(edge.node)),
+  const [_, setEndCursor] = useAsyncStorage(
+    `${userData?.id}-${recipientUserId}-endCursor`,
   );
+
+  // Store endCursor so we can calculate
+  // when there are unread messages
+  useEffect(() => {
+    if (data?.pages[0].privatePosts.pageInfo.endCursor) {
+      setEndCursor(data?.pages[0].privatePosts.pageInfo.endCursor);
+    }
+  }, [data?.pages, setEndCursor]);
+
   const { mutateAsync } = useCreatePrivatePostMutation();
 
   const onSend = useCallback(
@@ -47,6 +57,11 @@ export function DirectMessagesScreen({
   if (!userData?.id || isLoading) {
     return <ActivityIndicator />;
   }
+
+  // Map all available posts/pages into a flat messages object
+  const incomingMessages = data?.pages?.flatMap((page) =>
+    page.privatePosts.edges.flatMap((edge) => postToMessage(edge.node)),
+  );
 
   return (
     <GiftedChat

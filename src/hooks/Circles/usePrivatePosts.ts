@@ -2,6 +2,7 @@ import {
   InfiniteData,
   useInfiniteQuery,
   useMutation,
+  useQueries,
   useQueryClient,
 } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
@@ -80,6 +81,55 @@ export function useInfinitePrivatePosts(userId: string) {
     // Switch to Websocket/Subscription model would be an improvement
   });
 }
+
+export function usePrivatePostsForUsers(userIds?: string[]) {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+  const { data } = useUser();
+
+  const queryPosts = async (userId: string) => {
+    const variables = {
+      userIds: [data?.id, userId],
+      filter: {
+        order: 'NEWEST',
+      },
+    };
+
+    return graphQLClient.request<PrivatePostsData>(
+      privatePostsPageInfoQueryDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useQueries(
+    (userIds ?? []).map((userId) => {
+      return {
+        queryKey: ['privatePosts', userId],
+        queryFn: () => queryPosts(userId),
+        enabled: !!accountHeaders?.['LifeOmic-Account'],
+        refetchInterval: 10000,
+        // Continuously polls while query component is focused
+        // so new unread messages can be detected
+      };
+    }),
+  );
+}
+
+const privatePostsPageInfoQueryDocument = gql`
+  query PrivatePosts(
+    $userIds: [ID!]!
+    $filter: PrivatePostFilter!
+    $after: String
+  ) {
+    privatePosts(userIds: $userIds, filter: $filter, after: $after) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
 
 const privatePostsQueryDocument = gql`
   ${postDetailsFragment}
