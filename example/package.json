@@ -50,7 +50,7 @@
     "react-native-uuid": "^2.0.1",
     "react-native-view-shot": "^3.7.0",
     "react-native-webview": "^11.26.1",
-    "react-query": "^3.39.3",
+    "@tanstack/react-query": "^4.0.0",
     "reactotron-react-native": "^5.0.3",
     "rn-emoji-keyboard": "^1.2.2",
     "victory-native": "^36.6.11"
