@@ -492,3 +492,8 @@ better solution.
 [@lifeomic/react-native-starter]:
   https://github.com/lifeomic/react-native-starter
 [contact us]: https://lifeomic.com/contact/
+
+## Upgrading
+
+For specific guidance on upgrading between versions of this SDK, see
+[the upgrade guide](./UPGRADING.md).
