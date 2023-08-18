@@ -43,7 +43,7 @@ export function useCreatePost() {
     );
   };
 
-  return useMutation('createPost', createPostMutation, {
+  return useMutation(['createPost'], createPostMutation, {
     onMutate: async (newPost) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)

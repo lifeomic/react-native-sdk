@@ -61,7 +61,7 @@ export function useAppConfig() {
   const { activeProject } = useActiveProject();
 
   return useQuery(
-    `/v1/life-research/projects/${activeProject?.id}/app-config`,
+    [`/v1/life-research/projects/${activeProject?.id}/app-config`],
     () =>
       httpClient
         .get<AppConfig>(

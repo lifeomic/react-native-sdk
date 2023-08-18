@@ -23,7 +23,7 @@ export function useAccounts() {
   const { httpClient } = useHttpClient();
 
   return useQuery(
-    'accounts',
+    ['accounts'],
     () =>
       httpClient
         .get<AccountsResponse>('/v1/accounts')

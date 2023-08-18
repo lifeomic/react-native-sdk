@@ -82,7 +82,7 @@ test('renders loading indicator while account fetching', async () => {
 
 test('renders loading indicator while app config fetching', async () => {
   useAppConfigMock.mockReturnValue({
-    isLoading: true,
+    isInitialLoading: true,
   });
   const { getByTestId } = render(homeScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();

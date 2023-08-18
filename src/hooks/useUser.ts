@@ -18,7 +18,7 @@ export function useUser() {
   const { httpClient } = useHttpClient();
 
   return useQuery(
-    'user',
+    ['user'],
     () => httpClient.get<User>('/v1/user').then((res) => res.data),
     {
       enabled: !!authResult?.accessToken,

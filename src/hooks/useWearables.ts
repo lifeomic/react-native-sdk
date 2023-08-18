@@ -93,7 +93,7 @@ export const useWearables = () => {
 
   const useWearableIntegrationQuery = (ehrId: string) =>
     useQuery(
-      'get-wearable',
+      ['get-wearable'],
       () =>
         httpClient.get(`/v1/wearables/${ehrId}`, { headers: accountHeaders }),
       {
@@ -103,7 +103,7 @@ export const useWearables = () => {
 
   const useWearableIntegrationsQuery = () =>
     useQuery(
-      'get-wearables',
+      ['get-wearables'],
       () =>
         httpClient
           .get<WearablesSyncState>('/v1/wearables', {

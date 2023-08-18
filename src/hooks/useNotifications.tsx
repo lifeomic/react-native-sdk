@@ -130,7 +130,7 @@ export function useNotifications() {
     isFetched: notificationsFetched,
     data: notificationsData,
     error: notificationsError,
-  } = useQuery('notifications', queryForNotifications, {
+  } = useQuery(['notifications'], queryForNotifications, {
     enabled: !!userData?.id && !!accountHeaders?.['LifeOmic-Account'],
     select: selectNotifications,
   });

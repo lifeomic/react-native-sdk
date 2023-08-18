@@ -10,8 +10,9 @@ import { useJoinCircles } from '../hooks';
 
 export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
   const { isLoading: loadingAccount } = useActiveAccount();
-  const { isLoading: loadingAppConfig, data: appConfig } = useAppConfig();
-  const { isLoading: loadingJoinCircles } = useJoinCircles();
+  const { isInitialLoading: loadingAppConfig, data: appConfig } =
+    useAppConfig();
+  const { isInitialLoading: loadingJoinCircles } = useJoinCircles();
   const { navigation } = navProps;
   const customHeaderTitle = appConfig?.homeTab?.screenHeader?.title;
 

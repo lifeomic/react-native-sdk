@@ -11,7 +11,7 @@ export function useJoinCircles() {
   const { httpClient } = useHttpClient();
 
   return useQuery(
-    `/v1/life-research/projects/${activeProject?.id}/app-config/circles`,
+    [`/v1/life-research/projects/${activeProject?.id}/app-config/circles`],
     () => {
       if (data?.homeTab?.circleTiles?.some((c) => !c.isMember)) {
         httpClient

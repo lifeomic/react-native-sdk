@@ -23,7 +23,7 @@ export function useDeletePost() {
     );
   };
 
-  return useMutation('deletePost', deletePostMutation, {
+  return useMutation(['deletePost'], deletePostMutation, {
     onMutate: async (deletedPost) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)

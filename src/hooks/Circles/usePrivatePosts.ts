@@ -151,7 +151,7 @@ export function useCreatePrivatePostMutation() {
     );
   };
 
-  return useMutation('createPrivatePost', {
+  return useMutation(['createPrivatePost'], {
     mutationFn: createPrivatePostMutation,
     onMutate: async (variables) => {
       // Cancel outgoing refetches
