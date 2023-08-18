@@ -10,26 +10,29 @@ interface Props extends Pick<HomeStackScreenProps<'Home'>, 'navigation'> {
   recipientsUserIds: string[];
 }
 
-export function MessagesTile({ navigation }: Props) {
+export function MessagesTile({
+  navigation,
+  title,
+  id,
+  recipientsUserIds,
+}: Props) {
   const { data } = useUser();
-  const mockUserIds = ['brucetest0005', '6fab714']; // TODO: Once backend is in place switch to using the props
-  const recipients = mockUserIds.filter((v) => v !== data?.id);
   const { MessageCircle } = useIcons();
   const unreadIds = useHasNewMessagesFromUsers({
     currentUserId: data?.id,
-    userIds: recipients,
+    userIds: recipientsUserIds,
   });
 
   return (
     <Tile
-      id="messages"
-      key="messages"
-      title="Messages"
+      id={id}
+      key={id}
+      title={title}
       Icon={MessageCircle}
       showBadge={unreadIds.length > 0}
       onPress={() => {
         navigation.navigate('Home/Messages', {
-          recipientsUserIds: recipients,
+          recipientsUserIds: recipientsUserIds,
         });
       }}
     />

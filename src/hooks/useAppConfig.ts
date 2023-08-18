@@ -26,7 +26,7 @@ export interface CircleTile {
 export interface MessageTile {
   id: string;
   providerUserIds: string;
-  subjectUserIds: string[];
+  userIds: string[];
   role: string;
   displayName: string;
 }
