@@ -13,7 +13,7 @@ import {
 } from 'react-native-app-auth';
 import { AuthResult, useAuth } from './useAuth';
 import { usePendingInvite } from './usePendingInvite';
-import { useQueryClient } from 'react-query';
+import { useQueryClient } from '@tanstack/react-query';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useActiveAccount } from '../useActiveAccount';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../useGraphQLClient';
 import { InfinitePostsData, useInfinitePosts } from './useInfinitePosts';
 import nock from 'nock';

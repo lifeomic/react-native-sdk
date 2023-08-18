@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
 import { useState, useCallback } from 'react';
-import { useQueryClient, useQuery } from 'react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { Post, postDetailsFragment } from './types';

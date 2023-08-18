@@ -3,7 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { useFhirClient } from './useFhirClient';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { useHttpClient } from './useHttpClient';

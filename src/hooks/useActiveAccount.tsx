@@ -7,7 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 import { Account, useAccounts } from './useAccounts';
-import { QueryObserverResult } from 'react-query';
+import { QueryObserverResult } from '@tanstack/react-query';
 import { useAsyncStorage } from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';

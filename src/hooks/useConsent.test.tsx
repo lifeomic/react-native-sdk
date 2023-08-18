@@ -4,7 +4,7 @@ import { useConsent } from './useConsent';
 import { useHttpClient } from './useHttpClient';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 

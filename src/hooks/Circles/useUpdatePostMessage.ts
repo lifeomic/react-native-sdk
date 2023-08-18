@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { useQueryClient, useMutation } from 'react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';

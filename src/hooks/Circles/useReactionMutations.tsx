@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useActiveAccount } from '../useActiveAccount';

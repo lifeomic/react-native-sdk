@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 const baseKey = 'async-storage-get';
 

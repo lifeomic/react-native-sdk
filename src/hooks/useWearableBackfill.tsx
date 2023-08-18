@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, useMemo } from 'react';
 import { addDays } from 'date-fns';
 import { gql } from 'graphql-request';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { EHRType, WearablesSyncState } from '../components';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';

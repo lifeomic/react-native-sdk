@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 import { useActiveProject } from './useActiveProject';

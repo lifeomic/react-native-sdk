@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 

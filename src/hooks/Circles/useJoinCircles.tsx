@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useActiveProject } from '../useActiveProject';
 import { CircleTile, useAppConfig } from '../useAppConfig';

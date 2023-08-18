@@ -1,5 +1,5 @@
 import { cloneDeep, omit } from 'lodash';
-import { useQueryClient, useMutation } from 'react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useUser } from '../useUser';

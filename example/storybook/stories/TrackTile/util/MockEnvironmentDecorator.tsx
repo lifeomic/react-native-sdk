@@ -13,7 +13,7 @@ import {
 } from '../../../../../src/components/TrackTile/hooks/useAxiosTrackTileService';
 import { nutrition } from './ontologies';
 import { HttpClientContextProvider } from '../../../../../src/hooks/useHttpClient';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DeveloperConfigProvider } from '../../../../../src/components/DeveloperConfigProvider';
 
 const axiosInstance = axios.create();

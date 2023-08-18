@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react-native';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAsyncStorage } from './useAsyncStorage';
 
 const queryClient = new QueryClient({

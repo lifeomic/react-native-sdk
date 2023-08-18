@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { AppConfig, useActiveAccount, useAppConfig } from '../hooks';
 import { HomeScreen } from './HomeScreen';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
 jest.unmock('i18next');

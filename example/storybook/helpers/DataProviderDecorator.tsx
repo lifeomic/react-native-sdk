@@ -3,7 +3,7 @@ import { DecoratorFunction } from '@storybook/addons';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { HttpClientContextProvider } from '../../../src/hooks/useHttpClient';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ActiveAccountContext, ActiveProjectContext } from '../../../src/hooks';
 
 export const DataProviderDecorator = (

@@ -3,7 +3,7 @@ import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
-} from 'react-query';
+} from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useActiveAccount } from '../useActiveAccount';

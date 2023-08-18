@@ -6,7 +6,7 @@ import {
 } from './useOnboardingCourse';
 import * as useAsyncStorage from './useAsyncStorage';
 import { mockDeep } from 'jest-mock-extended';
-import { UseQueryResult } from 'react-query';
+import { UseQueryResult } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 jest.mock('./useAppConfig', () => ({
