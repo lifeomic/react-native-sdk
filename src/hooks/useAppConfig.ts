@@ -23,12 +23,15 @@ export interface CircleTile {
   isMember: boolean;
 }
 
-type Tile =
-  | 'todayTile'
-  | 'trackTile'
-  | 'pillarsTile'
-  | 'myDataTile'
-  | 'messagesTile';
+export interface MessageTile {
+  id: string;
+  providerUserIds: string;
+  subjectUserIds: string[];
+  role: string;
+  displayName: string;
+}
+
+type Tile = 'todayTile' | 'trackTile' | 'pillarsTile' | 'myDataTile';
 
 export interface AppConfig {
   homeTab?: {
@@ -36,6 +39,7 @@ export interface AppConfig {
     circleTiles?: CircleTile[];
     tiles?: Tile[];
     trackTileSettings?: { title: string; advancedScreenTrackers: string[] };
+    messageTiles?: MessageTile[];
     pillarSettings?: { advancedScreenTrackers: string[] };
     myDataSettings?: {
       components: {

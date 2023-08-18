@@ -5,40 +5,43 @@ import {
   useCreatePrivatePostMutation,
   postToMessage,
 } from '../hooks/Circles/usePrivatePosts';
-import { useStyles, useUser } from '../hooks';
-import { createStyles } from '../components';
-import { ActivityIndicator } from 'react-native-paper';
+import { useDirectMessageEndCursor, useStyles, useUser } from '../hooks';
+import {
+  ActivityIndicatorView,
+  ActivityIndicatorViewStyles,
+  createStyles,
+} from '../components';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
-import { useAsyncStorage } from '../hooks/useAsyncStorage';
 
 export function DirectMessagesScreen({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/DirectMessage'>) {
-  const { recipientUserId } = route.params;
+  const { recipientUserId, displayName } = route.params;
   const { styles } = useStyles(defaultStyles);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: t('direct-messages-title', { userId: recipientUserId }),
+      title: t('direct-messages-title', { userId: displayName }),
     });
-  }, [navigation, recipientUserId]);
+  }, [navigation, displayName]);
 
   const { data: userData } = useUser();
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useInfinitePrivatePosts(recipientUserId);
-  const [_, setEndCursor] = useAsyncStorage(
-    `${userData?.id}-${recipientUserId}-endCursor`,
+  const { setEndCursor } = useDirectMessageEndCursor(
+    userData!.id, // Guarded against ! in useEffect
+    recipientUserId,
   );
 
   // Store endCursor so we can calculate
   // when there are unread messages
   useEffect(() => {
-    if (data?.pages[0].privatePosts.pageInfo.endCursor) {
+    if (userData?.id && data?.pages[0].privatePosts.pageInfo.endCursor) {
       setEndCursor(data?.pages[0].privatePosts.pageInfo.endCursor);
     }
-  }, [data?.pages, setEndCursor]);
+  }, [data?.pages, setEndCursor, userData?.id]);
 
   const { mutateAsync } = useCreatePrivatePostMutation();
 
@@ -54,8 +57,15 @@ export function DirectMessagesScreen({
     [mutateAsync, recipientUserId],
   );
 
+  const loadingIndicator = (
+    <ActivityIndicatorView
+      message={t('direct-message-loading', 'Loading messages')}
+      style={styles.activityIndicator}
+    />
+  );
+
   if (!userData?.id || isLoading) {
-    return <ActivityIndicator />;
+    return loadingIndicator;
   }
 
   // Map all available posts/pages into a flat messages object
@@ -65,6 +75,7 @@ export function DirectMessagesScreen({
 
   return (
     <GiftedChat
+      renderLoading={() => loadingIndicator}
       messages={incomingMessages}
       loadEarlier={hasNextPage}
       onLoadEarlier={() => {
@@ -77,6 +88,7 @@ export function DirectMessagesScreen({
       user={{
         _id: userData.id,
       }}
+      messagesContainerStyle={styles.messagesContainerStyle}
       renderBubble={(props) => {
         return (
           <Bubble
@@ -97,6 +109,14 @@ export function DirectMessagesScreen({
 }
 
 const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
+  activityIndicator: {
+    view: {
+      backgroundColor: theme.colors.elevation.level1,
+    },
+  } as ActivityIndicatorViewStyles,
+  messagesContainerStyle: {
+    backgroundColor: theme.colors.elevation.level1,
+  },
   rightMessageView: {
     backgroundColor: theme.colors.primary,
   },

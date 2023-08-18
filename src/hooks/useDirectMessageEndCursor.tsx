@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { usePrivatePostsForUsers } from './Circles/usePrivatePosts';
+import { usePollPageInfoForUsers } from './Circles/usePrivatePosts';
 import { useAsyncStorage } from './useAsyncStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isEqual } from 'lodash';
@@ -46,8 +46,8 @@ const useGetLocalCursorsForUsers = ({ currentUserId, userIds }: Props) => {
 
 const useGetRemoteCursorsForUsers = ({ userIds }: Props) => {
   const endCursorMap = new Map<string, string>();
-  const userQueries = usePrivatePostsForUsers(userIds);
-  userQueries.forEach(async (userQuery, index) => {
+  const userQueries = usePollPageInfoForUsers(userIds);
+  userQueries.forEach((userQuery, index) => {
     const endCursor = userQuery.data?.privatePosts.pageInfo.endCursor;
     if (endCursor) {
       endCursorMap.set(userIds[index], endCursor);

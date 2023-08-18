@@ -84,6 +84,7 @@ export type HomeStackParamList = {
   };
   'Home/DirectMessage': {
     recipientUserId: string;
+    displayName: string;
   };
 };
 

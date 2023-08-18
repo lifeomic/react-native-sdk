@@ -17,7 +17,7 @@ import { MyDataScreen } from '../screens/MyDataScreen';
 import { YoutubePlayerScreen } from '../screens/YoutubePlayerScreen';
 import { navigationScreenListeners } from '../hooks/useLogoHeaderOptions';
 import { DirectMessagesScreen } from '../screens/DirectMessagesScreen';
-import { MessageScreen } from '../screens/Messages';
+import { MessageScreen } from '../screens/MessageScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 

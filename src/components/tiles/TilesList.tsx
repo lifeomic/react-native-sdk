@@ -30,7 +30,6 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const todayTileEnabled = data?.homeTab?.tiles?.includes?.('todayTile');
   const myDataTileEnabled = data?.homeTab?.tiles?.includes?.('myDataTile');
   const todayTile = data?.homeTab?.todayTile;
-  const messagesTileEnabled = data?.homeTab?.tiles?.includes?.('messagesTile');
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
       navigation.navigate('Home/Circle/Discussion', { circleTile });
@@ -100,7 +99,6 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
         />
       )}
       <View style={styles.tilesView}>
-        {messagesTileEnabled && <MessagesTile navigation={navigation} />}
         {todayTileEnabled && todayTile && (
           <Tile
             id={todayTile.id}
@@ -128,6 +126,22 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             Icon={appTileIcon(appTile.id, appTile.icon, styles.iconImage)}
           />
         ))}
+        <MessagesTile
+          navigation={navigation}
+          title={'Messages'}
+          id={'Messages'}
+          recipientsUserIds={[]}
+        />
+        {data?.homeTab?.messageTiles?.map(
+          ({ id, displayName, subjectUserIds }) => (
+            <MessagesTile
+              navigation={navigation}
+              title={displayName}
+              id={id}
+              recipientsUserIds={subjectUserIds}
+            />
+          ),
+        )}
         {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
           <Tile
             id={circleTile.circleId}
