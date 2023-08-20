@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { t } from '../../../lib/i18n';
 import { inviteNotifier } from './InviteNotifier';
 import { useAuth } from '../../hooks/useAuth';
-import { useAcceptInviteMutation } from '../../hooks/useAcceptInviteMutation';
+import { useRestMutation } from '../../hooks/rest-api';
 
 type InviteParams = {
   inviteId?: string;
@@ -26,8 +26,9 @@ type ProviderProps = {
 
 export const InviteProvider = ({ children }: ProviderProps) => {
   const [inviteParams, setInviteParams] = useState<InviteParams>({});
-  const { isLoading, isSuccess, isError, reset, mutateAsync } =
-    useAcceptInviteMutation();
+  const { isLoading, isSuccess, isError, reset, mutateAsync } = useRestMutation(
+    'PATCH /v1/invitations/:inviteId',
+  );
   const { authResult, refreshForInviteAccept } = useAuth();
 
   const clearPendingInvite = useCallback(async () => {
@@ -38,7 +39,10 @@ export const InviteProvider = ({ children }: ProviderProps) => {
   const acceptInvite = useCallback(
     async (inviteId: string) => {
       try {
-        const acceptedInvite = await mutateAsync(inviteId);
+        const acceptedInvite = await mutateAsync({
+          inviteId,
+          status: 'ACCEPTED',
+        });
 
         // Before notifying others, refresh the auth token so that the new
         // auth token used has context of the accepted invite.
