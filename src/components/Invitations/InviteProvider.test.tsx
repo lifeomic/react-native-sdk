@@ -5,23 +5,21 @@ import { InviteProvider } from './InviteProvider';
 import { InviteParams, inviteNotifier } from './InviteNotifier';
 import { usePendingInvite } from '../../hooks/usePendingInvite';
 import { useAuth } from '../../hooks/useAuth';
-import { useAcceptInviteMutation } from '../../hooks/useAcceptInviteMutation';
+import { createRestAPIMock } from '../../test-utils/rest-api-mocking';
+
+const api = createRestAPIMock();
 
 jest.mock('../../hooks/useAuth', () => ({
   useAuth: jest.fn(),
 }));
 jest.mock('../../hooks/useAuth', () => ({
   useAuth: jest.fn(),
-}));
-jest.mock('../../hooks/useAcceptInviteMutation', () => ({
-  useAcceptInviteMutation: jest.fn(),
 }));
 
 const useAuthMock = useAuth as jest.Mock;
-const useAcceptInviteMutationMock = useAcceptInviteMutation as jest.Mock;
 
-const mutateAsync = jest.fn();
-const reset = jest.fn();
+const mutationMock = jest.fn();
+
 const refreshForInviteAccept = jest.fn();
 const mockInviteParams: InviteParams = {
   inviteId: 'invite-id',
@@ -46,13 +44,13 @@ beforeEach(() => {
     authResult: undefined,
     refreshForInviteAccept,
   });
-  useAcceptInviteMutationMock.mockReturnValue({
-    mutateAsync,
-    reset,
-  });
-  mutateAsync.mockResolvedValue({
-    account: 'invited-account',
-  });
+  api.mock(
+    'PATCH /v1/invitations/:inviteId',
+    mutationMock.mockReturnValue({
+      status: 200,
+      data: { account: 'invited-account' } as any,
+    }),
+  );
   inviteNotifier.clearCache();
 });
 
@@ -94,7 +92,12 @@ describe('accepting invite', () => {
       });
       await rerender({});
     });
-    expect(mutateAsync).toHaveBeenCalledWith(mockInviteParams.inviteId);
+    expect(mutationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: { status: 'ACCEPTED' },
+        params: { inviteId: mockInviteParams.inviteId },
+      }),
+    );
   });
 
   it('refreshes auth token, emits inviteAccepted, then waits for inviteAccountSettled to resets cache and mutation', async () => {
@@ -109,24 +112,27 @@ describe('accepting invite', () => {
       });
       await rerender({});
     });
-    expect(mutateAsync).toHaveBeenCalledWith(mockInviteParams.inviteId);
+    expect(mutationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: { status: 'ACCEPTED' },
+        params: { inviteId: mockInviteParams.inviteId },
+      }),
+    );
     expect(refreshForInviteAccept).toHaveBeenCalled();
     expect(acceptListener).toHaveBeenCalled();
     expect(result.current.inviteParams?.inviteId).toBeDefined();
-    expect(reset).not.toHaveBeenCalled();
 
     await act(async () => {
       inviteNotifier.emit('inviteAccountSettled');
       await rerender({});
     });
     expect(result.current.inviteParams).toEqual({});
-    expect(reset).toHaveBeenCalled();
 
     inviteNotifier.removeListener('inviteAccepted', acceptListener);
   });
 
   it('catches unknown errors and still clears cache', async () => {
-    mutateAsync.mockRejectedValue('network down');
+    mutationMock.mockReturnValue({ status: 500, data: {} });
     const { result, rerender } = await renderHookInContext();
     await act(async () => {
       inviteNotifier.emit('inviteDetected', mockInviteParams);
@@ -136,7 +142,12 @@ describe('accepting invite', () => {
       });
       await rerender({});
     });
-    expect(mutateAsync).toHaveBeenCalledWith(mockInviteParams.inviteId);
+    expect(mutationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: { status: 'ACCEPTED' },
+        params: { inviteId: mockInviteParams.inviteId },
+      }),
+    );
     expect(refreshForInviteAccept).not.toHaveBeenCalled();
     expect(result.current.inviteParams).toEqual({});
   });
