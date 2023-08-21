@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { tID } from '../common/testID';
-import { Account } from '../hooks/useAccounts';
+import { Account } from '../types/rest-types';
 import { SettingsStackScreenProps } from '../navigators/types';
 import { createStyles } from '../components';
 import { useStyles } from '../hooks';
