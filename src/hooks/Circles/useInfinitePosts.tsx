@@ -1,4 +1,4 @@
-import { InfiniteData, useInfiniteQuery } from 'react-query';
+import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useActiveAccount } from '../useActiveAccount';

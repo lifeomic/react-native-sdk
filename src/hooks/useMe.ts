@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 
@@ -31,7 +31,7 @@ export function useMe() {
   const { httpClient } = useHttpClient();
 
   return useQuery(
-    'fhir/dstu3/$me',
+    ['fhir/dstu3/$me'],
     () =>
       httpClient
         .get<MeResponse>('/v1/fhir/dstu3/$me', { headers: accountHeaders })

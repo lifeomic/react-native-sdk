@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useUser } from './useUser';
 import { useGraphQLClient } from './useGraphQLClient';
@@ -130,7 +130,7 @@ export function useNotifications() {
     isFetched: notificationsFetched,
     data: notificationsData,
     error: notificationsError,
-  } = useQuery('notifications', queryForNotifications, {
+  } = useQuery(['notifications'], queryForNotifications, {
     enabled: !!userData?.id && !!accountHeaders?.['LifeOmic-Account'],
     select: selectNotifications,
   });

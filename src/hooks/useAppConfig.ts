@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { useHttpClient } from './useHttpClient';
@@ -61,7 +61,7 @@ export function useAppConfig() {
   const { activeProject } = useActiveProject();
 
   return useQuery(
-    `/v1/life-research/projects/${activeProject?.id}/app-config`,
+    [`/v1/life-research/projects/${activeProject?.id}/app-config`],
     () =>
       httpClient
         .get<AppConfig>(

@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, renderHook } from '@testing-library/react-native';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { InviteProvider } from './InviteProvider';
 import { InviteParams, inviteNotifier } from './InviteNotifier';
 import { usePendingInvite } from '../../hooks/usePendingInvite';

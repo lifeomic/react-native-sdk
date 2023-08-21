@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useHttpClient } from './useHttpClient';
 import { useAuth } from './useAuth';
 
@@ -23,7 +23,7 @@ export function useAccounts() {
   const { httpClient } = useHttpClient();
 
   return useQuery(
-    'accounts',
+    ['accounts'],
     () =>
       httpClient
         .get<AccountsResponse>('/v1/accounts')

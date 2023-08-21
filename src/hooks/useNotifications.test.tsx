@@ -6,7 +6,7 @@ import {
   useNotifications,
 } from './useNotifications';
 import React from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from './useGraphQLClient';
 import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
 

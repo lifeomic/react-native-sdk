@@ -1,4 +1,4 @@
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useHttpClient } from './useHttpClient';
 import { ProjectInvite } from '../types';
 

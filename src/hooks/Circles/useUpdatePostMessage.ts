@@ -1,5 +1,5 @@
 import { gql } from 'graphql-request';
-import { useQueryClient, useMutation } from 'react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
@@ -26,7 +26,7 @@ export function useUpdatePostMessage() {
     );
   };
 
-  return useMutation('updatePostMessage', updatePostMessageMutation, {
+  return useMutation(['updatePostMessage'], updatePostMessageMutation, {
     onMutate: async (updatedPost) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)

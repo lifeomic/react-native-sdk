@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { AppConfig, useActiveAccount, useAppConfig } from '../hooks';
 import { HomeScreen } from './HomeScreen';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
 jest.unmock('i18next');
@@ -82,7 +82,7 @@ test('renders loading indicator while account fetching', async () => {
 
 test('renders loading indicator while app config fetching', async () => {
   useAppConfigMock.mockReturnValue({
-    isLoading: true,
+    isInitialLoading: true,
   });
   const { getByTestId } = render(homeScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();

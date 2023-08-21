@@ -3,7 +3,7 @@ import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
-} from 'react-query';
+} from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useActiveAccount } from '../useActiveAccount';
@@ -151,7 +151,7 @@ export function useCreatePrivatePostMutation() {
     );
   };
 
-  return useMutation('createPrivatePost', {
+  return useMutation(['createPrivatePost'], {
     mutationFn: createPrivatePostMutation,
     onMutate: async (variables) => {
       // Cancel outgoing refetches

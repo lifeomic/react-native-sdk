@@ -13,9 +13,9 @@ module.exports = {
             __dirname,
             './node_modules/react-native'
           ),
-          'react-query': path.resolve(
+          '@tanstack/react-query': path.resolve(
             __dirname,
-            './node_modules/react-query'
+            './node_modules/@tanstack/react-query'
           ),
           '@react-navigation/native': path.resolve(__dirname, './node_modules/@react-navigation/native'),
           '@react-navigation/native-stack': path.resolve(__dirname, './node_modules/@react-navigation/native-stack'),

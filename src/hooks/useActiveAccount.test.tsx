@@ -7,7 +7,11 @@ import {
 } from './useActiveAccount';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
-import { QueryClient, QueryClientProvider, UseQueryResult } from 'react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  UseQueryResult,
+} from '@tanstack/react-query';
 import { mockDeep } from 'jest-mock-extended';
 import * as useAsyncStorage from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';

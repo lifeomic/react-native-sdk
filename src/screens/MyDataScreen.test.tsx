@@ -12,7 +12,7 @@ import {
 } from 'date-fns';
 import { AppConfig, useAppConfig } from '../hooks';
 import { MyDataScreen } from './MyDataScreen';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
 jest.unmock('@react-navigation/native');

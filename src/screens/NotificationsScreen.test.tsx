@@ -4,7 +4,7 @@ import { useActiveAccount, useUser } from '../hooks';
 import { NotificationQueryResponse } from '../hooks/useNotifications';
 import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
 import { NotificationsScreen } from './NotificationsScreen';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
 jest.unmock('@react-navigation/native');

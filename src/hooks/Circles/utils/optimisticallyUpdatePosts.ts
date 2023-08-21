@@ -1,4 +1,4 @@
-import { QueryClient } from 'react-query';
+import { QueryClient } from '@tanstack/react-query';
 import type {
   InfinitePostsData,
   PostDetailsPostQueryResponse,
@@ -35,7 +35,8 @@ export const optimisticallyUpdatePosts = ({
     .getQueryCache()
     .findAll({ queryKey: ['postDetails'] })
     .map((query) => {
-      query?.setData(
+      queryClient.setQueryData(
+        query.queryKey,
         (currentData: PostDetailsPostQueryResponse | undefined) => {
           const newData = cloneDeep(currentData);
           if (newData?.post.id === id) {

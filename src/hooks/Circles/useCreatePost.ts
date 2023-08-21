@@ -1,5 +1,5 @@
 import { cloneDeep, omit } from 'lodash';
-import { useQueryClient, useMutation } from 'react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useUser } from '../useUser';
@@ -43,7 +43,7 @@ export function useCreatePost() {
     );
   };
 
-  return useMutation('createPost', createPostMutation, {
+  return useMutation(['createPost'], createPostMutation, {
     onMutate: async (newPost) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)

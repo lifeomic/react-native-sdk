@@ -6,7 +6,7 @@ import {
 } from '@testing-library/react-native';
 import { Thread } from '../Thread';
 import { usePost, Post, useLoadReplies } from '../../../hooks';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 jest.unmock('@react-navigation/native');
 jest.mock('../../../hooks/Circles/usePost');

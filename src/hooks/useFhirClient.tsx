@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Bundle, Observation, Coding } from 'fhir/r3';
 import formatISO from 'date-fns/formatISO';
 import { useHttpClient } from './useHttpClient';

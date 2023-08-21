@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useActiveAccount } from '../useActiveAccount';
@@ -43,7 +43,7 @@ export function useCreateReactionMutation() {
     );
   };
 
-  return useMutation('createReaction', createReactionMutation, {
+  return useMutation(['createReaction'], createReactionMutation, {
     onMutate: async (newReaction) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)
@@ -96,7 +96,7 @@ export function useUndoReactionMutation() {
     );
   };
 
-  return useMutation('undoReaction', undoReactionMutation, {
+  return useMutation(['undoReaction'], undoReactionMutation, {
     onMutate: async (newReaction) => {
       // Cancel any outgoing refetches
       // (so they don't overwrite our optimistic update)

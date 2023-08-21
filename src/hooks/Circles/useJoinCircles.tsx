@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useActiveProject } from '../useActiveProject';
 import { CircleTile, useAppConfig } from '../useAppConfig';
@@ -11,7 +11,7 @@ export function useJoinCircles() {
   const { httpClient } = useHttpClient();
 
   return useQuery(
-    `/v1/life-research/projects/${activeProject?.id}/app-config/circles`,
+    [`/v1/life-research/projects/${activeProject?.id}/app-config/circles`],
     () => {
       if (data?.homeTab?.circleTiles?.some((c) => !c.isMember)) {
         httpClient

@@ -3,7 +3,7 @@ import { ThemedNavigationContainer } from './ThemedNavigationContainer';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthConfiguration } from 'react-native-app-auth';
 import { AuthContextProvider } from '../hooks/useAuth';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ActiveAccountContextProvider } from '../hooks/useActiveAccount';
 import { HttpClientContextProvider } from '../hooks/useHttpClient';
 import { OAuthContextProvider } from '../hooks/useOAuthFlow';
