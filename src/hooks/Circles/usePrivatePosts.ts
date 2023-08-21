@@ -139,8 +139,8 @@ export function usePollPageInfoForUsers(userIds?: string[]) {
     );
   };
 
-  return useQueries(
-    (userIds ?? []).map((userId) => {
+  return useQueries({
+    queries: (userIds ?? []).map((userId) => {
       return {
         queryKey: ['privatePosts', userId],
         queryFn: () => queryPosts(userId),
@@ -150,7 +150,7 @@ export function usePollPageInfoForUsers(userIds?: string[]) {
         // so new unread messages can be detected
       };
     }),
-  );
+  });
 }
 
 export const useLookupUsers = (userIds: string[]) => {
@@ -169,15 +169,15 @@ export const useLookupUsers = (userIds: string[]) => {
     );
   };
 
-  return useQueries(
-    (userIds ?? []).map((userId) => {
+  return useQueries({
+    queries: (userIds ?? []).map((userId) => {
       return {
         queryKey: ['user', userId],
         queryFn: () => queryUser(userId),
         enabled: !!accountHeaders?.['LifeOmic-Account'],
       };
     }),
-  );
+  });
 };
 
 const userQueryDocument = gql`
