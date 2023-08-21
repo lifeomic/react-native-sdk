@@ -8,6 +8,8 @@ import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
 import { compact, orderBy } from 'lodash';
 import { useLookupUsers } from '../hooks/Circles/usePrivatePosts';
+import { ActivityIndicatorView } from '../components';
+import { tID } from '../common';
 
 export function MessageScreen({
   navigation,
@@ -15,7 +17,7 @@ export function MessageScreen({
 }: HomeStackScreenProps<'Home/Messages'>) {
   const { recipientsUserIds } = route.params;
   const { styles } = useStyles(defaultStyles);
-  const { data } = useUser();
+  const { data, isLoading: userLoading } = useUser();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -26,8 +28,7 @@ export function MessageScreen({
   const { User } = useIcons();
 
   const userQueries = useLookupUsers(recipientsUserIds);
-
-  const unreadIds = useHasNewMessagesFromUsers({
+  const { userIds, isLoading } = useHasNewMessagesFromUsers({
     currentUserId: data?.id,
     userIds: recipientsUserIds,
   });
@@ -58,11 +59,27 @@ export function MessageScreen({
 
   const renderRight = useCallback(
     (userId: string) =>
-      unreadIds?.includes(userId) && (
-        <Badge size={12} style={styles.badgeView} />
+      userIds?.includes(userId) && (
+        <Badge
+          size={12}
+          style={styles.badgeView}
+          testID={tID('unread-badge')}
+        />
       ),
-    [styles.badgeView, unreadIds],
+    [styles.badgeView, userIds],
   );
+
+  if (
+    isLoading ||
+    userQueries.some((query) => query.isLoading) ||
+    userLoading
+  ) {
+    return (
+      <ActivityIndicatorView
+        message={t('loading-messages-screen', 'Loading messages')}
+      />
+    );
+  }
 
   const userList = compact(
     userQueries.map(({ data: userData }) => {
@@ -80,7 +97,7 @@ export function MessageScreen({
 
   const prioritizedUserList = orderBy(
     userList,
-    (user) => unreadIds.includes(user!.userId),
+    (user) => userIds.includes(user.userId),
     'desc',
   );
 
@@ -97,6 +114,7 @@ export function MessageScreen({
             activeOpacity={0.6}
           >
             <List.Item
+              testID={tID('user-list-item')}
               titleStyle={styles.listItemText}
               style={styles.listItemView}
               left={() => renderLeft(user.picture)}

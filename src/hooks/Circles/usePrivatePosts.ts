@@ -18,15 +18,20 @@ import { t } from 'i18next';
  * privatePosts
  */
 export type InfinitePrivatePostsData = InfiniteData<PrivatePostsData>;
-export type PrivatePostsData = {
+export type PrivatePostsData = PageInfoData & {
+  privatePosts: {
+    edges: {
+      node: Post;
+    }[];
+  };
+};
+
+export type PageInfoData = {
   privatePosts: {
     pageInfo: {
       endCursor: string;
       hasNextPage: boolean;
     };
-    edges: {
-      node: Post;
-    }[];
   };
 };
 
@@ -127,7 +132,7 @@ export function usePollPageInfoForUsers(userIds?: string[]) {
       },
     };
 
-    return graphQLClient.request<PrivatePostsData>(
+    return graphQLClient.request<PageInfoData>(
       privatePostsPageInfoQueryDocument,
       variables,
       accountHeaders,

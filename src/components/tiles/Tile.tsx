@@ -44,7 +44,7 @@ export const Tile = ({
               {title}
             </Text>
             <View style={{ paddingRight: 24 }}>
-              {showBadge && <Badge size={12} />}
+              {showBadge && <Badge size={12} testID={tID('tile-badge')} />}
             </View>
             {onPress ? (
               <View

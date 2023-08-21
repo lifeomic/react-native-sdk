@@ -47,35 +47,45 @@ const useGetLocalCursorsForUsers = ({ currentUserId, userIds }: Props) => {
 const useGetRemoteCursorsForUsers = ({ userIds }: Props) => {
   const endCursorMap = new Map<string, string>();
   const userQueries = usePollPageInfoForUsers(userIds);
+
+  if (userQueries.some((query) => query.isLoading)) {
+    return { isLoading: true, endCursorMap };
+  }
+
   userQueries.forEach((userQuery, index) => {
     const endCursor = userQuery.data?.privatePosts.pageInfo.endCursor;
     if (endCursor) {
       endCursorMap.set(userIds[index], endCursor);
     }
   });
-  return endCursorMap;
+  return { endCursorMap, isLoading: false };
 };
 
 export const useHasNewMessagesFromUsers = ({
   currentUserId,
   userIds,
 }: Props) => {
-  const remoteEndCursorMap = useGetRemoteCursorsForUsers({
+  const { endCursorMap, isLoading } = useGetRemoteCursorsForUsers({
     currentUserId,
     userIds,
   });
+
   const localEndCursorMap = useGetLocalCursorsForUsers({
     currentUserId,
     userIds,
   });
-  const newUnreadMessages = [];
 
-  for (const [userId, remoteCursor] of remoteEndCursorMap.entries()) {
+  if (isLoading) {
+    return { isLoading };
+  }
+
+  const userIdsWithUnreads = [];
+  for (const [userId, remoteCursor] of endCursorMap.entries()) {
     const localCursor = localEndCursorMap?.get(userId);
     if (!localCursor || localCursor !== remoteCursor) {
-      newUnreadMessages.push(userId);
+      userIdsWithUnreads.push(userId);
     }
   }
 
-  return newUnreadMessages;
+  return { userIds: userIdsWithUnreads, isLoading };
 };

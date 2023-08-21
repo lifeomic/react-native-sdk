@@ -23,15 +23,15 @@ export function DirectMessagesScreen({
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: t('direct-messages-title', { userId: displayName }),
+      title: displayName,
     });
   }, [navigation, displayName]);
 
-  const { data: userData } = useUser();
+  const { data: userData, isLoading: userLoading } = useUser();
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useInfinitePrivatePosts(recipientUserId);
   const { setEndCursor } = useDirectMessageEndCursor(
-    userData!.id, // Guarded against ! in useEffect
+    userData?.id!, // Guarded against ! in useEffect
     recipientUserId,
   );
 
@@ -64,7 +64,7 @@ export function DirectMessagesScreen({
     />
   );
 
-  if (!userData?.id || isLoading) {
+  if (userLoading || isLoading || !userData?.id) {
     return loadingIndicator;
   }
 
