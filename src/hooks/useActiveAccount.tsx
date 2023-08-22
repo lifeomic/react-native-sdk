@@ -6,12 +6,13 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { Account, useAccounts } from './useAccounts';
+import { Account } from '../types/rest-types';
 import { QueryObserverResult } from '@tanstack/react-query';
 import { useAsyncStorage } from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
 import { useUser } from './useUser';
+import { useRestQuery } from './rest-api';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -60,7 +61,12 @@ export const ActiveAccountContextProvider = ({
    */
   accountIdToSelect?: string;
 }) => {
-  const accountsResult = useAccounts();
+  const accountsResult = useRestQuery(
+    'GET /v1/accounts',
+    {},
+    { select: (data) => data.accounts },
+  );
+
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
   const { data: userData } = useUser();
   const userId = userData?.id;
