@@ -2,6 +2,7 @@ import {
   InfiniteData,
   useInfiniteQuery,
   useMutation,
+  useQueries,
   useQueryClient,
 } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
@@ -11,20 +12,26 @@ import { Post, postDetailsFragment } from './types';
 import { useUser } from '../useUser';
 import { IMessage } from 'react-native-gifted-chat';
 import uuid from 'react-native-uuid';
+import { t } from 'i18next';
 
 /**
  * privatePosts
  */
 export type InfinitePrivatePostsData = InfiniteData<PrivatePostsData>;
-export type PrivatePostsData = {
+export type PrivatePostsData = PageInfoData & {
+  privatePosts: {
+    edges: {
+      node: Post;
+    }[];
+  };
+};
+
+export type PageInfoData = {
   privatePosts: {
     pageInfo: {
       endCursor: string;
       hasNextPage: boolean;
     };
-    edges: {
-      node: Post;
-    }[];
   };
 };
 
@@ -36,17 +43,44 @@ export type PostRepliesQueryResponse = {
   post: Pick<Post, 'replies'>;
 };
 
-export const postToMessage = (post: Partial<Post>): IMessage => ({
-  _id: post.id ?? uuid.v4().toString(),
-  text: post.message || '',
-  createdAt: post.createdAt ? new Date(post.createdAt) : new Date(),
+export type UserData = {
   user: {
-    _id: post.authorId ?? uuid.v4().toString(),
-    name: post.author?.profile.displayName,
-    avatar: post.author?.profile.picture,
-  },
-});
+    userId: string;
+    profile: {
+      displayName: string;
+      picture?: string;
+    };
+  };
+};
 
+export const postToMessage = (
+  post: Partial<Post> & Pick<Post, 'id'>,
+): IMessage => {
+  if (!post.authorId) {
+    throw Error(
+      t(
+        'post-to-message-error',
+        'Unable to convert post to message, missing required field authorId.',
+      ),
+    );
+  }
+
+  return {
+    _id: post.id,
+    text: post.message || '',
+    createdAt: post.createdAt ? new Date(post.createdAt) : new Date(),
+    user: {
+      _id: post.authorId,
+      name: post.author?.profile.displayName,
+      avatar: post.author?.profile.picture,
+    },
+  };
+};
+
+/*
+  This hook will query continuously so use it sparingly and only
+  when absolutely necessary.
+*/
 export function useInfinitePrivatePosts(userId: string) {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
@@ -80,6 +114,98 @@ export function useInfinitePrivatePosts(userId: string) {
     // Switch to Websocket/Subscription model would be an improvement
   });
 }
+
+/*
+  This hook will query continuously so use it sparingly and only
+  when absolutely necessary.
+*/
+export function usePollPageInfoForUsers(userIds?: string[]) {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+  const { data } = useUser();
+
+  const queryPosts = async (userId: string) => {
+    const variables = {
+      userIds: [data?.id, userId],
+      filter: {
+        order: 'NEWEST',
+      },
+    };
+
+    return graphQLClient.request<PageInfoData>(
+      privatePostsPageInfoQueryDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useQueries({
+    queries: (userIds ?? []).map((userId) => {
+      return {
+        queryKey: ['privatePosts', userId],
+        queryFn: () => queryPosts(userId),
+        enabled: !!accountHeaders?.['LifeOmic-Account'],
+        refetchInterval: 10000,
+        // Continuously polls while query component is focused
+        // so new unread messages can be detected
+      };
+    }),
+  });
+}
+
+export const useLookupUsers = (userIds: string[]) => {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+
+  const queryUser = async (userId: string) => {
+    const variables = {
+      userId: userId,
+    };
+
+    return graphQLClient.request<UserData>(
+      userQueryDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useQueries({
+    queries: (userIds ?? []).map((userId) => {
+      return {
+        queryKey: ['user', userId],
+        queryFn: () => queryUser(userId),
+        enabled: !!accountHeaders?.['LifeOmic-Account'],
+      };
+    }),
+  });
+};
+
+const userQueryDocument = gql`
+  query User($userId: ID!) {
+    user(userId: $userId) {
+      userId
+      profile {
+        displayName
+        picture
+      }
+    }
+  }
+`;
+
+const privatePostsPageInfoQueryDocument = gql`
+  query PrivatePosts(
+    $userIds: [ID!]!
+    $filter: PrivatePostFilter!
+    $after: String
+  ) {
+    privatePosts(userIds: $userIds, filter: $filter, after: $after) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
 
 const privatePostsQueryDocument = gql`
   ${postDetailsFragment}

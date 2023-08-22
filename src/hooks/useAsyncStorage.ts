@@ -12,12 +12,14 @@ export function useAsyncStorage(key: string) {
 
   const setItem = useCallback(
     (value: string) => {
-      if (value !== itemResult.data) {
-        AsyncStorage.setItem(key, value)
-          .catch((error) => console.error(`[LifeOmicSDK]:${error}`))
-          .finally(() => {
-            queryClient.setQueryData([baseKey, key], () => value);
-          });
+      try {
+        if (value !== itemResult.data) {
+          AsyncStorage?.setItem(key, value);
+        }
+      } catch (err) {
+        console.error(`[LifeOmicSDK]:${err}`);
+      } finally {
+        queryClient?.setQueryData?.([baseKey, key], () => value);
       }
     },
     [key, itemResult.data, queryClient],

@@ -79,7 +79,13 @@ export type HomeStackParamList = {
   };
   'Home/MyData': undefined;
   'Home/YoutubePlayer': { youtubeVideoId: string; videoName?: string };
-  'Home/DirectMessage': { recipientUserId: string };
+  'Home/Messages': {
+    recipientsUserIds: string[];
+  };
+  'Home/DirectMessage': {
+    recipientUserId: string;
+    displayName: string;
+  };
 };
 
 export type NotificationsStackParamList = {

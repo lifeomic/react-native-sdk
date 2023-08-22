@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View, ViewStyle } from 'react-native';
-import { Text, shadow } from 'react-native-paper';
+import { Badge, Text, shadow } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { createStyles, useIcons } from '../BrandConfigProvider';
 import { SvgProps } from 'react-native-svg';
@@ -13,6 +13,7 @@ interface TileProps {
   id?: string;
   onPress?: () => void;
   testID?: string;
+  showBadge?: boolean;
 }
 
 export const Tile = ({
@@ -22,6 +23,7 @@ export const Tile = ({
   testID,
   children,
   onPress,
+  showBadge,
 }: TileProps) => {
   const { ChevronRight } = useIcons();
   const { styles } = useStyles(defaultStyles);
@@ -41,6 +43,9 @@ export const Tile = ({
             <Text numberOfLines={2} style={styles.titleText}>
               {title}
             </Text>
+            <View style={{ paddingRight: 24 }}>
+              {showBadge && <Badge size={12} testID={tID('tile-badge')} />}
+            </View>
             {onPress ? (
               <View
                 style={styles.arrowIconView}

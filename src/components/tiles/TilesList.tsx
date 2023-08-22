@@ -11,6 +11,7 @@ import { SvgUri } from 'react-native-svg';
 import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
 import { HomeStackScreenProps } from '../../navigators/types';
 import { t } from '../../../lib/i18n';
+import { MessagesTile } from '../MessagesTile';
 
 interface Props extends HomeStackScreenProps<'Home'> {
   styles?: TilesListStyles;
@@ -29,7 +30,6 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const todayTileEnabled = data?.homeTab?.tiles?.includes?.('todayTile');
   const myDataTileEnabled = data?.homeTab?.tiles?.includes?.('myDataTile');
   const todayTile = data?.homeTab?.todayTile;
-
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
       navigation.navigate('Home/Circle/Discussion', { circleTile });
@@ -124,6 +124,14 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             title={appTile.title}
             onPress={onAppTilePress(appTile)}
             Icon={appTileIcon(appTile.id, appTile.icon, styles.iconImage)}
+          />
+        ))}
+        {data?.homeTab?.messageTiles?.map(({ id, displayName, userIds }) => (
+          <MessagesTile
+            navigation={navigation}
+            title={displayName}
+            id={id}
+            recipientsUserIds={userIds}
           />
         ))}
         {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
