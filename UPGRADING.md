@@ -5,3 +5,11 @@ versions of this library.
 
 - Replace your installation of `react-query@3.x` with
   `@tanstack/react-query@4.x`.
+
+### 2.x -> 3.x
+
+- The `useAccounts` hook was removed. Use
+  `useRestQuery('GET /v1/accounts', ...)` instead.
+
+- The `useAcceptInviteMutation` hooks was removed. Use
+  `useRestMutation('PATCH /v1/invitations/:inviteId', ...)` instead.
