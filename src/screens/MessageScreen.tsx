@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo } from 'react';
 import { useHasNewMessagesFromUsers, useStyles, useUser } from '../hooks';
 import { Avatar, Badge, Divider, List } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native';
@@ -69,6 +69,24 @@ export function MessageScreen({
     [styles.badgeView, userIds],
   );
 
+  const userList = useMemo(
+    () =>
+      compact(
+        userQueries.map(({ data: userData }) => {
+          if (!userData) {
+            return;
+          }
+
+          return {
+            userId: userData.user.userId,
+            displayName: userData.user.profile.displayName,
+            picture: userData.user.profile.picture,
+          };
+        }),
+      ),
+    [userQueries],
+  );
+
   if (
     isLoading ||
     userQueries.some((query) => query.isLoading) ||
@@ -80,20 +98,6 @@ export function MessageScreen({
       />
     );
   }
-
-  const userList = compact(
-    userQueries.map(({ data: userData }) => {
-      if (!userData) {
-        return;
-      }
-
-      return {
-        userId: userData.user.userId,
-        displayName: userData.user.profile.displayName,
-        picture: userData.user.profile.picture,
-      };
-    }),
-  );
 
   const prioritizedUserList = orderBy(
     userList,
