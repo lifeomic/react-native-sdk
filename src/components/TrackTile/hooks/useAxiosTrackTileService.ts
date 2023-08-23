@@ -30,6 +30,10 @@ import { useActiveAccount } from './../../../hooks/useActiveAccount';
 import { useActiveProject } from './../../../hooks/useActiveProject';
 import { useUser } from '../../../hooks/useUser';
 import { useDeveloperConfig } from '../../../hooks/useDeveloperConfig';
+import {
+  RefreshParams,
+  refreshNotifier,
+} from '../../../common/RefreshNotifier';
 
 const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
   headers: {
@@ -66,6 +70,19 @@ export const useAxiosTrackTileService = (): TrackTileService => {
       setPreviousUserId(userId);
     }
   }, [userId, cache, previousUserId]);
+
+  // Clear cached tracker values during HomeScreen refresh
+  useEffect(() => {
+    const refreshHandler = (refreshParams: RefreshParams) => {
+      if (refreshParams.context === 'HomeScreen') {
+        cache.trackerValues = {};
+      }
+    };
+    refreshNotifier.addListener(refreshHandler);
+    return () => {
+      refreshNotifier.removeListener(refreshHandler);
+    };
+  }, [cache]);
 
   const updateSettingsInCache = (settings: BulkInstalledMetricSettings) => {
     const tracker = cache.trackers?.find(

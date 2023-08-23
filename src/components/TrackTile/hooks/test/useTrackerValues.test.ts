@@ -13,6 +13,7 @@ import {
   startOfDay,
   startOfTomorrow,
 } from 'date-fns';
+import { refreshNotifier } from '../../../../common/RefreshNotifier';
 
 jest.mock('../../services/TrackTileService', () => ({
   ...jest.requireActual('../../services/TrackTileService'),
@@ -328,7 +329,7 @@ describe('useTrackerValues', () => {
 
     renderHook(() => useTrackerValues(valuesContext));
 
-    // Promise.resolve & .then progression:
+    // Async useCallback progression:
     await act(() => jest.advanceTimersByTime(1));
 
     expect(fetchTrackerValues).toHaveBeenCalledTimes(1);
@@ -370,6 +371,25 @@ describe('useTrackerValues', () => {
       });
       expect(result.current.loading).toBe(true);
       expect(fetchOntology).toHaveBeenCalledWith(TRACKER_CODE);
+    });
+  });
+
+  it('should refetch the values after a refresh', async () => {
+    const fetchTrackerValues = jest.fn(() => ({
+      then: (cb: (val: any) => void) => {
+        act(() => cb({}));
+        return { catch: jest.fn() };
+      },
+    }));
+    mockUseTrackTileService.mockReturnValue({ fetchTrackerValues } as any);
+
+    renderHook(() => useTrackerValues(valuesContext));
+
+    expect(fetchTrackerValues).toHaveBeenCalledTimes(1);
+
+    await act(() => {
+      refreshNotifier.emit({ context: 'HomeScreen' });
+      expect(fetchTrackerValues).toHaveBeenCalledTimes(2);
     });
   });
 });

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   TrackerValuesContext,
   TrackerValues,
@@ -14,6 +14,10 @@ import {
 import { notifier, EventTypeHandler } from '../services/EmitterService';
 import _, { partition } from 'lodash';
 import { usePrevious } from './usePrevious';
+import {
+  RefreshParams,
+  refreshNotifier,
+} from '../../../common/RefreshNotifier';
 
 type ValuesChangedHandler = EventTypeHandler<'valuesChanged'>;
 
@@ -31,6 +35,30 @@ export const useTrackerValues = (
   const prevDateRange = usePrevious(dateRange);
   const fetched = !!error || !!trackerValues;
 
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      if (valuesContext.shouldUseOntology) {
+        // NOTE: The service uses ontology for values roll-up.  We don't need
+        // to anything with the result here; we just need the service to fetch.
+        await svc.fetchOntology(valuesContext.codeBelow);
+      }
+      const fetchedTrackerValues = await svc.fetchTrackerValues(
+        valuesContext,
+        dateRange,
+      );
+      setTrackerValues(fetchedTrackerValues);
+      setLoading(false);
+    } catch (e) {
+      setError(e);
+      setLoading(false);
+
+      if (process.env.NODE_ENV === 'development') {
+        throw e;
+      }
+    }
+  }, [dateRange, svc, valuesContext]);
+
   // Schedule Tracker Data Refetch at the start of tomorrow for default range
   useEffect(() => {
     if (fetched && !dates) {
@@ -45,6 +73,18 @@ export const useTrackerValues = (
       return () => clearInterval(intervalId);
     }
   }, [fetched, dates, today]);
+
+  useEffect(() => {
+    const refreshHandler = (refreshParams: RefreshParams) => {
+      if (refreshParams.context === 'HomeScreen') {
+        fetchData();
+      }
+    };
+    refreshNotifier.addListener(refreshHandler);
+    return () => {
+      refreshNotifier.removeListener(refreshHandler);
+    };
+  }, [fetchData]);
 
   useEffect(() => {
     const handler: ValuesChangedHandler = (updates) => {
@@ -91,30 +131,7 @@ export const useTrackerValues = (
 
   useEffect(() => {
     if (!loading && !_.isEqual(prevDateRange, dateRange)) {
-      setLoading(true);
-
-      Promise.resolve()
-        .then(async () => {
-          if (valuesContext.shouldUseOntology) {
-            // NOTE: The service uses ontology for values roll-up.  We don't need
-            // to anything with the result here; we just need the service to fetch.
-            await svc.fetchOntology(valuesContext.codeBelow);
-          }
-          const fetchedTrackerValues = await svc.fetchTrackerValues(
-            valuesContext,
-            dateRange,
-          );
-          setTrackerValues(fetchedTrackerValues);
-          setLoading(false);
-        })
-        .catch((e) => {
-          setError(e);
-          setLoading(false);
-
-          if (process.env.NODE_ENV === 'development') {
-            throw e;
-          }
-        });
+      fetchData();
     }
   }, [
     svc.fetchTrackerValues,
@@ -123,6 +140,7 @@ export const useTrackerValues = (
     prevDateRange,
     svc,
     valuesContext,
+    fetchData,
   ]);
 
   return {
