@@ -119,7 +119,10 @@ export function useInfinitePrivatePosts(userId: string) {
   This hook will query continuously so use it sparingly and only
   when absolutely necessary.
 */
-export function usePollPageInfoForUsers(userIds?: string[]) {
+export function usePollPageInfoForUsers(
+  userIds?: string[],
+  refetchInterval: number = 10000,
+) {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
   const { data } = useUser();
@@ -145,7 +148,7 @@ export function usePollPageInfoForUsers(userIds?: string[]) {
         queryKey: ['privatePosts', userId],
         queryFn: () => queryPosts(userId),
         enabled: !!accountHeaders?.['LifeOmic-Account'],
-        refetchInterval: 10000,
+        refetchInterval,
         // Continuously polls while query component is focused
         // so new unread messages can be detected
       };
@@ -153,7 +156,9 @@ export function usePollPageInfoForUsers(userIds?: string[]) {
   });
 }
 
-export const useLookupUsers = (userIds: string[]) => {
+export const useLookupUsers = (
+  userList: { userId: string; enabled: boolean }[],
+) => {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
 
@@ -170,11 +175,11 @@ export const useLookupUsers = (userIds: string[]) => {
   };
 
   return useQueries({
-    queries: (userIds ?? []).map((userId) => {
+    queries: (userList ?? []).map((user) => {
       return {
-        queryKey: ['user', userId],
-        queryFn: () => queryUser(userId),
-        enabled: !!accountHeaders?.['LifeOmic-Account'],
+        queryKey: ['user', user.userId],
+        queryFn: () => queryUser(user.userId),
+        enabled: !!accountHeaders?.['LifeOmic-Account'] && user.enabled, // throttle queries until we are attempting to load them on screen
       };
     }),
   });

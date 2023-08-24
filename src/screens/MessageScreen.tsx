@@ -1,12 +1,16 @@
-import React, { useCallback, useLayoutEffect, useMemo } from 'react';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { useHasNewMessagesFromUsers, useStyles, useUser } from '../hooks';
 import { Avatar, Badge, Divider, List } from 'react-native-paper';
-import { TouchableOpacity } from 'react-native';
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  TouchableOpacity,
+} from 'react-native';
 import { ScrollView, View } from 'react-native';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
-import { compact, orderBy } from 'lodash';
+import { chunk, compact, orderBy } from 'lodash';
 import { useLookupUsers } from '../hooks/Circles/usePrivatePosts';
 import { ActivityIndicatorView } from '../components';
 import { tID } from '../common';
@@ -18,20 +22,62 @@ export function MessageScreen({
   const { recipientsUserIds } = route.params;
   const { styles } = useStyles(defaultStyles);
   const { data, isLoading: userLoading } = useUser();
+  const { User } = useIcons();
+
+  const [scrollIndex, setScrollIndex] = useState<number>(0);
+
+  // Users that have sent new messages
+  const { userIds: unreads, isLoading } = useHasNewMessagesFromUsers({
+    currentUserId: data?.id,
+    userIds: recipientsUserIds,
+  });
+
+  // Sort recipientsList by unreads
+  const sortedList = useMemo(
+    () =>
+      orderBy(recipientsUserIds, (userId) => unreads?.includes(userId), 'desc'),
+    [unreads, recipientsUserIds],
+  );
+
+  // Break-down list of users into smaller chunks
+  const recipientsListChunked = useMemo(
+    () => chunk(sortedList, 10),
+    [sortedList],
+  );
+
+  // Use current scroll-index to expand the list of users
+  // in view up to the maximum
+  const usersInView = useMemo(
+    () =>
+      compact(
+        recipientsListChunked.flatMap((users, index) => {
+          if (index <= scrollIndex) {
+            return users;
+          }
+        }),
+      ),
+    [recipientsListChunked, scrollIndex],
+  );
+
+  // Construct object to identify which user
+  // queries should be enabled
+  const prioritizedList = useMemo(
+    () =>
+      recipientsUserIds.map((userId) => ({
+        userId,
+        enabled: usersInView.includes(userId),
+      })),
+    [recipientsUserIds, usersInView],
+  );
+
+  // Get user details (picture/displayName) for usersInView
+  const userQueries = useLookupUsers(prioritizedList);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: t('messages-title', 'My Messages'),
     });
   }, [navigation]);
-
-  const { User } = useIcons();
-
-  const userQueries = useLookupUsers(recipientsUserIds);
-  const { userIds, isLoading } = useHasNewMessagesFromUsers({
-    currentUserId: data?.id,
-    userIds: recipientsUserIds,
-  });
 
   const handlePostTapped = useCallback(
     (userId: string, displayName: string) => () => {
@@ -59,14 +105,14 @@ export function MessageScreen({
 
   const renderRight = useCallback(
     (userId: string) =>
-      userIds?.includes(userId) && (
+      unreads?.includes(userId) && (
         <Badge
           size={12}
           style={styles.badgeView}
           testID={tID('unread-badge')}
         />
       ),
-    [styles.badgeView, userIds],
+    [styles.badgeView, unreads],
   );
 
   const userList = useMemo(
@@ -87,31 +133,37 @@ export function MessageScreen({
     [userQueries],
   );
 
-  if (
-    isLoading ||
-    userQueries.some((query) => query.isLoading) ||
-    userLoading
-  ) {
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (
+        event.nativeEvent.contentOffset.y +
+          event.nativeEvent.layoutMeasurement.height >=
+        event.nativeEvent.contentSize.height
+      ) {
+        if (recipientsListChunked.length > scrollIndex) {
+          // Add new users to view on scroll
+          setScrollIndex(scrollIndex + 1);
+        }
+      }
+    },
+    [scrollIndex, recipientsListChunked.length],
+  );
+
+  if (isLoading || userLoading) {
     return (
       <ActivityIndicatorView
         message={t('loading-messages-screen', 'Loading messages')}
       />
     );
   }
-
-  const prioritizedUserList = orderBy(
-    userList,
-    (user) => userIds.includes(user.userId),
-    'desc',
-  );
-
   return (
     <View style={styles.rootView}>
       <ScrollView
         scrollEventThrottle={400}
         contentContainerStyle={styles.scrollView}
+        onScroll={handleScroll}
       >
-        {prioritizedUserList?.map((user) => (
+        {userList?.map((user) => (
           <TouchableOpacity
             key={`message-${user.userId}`}
             onPress={handlePostTapped(user.userId, user.displayName)}
@@ -128,6 +180,9 @@ export function MessageScreen({
             <Divider />
           </TouchableOpacity>
         ))}
+        {userQueries.some((query) => {
+          return query.isInitialLoading;
+        }) && <ActivityIndicatorView />}
       </ScrollView>
     </View>
   );
