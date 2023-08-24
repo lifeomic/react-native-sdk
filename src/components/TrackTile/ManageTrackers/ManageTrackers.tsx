@@ -13,6 +13,7 @@ import { tID } from '../common/testID';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
 import isEqual from 'lodash/isEqual';
+import { usePrevious } from '../hooks/usePrevious';
 
 export type EditingState = 'editing' | 'done' | undefined;
 
@@ -31,6 +32,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
   const { loading, trackers, error } = useTrackers(trackerRequestMeta);
   const [initialState, setInitialState] = useState<Tracker[] | undefined>();
   const [orderState, setOrderState] = useState<Tracker[] | undefined>();
+  const previousEditingState = usePrevious(editingState);
 
   const {
     syncTrackerOrder,
@@ -59,14 +61,16 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
   );
 
   useEffect(() => {
-    if (editingState === 'editing') {
-      setOrderingState(true);
-    } else if (editingState === 'done') {
-      setOrderingState(false);
-    } else {
-      setOrderState(undefined);
+    if (previousEditingState !== editingState) {
+      if (editingState === 'editing') {
+        setOrderingState(true);
+      } else if (editingState === 'done') {
+        setOrderingState(false);
+      } else {
+        setOrderState(undefined);
+      }
     }
-  }, [editingState]);
+  }, [editingState, previousEditingState, setOrderingState]);
 
   const trackerList = orderState ?? trackers;
 
@@ -133,9 +137,12 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                 onDrag={() => !reorderSaving && isEditing && drag()}
                 onToggleInstall={() => {
                   setOrderState((current) =>
-                    current?.map((t) => ({
-                      ...t,
-                      installed: t === tracker ? !t.installed : t.installed,
+                    current?.map((trackerData) => ({
+                      ...trackerData,
+                      installed:
+                        trackerData === tracker
+                          ? !trackerData.installed
+                          : trackerData.installed,
                     })),
                   );
                 }}

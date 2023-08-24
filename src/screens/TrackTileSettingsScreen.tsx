@@ -6,8 +6,8 @@ import {
   ManageTrackers,
   EditingState,
 } from '../components/TrackTile/ManageTrackers/ManageTrackers';
-import { createStyles } from '../components';
-import { useStyles } from '../hooks';
+import { createStyles } from '../components/BrandConfigProvider';
+import { useStyles } from '../hooks/useStyles';
 import { HeaderButton } from '../components/HeaderButton';
 
 export const SettingsScreen = ({
@@ -42,7 +42,7 @@ export const SettingsScreen = ({
         />
       ),
     });
-  }, [editingState]);
+  }, [editingState, navigation]);
 
   return (
     <View style={styles.container}>

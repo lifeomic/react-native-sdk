@@ -12,11 +12,6 @@ import { merge } from 'lodash';
 
 jest.unmock('i18next');
 
-jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
-  const mockComponent = jest.requireActual('react-native/jest/mockComponent');
-  return mockComponent('react-native/Libraries/Components/Switch/Switch');
-});
-
 type PartialDeep<T> = T extends {}
   ? {
       [P in keyof T]?: PartialDeep<T[P]>;
@@ -112,6 +107,7 @@ describe('Manage Trackers', () => {
       units: [],
       order: 1,
     };
+    const trackers = [trackerA, trackerB];
     const upsertTrackers = jest.fn();
 
     const { findByText, findByTestId, rerender } = renderManageTrackers({
@@ -120,7 +116,7 @@ describe('Manage Trackers', () => {
         upsertTrackers,
       },
       trackerRequestMeta: {
-        trackers: [trackerA, trackerB],
+        trackers,
       },
     });
 
@@ -144,7 +140,7 @@ describe('Manage Trackers', () => {
             upsertTrackers,
           },
           trackerRequestMeta: {
-            trackers: [trackerA, trackerB],
+            trackers,
           },
         } as any as ManageTrackersProviderProps)}
       />,

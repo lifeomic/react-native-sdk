@@ -15,6 +15,7 @@ import { tID } from '../common/testID';
 import { useIcons, createStyles } from '../../BrandConfigProvider';
 import { useStyles, useTheme } from '../../../hooks';
 import { IconButton } from 'react-native-paper';
+import { Easing } from 'react-native-reanimated';
 
 type Props = Omit<TouchableHighlightProps, 'onPress' | 'onPressIn'> & {
   tracker: Tracker;
@@ -39,10 +40,11 @@ export const ManageTrackerRow: FC<Props> = (props) => {
   useEffect(() => {
     Animated.timing(animation, {
       toValue: !isEditable ? 0 : 1,
-      duration: isEditable ? 400 : 500,
+      duration: 400,
       useNativeDriver: false,
+      easing: isEditable ? Easing.linear : Easing.in(Easing.linear),
     }).start();
-  }, [isEditable]);
+  }, [isEditable, animation]);
 
   return (
     <TouchableHighlight

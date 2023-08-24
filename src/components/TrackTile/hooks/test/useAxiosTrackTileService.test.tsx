@@ -922,7 +922,7 @@ describe('useAxiosTrackTileService', () => {
       ]),
     );
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     const pillarValuesContext = {
       system: TRACKER_PILLAR_CODE_SYSTEM,
