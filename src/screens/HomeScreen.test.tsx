@@ -41,6 +41,7 @@ const exampleAppConfig: AppConfig = {
     ],
     screenHeader: {
       title: 'Custom Screen Title',
+      enableRefresh: true,
     },
   },
 };
@@ -93,6 +94,15 @@ test('sets the custom header title', async () => {
   await waitFor(() => {
     expect(navigateMock.setOptions).toHaveBeenCalledWith({
       title: 'Custom Screen Title',
+    });
+  });
+});
+
+test('sets headerLeft when enableRefresh is true', async () => {
+  render(homeScreen);
+  await waitFor(() => {
+    expect(navigateMock.setOptions).toHaveBeenCalledWith({
+      headerLeft: expect.anything(),
     });
   });
 });

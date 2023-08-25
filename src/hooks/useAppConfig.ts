@@ -56,6 +56,7 @@ export interface AppConfig {
     };
     screenHeader?: {
       title?: string;
+      enableRefresh?: boolean;
     };
   };
   onboardingCourse?: {

@@ -20,6 +20,7 @@ import {
   MUTATE_PROCEDURE_RESOURCE,
   DELETE_RESOURCE,
 } from '../useAxiosTrackTileService';
+import { refreshNotifier } from '../../../../common/RefreshNotifier';
 
 const valuesContext: TrackerValuesContext = {
   system: TRACKER_CODE_SYSTEM,
@@ -917,6 +918,44 @@ describe('useAxiosTrackTileService', () => {
       },
       DATASTORE_HEADERS,
     );
+  });
+
+  it('should clear pillar values cache upon refresh', async () => {
+    postMock.mockResolvedValue(
+      toGraphQLResult([
+        {
+          metricId: 'metric-id-1',
+          effectiveDateTime: '2021-07-23',
+          value: 1,
+        },
+        {
+          metricId: 'metric-id-1',
+          effectiveDateTime: '2021-07-24',
+          value: 2,
+        },
+      ]),
+    );
+
+    const { result } = renderHook(() => useAxiosTrackTileService());
+
+    const pillarValuesContext = {
+      system: TRACKER_PILLAR_CODE_SYSTEM,
+      codeBelow: TRACKER_PILLAR_CODE,
+    };
+
+    await act(async () => {
+      await result.current.fetchTrackerValues(pillarValuesContext, {
+        start: startOfDay(new Date('2021-07-23')),
+        end: endOfDay(new Date('2021-07-24')),
+      });
+      refreshNotifier.emit({ context: 'HomeScreen' });
+      await result.current.fetchTrackerValues(pillarValuesContext, {
+        start: startOfDay(new Date('2021-07-23')),
+        end: endOfDay(new Date('2021-07-24')),
+      });
+    });
+
+    expect(postMock).toHaveBeenCalledTimes(2);
   });
 });
 
