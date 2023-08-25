@@ -1,5 +1,5 @@
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
-import { useHasNewMessagesFromUsers, useStyles, useUser } from '../hooks';
+import { useStyles } from '../hooks';
 import { Avatar, Badge, Divider, List } from 'react-native-paper';
 import {
   NativeScrollEvent,
@@ -14,6 +14,7 @@ import { chunk, compact, orderBy } from 'lodash';
 import { useLookupUsers } from '../hooks/Circles/usePrivatePosts';
 import { ActivityIndicatorView } from '../components';
 import { tID } from '../common';
+import { useUnreadMessages } from '../hooks/useUnreadMessages';
 
 export function MessageScreen({
   navigation,
@@ -21,16 +22,12 @@ export function MessageScreen({
 }: HomeStackScreenProps<'Home/Messages'>) {
   const { recipientsUserIds } = route.params;
   const { styles } = useStyles(defaultStyles);
-  const { data, isLoading: userLoading } = useUser();
   const { User } = useIcons();
 
   const [scrollIndex, setScrollIndex] = useState<number>(0);
 
   // Users that have sent new messages
-  const { userIds: unreads, isLoading } = useHasNewMessagesFromUsers({
-    currentUserId: data?.id,
-    userIds: recipientsUserIds,
-  });
+  const { unreadMessagesUserIds: unreads } = useUnreadMessages();
 
   // Sort recipientsList by unreads
   const sortedList = useMemo(
@@ -149,13 +146,6 @@ export function MessageScreen({
     [scrollIndex, recipientsListChunked.length],
   );
 
-  if (isLoading || userLoading) {
-    return (
-      <ActivityIndicatorView
-        message={t('loading-messages-screen', 'Loading messages')}
-      />
-    );
-  }
   return (
     <View style={styles.rootView}>
       <ScrollView

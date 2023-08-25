@@ -92,6 +92,7 @@ const supportedNotificationTypes = [
   'PostReplyNotification',
   'CircleAdminPostNotification',
   'SurveyAssignedNotification',
+  'PrivatePostNotification',
 ];
 const selectNotifications = (
   data: NotificationQueryResponse,

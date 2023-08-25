@@ -1,18 +1,19 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { useUser, useHasNewMessagesFromUsers } from '../../hooks';
+import { useUser } from '../../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../../hooks/useGraphQLClient';
 import { MessagesTile } from '.';
+import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 
 jest.unmock('@react-navigation/native');
 jest.mock('../../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));
-jest.mock('../../hooks/useDirectMessageEndCursor');
+jest.mock('../../hooks/useUnreadMessages');
 
 const useUserMock = useUser as jest.Mock;
-const useHasNewMessagesFromUsersMock = useHasNewMessagesFromUsers as jest.Mock;
+const useUnreadMessagesMock = useUnreadMessages as jest.Mock;
 
 const navigateMock = {
   navigate: jest.fn(),
@@ -48,24 +49,14 @@ beforeEach(() => {
       id: 'current_user',
     },
   });
-  useHasNewMessagesFromUsersMock.mockReturnValue({
-    isLoading: false,
-    userIds: [],
+  useUnreadMessagesMock.mockReturnValue({
+    unreadMessageUserIds: [],
   });
 });
 
 test('renders loading indicator while user is fetching', async () => {
   useUserMock.mockReturnValue({
     isLoading: true,
-  });
-  const { getByTestId } = render(directMessageScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
-});
-
-test('renders loading indicator while unread queries are fetching', async () => {
-  useHasNewMessagesFromUsersMock.mockReturnValue({
-    isLoading: true,
-    userIds: [],
   });
   const { getByTestId } = render(directMessageScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
@@ -83,9 +74,8 @@ test('calls navigate with params', async () => {
 });
 
 test('renders badge if unread messages are available', async () => {
-  useHasNewMessagesFromUsersMock.mockReturnValue({
-    isLoading: false,
-    userIds: ['doctorId'],
+  useUnreadMessagesMock.mockReturnValue({
+    unreadMessagesUserIds: ['doctorId'],
   });
 
   const { getByTestId } = render(directMessageScreen);

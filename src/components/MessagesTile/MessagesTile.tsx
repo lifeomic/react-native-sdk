@@ -1,10 +1,11 @@
 import React from 'react';
 import { Tile } from '../tiles/Tile';
 import { HomeStackScreenProps } from '../../navigators';
-import { useUser, useHasNewMessagesFromUsers } from '../../hooks';
+import { useUser } from '../../hooks';
 import { useIcons } from '../BrandConfigProvider';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { tID } from '../TrackTile/common/testID';
+import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 
 interface Props extends Pick<HomeStackScreenProps<'Home'>, 'navigation'> {
   id: string;
@@ -18,14 +19,11 @@ export function MessagesTile({
   id,
   recipientsUserIds,
 }: Props) {
-  const { data, isLoading: loadingUser } = useUser();
+  const { isLoading: loadingUser } = useUser();
   const { MessageCircle } = useIcons();
-  const { userIds, isLoading } = useHasNewMessagesFromUsers({
-    currentUserId: data?.id,
-    userIds: recipientsUserIds,
-  });
+  const { unreadMessagesUserIds } = useUnreadMessages();
 
-  if (isLoading || loadingUser) {
+  if (loadingUser) {
     return <ActivityIndicatorView />;
   }
 
@@ -36,7 +34,7 @@ export function MessagesTile({
       title={title}
       testID={tID('message-tile')}
       Icon={MessageCircle}
-      showBadge={userIds.length > 0}
+      showBadge={unreadMessagesUserIds && unreadMessagesUserIds.length > 0}
       onPress={() => {
         navigation.navigate('Home/Messages', {
           recipientsUserIds: recipientsUserIds,
