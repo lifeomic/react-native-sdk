@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ProfileScreen } from './ProfileScreen';
-import { useUser, User } from '../hooks/useUser';
+import { useUser } from '../hooks/useUser';
+import { User } from '../types';
 
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),

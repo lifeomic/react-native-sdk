@@ -10,3 +10,14 @@ export interface ProjectInvite {
   expirationTimestamp: string;
   purpose?: string;
 }
+
+export interface User {
+  id: string;
+  profile: {
+    email: string;
+    displayName?: string;
+    givenName?: string;
+    familyName?: string;
+    picture?: string;
+  };
+}

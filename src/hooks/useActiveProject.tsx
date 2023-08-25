@@ -16,6 +16,7 @@ const selectedProjectIdKey = 'selectedProjectIdKey';
 export type ActiveProjectProps = {
   activeProject?: Project;
   activeSubjectId?: string;
+  activeSubject?: Subject;
 };
 
 export type ActiveProjectContextProps = ActiveProjectProps & {
@@ -101,6 +102,7 @@ export const ActiveProjectContextProvider = ({
       return {
         activeProject: selectedProject,
         activeSubjectId: selectedSubject.subjectId,
+        activeSubject: selectedSubject,
       };
     }
 

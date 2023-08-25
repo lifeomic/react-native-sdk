@@ -1,24 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
+import { Patient } from 'fhir/r3';
 
 export interface Subject {
   subjectId: string;
   projectId: string;
+  name: Patient['name'];
 }
 
 interface Entry {
-  resource: {
-    id: string;
-    meta: {
-      tag: [
-        {
-          system: string;
-          code: string;
-        },
-      ];
-    };
-  };
+  resource: Patient;
 }
 
 interface MeResponse {
@@ -40,9 +32,10 @@ export function useMe() {
             (entry) =>
               ({
                 subjectId: entry.resource.id,
-                projectId: entry.resource.meta.tag.find(
+                projectId: entry.resource.meta?.tag?.find(
                   (t) => t.system === 'http://lifeomic.com/fhir/dataset',
                 )?.code,
+                name: entry.resource.name,
               } as Subject),
           ),
         ),

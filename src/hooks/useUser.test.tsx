@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderHook, waitFor } from '@testing-library/react-native';
+import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { useAuth } from './useAuth';
 import { useUser } from './useUser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -50,4 +50,31 @@ test('fetches and parses user', async () => {
   await waitFor(() => result.current.isSuccess);
   expect(axiosMock.history.get[0].url).toBe('/v1/user');
   await waitFor(() => expect(result.current.data).toEqual(userProfile));
+});
+
+test('can update a user', async () => {
+  const userProfile = { id: 'id', profile: { email: 'email' } };
+  const updatedProfile = {
+    ...userProfile,
+    profile: {
+      ...userProfile.profile,
+      familyName: 'test',
+    },
+  };
+  axiosMock.onGet('/v1/user').reply(200, userProfile);
+  axiosMock.onPatch('/v1/user').reply(200, updatedProfile);
+
+  const { result } = await renderHookInContext();
+
+  await waitFor(() => result.current.isSuccess);
+
+  await act(async () => {
+    await result.current.updateUser({
+      profile: {
+        familyName: 'test',
+      },
+    });
+  });
+
+  await waitFor(() => expect(result.current.data).toEqual(updatedProfile));
 });
