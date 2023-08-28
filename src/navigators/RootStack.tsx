@@ -18,6 +18,7 @@ import { ConsentScreen } from '../screens/ConsentScreen';
 import { CircleThreadScreen } from '../screens/CircleThreadScreen';
 import { InviteRequiredScreen } from '../screens/InviteRequiredScreen';
 import { OnboardingCourseScreen } from '../screens/OnboardingCourseScreen';
+import { useSetUserProfileEffect } from '../hooks/useSetUserProfileEffect';
 
 export function RootStack() {
   const { isLoggedIn, loading: loadingAuth } = useAuth();
@@ -41,6 +42,8 @@ export function RootStack() {
     isLoading: onboardingCourseIsLoading,
     isFetched: onboardingCourseIsFetched,
   } = useOnboardingCourse();
+
+  useSetUserProfileEffect();
 
   const loadingProject = !isFetchedProject || isLoadingProject;
   const loadingAccount = !isFetchedAccount || isLoadingAccount;

@@ -1,4 +1,4 @@
-import { ProjectInvite } from '../types';
+import { ProjectInvite, User } from '../types';
 
 export interface Account {
   id: string;
@@ -28,5 +28,10 @@ export type RestAPIEndpoints = {
   'PATCH /v1/invitations/:inviteId': {
     Request: { status: 'ACCEPTED' };
     Response: ProjectInvite;
+  };
+
+  'PATCH /v1/user': {
+    Request: { profile: Omit<User['profile'], 'picture' | 'email'> };
+    Response: User;
   };
 };
