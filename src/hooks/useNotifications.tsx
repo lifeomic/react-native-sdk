@@ -1,8 +1,9 @@
+import { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
-import { useUser } from './useUser';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
+import { useUser } from './useUser';
 
 export type NotificationBase = {
   __typename: string;
@@ -35,13 +36,27 @@ export type PostReplyNotification = NotificationBase & {
   };
 };
 
+export type PrivatePostNotification = NotificationBase & {
+  post: {
+    id: string;
+    authorId: string;
+  };
+};
+
+export type Notification =
+  | PostReplyNotification
+  | SurveyAssignedNotification
+  | CircleAdminPostNotification
+  | PrivatePostNotification;
+
 export type NotificationQueryResponse = {
   notificationsForUser: {
     edges: {
       node:
         | PostReplyNotification
         | SurveyAssignedNotification
-        | CircleAdminPostNotification;
+        | CircleAdminPostNotification
+        | PrivatePostNotification;
     }[];
   };
 };
@@ -82,25 +97,41 @@ const notificationQuery = gql`
               }
             }
           }
+          ... on PrivatePostNotification {
+            post {
+              id
+              __typename
+              ... on ActivePost {
+                authorId
+              }
+            }
+          }
         }
       }
     }
   }
 `;
 
-const supportedNotificationTypes = [
+export const supportedNotificationsConst = [
   'PostReplyNotification',
   'CircleAdminPostNotification',
   'SurveyAssignedNotification',
   'PrivatePostNotification',
-];
+] as const;
+
+export type SupportedNotifications = (typeof supportedNotifications)[number];
+
+export const supportedNotifications = supportedNotificationsConst.map(
+  (v) => v as string,
+);
+
 const selectNotifications = (
   data: NotificationQueryResponse,
 ): NotificationQueryResponse => {
   return {
     notificationsForUser: {
       edges: data.notificationsForUser.edges.filter((edge) =>
-        supportedNotificationTypes.includes(edge.node.__typename),
+        supportedNotifications.includes(edge.node.__typename),
       ),
     },
   };
@@ -109,37 +140,20 @@ const selectNotifications = (
 export function useNotifications() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
+  const { data } = useUser();
 
-  const queryForNotifications = async () => {
+  const queryForNotifications = useCallback(() => {
     return graphQLClient.request<NotificationQueryResponse>(
       notificationQuery,
       {
-        userId: userData?.id,
+        userId: data?.id,
       },
       accountHeaders,
     );
-  };
+  }, [accountHeaders, data?.id, graphQLClient]);
 
-  const {
-    isLoading: userLoading,
-    isFetched: userFetched,
-    data: userData,
-    error: userError,
-  } = useUser();
-  const {
-    isLoading: notificationsLoading,
-    isFetched: notificationsFetched,
-    data: notificationsData,
-    error: notificationsError,
-  } = useQuery(['notifications'], queryForNotifications, {
-    enabled: !!userData?.id && !!accountHeaders?.['LifeOmic-Account'],
+  return useQuery(['notifications'], queryForNotifications, {
+    enabled: !!accountHeaders?.['LifeOmic-Account'] && !!data?.id,
     select: selectNotifications,
   });
-
-  return {
-    isLoading: notificationsLoading || userLoading,
-    isFetched: notificationsFetched || userFetched,
-    error: notificationsError || userError,
-    data: notificationsData,
-  };
 }

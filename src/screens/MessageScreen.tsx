@@ -15,6 +15,8 @@ import { useLookupUsers } from '../hooks/Circles/usePrivatePosts';
 import { ActivityIndicatorView } from '../components';
 import { tID } from '../common';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
+import { useNotificationManager } from '../hooks/useNotificationManager';
+import { useFocusEffect } from '@react-navigation/native';
 
 export function MessageScreen({
   navigation,
@@ -69,6 +71,17 @@ export function MessageScreen({
 
   // Get user details (picture/displayName) for usersInView
   const userQueries = useLookupUsers(prioritizedList);
+
+  const { setNotificationsRead } = useNotificationManager();
+
+  // TODO: This works for tracking new unread messages now but a refactor
+  // to track the privatePosts separately from general notifications will
+  // be required once the notifications tab is setup to show a badge
+  useFocusEffect(
+    useCallback(() => {
+      return () => setNotificationsRead();
+    }, [setNotificationsRead]),
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({

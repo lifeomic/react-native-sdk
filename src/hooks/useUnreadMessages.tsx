@@ -1,7 +1,7 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
-import { onNotificationReceived } from '../common/Notifications';
 import { uniq } from 'lodash';
 import { useAsyncStorage } from './useAsyncStorage';
+import { useNotificationManager } from './useNotificationManager';
 
 type UnreadMessageContextProps = {
   unreadMessagesUserIds?: string[];
@@ -18,8 +18,8 @@ export const UnreadMessagesContextProvider = ({
   const [initialUnreadMessages, setStoredUnreadMessages] = useAsyncStorage(
     'UnreadMessageUserIds',
   );
-
   const [unreadMessagesUserIds, setUnreadMessages] = useState<string[]>([]);
+  const { privatePostsUserIds } = useNotificationManager();
 
   useEffect(() => {
     if (initialUnreadMessages.isFetchedAfterMount) {
@@ -31,21 +31,21 @@ export const UnreadMessagesContextProvider = ({
     }
   }, [initialUnreadMessages.data, initialUnreadMessages.isFetchedAfterMount]);
 
-  onNotificationReceived((notification) => {
-    if (notification.payload.notificationType === 'privatePost') {
-      const incomingUserId = `${notification?.payload?.authorId}`;
-      const computeIds = (unreadIds?: string[]) => {
-        return unreadIds
-          ? uniq([...unreadIds, incomingUserId])
-          : [incomingUserId];
-      };
+  useEffect(() => {
+    const computeIds = (incomingUserIds: string[], unreadIds?: string[]) => {
+      return unreadIds
+        ? uniq([...unreadIds, ...incomingUserIds])
+        : incomingUserIds;
+    };
+
+    if (privatePostsUserIds) {
       setUnreadMessages((currentUnreads) => {
-        const newUserIds = computeIds(currentUnreads);
+        const newUserIds = computeIds(privatePostsUserIds, currentUnreads);
         setStoredUnreadMessages(newUserIds.join('#'));
         return newUserIds;
       });
     }
-  });
+  }, [privatePostsUserIds, setStoredUnreadMessages]);
 
   const markMessageRead = (userId: string) => {
     if (unreadMessagesUserIds.includes(userId)) {

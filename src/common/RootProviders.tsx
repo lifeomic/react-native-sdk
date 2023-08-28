@@ -21,7 +21,6 @@ import { InviteProvider } from '../components/Invitations/InviteProvider';
 import { PushNotificationsProvider } from '../hooks/usePushNotifications';
 import { CircleTileContextProvider } from '../hooks/Circles/useActiveCircleTile';
 import { OnboardingCourseContextProvider } from '../hooks/useOnboardingCourse';
-import { UnreadMessagesContextProvider } from '../hooks/useUnreadMessages';
 
 const queryClient = new QueryClient();
 
@@ -55,9 +54,7 @@ export function RootProviders({
                                       <PushNotificationsProvider
                                         config={pushNotificationsConfig}
                                       >
-                                        <UnreadMessagesContextProvider>
-                                          {children}
-                                        </UnreadMessagesContextProvider>
+                                        {children}
                                       </PushNotificationsProvider>
                                     </ThemedNavigationContainer>
                                     <CreateEditPostModal />
