@@ -6,7 +6,6 @@ import { GraphQLClientContextProvider } from '../../hooks/useGraphQLClient';
 import { MessagesTile } from '.';
 import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 
-jest.unmock('@react-navigation/native');
 jest.mock('../../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));

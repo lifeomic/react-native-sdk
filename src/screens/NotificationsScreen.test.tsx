@@ -7,7 +7,6 @@ import { NotificationsScreen } from './NotificationsScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
-jest.unmock('@react-navigation/native');
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));

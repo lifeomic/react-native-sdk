@@ -6,7 +6,6 @@ import { UserData, useLookupUsers } from '../hooks/Circles/usePrivatePosts';
 import { MessageScreen } from './MessageScreen';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
 
-jest.unmock('@react-navigation/native');
 jest.mock('../hooks/Circles/usePrivatePosts', () => {
   return {
     ...jest.requireActual('../hooks/Circles/usePrivatePosts'),
