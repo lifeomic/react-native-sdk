@@ -6,11 +6,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import {
   PrivatePostNotification,
   useNotifications,
-  Notification,
+  FeedNotification,
 } from './useNotifications';
 import { useAsyncStorage } from './useAsyncStorage';
 import { onNotificationReceived } from '../common';
@@ -33,7 +33,7 @@ export const NotificationsManagerContext =
     unreadCount: 0,
     privatePostsUserIds: [],
     setNotificationsRead: () => {},
-    lastReadAt: null,
+    lastReadAt: undefined,
   });
 
 export const NotificationsManagerProvider = ({
@@ -53,10 +53,10 @@ export const NotificationsManagerProvider = ({
   const [lastReadAt, setLastReadAt] =
     useState<NotificationsManagerContextType['lastReadAt']>();
 
-  const updateLastReadAt = (readAt: Date | null) => {
+  const updateLastReadAt = useCallback((readAt: Date | null) => {
     setLastReadAt(readAt);
     lastReadAtRef.current = readAt;
-  };
+  }, []);
 
   /**
    * Load persisted lastReadAt from async storage
@@ -72,6 +72,7 @@ export const NotificationsManagerProvider = ({
   }, [
     lastNotificationReadTime.data,
     lastNotificationReadTime.isFetchedAfterMount,
+    updateLastReadAt,
   ]);
 
   /**
@@ -88,9 +89,26 @@ export const NotificationsManagerProvider = ({
       }
     };
 
+    const handleOnBlur = () => {
+      lastReadAtRef.current &&
+        setLastNotificationReadTime(lastReadAtRef.current.toISOString());
+    };
+
     const listener = AppState.addEventListener('change', handleAppStateChange);
 
-    return () => listener.remove();
+    // Android can be forced killed without triggering an AppState change
+    // Luckily there is a blur event emitted
+    if (Platform.OS === 'android') {
+      const blurListener = AppState.addEventListener('blur', handleOnBlur);
+      return () => {
+        listener.remove();
+        blurListener.remove();
+      };
+    }
+
+    return () => {
+      listener.remove();
+    };
   }, [refetch, setLastNotificationReadTime]);
 
   useEffect(() => {
@@ -104,12 +122,12 @@ export const NotificationsManagerProvider = ({
 
   const setNotificationsRead = useCallback(() => {
     updateLastReadAt(new Date());
-  }, []);
+  }, [updateLastReadAt]);
 
   let unreadCount: number | undefined;
   let privatePostsUserIds: string[] | undefined;
 
-  const notificationsToAuthorId = (_notifications: Notification[]) =>
+  const notificationsToAuthorId = (_notifications: FeedNotification[]) =>
     compact(
       _notifications.map((n) => {
         if (n.__typename === 'PrivatePostNotification') {

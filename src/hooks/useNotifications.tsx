@@ -43,7 +43,7 @@ export type PrivatePostNotification = NotificationBase & {
   };
 };
 
-export type Notification =
+export type FeedNotification =
   | PostReplyNotification
   | SurveyAssignedNotification
   | CircleAdminPostNotification
@@ -112,18 +112,18 @@ const notificationQuery = gql`
   }
 `;
 
-export const supportedNotificationsConst = [
+export type SupportedNotifications = [
   'PostReplyNotification',
   'CircleAdminPostNotification',
   'SurveyAssignedNotification',
   'PrivatePostNotification',
-] as const;
+];
 
-export type SupportedNotifications = (typeof supportedNotifications)[number];
-
-export const supportedNotifications = supportedNotificationsConst.map(
-  (v) => v as string,
-);
+function isSupportedNotification(
+  __typename: any,
+): __typename is SupportedNotifications {
+  return true;
+}
 
 const selectNotifications = (
   data: NotificationQueryResponse,
@@ -131,7 +131,7 @@ const selectNotifications = (
   return {
     notificationsForUser: {
       edges: data.notificationsForUser.edges.filter((edge) =>
-        supportedNotifications.includes(edge.node.__typename),
+        isSupportedNotification(edge.node.__typename),
       ),
     },
   };

@@ -1,4 +1,10 @@
-import React, { useState, createContext, useContext, useEffect } from 'react';
+import React, {
+  useState,
+  createContext,
+  useContext,
+  useEffect,
+  useCallback,
+} from 'react';
 import { uniq } from 'lodash';
 import { useAsyncStorage } from './useAsyncStorage';
 import { useNotificationManager } from './useNotificationManager';
@@ -20,16 +26,19 @@ export const UnreadMessagesContextProvider = ({
   );
   const [unreadMessagesUserIds, setUnreadMessages] = useState<string[]>([]);
   const { privatePostsUserIds } = useNotificationManager();
+  const getStoredUnreadIds = useCallback(() => {
+    if (initialUnreadMessages.data) {
+      return JSON.parse(initialUnreadMessages.data) as string[];
+    } else {
+      return [];
+    }
+  }, [initialUnreadMessages.data]);
 
   useEffect(() => {
     if (initialUnreadMessages.isFetchedAfterMount) {
-      setUnreadMessages(
-        initialUnreadMessages.data
-          ? initialUnreadMessages.data?.split('#')
-          : [],
-      );
+      setUnreadMessages(getStoredUnreadIds());
     }
-  }, [initialUnreadMessages.data, initialUnreadMessages.isFetchedAfterMount]);
+  }, [getStoredUnreadIds, initialUnreadMessages.isFetchedAfterMount]);
 
   useEffect(() => {
     const computeIds = (incomingUserIds: string[], unreadIds?: string[]) => {
@@ -41,19 +50,23 @@ export const UnreadMessagesContextProvider = ({
     if (privatePostsUserIds) {
       setUnreadMessages((currentUnreads) => {
         const newUserIds = computeIds(privatePostsUserIds, currentUnreads);
-        setStoredUnreadMessages(newUserIds.join('#'));
+        setStoredUnreadMessages(JSON.stringify(newUserIds));
         return newUserIds;
       });
     }
   }, [privatePostsUserIds, setStoredUnreadMessages]);
 
-  const markMessageRead = (userId: string) => {
-    if (unreadMessagesUserIds.includes(userId)) {
-      setUnreadMessages((currentIds) =>
-        currentIds?.filter((id) => id !== userId),
-      );
-    }
-  };
+  const markMessageRead = useCallback(
+    (userId: string) => {
+      setUnreadMessages((currentIds) => {
+        if (unreadMessagesUserIds.includes(userId)) {
+          return currentIds?.filter((id) => id !== userId);
+        }
+        return currentIds;
+      });
+    },
+    [unreadMessagesUserIds],
+  );
 
   return (
     <UnreadMessagesContext.Provider
