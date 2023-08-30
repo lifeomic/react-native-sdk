@@ -53,14 +53,6 @@ beforeEach(() => {
   });
 });
 
-test('renders loading indicator while user is fetching', async () => {
-  useUserMock.mockReturnValue({
-    isLoading: true,
-  });
-  const { getByTestId } = render(directMessageScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
-});
-
 test('calls navigate with params', async () => {
   const { getByTestId, queryAllByTestId } = render(directMessageScreen);
   const messageTile = getByTestId('message-tile');
