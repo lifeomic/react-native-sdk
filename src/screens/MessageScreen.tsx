@@ -23,19 +23,28 @@ export function MessageScreen({
   route,
 }: HomeStackScreenProps<'Home/Messages'>) {
   const { recipientsUserIds } = route.params;
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: t('messages-title', 'My Messages'),
+    });
+  }, [navigation]);
+
   const { styles } = useStyles(defaultStyles);
   const { User } = useIcons();
-
   const [scrollIndex, setScrollIndex] = useState<number>(0);
 
-  // Users that have sent new messages
-  const { unreadMessagesUserIds: unreads } = useUnreadMessages();
+  // Get userIds that have sent new messages
+  const { unreadMessagesUserIds: unreadUserIds } = useUnreadMessages();
 
-  // Sort recipientsList by unreads
+  // Sort recipientsList by unread messages
   const sortedList = useMemo(
     () =>
-      orderBy(recipientsUserIds, (userId) => unreads?.includes(userId), 'desc'),
-    [unreads, recipientsUserIds],
+      orderBy(
+        recipientsUserIds,
+        (userId) => unreadUserIds?.includes(userId),
+        'desc',
+      ),
+    [unreadUserIds, recipientsUserIds],
   );
 
   // Break-down list of users into smaller chunks
@@ -60,34 +69,44 @@ export function MessageScreen({
 
   // Construct object to identify which user
   // queries should be enabled
-  const prioritizedList = useMemo(
+  const userQueryList = useMemo(
     () =>
-      recipientsUserIds.map((userId) => ({
+      sortedList.map((userId) => ({
         userId,
         enabled: usersInView.includes(userId),
       })),
-    [recipientsUserIds, usersInView],
+    [sortedList, usersInView],
   );
 
   // Get user details (picture/displayName) for usersInView
-  const userQueries = useLookupUsers(prioritizedList);
+  const userQueries = useLookupUsers(userQueryList);
+  const userDetailsList = useMemo(
+    () =>
+      compact(
+        userQueries.map(({ data: userData }) => {
+          if (!userData) {
+            return;
+          }
 
-  const { setNotificationsRead } = useNotificationManager();
+          return {
+            userId: userData.user.userId,
+            displayName: userData.user.profile.displayName,
+            picture: userData.user.profile.picture,
+          };
+        }),
+      ),
+    [userQueries],
+  );
 
   // TODO: This works for tracking new unread messages now but a refactor
   // to track the privatePosts separately from general notifications will
   // be required once the notifications tab is setup to show a badge
+  const { setNotificationsRead } = useNotificationManager();
   useFocusEffect(
     useCallback(() => {
       return () => setNotificationsRead();
     }, [setNotificationsRead]),
   );
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      title: t('messages-title', 'My Messages'),
-    });
-  }, [navigation]);
 
   const handlePostTapped = useCallback(
     (userId: string, displayName: string) => () => {
@@ -115,32 +134,14 @@ export function MessageScreen({
 
   const renderRight = useCallback(
     (userId: string) =>
-      unreads?.includes(userId) && (
+      unreadUserIds?.includes(userId) && (
         <Badge
           size={12}
           style={styles.badgeView}
           testID={tID('unread-badge')}
         />
       ),
-    [styles.badgeView, unreads],
-  );
-
-  const userList = useMemo(
-    () =>
-      compact(
-        userQueries.map(({ data: userData }) => {
-          if (!userData) {
-            return;
-          }
-
-          return {
-            userId: userData.user.userId,
-            displayName: userData.user.profile.displayName,
-            picture: userData.user.profile.picture,
-          };
-        }),
-      ),
-    [userQueries],
+    [styles.badgeView, unreadUserIds],
   );
 
   const handleScroll = useCallback(
@@ -166,7 +167,7 @@ export function MessageScreen({
         contentContainerStyle={styles.scrollView}
         onScroll={handleScroll}
       >
-        {userList?.map((user) => (
+        {userDetailsList?.map((user) => (
           <TouchableOpacity
             key={`message-${user.userId}`}
             onPress={handlePostTapped(user.userId, user.displayName)}

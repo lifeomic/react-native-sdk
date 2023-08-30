@@ -40,7 +40,7 @@ const directMessageScreen = (
         route={
           {
             params: {
-              recipientsUserIds: ['other_user'],
+              recipientsUserIds: ['no_unread_messages', 'other_user'],
             },
           } as any
         }
@@ -72,9 +72,9 @@ beforeEach(() => {
 test('renders loading indicator while lookup queries are fetching', async () => {
   useLookupUserMock.mockReturnValue([
     {
-      isLoading: false,
+      isInitialLoading: false,
     },
-    { isLoading: true },
+    { isInitialLoading: true },
   ]);
   const { getByTestId } = render(directMessageScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
@@ -119,10 +119,10 @@ test('renders badge if unread messages are available and sorts list', async () =
 
   useLookupUserMock.mockReturnValue([
     {
-      data: mockFirstUser,
+      data: mockSecondUser,
     },
     {
-      data: mockSecondUser,
+      data: mockFirstUser,
     },
   ]);
 
