@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import {
-  PushNotificationsConfig,
   registerDeviceToken,
   requestNotificationsPermissions,
-} from '../../src/common';
+} from '../../src/common/Notifications';
+import { PushNotificationsConfig } from '../../src/common/DeveloperConfig';
 import { Platform } from 'react-native';
 import { Notifications } from 'react-native-notifications';
 import { useHttpClient } from './useHttpClient';

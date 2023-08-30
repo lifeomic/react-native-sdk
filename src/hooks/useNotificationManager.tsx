@@ -13,7 +13,7 @@ import {
   FeedNotification,
 } from './useNotifications';
 import { useAsyncStorage } from './useAsyncStorage';
-import { onNotificationReceived } from '../common';
+import { onNotificationReceived } from '../common/Notifications';
 import { compact } from 'lodash';
 
 export interface NotificationsManagerContextType {
