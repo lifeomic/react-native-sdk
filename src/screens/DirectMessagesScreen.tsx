@@ -5,12 +5,13 @@ import {
   useCreatePrivatePostMutation,
   postToMessage,
 } from '../hooks/Circles/usePrivatePosts';
-import { useStyles, useUser } from '../hooks';
+import { useUser } from '../hooks/useUser';
+import { useStyles } from '../hooks/useStyles';
 import {
   ActivityIndicatorView,
   ActivityIndicatorViewStyles,
-  createStyles,
-} from '../components';
+} from '../components/ActivityIndicatorView';
+import { createStyles } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';

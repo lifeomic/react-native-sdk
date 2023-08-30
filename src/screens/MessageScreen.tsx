@@ -1,19 +1,20 @@
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
-import { useStyles } from '../hooks';
+import { useStyles } from '../hooks/useStyles';
 import { Avatar, Badge, Divider, List } from 'react-native-paper';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   TouchableOpacity,
+  ScrollView,
+  View,
 } from 'react-native';
-import { ScrollView, View } from 'react-native';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
 import { chunk, compact, orderBy } from 'lodash';
 import { useLookupUsers } from '../hooks/Circles/usePrivatePosts';
-import { ActivityIndicatorView } from '../components';
-import { tID } from '../common';
+import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
+import { tID } from '../common/testID';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
 import { useNotificationManager } from '../hooks/useNotificationManager';
 import { useFocusEffect } from '@react-navigation/native';
