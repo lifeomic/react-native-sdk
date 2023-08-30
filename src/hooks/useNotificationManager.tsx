@@ -7,11 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
-import {
-  PrivatePostNotification,
-  useNotifications,
-  FeedNotification,
-} from './useNotifications';
+import { useNotifications, FeedNotification } from './useNotifications';
 import { useAsyncStorage } from './useAsyncStorage';
 import { onNotificationReceived } from '../common/Notifications';
 import { compact } from 'lodash';
@@ -131,7 +127,7 @@ export const NotificationsManagerProvider = ({
     compact(
       _notifications.map((n) => {
         if (n.__typename === 'PrivatePostNotification') {
-          return (n as PrivatePostNotification).post.authorId;
+          return n.post.authorId;
         }
       }),
     );
