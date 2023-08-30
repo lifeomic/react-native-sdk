@@ -60,7 +60,12 @@ export type NotificationQueryResponse = {
   };
 };
 
-type SupportedNotificationTypes = FeedNotification['__typename'];
+const supportedNotificationTypes = [
+  'PostReplyNotification',
+  'CircleAdminPostNotification',
+  'SurveyAssignedNotification',
+  'PrivatePostNotification',
+];
 
 const notificationQuery = gql`
   query GetNotificationsForUser($userId: ID!) {
@@ -113,10 +118,10 @@ const notificationQuery = gql`
   }
 `;
 
-function isSupportedNotification(
-  __typename: string,
-): __typename is SupportedNotificationTypes {
-  return (__typename as SupportedNotificationTypes) !== undefined;
+export function isSupportedNotification(
+  notification: any,
+): notification is FeedNotification {
+  return supportedNotificationTypes.includes(notification?.__typename);
 }
 
 const selectNotifications = (
@@ -125,7 +130,7 @@ const selectNotifications = (
   return {
     notificationsForUser: {
       edges: data.notificationsForUser.edges.filter((edge) =>
-        isSupportedNotification(edge.node.__typename),
+        isSupportedNotification(edge.node),
       ),
     },
   };

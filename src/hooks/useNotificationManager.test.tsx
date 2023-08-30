@@ -3,7 +3,10 @@ import {
   useNotificationManager,
   NotificationsManagerProvider,
 } from './useNotificationManager';
-import { NotificationQueryResponse } from '../hooks/useNotifications';
+import {
+  FeedNotification,
+  NotificationQueryResponse,
+} from '../hooks/useNotifications';
 import {
   AppState,
   AppStateStatus,
@@ -46,18 +49,24 @@ const renderHookInContext = async () => {
   });
 };
 
-const getNotificationEdge = (time: string = new Date().toISOString()) => ({
-  node: {
-    __typename: 'CircleAdminPostNotification',
-    id: uniqueId().toString(),
-    time: time,
-    fullText: 'Admin posted to your circle!',
-    post: {
-      id: 'id',
-      authorId: 'someAuthor',
-    },
-  },
-});
+const getNotificationEdge = (time: string = new Date().toISOString()) => {
+  return {
+    node: {
+      __typename: 'CircleAdminPostNotification',
+      id: uniqueId().toString(),
+      time: time,
+      fullText: 'Admin posted to your circle!',
+      post: {
+        id: 'id',
+        authorId: 'someAuthor',
+        circle: {
+          id: '',
+          isMember: true,
+        },
+      },
+    } as FeedNotification,
+  };
+};
 
 describe('NotificationsManager', () => {
   beforeEach(async () => {
