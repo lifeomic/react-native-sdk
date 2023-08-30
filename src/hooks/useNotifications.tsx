@@ -6,13 +6,13 @@ import { useActiveAccount } from './useActiveAccount';
 import { useUser } from './useUser';
 
 export type NotificationBase = {
-  __typename: string;
   id: string;
   fullText: string;
   time: string;
 };
 
 export type CircleAdminPostNotification = NotificationBase & {
+  __typename: 'CircleAdminPostNotification';
   post: {
     id: string;
     circle: {
@@ -23,11 +23,13 @@ export type CircleAdminPostNotification = NotificationBase & {
 };
 
 export type SurveyAssignedNotification = NotificationBase & {
+  __typename: 'SurveyAssignedNotification';
   surveyName: string;
   organizationName: string;
 };
 
 export type PostReplyNotification = NotificationBase & {
+  __typename: 'PostReplyNotification';
   replyPost: {
     id: string;
     circle: {
@@ -37,6 +39,7 @@ export type PostReplyNotification = NotificationBase & {
 };
 
 export type PrivatePostNotification = NotificationBase & {
+  __typename: 'PrivatePostNotification';
   post: {
     id: string;
     authorId: string;
@@ -52,14 +55,12 @@ export type FeedNotification =
 export type NotificationQueryResponse = {
   notificationsForUser: {
     edges: {
-      node:
-        | PostReplyNotification
-        | SurveyAssignedNotification
-        | CircleAdminPostNotification
-        | PrivatePostNotification;
+      node: FeedNotification;
     }[];
   };
 };
+
+type SupportedNotificationTypes = FeedNotification['__typename'];
 
 const notificationQuery = gql`
   query GetNotificationsForUser($userId: ID!) {
@@ -112,17 +113,10 @@ const notificationQuery = gql`
   }
 `;
 
-export type SupportedNotifications = [
-  'PostReplyNotification',
-  'CircleAdminPostNotification',
-  'SurveyAssignedNotification',
-  'PrivatePostNotification',
-];
-
 function isSupportedNotification(
-  __typename: any,
-): __typename is SupportedNotifications {
-  return true;
+  __typename: string,
+): __typename is SupportedNotificationTypes {
+  return (__typename as SupportedNotificationTypes) !== undefined;
 }
 
 const selectNotifications = (
