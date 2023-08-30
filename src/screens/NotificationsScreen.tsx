@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { useNotifications } from '../hooks/useNotifications';
@@ -8,20 +8,11 @@ import formatRelative from 'date-fns/formatRelative';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { tID } from '../common';
-import { useFocusEffect } from '@react-navigation/native';
-import { useNotificationManager } from '../hooks/useNotificationManager';
 
 export const NotificationsScreen = () => {
   const { Bell, BellOff } = useIcons();
   const { isLoading, data } = useNotifications();
   const { styles } = useStyles(defaultStyles);
-  const { setNotificationsRead } = useNotificationManager();
-
-  useFocusEffect(
-    useCallback(() => {
-      return () => setNotificationsRead();
-    }, [setNotificationsRead]),
-  );
 
   const surveyIcon = useMemo(
     () => <List.Icon style={styles.iconView} icon={Bell} />,
