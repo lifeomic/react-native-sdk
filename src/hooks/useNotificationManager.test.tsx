@@ -10,10 +10,6 @@ import {
   NativeEventSubscription,
 } from 'react-native';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { QueryClient } from '@tanstack/query-core';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { GraphQLClientContextProvider } from './useGraphQLClient';
-import { PushNotificationsProvider } from './usePushNotifications';
 import { useNotifications } from './useNotifications';
 import { useAsyncStorage } from './useAsyncStorage';
 import { uniqueId } from 'lodash';
@@ -25,24 +21,6 @@ const events = {
   registerNotificationReceivedForeground,
   registerNotificationReceivedBackground,
 };
-
-jest.mock('./useActiveAccount', () => ({
-  useActiveAccount: jest.fn().mockResolvedValue({
-    account: 'account',
-  }),
-}));
-
-jest.mock('./useUser', () => ({
-  useUser: jest.fn().mockResolvedValue({
-    data: 'user',
-  }),
-}));
-
-jest.mock('./useAuth', () => ({
-  useAuth: jest.fn().mockResolvedValue({
-    authResult: { accessToken: '' },
-  }),
-}));
 
 jest.mock('./useNotifications', () => ({
   useNotifications: jest.fn(),
@@ -60,28 +38,10 @@ jest.mock('react-native-notifications', () => ({
 const useNotificationsMock = useNotifications as jest.Mock;
 const useAsyncStorageMock = useAsyncStorage as jest.Mock;
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
-
-const baseURL = 'https://some-domain/unit-test';
-
 const renderHookInContext = async () => {
   return renderHook(() => useNotificationManager(), {
     wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>
-        <GraphQLClientContextProvider baseURL={baseURL}>
-          <PushNotificationsProvider>
-            <NotificationsManagerProvider>
-              {children}
-            </NotificationsManagerProvider>
-          </PushNotificationsProvider>
-        </GraphQLClientContextProvider>
-      </QueryClientProvider>
+      <NotificationsManagerProvider>{children}</NotificationsManagerProvider>
     ),
   });
 };

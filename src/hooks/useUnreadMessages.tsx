@@ -26,6 +26,8 @@ export const UnreadMessagesContextProvider = ({
   );
   const [unreadMessagesUserIds, setUnreadMessages] = useState<string[]>([]);
   const { privatePostsUserIds } = useNotificationManager();
+
+  // Deserialize the userId array
   const getStoredUnreadIds = useCallback(() => {
     if (initialUnreadMessages.data) {
       return JSON.parse(initialUnreadMessages.data) as string[];
@@ -34,12 +36,14 @@ export const UnreadMessagesContextProvider = ({
     }
   }, [initialUnreadMessages.data]);
 
+  // Initial load from storage
   useEffect(() => {
     if (initialUnreadMessages.isFetchedAfterMount) {
       setUnreadMessages(getStoredUnreadIds());
     }
   }, [getStoredUnreadIds, initialUnreadMessages.isFetchedAfterMount]);
 
+  // React to privatePostsUserIds changes and update state
   useEffect(() => {
     const computeIds = (incomingUserIds: string[], unreadIds?: string[]) => {
       return unreadIds
@@ -49,13 +53,17 @@ export const UnreadMessagesContextProvider = ({
 
     if (privatePostsUserIds) {
       setUnreadMessages((currentUnreads) => {
-        const newUserIds = computeIds(privatePostsUserIds, currentUnreads);
-        setStoredUnreadMessages(JSON.stringify(newUserIds));
-        return newUserIds;
+        return computeIds(privatePostsUserIds, currentUnreads);
       });
     }
   }, [privatePostsUserIds, setStoredUnreadMessages]);
 
+  // React to state changes and update storage
+  useEffect(() => {
+    setStoredUnreadMessages(JSON.stringify(unreadMessagesUserIds));
+  }, [setStoredUnreadMessages, unreadMessagesUserIds]);
+
+  // Remove userIds from state
   const markMessageRead = useCallback(
     (userId: string) => {
       setUnreadMessages((currentIds) => {
