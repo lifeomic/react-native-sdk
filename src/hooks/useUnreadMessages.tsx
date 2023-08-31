@@ -61,6 +61,9 @@ const useMessageReadReceipts = () => {
         [
           {
             id: userId,
+            // TODO: Using the local time is brittle
+            // We could use the current system time of our
+            // graphql server to make this more robust
             time: new Date().toISOString(),
           },
           ...messageReadReceipts,
