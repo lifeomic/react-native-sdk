@@ -7,10 +7,9 @@ import React, {
   useState,
 } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
-import { useNotifications, FeedNotification } from './useNotifications';
+import { useNotifications } from './useNotifications';
 import { useAsyncStorage } from './useAsyncStorage';
 import { onNotificationReceived } from '../common/Notifications';
-import { compact } from 'lodash';
 
 export interface NotificationsManagerContextType {
   unreadCount: number | undefined;
@@ -21,13 +20,11 @@ export interface NotificationsManagerContextType {
    * Date - async storage has loaded and key was set
    */
   lastReadAt: Date | null | undefined;
-  privatePostsUserIds: string[] | undefined;
 }
 
 export const NotificationsManagerContext =
   createContext<NotificationsManagerContextType>({
     unreadCount: 0,
-    privatePostsUserIds: [],
     setNotificationsRead: () => {},
     lastReadAt: undefined,
   });
@@ -121,33 +118,20 @@ export const NotificationsManagerProvider = ({
   }, [updateLastReadAt]);
 
   let unreadCount: number | undefined;
-  let privatePostsUserIds: string[] | undefined;
-
-  const notificationsToAuthorId = (_notifications: FeedNotification[]) =>
-    compact(
-      _notifications.map((n) => {
-        if (n.__typename === 'PrivatePostNotification') {
-          return n.post.authorId;
-        }
-      }),
-    );
 
   if (lastReadAt === null) {
     unreadCount = notifications.length;
-    privatePostsUserIds = notificationsToAuthorId(notifications);
   } else if (lastReadAt instanceof Date) {
     const newNotifications = notifications?.filter(
       (notification) => new Date(notification.time) > lastReadAt,
     );
     unreadCount = newNotifications.length;
-    privatePostsUserIds = notificationsToAuthorId(newNotifications);
   }
 
   return (
     <NotificationsManagerContext.Provider
       value={{
         unreadCount,
-        privatePostsUserIds,
         setNotificationsRead,
         lastReadAt,
       }}
