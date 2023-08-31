@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { uniq } from 'lodash';
 import { useAsyncStorage } from './useAsyncStorage';
 import { useNotificationManager } from './useNotificationManager';
@@ -21,66 +15,22 @@ export const UnreadMessagesContextProvider = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const [initialUnreadMessages, setStoredUnreadMessages] = useAsyncStorage(
-    'UnreadMessageUserIds',
-  );
-  const [unreadMessagesUserIds, setUnreadMessages] = useState<string[]>([]);
-  const { privatePostsUserIds } = useNotificationManager();
+  const { unreadUserIds, addUserIds, removeUserId } = useUnreadUserIds();
 
-  // Deserialize the userId array
-  const getStoredUnreadIds = useCallback(() => {
-    if (initialUnreadMessages.data) {
-      return JSON.parse(initialUnreadMessages.data) as string[];
-    } else {
-      return [];
-    }
-  }, [initialUnreadMessages.data]);
+  const { privatePostsUserIds: userIdsWithNewMessages } =
+    useNotificationManager();
 
-  // Initial load from storage
   useEffect(() => {
-    if (initialUnreadMessages.isFetchedAfterMount) {
-      setUnreadMessages(getStoredUnreadIds());
+    if (userIdsWithNewMessages?.length) {
+      addUserIds(userIdsWithNewMessages);
     }
-  }, [getStoredUnreadIds, initialUnreadMessages.isFetchedAfterMount]);
-
-  // React to privatePostsUserIds changes and update state
-  useEffect(() => {
-    const computeIds = (incomingUserIds: string[], unreadIds?: string[]) => {
-      return unreadIds
-        ? uniq([...unreadIds, ...incomingUserIds])
-        : incomingUserIds;
-    };
-
-    if (privatePostsUserIds) {
-      setUnreadMessages((currentUnreads) => {
-        return computeIds(privatePostsUserIds, currentUnreads);
-      });
-    }
-  }, [privatePostsUserIds, setStoredUnreadMessages]);
-
-  // React to state changes and update storage
-  useEffect(() => {
-    setStoredUnreadMessages(JSON.stringify(unreadMessagesUserIds));
-  }, [setStoredUnreadMessages, unreadMessagesUserIds]);
-
-  // Remove userIds from state
-  const markMessageRead = useCallback(
-    (userId: string) => {
-      setUnreadMessages((currentIds) => {
-        if (unreadMessagesUserIds.includes(userId)) {
-          return currentIds?.filter((id) => id !== userId);
-        }
-        return currentIds;
-      });
-    },
-    [unreadMessagesUserIds],
-  );
+  }, [addUserIds, unreadUserIds, userIdsWithNewMessages]);
 
   return (
     <UnreadMessagesContext.Provider
       value={{
-        unreadMessagesUserIds: unreadMessagesUserIds ?? [],
-        markMessageRead,
+        unreadMessagesUserIds: unreadUserIds,
+        markMessageRead: removeUserId,
       }}
     >
       {children}
@@ -89,3 +39,39 @@ export const UnreadMessagesContextProvider = ({
 };
 
 export const useUnreadMessages = () => useContext(UnreadMessagesContext);
+
+const useUnreadUserIds = () => {
+  const [unreadStoredUserIds, setUnreadStoredUserIds] = useAsyncStorage(
+    'UnreadMessageUserIds',
+  );
+
+  const unreadUserIds = (
+    unreadStoredUserIds.data ? JSON.parse(unreadStoredUserIds.data) : []
+  ) as string[];
+
+  const addUserIds = (userIds: string[]) => {
+    const newUnreadUserIds = userIds.filter(
+      (id) => !unreadUserIds.includes(id),
+    );
+
+    if (newUnreadUserIds.length) {
+      setUnreadStoredUserIds(
+        JSON.stringify(uniq([...unreadUserIds, ...newUnreadUserIds]).sort()),
+      );
+    }
+  };
+
+  const removeUserId = (userId: string) => {
+    if (unreadUserIds.includes(userId)) {
+      setUnreadStoredUserIds(
+        JSON.stringify(unreadUserIds.filter((id) => id !== userId)),
+      );
+    }
+  };
+
+  return {
+    unreadUserIds,
+    addUserIds,
+    removeUserId,
+  };
+};

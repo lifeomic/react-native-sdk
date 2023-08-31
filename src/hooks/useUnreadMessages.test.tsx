@@ -36,16 +36,21 @@ describe('NotificationsManager', () => {
       privatePostsUserIds: ['some_user'],
     });
 
+    const setUnreadStoredUserIds = jest.fn();
+
     useAsyncStorageMock.mockReturnValue([
       {
         data: JSON.stringify([]),
         isFetchedAfterMount: true,
       },
-      jest.fn(),
+      setUnreadStoredUserIds,
     ]);
 
-    const { result } = await renderHookInContext();
-    expect(result.current.unreadMessagesUserIds).toEqual(['some_user']);
+    await renderHookInContext();
+
+    expect(setUnreadStoredUserIds).toBeCalledWith(
+      JSON.stringify(['some_user']),
+    );
   });
 
   it('fetches prior sessions unreadIds from storage', async () => {
