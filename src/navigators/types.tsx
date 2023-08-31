@@ -80,11 +80,11 @@ export type HomeStackParamList = {
   'Home/MyData': undefined;
   'Home/YoutubePlayer': { youtubeVideoId: string; videoName?: string };
   'Home/Messages': {
-    recipientsUserIds: string[];
+    tileId: string;
   };
   'Home/DirectMessage': {
     recipientUserId: string;
-    displayName: string;
+    displayName?: string;
   };
 };
 

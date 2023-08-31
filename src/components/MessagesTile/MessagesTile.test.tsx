@@ -60,13 +60,13 @@ test('calls navigate with params', async () => {
   expect(queryAllByTestId('tile-badge')).toHaveLength(0);
   fireEvent.press(messageTile);
   expect(navigateMock.navigate).toBeCalledWith('Home/Messages', {
-    recipientsUserIds: ['doctorId'],
+    tileId: 'some-messages-tile',
   });
 });
 
 test('renders badge if unread messages are available', async () => {
   useUnreadMessagesMock.mockReturnValue({
-    unreadMessagesUserIds: ['doctorId'],
+    unreadIds: ['doctorId'],
   });
 
   const { getByTestId } = render(directMessageScreen);
