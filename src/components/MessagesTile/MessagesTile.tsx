@@ -11,14 +11,9 @@ interface Props extends Pick<HomeStackScreenProps<'Home'>, 'navigation'> {
   recipientsUserIds: string[];
 }
 
-export function MessagesTile({
-  navigation,
-  title,
-  id,
-  recipientsUserIds,
-}: Props) {
+export function MessagesTile({ navigation, title, id }: Props) {
   const { MessageCircle } = useIcons();
-  const { unreadMessagesUserIds } = useUnreadMessages();
+  const { unreadIds } = useUnreadMessages();
 
   return (
     <Tile
@@ -27,10 +22,10 @@ export function MessagesTile({
       title={title}
       testID={tID('message-tile')}
       Icon={MessageCircle}
-      showBadge={unreadMessagesUserIds && unreadMessagesUserIds.length > 0}
+      showBadge={unreadIds && unreadIds.length > 0}
       onPress={() => {
         navigation.navigate('Home/Messages', {
-          recipientsUserIds: recipientsUserIds,
+          tileId: id,
         });
       }}
     />

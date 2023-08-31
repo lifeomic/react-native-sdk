@@ -72,7 +72,7 @@ describe('NotificationsManager', () => {
 
     const { result } = await renderHookInContext();
 
-    expect(result.current.unreadMessagesUserIds).toEqual(['someAuthor']);
+    expect(result.current.unreadIds).toEqual(['someAuthor']);
   });
 
   it('stored read receipts filter notifications and hook result', async () => {
@@ -95,7 +95,7 @@ describe('NotificationsManager', () => {
     ]);
 
     const { result } = await renderHookInContext();
-    expect(result.current.unreadMessagesUserIds).toEqual([]);
+    expect(result.current.unreadIds).toEqual([]);
   });
 
   it('markMessage removes user from unreadIds and storage', async () => {

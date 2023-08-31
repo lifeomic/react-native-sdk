@@ -10,7 +10,6 @@ jest.mock('../hooks/Circles/usePrivatePosts', () => {
   return {
     ...jest.requireActual('../hooks/Circles/usePrivatePosts'),
     useLookupUsers: jest.fn(),
-    usePollPageInfoForUsers: jest.fn(),
   };
 });
 jest.mock('../hooks/useUnreadMessages');
@@ -65,7 +64,7 @@ beforeEach(() => {
     },
   ]);
   useUnreadMessagesMock.mockReturnValue({
-    unreadMessageUserIds: [],
+    unreadIds: [],
   });
 });
 
@@ -74,7 +73,9 @@ test('renders loading indicator while lookup queries are fetching', async () => 
     {
       isInitialLoading: false,
     },
-    { isInitialLoading: true },
+    {
+      isInitialLoading: true,
+    },
   ]);
   const { getByTestId } = render(directMessageScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
@@ -127,7 +128,7 @@ test('renders badge if unread messages are available and sorts list', async () =
   ]);
 
   useUnreadMessagesMock.mockReturnValue({
-    unreadMessagesUserIds: ['other_user'],
+    unreadIds: ['other_user'],
   });
 
   const { queryAllByTestId } = render(directMessageScreen);

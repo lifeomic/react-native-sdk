@@ -12,7 +12,7 @@ type ReadReceipt = {
 };
 
 type UnreadMessageContextProps = {
-  unreadMessagesUserIds?: string[];
+  unreadIds?: string[];
   markMessageRead?: (userId: string) => void;
 };
 
@@ -26,14 +26,14 @@ export const UnreadMessagesContextProvider = ({
   const { messageReadReceipts, updateReadReceiptForUser } =
     useMessageReadReceipts();
   const { data } = useNotifications();
-  const unreadMessagesUserIds = useMemo(() => {
+  const unreadIds = useMemo(() => {
     return extractUnreadIdsFromNotifications(data, messageReadReceipts);
   }, [data, messageReadReceipts]);
 
   return (
     <UnreadMessagesContext.Provider
       value={{
-        unreadMessagesUserIds,
+        unreadIds,
         markMessageRead: updateReadReceiptForUser,
       }}
     >
@@ -61,6 +61,9 @@ const useMessageReadReceipts = () => {
         [
           {
             id: userId,
+            // TODO: Using the local time is brittle
+            // We could use the current system time of our
+            // graphql server to make this more robust
             time: new Date().toISOString(),
           },
           ...messageReadReceipts,
