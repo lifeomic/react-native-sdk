@@ -1,14 +1,16 @@
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { useStyles } from '../hooks/useStyles';
-import { Avatar, Badge, Divider, List } from 'react-native-paper';
+import { Badge, Divider, List } from 'react-native-paper';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   TouchableOpacity,
   ScrollView,
   View,
+  ViewStyle,
 } from 'react-native';
-import { createStyles, useIcons } from '../components/BrandConfigProvider';
+import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
+import { createStyles } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
 import { chunk, compact, orderBy } from 'lodash';
@@ -18,12 +20,16 @@ import { tID } from '../common/testID';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
 import { useNotificationManager } from '../hooks/useNotificationManager';
 import { useFocusEffect } from '@react-navigation/native';
+import { useUser } from '../hooks/useUser';
+
+type User = GiftedUser & { id: string; name: string };
 
 export function MessageScreen({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/Messages'>) {
   const { recipientsUserIds } = route.params;
+  const { data: currentUser } = useUser();
   useLayoutEffect(() => {
     navigation.setOptions({
       title: t('messages-title', 'My Messages'),
@@ -31,7 +37,6 @@ export function MessageScreen({
   }, [navigation]);
 
   const { styles } = useStyles(defaultStyles);
-  const { User } = useIcons();
   const [scrollIndex, setScrollIndex] = useState<number>(0);
 
   // Get userIds that have sent new messages
@@ -81,22 +86,23 @@ export function MessageScreen({
 
   // Get user details (picture/displayName) for usersInView
   const userQueries = useLookupUsers(userQueryList);
-  const userDetailsList = useMemo(
+  const userDetailsList: User[] = useMemo(
     () =>
       compact(
         userQueries.map(({ data: userData }) => {
-          if (!userData) {
+          if (!userData || userData?.user?.userId === currentUser?.id) {
             return;
           }
 
           return {
-            userId: userData.user.userId,
-            displayName: userData.user.profile.displayName,
-            picture: userData.user.profile.picture,
+            _id: userData.user.userId,
+            id: userData.user.userId,
+            name: userData.user.profile.displayName,
+            avatar: userData.user.profile.picture,
           };
         }),
       ),
-    [userQueries],
+    [currentUser?.id, userQueries],
   );
 
   // TODO: This works for tracking new unread messages now but a refactor
@@ -120,22 +126,17 @@ export function MessageScreen({
   );
 
   const renderLeft = useCallback(
-    (picture?: string) =>
-      picture ? (
-        <Avatar.Image
-          source={{ uri: picture }}
-          style={styles.userIconView}
-          size={42}
-        />
-      ) : (
-        <List.Icon icon={User} style={styles.userIconView} />
-      ),
-    [User, styles.userIconView],
+    (props: { style: ViewStyle }, user: User) => (
+      <View style={props.style}>
+        <GiftedAvatar user={user} textStyle={{ fontWeight: '500' }} />
+      </View>
+    ),
+    [],
   );
 
   const renderRight = useCallback(
-    (userId: string) =>
-      unreadUserIds?.includes(userId) && (
+    (user: User) =>
+      unreadUserIds?.includes(user.id) && (
         <Badge
           size={12}
           style={styles.badgeView}
@@ -170,17 +171,17 @@ export function MessageScreen({
       >
         {userDetailsList?.map((user) => (
           <TouchableOpacity
-            key={`message-${user.userId}`}
-            onPress={handlePostTapped(user.userId, user.displayName)}
+            key={`message-${user.id}`}
+            onPress={handlePostTapped(user.id, user.name)}
             activeOpacity={0.6}
           >
             <List.Item
               testID={tID('user-list-item')}
               titleStyle={styles.listItemText}
               style={styles.listItemView}
-              left={() => renderLeft(user.picture)}
-              title={user.displayName}
-              right={() => renderRight(user.userId)}
+              left={(props) => renderLeft(props, user)}
+              title={user.name}
+              right={() => renderRight(user)}
             />
             <Divider />
           </TouchableOpacity>
