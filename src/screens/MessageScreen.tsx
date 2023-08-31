@@ -61,8 +61,6 @@ export function MessageScreen({
     [styles.badgeView],
   );
 
-  console.log(userDetailsList);
-
   return (
     <View style={styles.rootView}>
       <ScrollView
