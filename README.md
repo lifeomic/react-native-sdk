@@ -497,3 +497,4 @@ better solution.
 
 For specific guidance on upgrading between versions of this SDK, see
 [the upgrade guide](./UPGRADING.md).
+
