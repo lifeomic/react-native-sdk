@@ -76,6 +76,13 @@ jest.mock('@react-navigation/elements', () => ({
   useHeaderHeight: jest.fn(),
 }));
 
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: jest.fn(),
+  useFocusEffect: jest.fn(),
+  createNavigationContainerRef: jest.fn(),
+}));
+
 beforeAll(async () => {
   // Setup minimal i18next instance
   jest.useRealTimers(); // Required to deal with hook timeout bug

@@ -2,7 +2,9 @@ import { renderHook, waitFor } from '@testing-library/react-native';
 import { useActiveAccount } from './useActiveAccount';
 import { useUser } from './useUser';
 import {
+  FeedNotification,
   NotificationQueryResponse,
+  isSupportedNotification,
   useNotifications,
 } from './useNotifications';
 import React from 'react';
@@ -74,4 +76,28 @@ test('returns query result', async () => {
     expect(result.current.isLoading).toBe(false);
   });
   expect(result.current.data).toEqual(notificationResponse);
+});
+
+test('filters out unsupported notifications', () => {
+  const unsupportedNotification = {
+    fullText: 'The user will not get this',
+  };
+
+  const supportedNotification = {
+    __typename: 'CircleAdminPostNotification',
+    id: '123',
+    time: '',
+    fullText: 'Admin posted to your circle!',
+    post: {
+      id: 'id',
+      authorId: 'someAuthor',
+      circle: {
+        id: '',
+        isMember: true,
+      },
+    },
+  } as FeedNotification;
+
+  expect(isSupportedNotification(unsupportedNotification)).toBe(false);
+  expect(isSupportedNotification(supportedNotification)).toBe(true);
 });

@@ -1,37 +1,113 @@
-import React, { useCallback, useLayoutEffect, useMemo } from 'react';
-import { useHasNewMessagesFromUsers, useStyles, useUser } from '../hooks';
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import { useStyles } from '../hooks/useStyles';
 import { Avatar, Badge, Divider, List } from 'react-native-paper';
-import { TouchableOpacity } from 'react-native';
-import { ScrollView, View } from 'react-native';
+import {
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  TouchableOpacity,
+  ScrollView,
+  View,
+} from 'react-native';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
-import { compact, orderBy } from 'lodash';
+import { chunk, compact, orderBy } from 'lodash';
 import { useLookupUsers } from '../hooks/Circles/usePrivatePosts';
-import { ActivityIndicatorView } from '../components';
-import { tID } from '../common';
+import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
+import { tID } from '../common/testID';
+import { useUnreadMessages } from '../hooks/useUnreadMessages';
+import { useNotificationManager } from '../hooks/useNotificationManager';
+import { useFocusEffect } from '@react-navigation/native';
 
 export function MessageScreen({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/Messages'>) {
   const { recipientsUserIds } = route.params;
-  const { styles } = useStyles(defaultStyles);
-  const { data, isLoading: userLoading } = useUser();
-
   useLayoutEffect(() => {
     navigation.setOptions({
       title: t('messages-title', 'My Messages'),
     });
   }, [navigation]);
 
+  const { styles } = useStyles(defaultStyles);
   const { User } = useIcons();
+  const [scrollIndex, setScrollIndex] = useState<number>(0);
 
-  const userQueries = useLookupUsers(recipientsUserIds);
-  const { userIds, isLoading } = useHasNewMessagesFromUsers({
-    currentUserId: data?.id,
-    userIds: recipientsUserIds,
-  });
+  // Get userIds that have sent new messages
+  const { unreadMessagesUserIds: unreadUserIds } = useUnreadMessages();
+
+  // Sort recipientsList by unread messages
+  const sortedList = useMemo(
+    () =>
+      orderBy(
+        recipientsUserIds,
+        (userId) => unreadUserIds?.includes(userId),
+        'desc',
+      ),
+    [unreadUserIds, recipientsUserIds],
+  );
+
+  // Break-down list of users into smaller chunks
+  const recipientsListChunked = useMemo(
+    () => chunk(sortedList, 10),
+    [sortedList],
+  );
+
+  // Use current scroll-index to expand the list of users
+  // in view up to the maximum
+  const usersInView = useMemo(
+    () =>
+      compact(
+        recipientsListChunked.flatMap((users, index) => {
+          if (index <= scrollIndex) {
+            return users;
+          }
+        }),
+      ),
+    [recipientsListChunked, scrollIndex],
+  );
+
+  // Construct object to identify which user
+  // queries should be enabled
+  const userQueryList = useMemo(
+    () =>
+      sortedList.map((userId) => ({
+        userId,
+        enabled: usersInView.includes(userId),
+      })),
+    [sortedList, usersInView],
+  );
+
+  // Get user details (picture/displayName) for usersInView
+  const userQueries = useLookupUsers(userQueryList);
+  const userDetailsList = useMemo(
+    () =>
+      compact(
+        userQueries.map(({ data: userData }) => {
+          if (!userData) {
+            return;
+          }
+
+          return {
+            userId: userData.user.userId,
+            displayName: userData.user.profile.displayName,
+            picture: userData.user.profile.picture,
+          };
+        }),
+      ),
+    [userQueries],
+  );
+
+  // TODO: This works for tracking new unread messages now but a refactor
+  // to track the privatePosts separately from general notifications will
+  // be required once the notifications tab is setup to show a badge
+  const { setNotificationsRead } = useNotificationManager();
+  useFocusEffect(
+    useCallback(() => {
+      return () => setNotificationsRead();
+    }, [setNotificationsRead]),
+  );
 
   const handlePostTapped = useCallback(
     (userId: string, displayName: string) => () => {
@@ -59,50 +135,30 @@ export function MessageScreen({
 
   const renderRight = useCallback(
     (userId: string) =>
-      userIds?.includes(userId) && (
+      unreadUserIds?.includes(userId) && (
         <Badge
           size={12}
           style={styles.badgeView}
           testID={tID('unread-badge')}
         />
       ),
-    [styles.badgeView, userIds],
+    [styles.badgeView, unreadUserIds],
   );
 
-  const userList = useMemo(
-    () =>
-      compact(
-        userQueries.map(({ data: userData }) => {
-          if (!userData) {
-            return;
-          }
-
-          return {
-            userId: userData.user.userId,
-            displayName: userData.user.profile.displayName,
-            picture: userData.user.profile.picture,
-          };
-        }),
-      ),
-    [userQueries],
-  );
-
-  if (
-    isLoading ||
-    userQueries.some((query) => query.isLoading) ||
-    userLoading
-  ) {
-    return (
-      <ActivityIndicatorView
-        message={t('loading-messages-screen', 'Loading messages')}
-      />
-    );
-  }
-
-  const prioritizedUserList = orderBy(
-    userList,
-    (user) => userIds.includes(user.userId),
-    'desc',
+  const handleScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (
+        event.nativeEvent.contentOffset.y +
+          event.nativeEvent.layoutMeasurement.height >=
+        event.nativeEvent.contentSize.height
+      ) {
+        if (recipientsListChunked.length > scrollIndex) {
+          // Add new users to view on scroll
+          setScrollIndex(scrollIndex + 1);
+        }
+      }
+    },
+    [scrollIndex, recipientsListChunked.length],
   );
 
   return (
@@ -110,8 +166,9 @@ export function MessageScreen({
       <ScrollView
         scrollEventThrottle={400}
         contentContainerStyle={styles.scrollView}
+        onScroll={handleScroll}
       >
-        {prioritizedUserList?.map((user) => (
+        {userDetailsList?.map((user) => (
           <TouchableOpacity
             key={`message-${user.userId}`}
             onPress={handlePostTapped(user.userId, user.displayName)}
@@ -128,6 +185,9 @@ export function MessageScreen({
             <Divider />
           </TouchableOpacity>
         ))}
+        {userQueries.some((query) => {
+          return query.isInitialLoading;
+        }) && <ActivityIndicatorView />}
       </ScrollView>
     </View>
   );

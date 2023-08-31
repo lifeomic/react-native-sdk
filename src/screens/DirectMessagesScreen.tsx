@@ -5,14 +5,16 @@ import {
   useCreatePrivatePostMutation,
   postToMessage,
 } from '../hooks/Circles/usePrivatePosts';
-import { useDirectMessageEndCursor, useStyles, useUser } from '../hooks';
+import { useUser } from '../hooks/useUser';
+import { useStyles } from '../hooks/useStyles';
 import {
   ActivityIndicatorView,
   ActivityIndicatorViewStyles,
-  createStyles,
-} from '../components';
+} from '../components/ActivityIndicatorView';
+import { createStyles } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
+import { useUnreadMessages } from '../hooks/useUnreadMessages';
 
 export function DirectMessagesScreen({
   navigation,
@@ -20,6 +22,11 @@ export function DirectMessagesScreen({
 }: HomeStackScreenProps<'Home/DirectMessage'>) {
   const { recipientUserId, displayName } = route.params;
   const { styles } = useStyles(defaultStyles);
+  const { markMessageRead } = useUnreadMessages();
+
+  useEffect(() => {
+    markMessageRead?.(recipientUserId);
+  }, [markMessageRead, recipientUserId]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -30,18 +37,6 @@ export function DirectMessagesScreen({
   const { data: userData, isLoading: userLoading } = useUser();
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useInfinitePrivatePosts(recipientUserId);
-  const { setEndCursor } = useDirectMessageEndCursor(
-    userData?.id!, // Guarded against ! in useEffect
-    recipientUserId,
-  );
-
-  // Store endCursor so we can calculate
-  // when there are unread messages
-  useEffect(() => {
-    if (userData?.id && data?.pages[0].privatePosts.pageInfo.endCursor) {
-      setEndCursor(data?.pages[0].privatePosts.pageInfo.endCursor);
-    }
-  }, [data?.pages, setEndCursor, userData?.id]);
 
   const { mutateAsync } = useCreatePrivatePostMutation();
 

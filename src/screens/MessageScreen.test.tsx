@@ -1,20 +1,11 @@
 import React from 'react';
 import { fireEvent, render, within } from '@testing-library/react-native';
-import { useUser } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
-import {
-  PageInfoData,
-  UserData,
-  useLookupUsers,
-  usePollPageInfoForUsers,
-} from '../hooks/Circles/usePrivatePosts';
+import { UserData, useLookupUsers } from '../hooks/Circles/usePrivatePosts';
 import { MessageScreen } from './MessageScreen';
+import { useUnreadMessages } from '../hooks/useUnreadMessages';
 
-jest.unmock('@react-navigation/native');
-jest.mock('../hooks/useUser', () => ({
-  useUser: jest.fn(),
-}));
 jest.mock('../hooks/Circles/usePrivatePosts', () => {
   return {
     ...jest.requireActual('../hooks/Circles/usePrivatePosts'),
@@ -22,10 +13,10 @@ jest.mock('../hooks/Circles/usePrivatePosts', () => {
     usePollPageInfoForUsers: jest.fn(),
   };
 });
+jest.mock('../hooks/useUnreadMessages');
 
-const useUserMock = useUser as jest.Mock;
 const useLookupUserMock = useLookupUsers as jest.Mock;
-const usePollPageInfoForUsersMock = usePollPageInfoForUsers as jest.Mock;
+const useUnreadMessagesMock = useUnreadMessages as jest.Mock;
 
 const navigateMock = {
   navigate: jest.fn(),
@@ -49,7 +40,7 @@ const directMessageScreen = (
         route={
           {
             params: {
-              recipientsUserIds: ['other_user'],
+              recipientsUserIds: ['no_unread_messages', 'other_user'],
             },
           } as any
         }
@@ -59,12 +50,6 @@ const directMessageScreen = (
 );
 
 beforeEach(() => {
-  useUserMock.mockReturnValue({
-    isLoading: false,
-    data: {
-      id: 'current_user',
-    },
-  });
   const mockUserData: UserData = {
     user: {
       userId: 'UserId',
@@ -79,47 +64,17 @@ beforeEach(() => {
       data: mockUserData,
     },
   ]);
-  const mockPageInfoData: PageInfoData = {
-    privatePosts: {
-      pageInfo: {
-        endCursor: '123',
-        hasNextPage: false,
-      },
-    },
-  };
-  usePollPageInfoForUsersMock.mockReturnValue([
-    {
-      isLoading: false,
-      data: mockPageInfoData,
-    },
-  ]);
-});
-
-test('renders loading indicator while user is fetching', async () => {
-  useUserMock.mockReturnValue({
-    isLoading: true,
+  useUnreadMessagesMock.mockReturnValue({
+    unreadMessageUserIds: [],
   });
-  const { getByTestId } = render(directMessageScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
 });
 
 test('renders loading indicator while lookup queries are fetching', async () => {
   useLookupUserMock.mockReturnValue([
     {
-      isLoading: false,
+      isInitialLoading: false,
     },
-    { isLoading: true },
-  ]);
-  const { getByTestId } = render(directMessageScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
-});
-
-test('renders loading indicator while unread queries are fetching', async () => {
-  usePollPageInfoForUsersMock.mockReturnValue([
-    {
-      isLoading: false,
-    },
-    { isLoading: true },
+    { isInitialLoading: true },
   ]);
   const { getByTestId } = render(directMessageScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
@@ -164,12 +119,16 @@ test('renders badge if unread messages are available and sorts list', async () =
 
   useLookupUserMock.mockReturnValue([
     {
-      data: mockFirstUser,
-    },
-    {
       data: mockSecondUser,
     },
+    {
+      data: mockFirstUser,
+    },
   ]);
+
+  useUnreadMessagesMock.mockReturnValue({
+    unreadMessagesUserIds: ['other_user'],
+  });
 
   const { queryAllByTestId } = render(directMessageScreen);
   const results = queryAllByTestId('user-list-item');

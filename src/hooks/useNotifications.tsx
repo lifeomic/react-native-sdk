@@ -1,17 +1,18 @@
+import { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
-import { useUser } from './useUser';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
+import { useUser } from './useUser';
 
 export type NotificationBase = {
-  __typename: string;
   id: string;
   fullText: string;
   time: string;
 };
 
 export type CircleAdminPostNotification = NotificationBase & {
+  __typename: 'CircleAdminPostNotification';
   post: {
     id: string;
     circle: {
@@ -22,11 +23,13 @@ export type CircleAdminPostNotification = NotificationBase & {
 };
 
 export type SurveyAssignedNotification = NotificationBase & {
+  __typename: 'SurveyAssignedNotification';
   surveyName: string;
   organizationName: string;
 };
 
 export type PostReplyNotification = NotificationBase & {
+  __typename: 'PostReplyNotification';
   replyPost: {
     id: string;
     circle: {
@@ -35,16 +38,34 @@ export type PostReplyNotification = NotificationBase & {
   };
 };
 
+export type PrivatePostNotification = NotificationBase & {
+  __typename: 'PrivatePostNotification';
+  post: {
+    id: string;
+    authorId: string;
+  };
+};
+
+export type FeedNotification =
+  | PostReplyNotification
+  | SurveyAssignedNotification
+  | CircleAdminPostNotification
+  | PrivatePostNotification;
+
 export type NotificationQueryResponse = {
   notificationsForUser: {
     edges: {
-      node:
-        | PostReplyNotification
-        | SurveyAssignedNotification
-        | CircleAdminPostNotification;
+      node: FeedNotification;
     }[];
   };
 };
+
+const supportedNotificationTypes = [
+  'PostReplyNotification',
+  'CircleAdminPostNotification',
+  'SurveyAssignedNotification',
+  'PrivatePostNotification',
+];
 
 const notificationQuery = gql`
   query GetNotificationsForUser($userId: ID!) {
@@ -82,24 +103,34 @@ const notificationQuery = gql`
               }
             }
           }
+          ... on PrivatePostNotification {
+            post {
+              id
+              __typename
+              ... on ActivePost {
+                authorId
+              }
+            }
+          }
         }
       }
     }
   }
 `;
 
-const supportedNotificationTypes = [
-  'PostReplyNotification',
-  'CircleAdminPostNotification',
-  'SurveyAssignedNotification',
-];
+export function isSupportedNotification(
+  notification: any,
+): notification is FeedNotification {
+  return supportedNotificationTypes.includes(notification?.__typename);
+}
+
 const selectNotifications = (
   data: NotificationQueryResponse,
 ): NotificationQueryResponse => {
   return {
     notificationsForUser: {
       edges: data.notificationsForUser.edges.filter((edge) =>
-        supportedNotificationTypes.includes(edge.node.__typename),
+        isSupportedNotification(edge.node),
       ),
     },
   };
@@ -108,37 +139,20 @@ const selectNotifications = (
 export function useNotifications() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
+  const { data } = useUser();
 
-  const queryForNotifications = async () => {
+  const queryForNotifications = useCallback(() => {
     return graphQLClient.request<NotificationQueryResponse>(
       notificationQuery,
       {
-        userId: userData?.id,
+        userId: data?.id,
       },
       accountHeaders,
     );
-  };
+  }, [accountHeaders, data?.id, graphQLClient]);
 
-  const {
-    isLoading: userLoading,
-    isFetched: userFetched,
-    data: userData,
-    error: userError,
-  } = useUser();
-  const {
-    isLoading: notificationsLoading,
-    isFetched: notificationsFetched,
-    data: notificationsData,
-    error: notificationsError,
-  } = useQuery(['notifications'], queryForNotifications, {
-    enabled: !!userData?.id && !!accountHeaders?.['LifeOmic-Account'],
+  return useQuery(['notifications'], queryForNotifications, {
+    enabled: !!accountHeaders?.['LifeOmic-Account'] && !!data?.id,
     select: selectNotifications,
   });
-
-  return {
-    isLoading: notificationsLoading || userLoading,
-    isFetched: notificationsFetched || userFetched,
-    error: notificationsError || userError,
-    data: notificationsData,
-  };
 }
