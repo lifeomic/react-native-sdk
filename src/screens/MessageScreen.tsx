@@ -2,7 +2,7 @@ import React, { useCallback, useLayoutEffect } from 'react';
 import { useStyles } from '../hooks/useStyles';
 import { Badge, Divider, List, Button } from 'react-native-paper';
 import { TouchableOpacity, ScrollView, View, ViewStyle } from 'react-native';
-import { createStyles, useIcons } from '../components/BrandConfigProvider';
+import { createStyles } from '../components/BrandConfigProvider';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
@@ -24,7 +24,6 @@ export function MessageScreen({
   }, [navigation]);
 
   const { styles } = useStyles(defaultStyles);
-  const { User } = useIcons();
   const { userDetailsList, fetchNextPage, hasNextPage, isLoading } =
     useMyMessages(tileId);
 
@@ -50,8 +49,8 @@ export function MessageScreen({
   );
 
   const renderRight = useCallback(
-    (user: User) =>
-      unreadUserIds?.includes(user.id) && (
+    (isUnread: boolean) =>
+      isUnread && (
         <Badge
           size={12}
           style={styles.badgeView}
@@ -69,15 +68,22 @@ export function MessageScreen({
       >
         {userDetailsList?.map((user) => (
           <TouchableOpacity
-            key={`message-${user.id}`}
-            onPress={handlePostTapped(user.id, user.name)}
+            key={`message-${user.userId}`}
+            onPress={handlePostTapped(user.userId, user.displayName)}
             activeOpacity={0.6}
           >
             <List.Item
               testID={tID('user-list-item')}
               titleStyle={styles.listItemText}
               style={styles.listItemView}
-              left={() => renderLeft(user.picture)}
+              left={(props) =>
+                renderLeft(props, {
+                  _id: user.userId,
+                  id: user.userId,
+                  name: user.displayName,
+                  avatar: user.picture,
+                })
+              }
               title={user.displayName}
               right={() => renderRight(user.isUnread)}
             />
