@@ -77,7 +77,6 @@ export const useMyMessages = (tileId: string) => {
     }
   };
 
-  console.log(recipientsListChunked.length, pageIndex);
   const hasNextPage = recipientsListChunked.length - 1 > pageIndex;
   return { userDetailsList, isLoading, fetchNextPage, hasNextPage };
 };
