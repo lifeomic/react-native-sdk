@@ -1,7 +1,15 @@
-import React, { createContext, useContext, useEffect } from 'react';
-import { uniq } from 'lodash';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
+import { compact, find, orderBy, uniqBy } from 'lodash';
 import { useAsyncStorage } from './useAsyncStorage';
-import { useNotificationManager } from './useNotificationManager';
+import {
+  NotificationQueryResponse,
+  useNotifications,
+} from './useNotifications';
+
+type ReadReceipt = {
+  id: string;
+  time: string;
+};
 
 type UnreadMessageContextProps = {
   unreadMessagesUserIds?: string[];
@@ -15,22 +23,18 @@ export const UnreadMessagesContextProvider = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const { unreadUserIds, addUserIds, removeUserId } = useUnreadUserIds();
-
-  const { privatePostsUserIds: userIdsWithNewMessages } =
-    useNotificationManager();
-
-  useEffect(() => {
-    if (userIdsWithNewMessages?.length) {
-      addUserIds(userIdsWithNewMessages);
-    }
-  }, [addUserIds, unreadUserIds, userIdsWithNewMessages]);
+  const { messageReadReceipts, updateReadReceiptForUser } =
+    useMessageReadReceipts();
+  const { data } = useNotifications();
+  const unreadMessagesUserIds = useMemo(() => {
+    return extractUnreadIdsFromNotifications(data, messageReadReceipts);
+  }, [data, messageReadReceipts]);
 
   return (
     <UnreadMessagesContext.Provider
       value={{
-        unreadMessagesUserIds: unreadUserIds,
-        markMessageRead: removeUserId,
+        unreadMessagesUserIds,
+        markMessageRead: updateReadReceiptForUser,
       }}
     >
       {children}
@@ -40,38 +44,78 @@ export const UnreadMessagesContextProvider = ({
 
 export const useUnreadMessages = () => useContext(UnreadMessagesContext);
 
-const useUnreadUserIds = () => {
-  const [unreadStoredUserIds, setUnreadStoredUserIds] = useAsyncStorage(
-    'UnreadMessageUserIds',
+const useMessageReadReceipts = () => {
+  const [storedMessageReadReceipts, setMessageReadReceipts] = useAsyncStorage(
+    'MessageReadReceipts',
   );
 
-  const unreadUserIds = (
-    unreadStoredUserIds.data ? JSON.parse(unreadStoredUserIds.data) : []
-  ) as string[];
+  const messageReadReceipts = useMemo(() => {
+    return storedMessageReadReceipts.data
+      ? (JSON.parse(storedMessageReadReceipts.data) as ReadReceipt[])
+      : [];
+  }, [storedMessageReadReceipts.data]);
 
-  const addUserIds = (userIds: string[]) => {
-    const newUnreadUserIds = userIds.filter(
-      (id) => !unreadUserIds.includes(id),
-    );
-
-    if (newUnreadUserIds.length) {
-      setUnreadStoredUserIds(
-        JSON.stringify(uniq([...unreadUserIds, ...newUnreadUserIds]).sort()),
+  const updateReadReceiptForUser = useCallback(
+    (userId: string) => {
+      const updated = uniqBy(
+        [
+          {
+            id: userId,
+            time: new Date().toISOString(),
+          },
+          ...messageReadReceipts,
+        ],
+        'id',
       );
-    }
-  };
-
-  const removeUserId = (userId: string) => {
-    if (unreadUserIds.includes(userId)) {
-      setUnreadStoredUserIds(
-        JSON.stringify(unreadUserIds.filter((id) => id !== userId)),
-      );
-    }
-  };
+      setMessageReadReceipts(JSON.stringify(updated));
+    },
+    [messageReadReceipts, setMessageReadReceipts],
+  );
 
   return {
-    unreadUserIds,
-    addUserIds,
-    removeUserId,
+    messageReadReceipts,
+    updateReadReceiptForUser,
   };
+};
+
+const getAuthorIdTimeFromPrivatePosts = (
+  notificationQueryData?: NotificationQueryResponse,
+) =>
+  // Filter by user, only need the newest message
+  uniqBy(
+    // Order by timestamp from newest to oldest
+    orderBy(
+      // Filter non-PrivatePosts
+      compact(
+        notificationQueryData?.notificationsForUser.edges.map(({ node }) => {
+          if (node.__typename === 'PrivatePostNotification') {
+            return { id: node.post.authorId, time: new Date(node.time) };
+          }
+        }),
+      ),
+      ({ time }) => time.getMilliseconds(),
+      'desc',
+    ),
+    'id',
+  );
+
+const extractUnreadIdsFromNotifications = (
+  notificationResponse: NotificationQueryResponse | undefined,
+  readReceipts: ReadReceipt[],
+) => {
+  const unreadIds = getAuthorIdTimeFromPrivatePosts(notificationResponse).map(
+    (userPost) => {
+      const readReceipt = find(readReceipts, {
+        id: userPost.id,
+      });
+      if (readReceipt) {
+        return new Date(readReceipt.time) < userPost.time
+          ? userPost.id
+          : undefined;
+      }
+      return userPost.id;
+    },
+  );
+
+  return compact(unreadIds);
 };

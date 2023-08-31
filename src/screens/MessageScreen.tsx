@@ -13,13 +13,11 @@ import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
 import { createStyles } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
-import { chunk, compact, orderBy } from 'lodash';
+import { chunk, compact, uniq } from 'lodash';
 import { useLookupUsers } from '../hooks/Circles/usePrivatePosts';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { tID } from '../common/testID';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
-import { useNotificationManager } from '../hooks/useNotificationManager';
-import { useFocusEffect } from '@react-navigation/native';
 import { useUser } from '../hooks/useUser';
 
 type User = GiftedUser & { id: string; name: string };
@@ -39,18 +37,15 @@ export function MessageScreen({
   const { styles } = useStyles(defaultStyles);
   const [scrollIndex, setScrollIndex] = useState<number>(0);
 
-  // Get userIds that have sent new messages
   const { unreadMessagesUserIds: unreadUserIds } = useUnreadMessages();
 
-  // Sort recipientsList by unread messages
+  // Unread messages always show on the top of the list
   const sortedList = useMemo(
     () =>
-      orderBy(
-        recipientsUserIds,
-        (userId) => unreadUserIds?.includes(userId),
-        'desc',
-      ),
-    [unreadUserIds, recipientsUserIds],
+      unreadUserIds
+        ? uniq([...unreadUserIds, ...recipientsUserIds])
+        : recipientsUserIds,
+    [recipientsUserIds, unreadUserIds],
   );
 
   // Break-down list of users into smaller chunks
@@ -103,16 +98,6 @@ export function MessageScreen({
         }),
       ),
     [currentUser?.id, userQueries],
-  );
-
-  // TODO: This works for tracking new unread messages now but a refactor
-  // to track the privatePosts separately from general notifications will
-  // be required once the notifications tab is setup to show a badge
-  const { setNotificationsRead } = useNotificationManager();
-  useFocusEffect(
-    useCallback(() => {
-      return () => setNotificationsRead();
-    }, [setNotificationsRead]),
   );
 
   const handlePostTapped = useCallback(

@@ -1,22 +1,27 @@
 import React from 'react';
-import { useNotificationManager } from './useNotificationManager';
+import {
+  FeedNotification,
+  NotificationQueryResponse,
+  useNotifications,
+} from './useNotifications';
 import { act, renderHook } from '@testing-library/react-native';
 import { useAsyncStorage } from './useAsyncStorage';
 import {
   UnreadMessagesContextProvider,
   useUnreadMessages,
 } from './useUnreadMessages';
+import { uniqueId } from 'lodash';
 
 jest.mock('./useAsyncStorage', () => ({
   useAsyncStorage: jest.fn(),
 }));
 
-jest.mock('./useNotificationManager', () => ({
-  useNotificationManager: jest.fn(),
+jest.mock('./useNotifications', () => ({
+  useNotifications: jest.fn(),
 }));
 
 const useAsyncStorageMock = useAsyncStorage as jest.Mock;
-const useNotificationManagerMock = useNotificationManager as jest.Mock;
+const useNotificationsMock = useNotifications as jest.Mock;
 
 const renderHookInContext = async () => {
   return renderHook(() => useUnreadMessages(), {
@@ -26,69 +31,100 @@ const renderHookInContext = async () => {
   });
 };
 
+const getNotificationEdge = (time: string = new Date().toISOString()) => {
+  return {
+    node: {
+      __typename: 'PrivatePostNotification',
+      id: uniqueId().toString(),
+      time: time,
+      fullText: 'Admin posted to your circle!',
+      post: {
+        id: 'id',
+        authorId: 'someAuthor',
+        circle: {
+          id: '',
+          isMember: true,
+        },
+      },
+    } as FeedNotification,
+  };
+};
+
 describe('NotificationsManager', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
   });
 
-  it('gets unread privatePosts from NotificationManager', async () => {
-    useNotificationManagerMock.mockReturnValue({
-      privatePostsUserIds: ['some_user'],
+  it('gets unread privatePosts from notifications', async () => {
+    useNotificationsMock.mockReturnValue({
+      data: {
+        notificationsForUser: { edges: [getNotificationEdge()] },
+      } as NotificationQueryResponse,
     });
 
-    const setUnreadStoredUserIds = jest.fn();
-
+    const setReadReceipts = jest.fn();
     useAsyncStorageMock.mockReturnValue([
       {
         data: JSON.stringify([]),
-        isFetchedAfterMount: true,
       },
-      setUnreadStoredUserIds,
-    ]);
-
-    await renderHookInContext();
-
-    expect(setUnreadStoredUserIds).toBeCalledWith(
-      JSON.stringify(['some_user']),
-    );
-  });
-
-  it('fetches prior sessions unreadIds from storage', async () => {
-    useNotificationManagerMock.mockReturnValue({
-      privatePostsUserIds: [],
-    });
-
-    useAsyncStorageMock.mockReturnValue([
-      {
-        data: JSON.stringify(['some_user']),
-        isFetchedAfterMount: true,
-      },
-      jest.fn(),
+      setReadReceipts,
     ]);
 
     const { result } = await renderHookInContext();
-    expect(result.current.unreadMessagesUserIds).toEqual(['some_user']);
+
+    expect(result.current.unreadMessagesUserIds).toEqual(['someAuthor']);
+  });
+
+  it('stored read receipts filter notifications and hook result', async () => {
+    useNotificationsMock.mockReturnValue({
+      data: {
+        notificationsForUser: {
+          edges: [getNotificationEdge(new Date('08/29/2023').toISOString())],
+        },
+      } as NotificationQueryResponse,
+    });
+
+    const setReadReceipts = jest.fn();
+    useAsyncStorageMock.mockReturnValue([
+      {
+        data: JSON.stringify([
+          { id: 'someAuthor', time: new Date().toISOString() },
+        ]),
+      },
+      setReadReceipts,
+    ]);
+
+    const { result } = await renderHookInContext();
+    expect(result.current.unreadMessagesUserIds).toEqual([]);
   });
 
   it('markMessage removes user from unreadIds and storage', async () => {
-    useNotificationManagerMock.mockReturnValue({
-      privatePostsUserIds: [],
+    useNotificationsMock.mockReturnValue({
+      data: {
+        notificationsForUser: {
+          edges: [],
+        },
+      } as NotificationQueryResponse,
     });
 
-    const setItemMock = jest.fn();
+    const setReadReceipts = jest.fn();
     useAsyncStorageMock.mockReturnValue([
       {
-        data: JSON.stringify(['some_user', 'another_user']),
-        isFetchedAfterMount: true,
+        data: JSON.stringify([]),
       },
-      setItemMock,
+      setReadReceipts,
     ]);
+
+    const date = new Date();
+    jest.useFakeTimers().setSystemTime(date);
 
     const { result } = await renderHookInContext();
     act(() => {
-      result.current.markMessageRead?.('some_user');
+      result.current.markMessageRead?.('someUser');
     });
 
-    expect(setItemMock).toHaveBeenCalledWith(JSON.stringify(['another_user']));
+    expect(setReadReceipts).toHaveBeenCalledWith(
+      JSON.stringify([{ id: 'someUser', time: date.toISOString() }]),
+    );
   });
 });

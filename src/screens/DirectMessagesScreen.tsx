@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { Bubble, GiftedChat, IMessage } from 'react-native-gifted-chat';
 import {
   useInfinitePrivatePosts,
@@ -23,10 +23,14 @@ export function DirectMessagesScreen({
   const { recipientUserId, displayName } = route.params;
   const { styles } = useStyles(defaultStyles);
   const { markMessageRead } = useUnreadMessages();
+  const userId = useRef<string>();
 
   useEffect(() => {
-    markMessageRead?.(recipientUserId);
-  }, [markMessageRead, recipientUserId]);
+    if (userId.current !== recipientUserId) {
+      userId.current = recipientUserId;
+      markMessageRead?.(recipientUserId);
+    }
+  });
 
   useLayoutEffect(() => {
     navigation.setOptions({
