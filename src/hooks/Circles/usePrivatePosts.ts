@@ -157,7 +157,7 @@ export function usePollPageInfoForUsers(
 }
 
 export const useLookupUsers = (
-  userList: { userId: string; enabled: boolean }[],
+  userList?: { userId: string; enabled: boolean }[],
 ) => {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();

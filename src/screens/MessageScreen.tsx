@@ -1,33 +1,22 @@
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useCallback, useLayoutEffect } from 'react';
 import { useStyles } from '../hooks/useStyles';
-import { Badge, Divider, List } from 'react-native-paper';
-import {
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  TouchableOpacity,
-  ScrollView,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Badge, Divider, List, Button } from 'react-native-paper';
+import { TouchableOpacity, ScrollView, View, ViewStyle } from 'react-native';
+import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
-import { createStyles } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
-import { chunk, compact, uniq } from 'lodash';
-import { useLookupUsers } from '../hooks/Circles/usePrivatePosts';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { tID } from '../common/testID';
-import { useUnreadMessages } from '../hooks/useUnreadMessages';
-import { useUser } from '../hooks/useUser';
-
+import { useMyMessages } from '../hooks/useMyMessages';
 type User = GiftedUser & { id: string; name: string };
 
 export function MessageScreen({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/Messages'>) {
-  const { recipientsUserIds } = route.params;
-  const { data: currentUser } = useUser();
+  const { tileId } = route.params;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: t('messages-title', 'My Messages'),
@@ -35,77 +24,18 @@ export function MessageScreen({
   }, [navigation]);
 
   const { styles } = useStyles(defaultStyles);
-  const [scrollIndex, setScrollIndex] = useState<number>(0);
-
-  const { unreadMessagesUserIds: unreadUserIds } = useUnreadMessages();
-
-  // Unread messages always show on the top of the list
-  const sortedList = useMemo(
-    () =>
-      unreadUserIds
-        ? uniq([...unreadUserIds, ...recipientsUserIds])
-        : recipientsUserIds,
-    [recipientsUserIds, unreadUserIds],
-  );
-
-  // Break-down list of users into smaller chunks
-  const recipientsListChunked = useMemo(
-    () => chunk(sortedList, 10),
-    [sortedList],
-  );
-
-  // Use current scroll-index to expand the list of users
-  // in view up to the maximum
-  const usersInView = useMemo(
-    () =>
-      compact(
-        recipientsListChunked.flatMap((users, index) => {
-          if (index <= scrollIndex) {
-            return users;
-          }
-        }),
-      ),
-    [recipientsListChunked, scrollIndex],
-  );
-
-  // Construct object to identify which user
-  // queries should be enabled
-  const userQueryList = useMemo(
-    () =>
-      sortedList.map((userId) => ({
-        userId,
-        enabled: usersInView.includes(userId),
-      })),
-    [sortedList, usersInView],
-  );
-
-  // Get user details (picture/displayName) for usersInView
-  const userQueries = useLookupUsers(userQueryList);
-  const userDetailsList: User[] = useMemo(
-    () =>
-      compact(
-        userQueries.map(({ data: userData }) => {
-          if (!userData || userData?.user?.userId === currentUser?.id) {
-            return;
-          }
-
-          return {
-            _id: userData.user.userId,
-            id: userData.user.userId,
-            name: userData.user.profile.displayName,
-            avatar: userData.user.profile.picture,
-          };
-        }),
-      ),
-    [currentUser?.id, userQueries],
-  );
+  const { User } = useIcons();
+  const { userDetailsList, fetchNextPage, hasNextPage, isLoading } =
+    useMyMessages(tileId);
 
   const handlePostTapped = useCallback(
-    (userId: string, displayName: string) => () => {
-      navigation.navigate('Home/DirectMessage', {
-        recipientUserId: userId,
-        displayName,
-      });
+    (userId: string | undefined, displayName?: string) => () => {
+      if (userId) {
+        navigation.navigate('Home/DirectMessage', {
+          recipientUserId: userId,
+          displayName,
+        });
+      }
     },
     [navigation],
   );
@@ -128,31 +58,16 @@ export function MessageScreen({
           testID={tID('unread-badge')}
         />
       ),
-    [styles.badgeView, unreadUserIds],
+    [styles.badgeView],
   );
 
-  const handleScroll = useCallback(
-    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (
-        event.nativeEvent.contentOffset.y +
-          event.nativeEvent.layoutMeasurement.height >=
-        event.nativeEvent.contentSize.height
-      ) {
-        if (recipientsListChunked.length > scrollIndex) {
-          // Add new users to view on scroll
-          setScrollIndex(scrollIndex + 1);
-        }
-      }
-    },
-    [scrollIndex, recipientsListChunked.length],
-  );
+  console.log(userDetailsList);
 
   return (
     <View style={styles.rootView}>
       <ScrollView
         scrollEventThrottle={400}
         contentContainerStyle={styles.scrollView}
-        onScroll={handleScroll}
       >
         {userDetailsList?.map((user) => (
           <TouchableOpacity
@@ -164,16 +79,27 @@ export function MessageScreen({
               testID={tID('user-list-item')}
               titleStyle={styles.listItemText}
               style={styles.listItemView}
-              left={(props) => renderLeft(props, user)}
-              title={user.name}
-              right={() => renderRight(user)}
+              left={() => renderLeft(user.picture)}
+              title={user.displayName}
+              right={() => renderRight(user.isUnread)}
             />
             <Divider />
           </TouchableOpacity>
         ))}
-        {userQueries.some((query) => {
-          return query.isInitialLoading;
-        }) && <ActivityIndicatorView />}
+        {isLoading ? (
+          <ActivityIndicatorView />
+        ) : (
+          hasNextPage && (
+            <Button
+              onPress={() => fetchNextPage()}
+              mode="elevated"
+              style={styles.loadMoreButton}
+              labelStyle={styles.loadMoreText}
+            >
+              {t('load-more', 'Load more')}
+            </Button>
+          )
+        )}
       </ScrollView>
     </View>
   );
@@ -197,6 +123,8 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
       marginLeft: theme.spacing.extraSmall,
     },
     badgeView: {},
+    loadMoreButton: {},
+    loadMoreText: {},
   };
 });
 
