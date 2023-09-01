@@ -126,7 +126,9 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     userIconView: {
       marginLeft: theme.spacing.extraSmall,
     },
-    badgeView: {},
+    badgeView: {
+      alignSelf: 'center',
+    },
     loadMoreButton: {},
     loadMoreText: {},
   };
