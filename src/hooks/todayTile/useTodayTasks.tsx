@@ -40,7 +40,7 @@ const useGetSurveyResponsesForProject = () => {
       projectId: activeProject!.id,
       author: activeSubjectId!,
       patientId: activeSubjectId!,
-      includeSurveyName: true,
+      includeSurveyName: false,
       status: 'in-progress,complete',
       pageSize: 100,
     },
@@ -92,16 +92,6 @@ export const useTodayTasks = () => {
     refetch: refetchSurveys,
   } = useGetSurveyResponsesForProject();
   const { data, isInitialLoading, refetch } = useGetIncompleteActivitiesCount();
-  const finishedConsentTasks =
-    consentTasks?.filter(
-      (task) => task.status === 'active' || task.status === 'rejected',
-    ) ?? [];
-  const finishedSurveyTasks =
-    surveyTasks?.filter((task) => task.status === 'completed') ?? [];
-  const doneTasks = [
-    ...finishedConsentTasks,
-    ...finishedSurveyTasks,
-  ] as TodayTask[];
 
   const inProgressConsentTasks =
     consentTasks?.filter((task) => task.status === 'proposed') ?? [];
@@ -113,7 +103,6 @@ export const useTodayTasks = () => {
   ] as TodayTask[];
 
   return {
-    doneTasks,
     loading: loadingConsents || loadingSurveys || isInitialLoading,
     newTasks,
     incompleteActivitiesCount: data?.getIncompleteActivitiesCount,
