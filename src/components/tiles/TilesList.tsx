@@ -12,6 +12,7 @@ import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
 import { HomeStackScreenProps } from '../../navigators/types';
 import { t } from '../../../lib/i18n';
 import { MessagesTile } from '../MessagesTile';
+import TodayBadge from '../TodayBadge';
 
 interface Props extends HomeStackScreenProps<'Home'> {
   styles?: TilesListStyles;
@@ -106,6 +107,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             title={todayTile.title}
             Icon={tileIcon('HeartCheck', 'today')}
             onPress={onTodayTilePress}
+            badge={TodayBadge}
           />
         )}
         {myDataTileEnabled && (

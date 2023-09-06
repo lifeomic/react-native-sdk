@@ -27,6 +27,8 @@ jest.mock('../BrandConfigProvider/icons/IconProvider', () => ({
   })),
 }));
 
+jest.mock('../../components/TodayBadge', () => null);
+
 beforeEach(() => {
   (useAppConfig as jest.Mock).mockReturnValue({
     data: {

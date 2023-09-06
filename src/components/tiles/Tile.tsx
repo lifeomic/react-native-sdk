@@ -14,6 +14,7 @@ interface TileProps {
   onPress?: () => void;
   testID?: string;
   showBadge?: boolean;
+  badge?: () => React.JSX.Element | null;
 }
 
 export const Tile = ({
@@ -24,6 +25,7 @@ export const Tile = ({
   children,
   onPress,
   showBadge,
+  badge,
 }: TileProps) => {
   const { ChevronRight } = useIcons();
   const { styles } = useStyles(defaultStyles);
@@ -45,6 +47,7 @@ export const Tile = ({
             </Text>
             <View style={{ paddingRight: 24 }}>
               {showBadge && <Badge size={12} testID={tID('tile-badge')} />}
+              {badge?.()}
             </View>
             {onPress ? (
               <View
