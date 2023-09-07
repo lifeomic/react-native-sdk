@@ -59,7 +59,7 @@ beforeEach(() => {
     }),
   );
   useAsyncStorageSpy.mockReturnValue([
-    { data: '', isFetched: true, isLoading: false },
+    '',
     (value: string) =>
       AsyncStorage.setItem('selectedAccountId:mockUser', value),
   ]);

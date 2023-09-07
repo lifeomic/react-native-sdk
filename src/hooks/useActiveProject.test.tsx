@@ -74,7 +74,7 @@ beforeEach(() => {
   });
 
   useAsyncStorageSpy.mockReturnValue([
-    { data: '', isFetched: true, isLoading: false },
+    '',
     (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
   ]);
 });

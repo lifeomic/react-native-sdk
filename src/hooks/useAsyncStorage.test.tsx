@@ -14,7 +14,7 @@ describe('useAsyncStorage', () => {
     expect(AsyncStorage.getItem).toBeCalledWith('key');
 
     await waitFor(() => {
-      expect(result.current[0].data).toEqual('test');
+      expect(result.current[0]).toEqual('test');
     });
 
     await act(async () => {
@@ -24,7 +24,7 @@ describe('useAsyncStorage', () => {
     expect(AsyncStorage.setItem).toBeCalledWith('key', 'new-value');
 
     await waitFor(() => {
-      expect(result.current[0].data).toEqual('new-value');
+      expect(result.current[0]).toEqual('new-value');
     });
   });
 });

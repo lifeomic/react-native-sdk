@@ -42,12 +42,12 @@ export const OnboardingCourseContextProvider = ({
     undefined,
   );
 
-  const isLoading = isAppConfigLoading || storedDidLaunchResult.isLoading;
-  const isFetched = isAppConfigFetched && storedDidLaunchResult.isFetched;
+  const isLoading = isAppConfigLoading;
+  const isFetched = isAppConfigFetched;
 
   useEffect(() => {
-    if (storedDidLaunchResult.isFetched && activeProject?.id) {
-      setDidLaunchCourse(storedDidLaunchResult.data === 'true');
+    if (activeProject?.id) {
+      setDidLaunchCourse(storedDidLaunchResult === 'true');
     }
   }, [storedDidLaunchResult, activeProject?.id]);
 
@@ -71,7 +71,7 @@ export const OnboardingCourseContextProvider = ({
         onboardingCourseUrl,
         onboardingCourseTitle,
         onOnboardingCourseOpen,
-        isLoading,
+        isLoading: !!isLoading,
         isFetched: !!isFetched,
         error,
       }}

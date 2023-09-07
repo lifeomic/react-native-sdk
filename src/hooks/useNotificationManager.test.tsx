@@ -75,10 +75,7 @@ describe('NotificationsManager', () => {
 
   it('refetch after notification arrived', async () => {
     useAsyncStorageMock.mockReturnValue([
-      {
-        data: new Date('08/29/2023').toISOString(),
-        isFetched: true,
-      },
+      new Date('08/29/2023').toISOString(),
       jest.fn(),
     ]);
 
@@ -121,10 +118,7 @@ describe('NotificationsManager', () => {
   it('persists last read at time to async storage on background/inactive', async () => {
     const setLastNotificationReadTimeMock = jest.fn();
     useAsyncStorageMock.mockReturnValue([
-      {
-        data: new Date('08/29/2023').toISOString(),
-        isFetched: true,
-      },
+      new Date('08/29/2023').toISOString(),
       setLastNotificationReadTimeMock,
     ]);
 

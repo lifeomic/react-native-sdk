@@ -26,7 +26,7 @@ let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 
 beforeEach(() => {
   useAsyncStorageSpy.mockReturnValue([
-    { data: '', isFetched: true, isLoading: false },
+    '',
     (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
   ]);
 });
