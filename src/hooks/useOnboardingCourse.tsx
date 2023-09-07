@@ -36,6 +36,7 @@ export const OnboardingCourseContextProvider = ({
 
   const [storedDidLaunchResult, storeDidLaunch] = useAsyncStorage(
     `${activeProject?.id}-didLaunchOnboardingCourse`,
+    !!activeProject?.id,
   );
   const [didLaunchCourse, setDidLaunchCourse] = useState<boolean | undefined>(
     undefined,
@@ -56,7 +57,7 @@ export const OnboardingCourseContextProvider = ({
     3. The onboarding course has not been launched
   */
   const shouldLaunchOnboardingCourse =
-    isFetched && !!onboardingCourseUrl && !didLaunchCourse;
+    !!isFetched && !!onboardingCourseUrl && !didLaunchCourse;
 
   const onOnboardingCourseOpen = useCallback(() => {
     setDidLaunchCourse(true);
@@ -71,7 +72,7 @@ export const OnboardingCourseContextProvider = ({
         onboardingCourseTitle,
         onOnboardingCourseOpen,
         isLoading,
-        isFetched,
+        isFetched: !!isFetched,
         error,
       }}
     >

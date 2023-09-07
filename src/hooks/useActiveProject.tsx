@@ -76,6 +76,7 @@ export const ActiveProjectContextProvider = ({
   const [previousUserId, setPreviousUserId] = useState(userId);
   const [storedProjectIdResult, setStoredProjectId] = useAsyncStorage(
     `${selectedProjectIdKey}:${userId}`,
+    !!selectedProjectIdKey && !!userId,
   );
 
   /**
@@ -86,8 +87,7 @@ export const ActiveProjectContextProvider = ({
       !userId || // wait for user id before reading and writing to storage
       projectLoading || // wait for projects endpoint
       useMeLoading || // wait for subjects endpoint
-      storedProjectIdResult.isLoading ||
-      storedProjectIdResult.isError // wait for async storage result or error
+      storedProjectIdResult.isLoading
     ) {
       return {};
     }
@@ -110,7 +110,6 @@ export const ActiveProjectContextProvider = ({
   }, [
     storedProjectIdResult.data,
     storedProjectIdResult.isLoading,
-    storedProjectIdResult.isError,
     projectsResult.data,
     useMeResult.data,
     projectLoading,

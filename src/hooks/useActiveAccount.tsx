@@ -74,6 +74,7 @@ export const ActiveAccountContextProvider = ({
   const [previousUserId, setPreviousUserId] = useState(userId);
   const [storedAccountIdResult, setStoredAccountId] = useAsyncStorage(
     `${selectedAccountIdKey}:${userId}`,
+    !!selectedAccountIdKey && !!userId,
   );
 
   /**
