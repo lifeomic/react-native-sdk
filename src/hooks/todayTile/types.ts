@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+
 import { ConsentExcept } from 'fhir/r3';
 
 export interface Questionnaire_questionnaire_item_code {
