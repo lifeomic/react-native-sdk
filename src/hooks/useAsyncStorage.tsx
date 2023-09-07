@@ -8,7 +8,7 @@ export function useAsyncStorage(key: string, enabled: boolean = true) {
     (async () => {
       if (enabled) {
         const storedValue = await AsyncStorage.getItem(key);
-        setValue(() => storedValue);
+        setValue(storedValue);
       }
     })();
   }, [key, enabled]);
