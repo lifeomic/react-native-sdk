@@ -8,14 +8,9 @@ import {
   useActiveProject,
 } from './useActiveProject';
 import * as useAsyncStorage from './useAsyncStorage';
-import {
-  QueryClient,
-  QueryClientProvider,
-  UseQueryResult,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
-import { mockDeep } from 'jest-mock-extended';
 
 jest.mock('./useSubjectProjects', () => ({
   useSubjectProjects: jest.fn(),
@@ -79,12 +74,7 @@ beforeEach(() => {
   });
 
   useAsyncStorageSpy.mockReturnValue([
-    {
-      ...mockDeep<UseQueryResult<string | null>>({
-        isLoading: false,
-        isFetched: true,
-      }),
-    },
+    { data: '', isFetched: true, isLoading: false },
     (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
   ]);
 });

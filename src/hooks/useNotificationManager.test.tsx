@@ -77,7 +77,7 @@ describe('NotificationsManager', () => {
     useAsyncStorageMock.mockReturnValue([
       {
         data: new Date('08/29/2023').toISOString(),
-        isFetchedAfterMount: true,
+        isFetched: true,
       },
       jest.fn(),
     ]);
@@ -123,7 +123,7 @@ describe('NotificationsManager', () => {
     useAsyncStorageMock.mockReturnValue([
       {
         data: new Date('08/29/2023').toISOString(),
-        isFetchedAfterMount: true,
+        isFetched: true,
       },
       setLastNotificationReadTimeMock,
     ]);

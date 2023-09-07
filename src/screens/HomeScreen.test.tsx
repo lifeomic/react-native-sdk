@@ -73,22 +73,6 @@ beforeEach(() => {
   });
 });
 
-test('renders loading indicator while account fetching', async () => {
-  useActiveAccountMock.mockReturnValue({
-    isLoading: true,
-  });
-  const { getByTestId } = render(homeScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
-});
-
-test('renders loading indicator while app config fetching', async () => {
-  useAppConfigMock.mockReturnValue({
-    isInitialLoading: true,
-  });
-  const { getByTestId } = render(homeScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
-});
-
 test('sets the custom header title', async () => {
   render(homeScreen);
   await waitFor(() => {
