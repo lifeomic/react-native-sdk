@@ -11,9 +11,6 @@ jest.mock('../components/HeaderButton', () => ({
 jest.mock('../components/TrackTile/hooks/useTrackers', () => ({
   useTrackers: jest.fn(() => ({})),
 }));
-jest.mock('i18next', () => ({
-  t: (_: any, text: string) => text,
-}));
 
 const mockUseTrackers = useTrackers as any as jest.Mock;
 
