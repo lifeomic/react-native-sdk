@@ -41,7 +41,7 @@ const useGetSurveyResponsesForProject = () => {
       author: activeSubjectId!,
       patientId: activeSubjectId!,
       includeSurveyName: false,
-      status: 'in-progress,complete',
+      status: 'in-progress',
       pageSize: 100,
     },
     {

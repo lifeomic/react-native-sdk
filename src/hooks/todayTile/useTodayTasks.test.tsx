@@ -122,9 +122,6 @@ test('consents and surveys are summed and categorized correctly', async () => {
     {
       status: 'in-progress',
     },
-    {
-      status: 'completed',
-    },
   ];
 
   api.mock(
@@ -145,6 +142,5 @@ test('consents and surveys are summed and categorized correctly', async () => {
 
   await waitFor(() => {
     expect(result.current.newTasks.length).toEqual(2);
-    expect(result.current.doneTasks.length).toEqual(3);
   });
 });
