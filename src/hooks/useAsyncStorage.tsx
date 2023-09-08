@@ -1,29 +1,27 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-const baseKey = 'async-storage-get';
+export function useAsyncStorage(key: string, enabled: boolean = true) {
+  const [value, setValue] = useState<string | null>(null);
 
-export function useAsyncStorage(key: string) {
-  const queryClient = useQueryClient();
-  const itemResult = useQuery<string | null>([baseKey, key], () =>
-    AsyncStorage.getItem(key),
-  );
+  useEffect(() => {
+    (async () => {
+      if (enabled) {
+        const storedValue = await AsyncStorage.getItem(key);
+        setValue(storedValue);
+      }
+    })();
+  }, [key, enabled]);
 
   const setItem = useCallback(
-    (value: string) => {
-      try {
-        if (value !== itemResult.data) {
-          AsyncStorage?.setItem(key, value);
-        }
-      } catch (err) {
-        console.error(`[LifeOmicSDK]:${err}`);
-      } finally {
-        queryClient?.setQueryData?.([baseKey, key], () => value);
+    (newValue: string) => {
+      if (newValue !== value && enabled) {
+        AsyncStorage?.setItem(key, newValue);
+        setValue(() => newValue);
       }
     },
-    [key, itemResult.data, queryClient],
+    [key, value, enabled],
   );
 
-  return [itemResult, setItem] as [typeof itemResult, typeof setItem];
+  return [value, setItem] as [typeof value, typeof setItem];
 }

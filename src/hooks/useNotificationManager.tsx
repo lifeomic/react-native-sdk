@@ -55,18 +55,10 @@ export const NotificationsManagerProvider = ({
    * Load persisted lastReadAt from async storage
    */
   useEffect(() => {
-    if (lastNotificationReadTime.isFetchedAfterMount) {
-      updateLastReadAt(
-        lastNotificationReadTime.data
-          ? new Date(lastNotificationReadTime.data)
-          : null,
-      );
-    }
-  }, [
-    lastNotificationReadTime.data,
-    lastNotificationReadTime.isFetchedAfterMount,
-    updateLastReadAt,
-  ]);
+    updateLastReadAt(
+      lastNotificationReadTime ? new Date(lastNotificationReadTime) : null,
+    );
+  }, [lastNotificationReadTime, updateLastReadAt]);
 
   /**
    * Persist lastReadAt to async storage on background/close

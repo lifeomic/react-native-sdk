@@ -63,12 +63,7 @@ describe('NotificationsManager', () => {
     });
 
     const setReadReceipts = jest.fn();
-    useAsyncStorageMock.mockReturnValue([
-      {
-        data: JSON.stringify([]),
-      },
-      setReadReceipts,
-    ]);
+    useAsyncStorageMock.mockReturnValue([JSON.stringify([]), setReadReceipts]);
 
     const { result } = await renderHookInContext();
 
@@ -86,11 +81,7 @@ describe('NotificationsManager', () => {
 
     const setReadReceipts = jest.fn();
     useAsyncStorageMock.mockReturnValue([
-      {
-        data: JSON.stringify([
-          { id: 'someAuthor', time: new Date().toISOString() },
-        ]),
-      },
+      JSON.stringify([{ id: 'someAuthor', time: new Date().toISOString() }]),
       setReadReceipts,
     ]);
 
@@ -108,12 +99,7 @@ describe('NotificationsManager', () => {
     });
 
     const setReadReceipts = jest.fn();
-    useAsyncStorageMock.mockReturnValue([
-      {
-        data: JSON.stringify([]),
-      },
-      setReadReceipts,
-    ]);
+    useAsyncStorageMock.mockReturnValue([JSON.stringify([]), setReadReceipts]);
 
     const date = new Date();
     jest.useFakeTimers().setSystemTime(date);

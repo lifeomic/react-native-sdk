@@ -76,6 +76,7 @@ export const ActiveProjectContextProvider = ({
   const [previousUserId, setPreviousUserId] = useState(userId);
   const [storedProjectIdResult, setStoredProjectId] = useAsyncStorage(
     `${selectedProjectIdKey}:${userId}`,
+    !!selectedProjectIdKey && !!userId,
   );
 
   /**
@@ -85,15 +86,13 @@ export const ActiveProjectContextProvider = ({
     if (
       !userId || // wait for user id before reading and writing to storage
       projectLoading || // wait for projects endpoint
-      useMeLoading || // wait for subjects endpoint
-      storedProjectIdResult.isLoading ||
-      storedProjectIdResult.isError // wait for async storage result or error
+      useMeLoading
     ) {
       return {};
     }
 
     const { selectedProject, selectedSubject } = findProjectAndSubjectById(
-      selectedId ?? storedProjectIdResult.data,
+      selectedId ?? storedProjectIdResult,
       projectsResult.data,
       useMeResult.data,
     );
@@ -108,9 +107,7 @@ export const ActiveProjectContextProvider = ({
 
     return {};
   }, [
-    storedProjectIdResult.data,
-    storedProjectIdResult.isLoading,
-    storedProjectIdResult.isError,
+    storedProjectIdResult,
     projectsResult.data,
     useMeResult.data,
     projectLoading,
@@ -154,16 +151,8 @@ export const ActiveProjectContextProvider = ({
       value={{
         ...hookReturnValue,
         setActiveProjectId,
-        isLoading: !!(
-          projectsResult.isLoading ||
-          useMeResult.isLoading ||
-          storedProjectIdResult.isLoading
-        ),
-        isFetched: !!(
-          projectsResult.isFetched &&
-          useMeResult.isFetched &&
-          storedProjectIdResult.isFetched
-        ),
+        isLoading: !!(projectsResult.isLoading || useMeResult.isLoading),
+        isFetched: !!(projectsResult.isFetched && useMeResult.isFetched),
         error: projectsResult.error || useMeResult.error,
       }}
     >

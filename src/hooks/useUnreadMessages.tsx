@@ -50,10 +50,10 @@ const useMessageReadReceipts = () => {
   );
 
   const messageReadReceipts = useMemo(() => {
-    return storedMessageReadReceipts.data
-      ? (JSON.parse(storedMessageReadReceipts.data) as ReadReceipt[])
+    return storedMessageReadReceipts
+      ? (JSON.parse(storedMessageReadReceipts) as ReadReceipt[])
       : [];
-  }, [storedMessageReadReceipts.data]);
+  }, [storedMessageReadReceipts]);
 
   const updateReadReceiptForUser = useCallback(
     (userId: string) => {
