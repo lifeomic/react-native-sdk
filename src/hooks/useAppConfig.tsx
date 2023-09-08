@@ -1,8 +1,8 @@
-import { useQuery } from '@tanstack/react-query';
+import React, { createContext, useContext, useRef, useState } from 'react';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
-import { useHttpClient } from './useHttpClient';
 import { Trace } from '../components/MyData/LineChart/TraceLine';
+import { useHttpClient } from './useHttpClient';
 
 export interface AppTile {
   id: string;
@@ -65,22 +65,73 @@ export interface AppConfig {
   };
 }
 
-export function useAppConfig() {
-  const { accountHeaders } = useActiveAccount();
-  const { httpClient } = useHttpClient();
-  const { activeProject } = useActiveProject();
+type AppConfigContextProps = {
+  data: AppConfig | undefined;
+  isLoading: boolean | undefined;
+  isFetched: boolean | undefined;
+  error: any;
+};
+const AppConfigContext = createContext<AppConfigContextProps>({
+  data: undefined,
+  isLoading: undefined,
+  isFetched: undefined,
+  error: undefined,
+});
 
-  return useQuery(
-    [`/v1/life-research/projects/${activeProject?.id}/app-config`],
-    () =>
-      httpClient
-        .get<AppConfig>(
-          `/v1/life-research/projects/${activeProject?.id}/app-config`,
-          { headers: accountHeaders },
-        )
-        .then((res) => res.data),
-    {
-      enabled: !!accountHeaders && !!activeProject?.id,
-    },
+export const AppConfigContextProvider = ({
+  children,
+}: {
+  children?: React.ReactNode;
+}) => {
+  const { accountHeaders } = useActiveAccount();
+  const { activeProject } = useActiveProject();
+  const { apiClient } = useHttpClient();
+  const [appConfig, setAppConfig] = useState<AppConfig | undefined>(undefined);
+  const isLoading = useRef<boolean | undefined>(undefined);
+  const error = useRef<undefined>(undefined);
+
+  if (!appConfig && !!activeProject?.id && !!accountHeaders) {
+    isLoading.current = true;
+    apiClient
+      .request(
+        'GET /v1/life-research/projects/:projectId/app-config',
+        {
+          projectId: activeProject?.id!,
+        },
+        { headers: accountHeaders },
+      )
+      .then((res) => {
+        isLoading.current = false;
+        error.current = undefined;
+        setAppConfig(res.data);
+      })
+      .catch((err) => {
+        isLoading.current = false;
+        error.current = err;
+        setAppConfig(undefined);
+      });
+  }
+
+  return (
+    <AppConfigContext.Provider
+      value={{
+        data: appConfig,
+        isLoading: isLoading.current,
+        error: error.current,
+        isFetched: !!appConfig,
+      }}
+    >
+      {children}
+    </AppConfigContext.Provider>
   );
-}
+};
+
+export const useAppConfig = () => {
+  const appConfigContext = useContext(AppConfigContext);
+  if (!appConfigContext) {
+    throw new Error(
+      'No AppConfigContext.Provider found when calling useAppConfig.',
+    );
+  }
+  return appConfigContext;
+};

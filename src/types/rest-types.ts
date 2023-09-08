@@ -1,4 +1,5 @@
 import { ConsentDirective, SurveyResponse } from '../hooks/todayTile/types';
+import { AppConfig } from '../hooks/useAppConfig';
 import { ProjectInvite, User } from '../types';
 
 export interface Account {
@@ -59,5 +60,10 @@ export type RestAPIEndpoints = {
     Response: {
       items: ConsentDirective[];
     };
+  };
+
+  'GET /v1/life-research/projects/:projectId/app-config': {
+    Request: { projectId: string };
+    Response: AppConfig;
   };
 };

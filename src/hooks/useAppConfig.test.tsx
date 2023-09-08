@@ -1,20 +1,17 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AppConfig, useAppConfig, AppTile } from './useAppConfig';
+import {
+  AppConfig,
+  useAppConfig,
+  AppTile,
+  AppConfigContextProvider,
+} from './useAppConfig';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
-import { useHttpClient } from './useHttpClient';
-import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios';
+import { HttpClientContextProvider } from './useHttpClient';
+import { createRestAPIMock } from '../test-utils/rest-api-mocking';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
+const api = createRestAPIMock();
 
 jest.mock('./useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
@@ -22,13 +19,9 @@ jest.mock('./useActiveAccount', () => ({
 jest.mock('./useActiveProject', () => ({
   useActiveProject: jest.fn(),
 }));
-jest.mock('./useHttpClient', () => ({
-  useHttpClient: jest.fn(),
-}));
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useActiveProjectMock = useActiveProject as jest.Mock;
-const useHttpClientMock = useHttpClient as jest.Mock;
 
 const mockAppTile = (id: string): AppTile => ({
   id,
@@ -37,23 +30,25 @@ const mockAppTile = (id: string): AppTile => ({
     url: 'url',
   },
 });
-
 const renderHookInContext = async () => {
   return renderHook(() => useAppConfig(), {
     wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <HttpClientContextProvider>
+        <AppConfigContextProvider>{children}</AppConfigContextProvider>
+      </HttpClientContextProvider>
     ),
   });
 };
 
 const configWith = (homeTab: AppConfig['homeTab']) => {
-  axiosMock.onGet().reply(200, {
-    homeTab,
-  });
+  api.mock(
+    'GET /v1/life-research/projects/:projectId/app-config',
+    jest.fn().mockReturnValue({
+      status: 200,
+      data: { homeTab },
+    }),
+  );
 };
-
-const axiosInstance = axios.create();
-const axiosMock = new MockAdapter(axiosInstance);
 
 beforeEach(() => {
   useActiveAccountMock.mockReturnValue({
@@ -62,7 +57,6 @@ beforeEach(() => {
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
   });
-  useHttpClientMock.mockReturnValue({ httpClient: axiosInstance });
 });
 
 test('configured appTiles are returned', async () => {
