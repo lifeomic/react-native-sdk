@@ -62,6 +62,7 @@ beforeEach(() => {
     '',
     (value: string) =>
       AsyncStorage.setItem('selectedAccountId:mockUser', value),
+    true,
   ]);
   useUserMock.mockReturnValue({
     data: { id: 'mockUser' },

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function useAsyncStorage(key: string, enabled: boolean = true) {
-  const [value, setValue] = useState<string | null>(null);
+  const [value, setValue] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
     (async () => {
@@ -23,5 +23,6 @@ export function useAsyncStorage(key: string, enabled: boolean = true) {
     [key, value, enabled],
   );
 
-  return [value, setItem] as [typeof value, typeof setItem];
+  const isLoaded = typeof value !== 'undefined'; // Expect string or null when loaded
+  return [value, setItem, isLoaded] as [typeof value, typeof setItem, boolean];
 }

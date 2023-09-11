@@ -72,10 +72,11 @@ export const ActiveAccountContextProvider = ({
   const userId = userData?.id;
   const [selectedId, setSelectedId] = useState(accountIdToSelect);
   const [previousUserId, setPreviousUserId] = useState(userId);
-  const [storedAccountIdResult, setStoredAccountId] = useAsyncStorage(
-    `${selectedAccountIdKey}:${userId}`,
-    !!selectedAccountIdKey && !!userId,
-  );
+  const [storedAccountIdResult, setStoredAccountId, isStorageLoaded] =
+    useAsyncStorage(
+      `${selectedAccountIdKey}:${userId}`,
+      !!selectedAccountIdKey && !!userId,
+    );
 
   /**
    * Initial setting of activeAccount
@@ -83,6 +84,7 @@ export const ActiveAccountContextProvider = ({
   const activeAccount = useMemo<ActiveAccountProps>(() => {
     if (
       !userId || // require user id before reading/writing to storage
+      !isStorageLoaded ||
       accountsWithProduct.length < 1 // no valid accounts found server side
     ) {
       return {};
@@ -101,7 +103,13 @@ export const ActiveAccountContextProvider = ({
       },
       trialExpired: getTrialExpired(selectedAccount),
     };
-  }, [accountsWithProduct, selectedId, storedAccountIdResult, userId]);
+  }, [
+    accountsWithProduct,
+    isStorageLoaded,
+    selectedId,
+    storedAccountIdResult,
+    userId,
+  ]);
 
   useEffect(() => {
     if (activeAccount?.account?.id) {
@@ -166,8 +174,8 @@ export const ActiveAccountContextProvider = ({
         accountsWithProduct,
         refetch,
         setActiveAccountId,
-        isLoading: accountsResult.isLoading,
-        isFetched: accountsResult.isFetched,
+        isLoading: accountsResult.isLoading || !isStorageLoaded,
+        isFetched: accountsResult.isFetched && isStorageLoaded,
         error: accountsResult.error,
       }}
     >
