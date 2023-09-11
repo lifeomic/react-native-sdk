@@ -6,12 +6,7 @@ import {
 } from './useActiveAccount';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
-import {
-  QueryClient,
-  QueryClientProvider,
-  UseQueryResult,
-} from '@tanstack/react-query';
-import { mockDeep } from 'jest-mock-extended';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as useAsyncStorage from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { useUser } from './useUser';
@@ -64,9 +59,7 @@ beforeEach(() => {
     }),
   );
   useAsyncStorageSpy.mockReturnValue([
-    {
-      ...mockDeep<UseQueryResult<string | null>>({ isFetched: true }),
-    },
+    '',
     (value: string) =>
       AsyncStorage.setItem('selectedAccountId:mockUser', value),
   ]);

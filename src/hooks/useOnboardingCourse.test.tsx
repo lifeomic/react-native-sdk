@@ -5,8 +5,6 @@ import {
   useOnboardingCourse,
 } from './useOnboardingCourse';
 import * as useAsyncStorage from './useAsyncStorage';
-import { mockDeep } from 'jest-mock-extended';
-import { UseQueryResult } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 jest.mock('./useAppConfig', () => ({
@@ -28,12 +26,7 @@ let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 
 beforeEach(() => {
   useAsyncStorageSpy.mockReturnValue([
-    {
-      ...mockDeep<UseQueryResult<string | null>>({
-        isLoading: false,
-        isFetched: true,
-      }),
-    },
+    '',
     (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
   ]);
 });

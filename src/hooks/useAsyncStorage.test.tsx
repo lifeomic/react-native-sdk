@@ -1,46 +1,30 @@
-import React from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAsyncStorage } from './useAsyncStorage';
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
 
 const renderHookInContext = async (key: string) => {
-  return renderHook(() => useAsyncStorage(key), {
-    wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    ),
-  });
+  return renderHook(() => useAsyncStorage(key));
 };
 
 describe('useAsyncStorage', () => {
   test('can fetch and update the stored value', async () => {
-    queryClient.setQueryData(['async-storage-get', 'key'], () => 'test');
-
+    AsyncStorageMock.getItem = jest.fn().mockReturnValue('test');
     const { result } = await renderHookInContext('key');
+    expect(AsyncStorage.getItem).toBeCalledWith('key');
 
     await waitFor(() => {
-      expect(result.current[0].data).toEqual('test');
+      expect(result.current[0]).toEqual('test');
     });
 
     await act(async () => {
-      await result.current[1]('new-value');
+      result.current[1]('new-value');
     });
+
+    expect(AsyncStorage.setItem).toBeCalledWith('key', 'new-value');
 
     await waitFor(() => {
-      expect(result.current[0].data).toEqual('new-value');
+      expect(result.current[0]).toEqual('new-value');
     });
-
-    await act(async () => {
-      await result.current[1]('new-value');
-    });
-
-    expect(result.current[0].data).toEqual('new-value');
   });
 });

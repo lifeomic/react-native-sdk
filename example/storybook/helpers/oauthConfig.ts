@@ -14,6 +14,7 @@ export const authConfig: AuthConfiguration = {
   additionalParameters: {
     prompt: 'consent',
   },
+  iosPrefersEphemeralSession: true,
 };
 
 export const baseURL = apiBaseUrl;
