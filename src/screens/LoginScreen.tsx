@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
-import { useStyles, useDeveloperConfig } from '../hooks/';
+import { useStyles, useDeveloperConfig, usePendingInvite } from '../hooks/';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import LaunchScreen from '../components/LaunchScreen';
 import { Dialog, Portal, Text } from 'react-native-paper';
@@ -13,10 +13,18 @@ export const LoginScreen: FC = () => {
   const [visible, setVisible] = useState(false);
   const [errorText, setErrorText] = useState('');
   const { AlertTriangle } = useIcons();
+  const { inviteParams } = usePendingInvite();
 
   const hideDialog = () => {
     setVisible(false);
     setErrorText('');
+  };
+
+  const getLoginButtonText = () => {
+    if (inviteParams?.inviteId) {
+      return t('login-button-title-invite-found', 'Accept Invite');
+    }
+    return t('login-button-title', 'Login');
   };
 
   const onFail = (error: any) => {
@@ -45,10 +53,7 @@ export const LoginScreen: FC = () => {
       <View style={styles.containerView}>
         <LaunchScreen key="launch-screen" style={StyleSheet.absoluteFill} />
         <View style={styles.buttonContainer}>
-          <OAuthLoginButton
-            label={t('login-button-title', 'Login')}
-            onFail={onFail}
-          />
+          <OAuthLoginButton label={getLoginButtonText()} onFail={onFail} />
         </View>
       </View>
       <Portal>
