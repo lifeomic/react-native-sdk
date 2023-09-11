@@ -28,6 +28,7 @@ beforeEach(() => {
   useAsyncStorageSpy.mockReturnValue([
     '',
     (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
+    true,
   ]);
 });
 

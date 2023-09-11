@@ -77,6 +77,7 @@ describe('NotificationsManager', () => {
     useAsyncStorageMock.mockReturnValue([
       new Date('08/29/2023').toISOString(),
       jest.fn(),
+      true,
     ]);
 
     const notificationResponse: NotificationQueryResponse = {
@@ -120,6 +121,7 @@ describe('NotificationsManager', () => {
     useAsyncStorageMock.mockReturnValue([
       new Date('08/29/2023').toISOString(),
       setLastNotificationReadTimeMock,
+      true,
     ]);
 
     let fireAppStateChange: (state: AppStateStatus) => void;

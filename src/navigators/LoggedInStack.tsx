@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { TabNavigator } from './TabNavigator';
 import { ConsentScreen } from '../screens/ConsentScreen';
 import { CircleThreadScreen } from '../screens/CircleThreadScreen';
@@ -14,6 +14,7 @@ import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { t } from 'i18next';
 import { usePendingInvite } from '../hooks/usePendingInvite';
 import { useSetUserProfileEffect } from '../hooks/useSetUserProfileEffect';
+import { useJoinCircles } from '../hooks';
 
 export function LoggedInStack() {
   const Stack = createNativeStackNavigator<LoggedInRootParamList>();
@@ -37,6 +38,7 @@ export function LoggedInStack() {
     isLoading: onboardingCourseIsLoading,
     isFetched: onboardingCourseIsFetched,
   } = useOnboardingCourse();
+  const { isInitialLoading: loadingJoinCircles } = useJoinCircles();
 
   const loadingProject = !isFetchedProject || isLoadingProject;
   const loadingAccount = !isFetchedAccount || isLoadingAccount;
@@ -55,42 +57,33 @@ export function LoggedInStack() {
     ? 'screens/OnboardingCourseScreen'
     : 'app';
 
-  if (loadingAccountOrProject) {
-    return (
-      <ActivityIndicatorView
-        message={t(
-          'root-stack-waiting-for-account-and-project',
-          'Loading account',
-        )}
-      />
-    );
-  }
+  const getLoadingMessage = useCallback(() => {
+    if (loadingAccountOrProject) {
+      return t('waiting-for-account-and-project', 'Loading account');
+    } else if (hasAccountAndProject && loadingConsents) {
+      return t('root-stack-waiting-for-consents', 'Loading consents');
+    } else if (hasAccountAndProject && loadingOnboardingCourse) {
+      return t(
+        'root-stack-waiting-for-app-config',
+        'Loading onboarding course data',
+      );
+    } else if (inviteParams?.inviteId) {
+      return t('root-stack-accepting-invitation', 'Accepting invitation');
+    } else if (loadingJoinCircles) {
+      return t('root-stack-waiting-for-circle-join', 'Joining Circles');
+    }
+  }, [
+    hasAccountAndProject,
+    inviteParams?.inviteId,
+    loadingAccountOrProject,
+    loadingConsents,
+    loadingJoinCircles,
+    loadingOnboardingCourse,
+  ]);
 
-  if (hasAccountAndProject && loadingConsents) {
-    return (
-      <ActivityIndicatorView
-        message={t('root-stack-waiting-for-consents', 'Loading consents')}
-      />
-    );
-  }
-
-  if (hasAccountAndProject && loadingOnboardingCourse) {
-    return (
-      <ActivityIndicatorView
-        message={t(
-          'root-stack-waiting-for-app-config',
-          'Loading onboarding course data',
-        )}
-      />
-    );
-  }
-
-  if (inviteParams?.inviteId) {
-    return (
-      <ActivityIndicatorView
-        message={t('root-stack-accepting-invitation', 'Accepting invitation')}
-      />
-    );
+  const loadingMessage = getLoadingMessage();
+  if (loadingMessage) {
+    return <ActivityIndicatorView message={loadingMessage} />;
   }
 
   return (

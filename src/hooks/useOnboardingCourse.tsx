@@ -33,17 +33,17 @@ export const OnboardingCourseContextProvider = ({
   const onboardingCourseUrl = data?.onboardingCourse?.url;
   const onboardingCourseTitle = data?.onboardingCourse?.title;
   const { activeProject } = useActiveProject();
-
-  const [storedDidLaunchResult, storeDidLaunch] = useAsyncStorage(
-    `${activeProject?.id}-didLaunchOnboardingCourse`,
-    !!activeProject?.id,
-  );
+  const [storedDidLaunchResult, storeDidLaunch, isStorageLoaded] =
+    useAsyncStorage(
+      `${activeProject?.id}-didLaunchOnboardingCourse`,
+      !!activeProject?.id,
+    );
   const [didLaunchCourse, setDidLaunchCourse] = useState<boolean | undefined>(
     undefined,
   );
 
-  const isLoading = isAppConfigLoading;
-  const isFetched = isAppConfigFetched;
+  const isLoading = isAppConfigLoading || !isStorageLoaded;
+  const isFetched = isAppConfigFetched && isStorageLoaded;
 
   useEffect(() => {
     if (activeProject?.id) {

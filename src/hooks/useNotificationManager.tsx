@@ -34,8 +34,11 @@ export const NotificationsManagerProvider = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const [lastNotificationReadTime, setLastNotificationReadTime] =
-    useAsyncStorage('lastNotificationReadTime');
+  const [
+    lastNotificationReadTime,
+    setLastNotificationReadTime,
+    isStorageLoaded,
+  ] = useAsyncStorage('lastNotificationReadTime');
   const { data, refetch } = useNotifications();
 
   /**
@@ -55,10 +58,12 @@ export const NotificationsManagerProvider = ({
    * Load persisted lastReadAt from async storage
    */
   useEffect(() => {
-    updateLastReadAt(
-      lastNotificationReadTime ? new Date(lastNotificationReadTime) : null,
-    );
-  }, [lastNotificationReadTime, updateLastReadAt]);
+    if (isStorageLoaded) {
+      updateLastReadAt(
+        lastNotificationReadTime ? new Date(lastNotificationReadTime) : null,
+      );
+    }
+  }, [lastNotificationReadTime, updateLastReadAt, isStorageLoaded]);
 
   /**
    * Persist lastReadAt to async storage on background/close
