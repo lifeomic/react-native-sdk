@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import axios, { AxiosInstance, RawAxiosRequestHeaders } from 'axios';
 import { useAuth } from './useAuth';
+import { APIClient } from '@lifeomic/one-query';
+import { RestAPIEndpoints } from '../types/rest-types';
 
 export const defaultBaseURL = 'https://api.us.lifeomic.com';
 export const defaultHeaders: RawAxiosRequestHeaders = {
@@ -12,12 +14,18 @@ export const defaultAxiosInstance = axios.create({
   headers: defaultHeaders,
 });
 
+export const defaultAPIClientInstance = new APIClient<RestAPIEndpoints>(
+  defaultAxiosInstance,
+);
+
 export interface HttpClient {
   httpClient: AxiosInstance;
+  apiClient: APIClient<RestAPIEndpoints>;
 }
 
 const HttpClientContext = createContext<HttpClient>({
   httpClient: defaultAxiosInstance,
+  apiClient: defaultAPIClientInstance,
 });
 
 let requestInterceptorId: number;
@@ -40,6 +48,7 @@ export const HttpClientContextProvider = ({
   const { authResult, refreshForAuthFailure } = useAuth();
 
   const axiosInstance = injectedAxiosInstance || defaultAxiosInstance;
+  const apiClient = defaultAPIClientInstance;
 
   if (baseURL || !axiosInstance.defaults.baseURL) {
     axiosInstance.defaults.baseURL = baseURL || defaultBaseURL;
@@ -79,7 +88,7 @@ export const HttpClientContextProvider = ({
     return axiosInstance;
   }, [authResult?.accessToken, axiosInstance, refreshForAuthFailure]);
 
-  const context: HttpClient = { httpClient };
+  const context: HttpClient = { httpClient, apiClient };
 
   return (
     <HttpClientContext.Provider value={context}>

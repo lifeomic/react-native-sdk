@@ -56,7 +56,7 @@ export const OnboardingCourseContextProvider = ({
     3. The onboarding course has not been launched
   */
   const shouldLaunchOnboardingCourse =
-    isFetched && !!onboardingCourseUrl && !didLaunchCourse;
+    !!isFetched && !!onboardingCourseUrl && !didLaunchCourse;
 
   const onOnboardingCourseOpen = useCallback(() => {
     setDidLaunchCourse(true);
@@ -70,8 +70,8 @@ export const OnboardingCourseContextProvider = ({
         onboardingCourseUrl,
         onboardingCourseTitle,
         onOnboardingCourseOpen,
-        isLoading,
-        isFetched,
+        isLoading: !!isLoading,
+        isFetched: !!isFetched,
         error,
       }}
     >
