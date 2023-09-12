@@ -1,8 +1,8 @@
-import React, { FC, useCallback, useState } from 'react';
-import { View, ActivityIndicator, Switch } from 'react-native';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import { t } from '../../../../lib/i18n';
 import { Text } from '../styles';
-import { Tracker, isInstalledMetric } from '../services/TrackTileService';
+import { Tracker } from '../services/TrackTileService';
 import { useTrackers } from '../hooks/useTrackers';
 import DraggableFlatList, {
   RenderItemParams,
@@ -12,20 +12,27 @@ import { useSyncTrackerOrder } from './useSyncTrackerOrder';
 import { tID } from '../common/testID';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
+import isEqual from 'lodash/isEqual';
+import { usePrevious } from '../hooks/usePrevious';
+
+export type EditingState = 'editing' | 'done' | undefined;
 
 export type ManageTrackersProps = {
   trackerRequestMeta?: ReturnType<typeof useTrackers>;
   onOpenTracker: (metric: Tracker) => void;
   hasReorderError?: boolean;
+  editingState?: EditingState;
 };
 
 export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
-  const { onOpenTracker, trackerRequestMeta } = props;
+  const { onOpenTracker, trackerRequestMeta, editingState } = props;
   const { styles } = useStyles(defaultStyles);
-  const [isReordering, setIsReordering] = useState(false);
 
+  const isEditing = editingState === 'editing';
   const { loading, trackers, error } = useTrackers(trackerRequestMeta);
+  const [initialState, setInitialState] = useState<Tracker[] | undefined>();
   const [orderState, setOrderState] = useState<Tracker[] | undefined>();
+  const previousEditingState = usePrevious(editingState);
 
   const {
     syncTrackerOrder,
@@ -35,54 +42,40 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
 
   const setOrderingState = useCallback(
     async (reordering: boolean) => {
-      setIsReordering(reordering);
+      if (!trackers) {
+        return;
+      }
 
       if (reordering) {
-        setOrderState(() => trackers?.filter(isInstalledMetric));
-      } else {
+        const data = trackers.map((d) => ({
+          ...d,
+          installed: d.installed ?? false,
+        }));
+        setInitialState(data.slice());
+        setOrderState(data.slice());
+      } else if (!isEqual(initialState, orderState)) {
         await syncTrackerOrder();
-        setOrderState((ts) =>
-          ts?.concat(trackers.filter((tracker) => !isInstalledMetric(tracker))),
-        );
       }
     },
-    [trackers, syncTrackerOrder],
+    [trackers, syncTrackerOrder, initialState, orderState],
   );
+
+  useEffect(() => {
+    if (previousEditingState !== editingState) {
+      if (editingState === 'editing') {
+        setOrderingState(true);
+      } else if (editingState === 'done') {
+        setOrderingState(false);
+      } else {
+        setOrderState(undefined);
+      }
+    }
+  }, [editingState, previousEditingState, setOrderingState]);
 
   const trackerList = orderState ?? trackers;
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text variant="semibold" style={styles.headerText}>
-          {t('track-tile.your-active-items', 'Your active items')}
-        </Text>
-        <View style={styles.headerReorderContainer}>
-          <Text
-            accessible={false}
-            variant="semibold"
-            style={styles.headerReorderText}
-          >
-            {t('track-tile.reorder', 'Reorder')}
-          </Text>
-          <Switch
-            testID={tID('reorder-trackers-switch')}
-            accessibilityLabel={
-              isReordering
-                ? t('track-tile.save-tracker-order', 'Save tracker order')
-                : t('track-tile.reorder-trackers', 'Reorder trackers')
-            }
-            value={isReordering}
-            onValueChange={setOrderingState}
-            style={styles.headerReorderSwitch}
-            thumbColor={styles.reorderSwitchThumbColor?.backgroundColor}
-            trackColor={{
-              true: styles.reorderSwitchTrueTrackColor?.backgroundColor,
-              false: styles.reorderSwitchFalseTrackColor?.backgroundColor,
-            }}
-          />
-        </View>
-      </View>
       {error && (
         <Text variant="semibold" style={styles.errorText}>
           {t(
@@ -109,10 +102,10 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
       )}
 
       <DraggableFlatList
-        containerStyle={styles.draggableFlatListContainer}
+        style={styles.draggableFlatListContainer}
         data={trackerList}
         keyExtractor={({ id }) => id}
-        overScrollMode={isReordering ? 'never' : 'auto'}
+        overScrollMode={isEditing ? 'never' : 'auto'}
         onDragEnd={({ data }) => setOrderState(data)}
         renderItem={useCallback(
           ({ item: tracker, drag, isActive }: RenderItemParams<Tracker>) => {
@@ -122,7 +115,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
               <ManageTrackerRow
                 testID={tID(`tracker-settings-row-${id}`)}
                 tracker={tracker}
-                isDraggable={isReordering}
+                isEditable={isEditing}
                 isBeingDragged={isActive}
                 endAdornment={
                   reorderSaving && (
@@ -138,13 +131,24 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                     ? styles.trackerRowHighlightColor?.backgroundColor
                     : 'rgba(0, 0, 0, 0)'
                 }
-                onPress={() =>
-                  !reorderSaving && !isReordering && onOpenTracker(tracker)
+                onOpen={() =>
+                  !reorderSaving && !isEditing && onOpenTracker(tracker)
                 }
-                onPressIn={() => !reorderSaving && isReordering && drag()}
+                onDrag={() => !reorderSaving && isEditing && drag()}
+                onToggleInstall={() => {
+                  setOrderState((current) =>
+                    current?.map((trackerData) => ({
+                      ...trackerData,
+                      installed:
+                        trackerData === tracker
+                          ? !trackerData.installed
+                          : trackerData.installed,
+                    })),
+                  );
+                }}
                 accessibilityActions={
                   !reorderSaving
-                    ? isReordering
+                    ? isEditing
                       ? [
                           {
                             name: 'decrement',
@@ -170,7 +174,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
                   const action = e.nativeEvent.actionName;
                   switch (action) {
                     case 'activate':
-                      !reorderSaving && !isReordering && onOpenTracker(tracker);
+                      !reorderSaving && !isEditing && onOpenTracker(tracker);
                       break;
                     case 'decrement':
                     case 'increment': {
@@ -199,7 +203,7 @@ export const ManageTrackers: FC<ManageTrackersProps> = (props) => {
           },
           [
             styles.trackerRowHighlightColor?.backgroundColor,
-            isReordering,
+            isEditing,
             onOpenTracker,
             reorderSaving,
             styles.trackerRowLoading,
@@ -257,7 +261,9 @@ const defaultStyles = createStyles('ManageTrackers', () => ({
     padding: 16,
   },
   trackerRowLoading: {},
-  draggableFlatListContainer: { flex: 1 },
+  draggableFlatListContainer: {
+    minHeight: '100%',
+  },
 }));
 
 declare module '@styles' {

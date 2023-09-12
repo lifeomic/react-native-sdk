@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { notifier } from '../services/EmitterService';
 import {
-  isInstalledMetric,
   Tracker,
   TRACKER_PILLAR_CODE_SYSTEM,
   useTrackTileService,
 } from '../services/TrackTileService';
-import omit from 'lodash/omit';
 
 type Trackers = {
   trackers: Tracker[];
@@ -36,16 +34,14 @@ export const useTrackers = (trackersToUse?: Trackers) => {
 
   useEffect(() => {
     const onChange = (...newTrackers: Tracker[]) => {
-      const installedMetrics = newTrackers.filter(isInstalledMetric);
-
-      if (!installedMetrics.length) {
+      if (!newTrackers.length) {
         return;
       }
 
-      const pillarTileTrackers = installedMetrics.filter(
+      const pillarTileTrackers = newTrackers.filter(
         (t) => t.system === TRACKER_PILLAR_CODE_SYSTEM,
       );
-      const trackTileTrackers = installedMetrics.filter(
+      const trackTileTrackers = newTrackers.filter(
         (t) => !pillarTileTrackers.includes(t),
       );
 
@@ -77,36 +73,34 @@ export const useTrackers = (trackersToUse?: Trackers) => {
     };
 
     const onRemoved = (tracker: Tracker) => {
-      if (isInstalledMetric(tracker)) {
-        if (tracker.system === TRACKER_PILLAR_CODE_SYSTEM) {
-          setPillarTrackers((currentTrackers) =>
-            sortTrackers(
-              currentTrackers?.map((t) => {
-                if (t.id === tracker.id) {
-                  return {
-                    ...omit(t, ['target', 'unit', 'metricId']),
-                    id: tracker.metricId,
-                  };
-                }
-                return t;
-              }),
-            ),
-          );
-        } else {
-          setTrackers((currentTrackers) =>
-            sortTrackers(
-              currentTrackers?.map((t) => {
-                if (t.id === tracker.id) {
-                  return {
-                    ...omit(t, ['target', 'unit', 'metricId']),
-                    id: tracker.metricId,
-                  };
-                }
-                return t;
-              }),
-            ),
-          );
-        }
+      if (tracker.system === TRACKER_PILLAR_CODE_SYSTEM) {
+        setPillarTrackers((currentTrackers) =>
+          sortTrackers(
+            currentTrackers?.map((t) => {
+              if (t.id === tracker.id) {
+                return {
+                  ...t,
+                  installed: false,
+                };
+              }
+              return t;
+            }),
+          ),
+        );
+      } else {
+        setTrackers((currentTrackers) =>
+          sortTrackers(
+            currentTrackers?.map((t) => {
+              if (t.id === tracker.id) {
+                return {
+                  ...t,
+                  installed: false,
+                };
+              }
+              return t;
+            }),
+          ),
+        );
       }
     };
     if (!trackersToUse) {

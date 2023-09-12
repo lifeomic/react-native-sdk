@@ -39,6 +39,7 @@ export type MetricType = {
 
 export type InstalledMetricSettings = Pick<UnitType, 'unit' | 'target'> & {
   order: number;
+  installed?: boolean;
 };
 
 export type BulkInstalledMetricSettings = InstalledMetricSettings & {
@@ -157,7 +158,6 @@ export type TrackTileService = {
     settings: InstalledMetricSettings,
   ) => Promise<InstalledMetric>;
   upsertTrackers: (settings: BulkInstalledMetricSettings[]) => Promise<void>;
-  uninstallTracker: (metricId: string) => Promise<void>;
 
   /**
    * @description NOTE: For Procedure resources, the TrackerValue `value` prop
@@ -207,10 +207,4 @@ export const useTrackTileService = () => {
 export const extractBulkSettings = (
   install: InstalledMetric,
 ): BulkInstalledMetricSettings =>
-  pick(install, ['unit', 'order', 'target', 'metricId']);
-
-export const isInstalledMetric = (
-  tracker: Tracker,
-): tracker is InstalledMetric => {
-  return 'metricId' in tracker && 'target' in tracker && 'unit' in tracker;
-};
+  pick(install, ['unit', 'order', 'target', 'metricId', 'installed']);

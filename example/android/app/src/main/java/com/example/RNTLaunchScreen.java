@@ -23,7 +23,7 @@ public class RNTLaunchScreen extends SimpleViewManager<View> implements ReactPac
         return View.inflate(context, R.layout.splash_screen, null);
     }
 
-    @Overrides
+    @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         return Arrays.<ViewManager>asList(new RNTLaunchScreen());
     }

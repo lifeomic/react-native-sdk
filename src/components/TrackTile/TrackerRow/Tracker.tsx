@@ -21,8 +21,7 @@ type TrackerProps = TrackerType & {
 };
 const { numberFormat } = numberFormatters;
 export function Tracker(tracker: TrackerProps) {
-  const isInstalled = 'metricId' in tracker;
-  const disabled = !isInstalled;
+  const disabled = !tracker.installed;
   const { styles: instanceStyles } = tracker;
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const theme = useTheme();
@@ -33,7 +32,7 @@ export function Tracker(tracker: TrackerProps) {
   const currentValue = convertToPreferredUnit(tracker.value ?? 0, tracker);
   const id = tracker.metricId || tracker.id;
 
-  const scale = isInstalled
+  const scale = tracker.installed
     ? styles.trackerIconInstalledHeightView?.height ?? 30
     : styles.trackerIconInstalledUninstalledHeightView?.height ?? 35;
 
@@ -56,7 +55,7 @@ export function Tracker(tracker: TrackerProps) {
             scale={(scale as number) / INDICATOR_HEIGHT}
           />
         </View>
-        {isInstalled && (
+        {tracker.installed && (
           <Text
             testID={tID(`tracker-value-${id}`)}
             variant="bold"
@@ -77,7 +76,7 @@ export function Tracker(tracker: TrackerProps) {
         {tracker.name}
       </Text>
       <Text testID={tID(`tracker-unit-${id}`)} style={[styles.trackerUnitText]}>
-        {isInstalled
+        {tracker.installed
           ? t('track-tile.unit-display', {
               defaultValue: '({{unit}})',
               unit: unitDisplay,

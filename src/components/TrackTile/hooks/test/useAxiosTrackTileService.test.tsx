@@ -1,9 +1,8 @@
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react-native';
 import { addSeconds, endOfDay, startOfDay, subSeconds } from 'date-fns';
 import {
   BulkInstalledMetricSettings,
   InstalledMetric,
-  isInstalledMetric,
   MetricType,
   Tracker,
   TrackerResource,
@@ -21,6 +20,8 @@ import {
   DELETE_RESOURCE,
 } from '../useAxiosTrackTileService';
 import { refreshNotifier } from '../../../../common/RefreshNotifier';
+import React from 'react';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 const valuesContext: TrackerValuesContext = {
   system: TRACKER_CODE_SYSTEM,
@@ -78,9 +79,19 @@ jest.mock('../../../../hooks/useUser', () => ({
   }),
 }));
 
+const renderHookInContext = () => {
+  return renderHook(() => useAxiosTrackTileService(), {
+    wrapper: ({ children }) => (
+      <QueryClientProvider client={new QueryClient()}>
+        {children}
+      </QueryClientProvider>
+    ),
+  });
+};
+
 describe('useAxiosTrackTileService', () => {
   it('should return the same values for accountSettings', () => {
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     expect(result.current).toEqual(
       expect.objectContaining({
@@ -93,7 +104,7 @@ describe('useAxiosTrackTileService', () => {
   it('should fetch the track tile trackers when calling fetchTrackers', async () => {
     getMock.mockResolvedValue({ data: [{ id: 'metric-id' }] });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     let returnedMetrics: any;
     await act(async () => {
@@ -110,7 +121,7 @@ describe('useAxiosTrackTileService', () => {
   it('should cache trackers and only call the api once', async () => {
     getMock.mockResolvedValue({ data: [{ id: 'metric-id' }] });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     let first: any, second: any;
     await act(async () => {
@@ -125,7 +136,7 @@ describe('useAxiosTrackTileService', () => {
   it('should fetch the trackers on a project when calling fetchTrackers when a project is provided', async () => {
     getMock.mockResolvedValue({ data: [{ id: 'metric-id' }] });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     let returnedTrackers: any;
     await act(async () => {
@@ -142,7 +153,7 @@ describe('useAxiosTrackTileService', () => {
   it('should request the public trackers when fetching trackers with includePublic set to true', async () => {
     getMock.mockResolvedValue({ data: [] });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.fetchTrackers();
@@ -157,7 +168,7 @@ describe('useAxiosTrackTileService', () => {
   it('should include public and project only trackers when requested', async () => {
     getMock.mockResolvedValue({ data: [] });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.fetchTrackers();
@@ -178,7 +189,7 @@ describe('useAxiosTrackTileService', () => {
     };
     putMock.mockResolvedValue({ data: settings });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     let upsertResult: any;
     await act(async () => {
@@ -207,7 +218,7 @@ describe('useAxiosTrackTileService', () => {
     putMock.mockResolvedValue({ data: { ...settings, order: 2 } }); // update res
     getMock.mockResolvedValue({ data: [settings] }); // initial value
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     let cachedResult: any;
     await act(async () => {
@@ -242,7 +253,7 @@ describe('useAxiosTrackTileService', () => {
     putMock.mockResolvedValue({ data: { ...settings, order: 2 } }); // update res
     getMock.mockResolvedValue({ data: [settings] }); // initial value
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     let cachedResult: any;
     await act(async () => {
@@ -276,7 +287,7 @@ describe('useAxiosTrackTileService', () => {
     patchMock.mockResolvedValue({ data: updatedSettings });
     getMock.mockResolvedValue({ data: [tracker1, tracker2] });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     let cachedResult: any;
     await act(async () => {
@@ -288,37 +299,12 @@ describe('useAxiosTrackTileService', () => {
       cachedResult = await result.current.fetchTrackers();
     });
 
-    expect(patchMock).toHaveBeenCalledWith(
+    expect(putMock).toHaveBeenCalledWith(
       '/v1/track-tiles/metrics/installs',
       updatedSettings,
       ACCOUNT_HEADERS,
     );
     expect(cachedResult).toEqual(updatedSettings);
-  });
-
-  it("should delete a tracker when calling uninstallTracker and update the cache so it's not installed anymore", async () => {
-    const tracker = { id: 'a', metricId: '1', target: 1, unit: 'u', order: 1 };
-
-    getMock.mockResolvedValue({ data: [tracker] });
-
-    const { result } = renderHook(() => useAxiosTrackTileService());
-
-    let cachedResult: any, initialCacheValue: any;
-    await act(async () => {
-      // populate cache
-      initialCacheValue = await result.current.fetchTrackers();
-      // uninstall the tracker
-      await result.current.uninstallTracker(tracker.metricId);
-      // fetch trackers from cache
-      cachedResult = await result.current.fetchTrackers();
-    });
-
-    expect(deleteMock).toHaveBeenCalledWith(
-      `/v1/track-tiles/metrics/installs/${tracker.metricId}`,
-      ACCOUNT_HEADERS,
-    );
-    expect(initialCacheValue.every(isInstalledMetric)).toEqual(true);
-    expect(cachedResult.every(isInstalledMetric)).toEqual(false);
   });
 
   it('should query for tracker values based on an interval of days', async () => {
@@ -341,7 +327,7 @@ describe('useAxiosTrackTileService', () => {
       ),
     );
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     let fetchResult: any;
     await act(async () => {
@@ -426,7 +412,7 @@ describe('useAxiosTrackTileService', () => {
       ),
     );
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     const customValuesContext = {
       ...valuesContext,
@@ -520,7 +506,7 @@ describe('useAxiosTrackTileService', () => {
         ]),
       );
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.fetchTrackerValues(valuesContext, {
@@ -583,7 +569,7 @@ describe('useAxiosTrackTileService', () => {
       ]),
     );
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.fetchTrackerValues(valuesContext, {
@@ -615,7 +601,7 @@ describe('useAxiosTrackTileService', () => {
       ]),
     );
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     const pillarValuesContext = {
       system: TRACKER_PILLAR_CODE_SYSTEM,
@@ -688,7 +674,7 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.upsertTrackerResource(valuesContext, newResource);
@@ -735,7 +721,7 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.upsertTrackerResource(valuesContext, newResource);
@@ -784,7 +770,7 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.upsertTrackerResource(valuesContext, newResource);
@@ -834,7 +820,7 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.upsertTrackerResource(valuesContext, newResource);
@@ -853,7 +839,7 @@ describe('useAxiosTrackTileService', () => {
   it('should throw an error if the query result does not contain any data', async () => {
     postMock.mockResolvedValueOnce({ data: {} });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await expect(
       result.current.upsertTrackerResource(valuesContext, {
@@ -871,7 +857,7 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.deleteTrackerResource(
@@ -900,7 +886,7 @@ describe('useAxiosTrackTileService', () => {
       },
     });
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     await act(async () => {
       await result.current.deleteTrackerResource(
@@ -936,7 +922,7 @@ describe('useAxiosTrackTileService', () => {
       ]),
     );
 
-    const { result } = renderHook(() => useAxiosTrackTileService());
+    const { result } = renderHookInContext();
 
     const pillarValuesContext = {
       system: TRACKER_PILLAR_CODE_SYSTEM,

@@ -47,8 +47,8 @@ describe('Track Tile', () => {
   it('should display all returned trackers', async () => {
     useAxiosTrackTileServiceMock.mockReturnValue({
       fetchTrackers: jest.fn().mockResolvedValue([
-        { id: '1', name: 'Tracker A', units: [] },
-        { id: '2', name: 'Tracker B', units: [] },
+        { id: '1', name: 'Tracker A', units: [], installed: true },
+        { id: '2', name: 'Tracker B', units: [], installed: true },
       ]),
       fetchTrackerValues: jest.fn().mockResolvedValue({}),
     });
@@ -64,7 +64,7 @@ describe('Track Tile', () => {
   });
 
   it('clicking a tracker calls onOpenTracker handler with selected tracker', async () => {
-    const tracker = { id: '1', name: 'Tracker A', units: [] };
+    const tracker = { id: '1', name: 'Tracker A', units: [], installed: true };
     const onOpenTracker = jest.fn();
     useAxiosTrackTileServiceMock.mockReturnValue({
       fetchTrackers: jest.fn().mockResolvedValue([tracker]),
@@ -108,7 +108,13 @@ describe('Track Tile', () => {
   });
 
   it('should display tracker value based on metricId', async () => {
-    const tracker = { id: '1', name: 'Tracker A', metricId: '2', units: [] };
+    const tracker = {
+      id: '1',
+      name: 'Tracker A',
+      metricId: '2',
+      units: [],
+      installed: true,
+    };
     const trackerValue = '999';
     useAxiosTrackTileServiceMock.mockReturnValue({
       fetchTrackers: jest.fn().mockResolvedValue([tracker]),

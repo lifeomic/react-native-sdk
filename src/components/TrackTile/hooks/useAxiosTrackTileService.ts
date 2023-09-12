@@ -24,7 +24,7 @@ import {
   max as maxDate,
   differenceInSeconds,
 } from 'date-fns';
-import { pick, merge, pickBy, omit, fromPairs } from 'lodash';
+import { pick, merge, pickBy, fromPairs } from 'lodash';
 import { useHttpClient } from '../../../hooks/useHttpClient';
 import { useActiveAccount } from './../../../hooks/useActiveAccount';
 import { useActiveProject } from './../../../hooks/useActiveProject';
@@ -34,6 +34,7 @@ import {
   RefreshParams,
   refreshNotifier,
 } from '../../../common/RefreshNotifier';
+import { useAppConfig } from '../../../hooks/useAppConfig';
 
 const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
   headers: {
@@ -47,12 +48,14 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   const { activeSubjectId: patientId, activeProject } = useActiveProject();
   const { account } = useActiveAccount();
   const { data: userData } = useUser();
+  const { data: appConfig } = useAppConfig();
   const userId = userData?.id;
   const [previousUserId, setPreviousUserId] = useState(userId);
   const { ontology: devConfigOntology } = useDeveloperConfig();
 
   const accountId = account?.id || '';
   const projectId = activeProject?.id || '';
+  const { includePublic = false } = appConfig?.homeTab?.trackTileSettings ?? {};
 
   const { current: cache } = useRef<{
     trackers?: Tracker[];
@@ -211,6 +214,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
 
       const queryParams = {
         project: projectId,
+        'include-public': includePublic,
       };
       const params = Object.entries(pickBy(queryParams))
         .map(([k, v]) => `${k}=${v}`)
@@ -240,30 +244,13 @@ export const useAxiosTrackTileService = (): TrackTileService => {
     },
 
     upsertTrackers: async (settings) => {
-      await httpClient.patch(
+      await httpClient.put(
         '/v1/track-tiles/metrics/installs',
         settings,
         axiosConfig({ account: accountId }),
       );
 
       settings.forEach(updateSettingsInCache);
-    },
-
-    uninstallTracker: async (metricId) => {
-      await httpClient.delete(
-        `/v1/track-tiles/metrics/installs/${metricId}`,
-        axiosConfig({ account: accountId }),
-      );
-
-      cache.trackers = cache.trackers?.map((t) => {
-        if (t.metricId === metricId) {
-          return {
-            ...omit(t, ['target', 'unit', 'metricId']),
-            id: metricId,
-          };
-        }
-        return t;
-      });
     },
 
     fetchTrackerValues: async (valuesContext, interval) => {

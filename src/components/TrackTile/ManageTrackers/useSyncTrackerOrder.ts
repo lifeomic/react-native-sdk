@@ -3,10 +3,10 @@ import { notifier } from '../services/EmitterService';
 import {
   Tracker,
   useTrackTileService,
-  InstalledMetric,
-  isInstalledMetric,
   extractBulkSettings,
+  InstalledMetric,
 } from '../services/TrackTileService';
+import { getPreferredUnitType } from '../util/convert-value';
 
 export const useSyncTrackerOrder = (orderState: Tracker[] | undefined) => {
   const svc = useTrackTileService();
@@ -14,28 +14,20 @@ export const useSyncTrackerOrder = (orderState: Tracker[] | undefined) => {
   const [loading, setLoading] = useState(false);
 
   const syncTrackerOrder = useCallback(async () => {
-    if (!orderState) {
+    if (!orderState?.length) {
       return;
     }
 
-    const toUpdate: InstalledMetric[] = [];
-    const after = orderState.filter(isInstalledMetric);
-
-    for (let index = after.length - 1; index >= 0; index--) {
-      const tracker = after[index];
-      const trackerOrder = tracker.order ?? Number.MAX_SAFE_INTEGER;
-
-      if (trackerOrder !== index) {
-        toUpdate.push({
-          ...tracker,
-          order: index,
-        });
-      }
-    }
-
-    if (!toUpdate.length) {
-      return;
-    }
+    const toUpdate: InstalledMetric[] = orderState.map((tracker, index) => {
+      const unit = getPreferredUnitType(tracker);
+      return {
+        ...tracker,
+        order: index,
+        metricId: tracker.metricId ?? tracker.id,
+        unit: tracker.unit ?? unit.unit,
+        target: tracker.target ?? unit.target,
+      };
+    });
 
     setLoading(true);
 

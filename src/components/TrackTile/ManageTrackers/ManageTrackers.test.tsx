@@ -12,11 +12,6 @@ import { merge } from 'lodash';
 
 jest.unmock('i18next');
 
-jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
-  const mockComponent = jest.requireActual('react-native/jest/mockComponent');
-  return mockComponent('react-native/Libraries/Components/Switch/Switch');
-});
-
 type PartialDeep<T> = T extends {}
   ? {
       [P in keyof T]?: PartialDeep<T[P]>;
@@ -101,6 +96,7 @@ describe('Manage Trackers', () => {
       unit: 'A',
       target: 1,
       metricId: 'A',
+      units: [],
       order: 0,
     };
     const trackerB = {
@@ -108,34 +104,47 @@ describe('Manage Trackers', () => {
       unit: 'B',
       target: 1,
       metricId: 'B',
+      units: [],
       order: 1,
     };
+    const trackers = [trackerA, trackerB];
     const upsertTrackers = jest.fn();
 
-    const { findByLabelText, findByText } = renderManageTrackers({
+    const { findByText, findByTestId, rerender } = renderManageTrackers({
+      editingState: 'editing',
       trackTileService: {
         upsertTrackers,
       },
       trackerRequestMeta: {
-        trackers: [trackerA, trackerB],
+        trackers,
       },
     });
 
     await act(async () => {
-      fireEvent(await findByLabelText('Reorder trackers'), 'valueChange', true);
-
-      fireEvent(await findByText(trackerB.name), 'pressIn');
+      fireEvent(
+        await findByTestId(`drag-handle-${trackerB.metricId}`),
+        'pressIn',
+      );
 
       fireEvent(await findByText(trackerB.name), 'dragEnd', {
         data: [trackerB, trackerA],
       });
-
-      fireEvent(
-        await findByLabelText('Save tracker order'),
-        'valueChange',
-        false,
-      );
     });
+
+    rerender(
+      <ManageTrackersProvider
+        {...({
+          onOpenTracker: jest.fn(),
+          editingState: 'done',
+          trackTileService: {
+            upsertTrackers,
+          },
+          trackerRequestMeta: {
+            trackers,
+          },
+        } as any as ManageTrackersProviderProps)}
+      />,
+    );
 
     expect(upsertTrackers).toHaveBeenCalledWith(
       expect.arrayContaining([

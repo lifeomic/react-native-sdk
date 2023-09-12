@@ -49,26 +49,31 @@ export function TrackerRow(props: TrackerRowProps) {
         </View>
       )}
       {!loading &&
-        trackers.map((tracker, i) => (
-          <TouchableOpacity
-            testID={tID(
-              `open-tracker-details-button-${tracker.metricId || tracker.id}`,
-            )}
-            key={i}
-            onPress={() => onOpenTracker(tracker)}
-            activeOpacity={0.5}
-          >
-            <Tracker
-              {...tracker}
-              value={
-                values[tracker.metricId ?? '']?.reduce(
-                  (total, { value }) => total + value,
-                  0,
-                ) ?? 0
-              }
-            />
-          </TouchableOpacity>
-        ))}
+        trackers.map(
+          (tracker, i) =>
+            tracker.installed && (
+              <TouchableOpacity
+                testID={tID(
+                  `open-tracker-details-button-${
+                    tracker.metricId || tracker.id
+                  }`,
+                )}
+                key={i}
+                onPress={() => onOpenTracker(tracker)}
+                activeOpacity={0.5}
+              >
+                <Tracker
+                  {...tracker}
+                  value={
+                    values[tracker.metricId ?? '']?.reduce(
+                      (total, { value }) => total + value,
+                      0,
+                    ) ?? 0
+                  }
+                />
+              </TouchableOpacity>
+            ),
+        )}
     </ScrollView>
   );
 }
