@@ -1,9 +1,8 @@
-import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 import { Patient } from 'fhir/r3';
-import { inviteNotifier } from '../components/Invitations/InviteNotifier';
+import { useAuth } from './useAuth';
 
 export interface Subject {
   subjectId: string;
@@ -21,11 +20,12 @@ interface MeResponse {
 }
 
 export function useMe() {
+  const { authResult } = useAuth();
   const { accountHeaders } = useActiveAccount();
   const { httpClient } = useHttpClient();
 
   const useMeQuery = useQuery(
-    ['fhir/dstu3/$me'],
+    ['fhir/dstu3/$me', authResult?.accessToken],
     () =>
       httpClient
         .get<MeResponse>('/v1/fhir/dstu3/$me', { headers: accountHeaders })
@@ -45,16 +45,6 @@ export function useMe() {
       enabled: !!accountHeaders,
     },
   );
-
-  useEffect(() => {
-    const listener = async () => {
-      await useMeQuery.refetch();
-    };
-    inviteNotifier.addListener('inviteAccepted', listener);
-    return () => {
-      inviteNotifier.removeListener('inviteAccepted', listener);
-    };
-  }, [useMeQuery]);
 
   return useMeQuery;
 }

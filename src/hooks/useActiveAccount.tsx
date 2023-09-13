@@ -127,20 +127,26 @@ export const ActiveAccountContextProvider = ({
   }, [previousUserId, userId, accountsResult]);
 
   const setActiveAccountId = useCallback(
-    async (accountId: string) => {
+    async (accountId: string, bypassValidation: boolean = false) => {
       try {
-        const selectedAccount = getValidAccount(accountsWithProduct, accountId);
-        if (!selectedAccount) {
-          if (process.env.NODE_ENV !== 'test') {
-            console.warn(
-              'Ignoring attempt to set invalid accountId',
-              accountId,
-            );
+        if (bypassValidation) {
+          setSelectedId(accountId);
+        } else {
+          const selectedAccount = getValidAccount(
+            accountsWithProduct,
+            accountId,
+          );
+          if (!selectedAccount) {
+            if (process.env.NODE_ENV !== 'test') {
+              console.warn(
+                'Ignoring attempt to set invalid accountId',
+                accountId,
+              );
+            }
+            return;
           }
-          return;
+          setSelectedId(selectedAccount.id);
         }
-
-        setSelectedId(selectedAccount.id);
       } catch (error) {
         if (process.env.NODE_ENV !== 'test') {
           console.warn('Unable to set active account', error);
@@ -158,7 +164,10 @@ export const ActiveAccountContextProvider = ({
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
       await refetch();
-      await setActiveAccountId(acceptedInvite.account);
+
+      // Optimistically assume that the account response will
+      // contain the account of invite the user just accepted
+      await setActiveAccountId(acceptedInvite.account, true);
       inviteNotifier.emit('inviteAccountSettled');
     };
     inviteNotifier.addListener('inviteAccepted', listener);
