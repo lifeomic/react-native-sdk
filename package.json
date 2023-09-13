@@ -16,6 +16,7 @@
     "build": "rm -rf dist && tsc -p tsconfig.build.json --outDir dist && yarn copyAdditionalFiles && yarn buildDeclaredStyles",
     "precopyToProject": "yarn build",
     "copyToProject": "sh -c 'cp -r ./dist/ ../${0}/node_modules/@lifeomic/react-native-sdk'",
+    "keepProjectSynced": "node ./bin/scripts/syncWithProject.js",
     "copyToStarter": "yarn copyToProject react-native-starter",
     "copyAdditionalFiles": "./bin/scripts/copyAdditionalFiles",
     "buildDeclaredStyles": "node ./bin/scripts/buildDeclaredStyles.js"
@@ -64,6 +65,7 @@
     "metro-react-native-babel-preset": "^0.74.1",
     "msw": "^1.2.3",
     "nock": "^13.3.0",
+    "node-watch": "^0.7.4",
     "prettier": "^2.8.3",
     "query-string": "^8.1.0",
     "react": "^18.2.0",
@@ -92,6 +94,7 @@
     "rn-emoji-keyboard": "^1.2.2",
     "semantic-release": "^19.0.3",
     "ts-jest": "^29.0.5",
+    "tsc-watch": "^6.0.4",
     "typescript": "^4.9.4",
     "victory-native": "^36.6.11"
   },
