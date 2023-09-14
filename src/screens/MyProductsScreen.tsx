@@ -2,9 +2,9 @@ import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../navigators/types';
-import { createStyles, useIcons } from '../components/BrandConfigProvider';
+import { createStyles } from '../components/BrandConfigProvider';
 import { useDeveloperConfig, useStyles } from '../hooks';
-import { ActivityIndicator, Divider, List } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 import { useTrackers } from '../components/TrackTile/hooks/useTrackers';
 import { RadialProgress } from '../components/TrackTile/TrackerRow/RadialProgress';
 import {
@@ -16,12 +16,12 @@ import {
 import { useTrackerValues } from '../components/TrackTile/hooks/useTrackerValues';
 import startOfDay from 'date-fns/startOfDay';
 import endOfDay from 'date-fns/endOfDay';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Tile } from '../components/tiles/Tile';
+import { ScreenSurface } from '../components/ScreenSurface';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home/MyProducts'>;
 
 export const MyProductsScreen = ({ navigation }: Props) => {
-  //   const { tracker, valuesContext, referenceDate } = params;
   const { trackers, loading: trackersLoading } = useTrackers();
   const { styles } = useStyles(defaultStyles);
   const { componentProps } = useDeveloperConfig();
@@ -54,8 +54,6 @@ export const MyProductsScreen = ({ navigation }: Props) => {
     [activeValues],
   );
 
-  const { ChevronRight } = useIcons();
-
   const renderRadial = useCallback(
     (tracker: Tracker) => (
       <View style={styles.radialView}>
@@ -64,12 +62,13 @@ export const MyProductsScreen = ({ navigation }: Props) => {
           color={tracker.color}
           target={tracker.target ?? 0}
           value={getIncomingValue(tracker.metricId ?? '')}
-          strokeWidth={radialProgressStrokeWidth}
-          radius={radialProgressRadius}
           strokeLinecap={radialProgressStrokeLinecap}
           rotation={radialProgressRotation}
           styles={{
-            borderView: styles.radialProgressBorderView,
+            circle: {
+              radius: radialProgressRadius,
+              strokeWidth: radialProgressStrokeWidth,
+            },
           }}
         />
       </View>
@@ -80,51 +79,47 @@ export const MyProductsScreen = ({ navigation }: Props) => {
       radialProgressRotation,
       radialProgressStrokeLinecap,
       radialProgressStrokeWidth,
-      styles.radialProgressBorderView,
       styles.radialView,
     ],
   );
-
-  const renderIcon = useCallback(() => <ChevronRight />, [ChevronRight]);
 
   if (trackersLoading) {
     return <ActivityIndicator />;
   }
 
   return (
-    <View style={styles.rootView}>
-      {trackers?.map((tracker) => (
-        <>
-          <Divider style={styles.dividerView} />
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('Home/TrackTile', { tracker, valuesContext });
-            }}
-          >
-            <List.Section style={styles.listSectionView}>
-              <List.Item
-                style={styles.listItemView}
-                id={tracker.id}
-                key={tracker.id}
-                title={tracker.name}
-                titleStyle={styles.titleText}
-                left={() => renderRadial(tracker)}
-                right={() => renderIcon()}
-              />
-            </List.Section>
-          </TouchableOpacity>
-        </>
-      ))}
-    </View>
+    <ScreenSurface testID="my-products-screen">
+      <View style={styles.rootView}>
+        <View style={styles.tilesView}>
+          {trackers?.map((tracker) => (
+            <Tile
+              id={tracker.id}
+              key={tracker.id}
+              title={tracker.name}
+              onPress={() =>
+                navigation.navigate('Home/TrackTile', {
+                  tracker,
+                  valuesContext,
+                })
+              }
+              Icon={() => renderRadial(tracker)}
+            />
+          ))}
+        </View>
+      </View>
+    </ScreenSurface>
   );
 };
 
 const defaultStyles = createStyles('MyProductsScreen', (theme) => ({
   rootView: {},
+  tilesView: {
+    marginHorizontal: theme.spacing.large,
+    marginBottom: theme.spacing.large,
+  },
   listSectionView: {},
   listItemView: { marginLeft: 30, marginVertical: 10 },
   radialView: { width: 30, height: 30 },
-  radialProgressBorderView: {},
   titleText: {
     ...theme.fonts.titleMedium,
     color: theme.colors.text,
@@ -137,5 +132,3 @@ declare module '@styles' {
   interface ComponentStyles
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
-
-export default MyProductsScreen;

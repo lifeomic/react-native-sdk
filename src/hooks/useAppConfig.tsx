@@ -31,7 +31,12 @@ export interface MessageTile {
   displayName: string;
 }
 
-type Tile = 'todayTile' | 'trackTile' | 'pillarsTile' | 'myDataTile';
+type Tile =
+  | 'todayTile'
+  | 'trackTile'
+  | 'pillarsTile'
+  | 'myDataTile'
+  | 'productTracker';
 
 export interface AppConfig {
   homeTab?: {

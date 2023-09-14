@@ -18,7 +18,7 @@ import { YoutubePlayerScreen } from '../screens/YoutubePlayerScreen';
 import { navigationScreenListeners } from '../hooks/useLogoHeaderOptions';
 import { DirectMessagesScreen } from '../screens/DirectMessagesScreen';
 import { MessageScreen } from '../screens/MessageScreen';
-import MyProductsScreen from '../screens/MyProductsScreen';
+import { MyProductsScreen } from '../screens/MyProductsScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 

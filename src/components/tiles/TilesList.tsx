@@ -30,6 +30,8 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const trackTileTitle = trackerSettings?.title;
   const todayTileEnabled = data?.homeTab?.tiles?.includes?.('todayTile');
   const myDataTileEnabled = data?.homeTab?.tiles?.includes?.('myDataTile');
+  const productTrackerTileEnabled =
+    data?.homeTab?.tiles?.includes?.('productTracker');
   const todayTile = data?.homeTab?.todayTile;
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
@@ -60,15 +62,6 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
 
   return (
     <View testID={tID('tiles-list')} style={styles.view}>
-      <Tile
-        id={'product-tracker'}
-        key={'product-tracker'}
-        title={'Product Tracker'}
-        Icon={tileIcon('MedicalBriefcase', 'product-tracker-icon')}
-        onPress={() => {
-          navigation.navigate('Home/MyProducts');
-        }}
-      />
       {pillarsTileEnabled && (
         <PillarsTile
           shouldUseOntology={!!pillarSettings?.advancedScreenTrackers?.length}
@@ -117,6 +110,17 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             Icon={tileIcon('HeartCheck', 'today')}
             onPress={onTodayTilePress}
             badge={TodayBadge}
+          />
+        )}
+        {productTrackerTileEnabled && (
+          <Tile
+            id={'product-tracker'}
+            key={'product-tracker'}
+            title={'Product Tracker'}
+            Icon={tileIcon('MedicalBriefcase', 'product-tracker-icon')}
+            onPress={() => {
+              navigation.navigate('Home/MyProducts');
+            }}
           />
         )}
         {myDataTileEnabled && (
