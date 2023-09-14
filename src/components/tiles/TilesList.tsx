@@ -60,6 +60,15 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
 
   return (
     <View testID={tID('tiles-list')} style={styles.view}>
+      <Tile
+        id={'product-tracker'}
+        key={'product-tracker'}
+        title={'Product Tracker'}
+        Icon={tileIcon('MedicalBriefcase', 'product-tracker-icon')}
+        onPress={() => {
+          navigation.navigate('Home/MyProducts');
+        }}
+      />
       {pillarsTileEnabled && (
         <PillarsTile
           shouldUseOntology={!!pillarSettings?.advancedScreenTrackers?.length}

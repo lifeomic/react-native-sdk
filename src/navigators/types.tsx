@@ -86,6 +86,7 @@ export type HomeStackParamList = {
     recipientUserId: string;
     displayName?: string;
   };
+  'Home/MyProducts': undefined;
 };
 
 export type NotificationsStackParamList = {

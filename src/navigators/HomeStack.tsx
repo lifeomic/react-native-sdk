@@ -18,6 +18,7 @@ import { YoutubePlayerScreen } from '../screens/YoutubePlayerScreen';
 import { navigationScreenListeners } from '../hooks/useLogoHeaderOptions';
 import { DirectMessagesScreen } from '../screens/DirectMessagesScreen';
 import { MessageScreen } from '../screens/MessageScreen';
+import MyProductsScreen from '../screens/MyProductsScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -65,6 +66,11 @@ export function HomeStack() {
       <Stack.Screen
         name="Home/DirectMessage"
         component={DirectMessagesScreen}
+      />
+      <Stack.Screen
+        name="Home/MyProducts"
+        component={MyProductsScreen}
+        options={{ title: t('My Products') }}
       />
       {getAdditionalHomeScreens?.(Stack)}
     </Stack.Navigator>
