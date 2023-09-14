@@ -117,15 +117,7 @@ const defaultStyles = createStyles('MyProductsScreen', (theme) => ({
     marginHorizontal: theme.spacing.large,
     marginBottom: theme.spacing.large,
   },
-  listSectionView: {},
-  listItemView: { marginLeft: 30, marginVertical: 10 },
   radialView: { width: 30, height: 30 },
-  titleText: {
-    ...theme.fonts.titleMedium,
-    color: theme.colors.text,
-    maxWidth: '80%',
-  },
-  dividerView: { borderWidth: 0.5 },
 }));
 
 declare module '@styles' {
