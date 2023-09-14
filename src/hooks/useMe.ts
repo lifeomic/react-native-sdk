@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 import { Patient } from 'fhir/r3';
-import { useAuth } from './useAuth';
+import { usePendingInvite } from './usePendingInvite';
 
 export interface Subject {
   subjectId: string;
@@ -20,12 +20,12 @@ interface MeResponse {
 }
 
 export function useMe() {
-  const { authResult } = useAuth();
   const { accountHeaders } = useActiveAccount();
   const { httpClient } = useHttpClient();
+  const { lastAcceptedId } = usePendingInvite();
 
   const useMeQuery = useQuery(
-    ['fhir/dstu3/$me', authResult?.accessToken],
+    ['fhir/dstu3/$me', lastAcceptedId],
     () =>
       httpClient
         .get<MeResponse>('/v1/fhir/dstu3/$me', { headers: accountHeaders })

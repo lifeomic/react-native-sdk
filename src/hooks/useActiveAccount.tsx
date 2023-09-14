@@ -12,7 +12,7 @@ import { useAsyncStorage } from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
 import { useUser } from './useUser';
-import { useRestQuery } from './rest-api';
+import { useRestCache, useRestQuery } from './rest-api';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -66,6 +66,12 @@ export const ActiveAccountContextProvider = ({
     {},
     { select: (data) => data.accounts },
   );
+  console.log(
+    'accountResults',
+    accountsResult.isInitialLoading,
+    accountsResult.isLoading,
+    accountsResult.data,
+  );
 
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
   const { data: userData } = useUser();
@@ -77,6 +83,7 @@ export const ActiveAccountContextProvider = ({
       `${selectedAccountIdKey}:${userId}`,
       !!selectedAccountIdKey && !!userId,
     );
+  const cache = useRestCache();
 
   /**
    * Initial setting of activeAccount
@@ -127,26 +134,19 @@ export const ActiveAccountContextProvider = ({
   }, [previousUserId, userId, accountsResult]);
 
   const setActiveAccountId = useCallback(
-    async (accountId: string, bypassValidation: boolean = false) => {
+    async (accountId: string) => {
       try {
-        if (bypassValidation) {
-          setSelectedId(accountId);
-        } else {
-          const selectedAccount = getValidAccount(
-            accountsWithProduct,
-            accountId,
-          );
-          if (!selectedAccount) {
-            if (process.env.NODE_ENV !== 'test') {
-              console.warn(
-                'Ignoring attempt to set invalid accountId',
-                accountId,
-              );
-            }
-            return;
+        const selectedAccount = getValidAccount(accountsWithProduct, accountId);
+        if (!selectedAccount) {
+          if (process.env.NODE_ENV !== 'test') {
+            console.warn(
+              'Ignoring attempt to set invalid accountId',
+              accountId,
+            );
           }
-          setSelectedId(selectedAccount.id);
+          return;
         }
+        setSelectedId(selectedAccount.id);
       } catch (error) {
         if (process.env.NODE_ENV !== 'test') {
           console.warn('Unable to set active account', error);
@@ -163,18 +163,16 @@ export const ActiveAccountContextProvider = ({
   // Handle invite accept
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
+      cache.invalidateQueries({ 'GET /v1/accounts': 'all' });
       await refetch();
-
-      // Optimistically assume that the account response will
-      // contain the account of invite the user just accepted
-      await setActiveAccountId(acceptedInvite.account, true);
+      await setActiveAccountId(acceptedInvite.account);
       inviteNotifier.emit('inviteAccountSettled');
     };
     inviteNotifier.addListener('inviteAccepted', listener);
     return () => {
       inviteNotifier.removeListener('inviteAccepted', listener);
     };
-  }, [refetch, setActiveAccountId]);
+  }, [refetch, setActiveAccountId, cache]);
 
   return (
     <ActiveAccountContext.Provider

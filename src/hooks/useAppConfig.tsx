@@ -83,14 +83,14 @@ export const AppConfigContextProvider = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const { accountHeaders } = useActiveAccount();
+  const { accountHeaders, account } = useActiveAccount();
   const { activeProject } = useActiveProject();
   const { apiClient } = useHttpClient();
   const [appConfig, setAppConfig] = useState<AppConfig | undefined>(undefined);
   const isLoading = useRef<boolean | undefined>(undefined);
   const error = useRef<undefined>(undefined);
 
-  if (!appConfig && !!activeProject?.id && !!accountHeaders) {
+  if (!appConfig && !!activeProject?.id && !!account) {
     isLoading.current = true;
     apiClient
       .request(
