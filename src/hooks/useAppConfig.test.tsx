@@ -52,7 +52,7 @@ const configWith = (homeTab: AppConfig['homeTab']) => {
 
 beforeEach(() => {
   useActiveAccountMock.mockReturnValue({
-    accountHeaders: { 'LifeOmic-Account': 'acct1' },
+    account: 'acct1',
   });
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
