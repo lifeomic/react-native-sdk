@@ -66,12 +66,6 @@ export const ActiveAccountContextProvider = ({
     {},
     { select: (data) => data.accounts },
   );
-  console.log(
-    'accountResults',
-    accountsResult.isInitialLoading,
-    accountsResult.isLoading,
-    accountsResult.data,
-  );
 
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
   const { data: userData } = useUser();
