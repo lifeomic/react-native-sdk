@@ -10,8 +10,6 @@ import { Subject, useMe } from './useMe';
 import { Project, useSubjectProjects } from './useSubjectProjects';
 import { useAsyncStorage } from './useAsyncStorage';
 import { useUser } from './useUser';
-import { inviteNotifier } from '../components/Invitations/InviteNotifier';
-
 const selectedProjectIdKey = 'selectedProjectIdKey';
 
 export type ActiveProjectProps = {
@@ -119,16 +117,6 @@ export const ActiveProjectContextProvider = ({
     projectsResult.data,
     useMeResult.data,
   ]);
-
-  useEffect(() => {
-    const listener = async () => {
-      await projectsResult.refetch();
-    };
-    inviteNotifier.addListener('inviteAccepted', listener);
-    return () => {
-      inviteNotifier.removeListener('inviteAccepted', listener);
-    };
-  }, [projectsResult]);
 
   useEffect(() => {
     if (hookReturnValue?.activeProject?.id) {

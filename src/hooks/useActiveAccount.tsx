@@ -12,7 +12,7 @@ import { useAsyncStorage } from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
 import { useUser } from './useUser';
-import { useRestQuery } from './rest-api';
+import { useRestCache, useRestQuery } from './rest-api';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -77,6 +77,7 @@ export const ActiveAccountContextProvider = ({
       `${selectedAccountIdKey}:${userId}`,
       !!selectedAccountIdKey && !!userId,
     );
+  const cache = useRestCache();
 
   /**
    * Initial setting of activeAccount
@@ -139,7 +140,6 @@ export const ActiveAccountContextProvider = ({
           }
           return;
         }
-
         setSelectedId(selectedAccount.id);
       } catch (error) {
         if (process.env.NODE_ENV !== 'test') {
@@ -157,6 +157,7 @@ export const ActiveAccountContextProvider = ({
   // Handle invite accept
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
+      cache.invalidateQueries({ 'GET /v1/accounts': 'all' });
       await refetch();
       await setActiveAccountId(acceptedInvite.account);
       inviteNotifier.emit('inviteAccountSettled');
@@ -165,7 +166,7 @@ export const ActiveAccountContextProvider = ({
     return () => {
       inviteNotifier.removeListener('inviteAccepted', listener);
     };
-  }, [refetch, setActiveAccountId]);
+  }, [refetch, setActiveAccountId, cache]);
 
   return (
     <ActiveAccountContext.Provider

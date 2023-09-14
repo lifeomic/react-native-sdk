@@ -9,6 +9,7 @@ import {
 import Keychain from 'react-native-keychain';
 import { unusedUsername } from '../common/SecureStore';
 import { useCurrentAppState } from './useCurrentAppState';
+import { AxiosError } from 'axios';
 
 jest.mock('react-native-keychain', () => ({
   ACCESSIBLE: { AFTER_FIRST_UNLOCK: 'AFTER_FIRST_UNLOCK' },
@@ -69,7 +70,7 @@ test('without provider, methods fail', async () => {
   ).rejects.toBeUndefined();
   await expect(result.current.clearAuthResult()).rejects.toBeUndefined();
   await expect(
-    result.current.refreshForAuthFailure(new Error()),
+    result.current.refreshForAuthFailure(new Error() as AxiosError),
   ).rejects.toBeUndefined();
 });
 
@@ -331,14 +332,14 @@ test('refreshForAuthFailure refreshes auth token if not already loading', async 
   );
   jest.useFakeTimers();
   act(() => {
-    result.current.refreshForAuthFailure(new Error());
+    result.current.refreshForAuthFailure(new Error() as AxiosError);
   });
   expect(refreshHandler).toHaveBeenCalledTimes(1);
   expect(result.current.loading).toBe(true);
 
   // 3. 401 reports have no effect while still loading
   await act(async () => {
-    await result.current.refreshForAuthFailure(new Error());
+    await result.current.refreshForAuthFailure(new Error() as AxiosError);
   });
   expect(refreshHandler).toHaveBeenCalledTimes(1);
 

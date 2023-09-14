@@ -13,11 +13,13 @@ type InviteParams = {
 type InviteState = {
   inviteParams: InviteParams;
   clearPendingInvite: () => Promise<void>;
+  lastAcceptedId: string;
 };
 
 export const InviteContext = createContext<InviteState>({
   inviteParams: {},
   clearPendingInvite: async () => Promise.reject(),
+  lastAcceptedId: '',
 });
 
 type ProviderProps = {
@@ -26,6 +28,7 @@ type ProviderProps = {
 
 export const InviteProvider = ({ children }: ProviderProps) => {
   const [inviteParams, setInviteParams] = useState<InviteParams>({});
+  const [lastAcceptedId, setAcceptedId] = useState<string>('');
   const { isLoading, isSuccess, isError, reset, mutateAsync } = useRestMutation(
     'PATCH /v1/invitations/:inviteId',
   );
@@ -43,6 +46,7 @@ export const InviteProvider = ({ children }: ProviderProps) => {
           inviteId,
           status: 'ACCEPTED',
         });
+        setAcceptedId(acceptedInvite.id);
 
         // Before notifying others, refresh the auth token so that the new
         // auth token used has context of the accepted invite.
@@ -116,6 +120,7 @@ export const InviteProvider = ({ children }: ProviderProps) => {
       value={{
         inviteParams,
         clearPendingInvite,
+        lastAcceptedId,
       }}
     >
       {children}

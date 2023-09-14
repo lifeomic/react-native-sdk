@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useMe } from './useMe';
 import { useHttpClient } from './useHttpClient';
+import { usePendingInvite } from './usePendingInvite';
 
 export interface Project {
   id: string;
@@ -16,9 +17,10 @@ export function useSubjectProjects() {
   const { account, accountHeaders } = useActiveAccount();
   const { data: subjects } = useMe();
   const { httpClient } = useHttpClient();
+  const { lastAcceptedId } = usePendingInvite();
 
   return useQuery<Project[]>(
-    [`${account?.id}-projects`, subjects],
+    [`${account?.id}-projects`, subjects, lastAcceptedId],
     async () => {
       if (subjects?.length) {
         const res = await httpClient.get<ProjectsResponse>(

@@ -8,6 +8,7 @@ import React, {
 import { RefreshResult } from 'react-native-app-auth';
 import { SecureStore } from '../common/SecureStore';
 import { useCurrentAppState } from './useCurrentAppState';
+import { AxiosError } from 'axios';
 
 export interface AuthStatus {
   loading: boolean;
@@ -20,7 +21,7 @@ export interface AuthStatus {
   // We keep these methods explicitly named because we want it to feel wrong
   // for hook consumers to refresh the auth token for any other reason than
   // these named cases.  This also allows for each case to evolve on its own.
-  refreshForAuthFailure: (error: Error) => Promise<void>;
+  refreshForAuthFailure: (error: AxiosError<any, any>) => Promise<void>;
   refreshForInviteAccept: () => Promise<void>;
 }
 
@@ -157,10 +158,19 @@ export const AuthContextProvider = ({
     }
   }, [currentAppState, refreshIfNeeded]);
 
-  const refreshForAuthFailure = useCallback(async () => {
-    // TODO: Add throttling, etc.
-    return refreshIfNeeded(true);
-  }, [refreshIfNeeded]);
+  const refreshForAuthFailure = useCallback(
+    async (error: AxiosError) => {
+      const refreshTokenEndpointBlacklist = ['device-endpoints'];
+      if (
+        refreshTokenEndpointBlacklist.every(
+          (endpoint) => !error?.config?.url?.includes(endpoint),
+        )
+      ) {
+        return refreshIfNeeded(true);
+      }
+    },
+    [refreshIfNeeded],
+  );
 
   const refreshForInviteAccept = useCallback(async () => {
     return refreshIfNeeded(true);
