@@ -69,4 +69,12 @@ describe('with developerConfig injected into provider', () => {
       additionalScreens,
     );
   });
+
+  test('allows for onUserSignIn to be configured', async () => {
+    const onUserSignIn = jest.fn();
+    const { result } = await renderHookInContext({
+      onUserSignIn,
+    });
+    expect(result.current.onUserSignIn).toEqual(onUserSignIn);
+  });
 });

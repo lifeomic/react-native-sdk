@@ -45,6 +45,9 @@ import { EducationContent } from '../components/TrackTile/services/TrackTileServ
  * for the `educationContent` property of terminology responses.  This enables
  * showing a custom thumbnail image in AdvancedTrackerDetails. The key provided
  * must be the `coding.code` value, e.g. '41950-7' for steps.
+ *
+ * @param onUserSignIn Allows for providing a callback to be called when a user
+ * signs in.  This is useful for analytics tracking, subscription checks, etc.
  */
 
 export interface RouteColor {
@@ -105,6 +108,19 @@ export type DeveloperConfig = {
   ontology?: {
     educationContentOverrides?: Record<string, EducationContent>;
   };
+  onUserSignIn?: ({
+    patientId,
+    userId,
+    email,
+    account,
+    project,
+  }: {
+    patientId: string;
+    userId: string;
+    email: string;
+    account: string;
+    project: string;
+  }) => Promise<void>;
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };
