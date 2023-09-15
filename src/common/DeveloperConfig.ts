@@ -47,7 +47,7 @@ import { EducationContent } from '../components/TrackTile/services/TrackTileServ
  * must be the `coding.code` value, e.g. '41950-7' for steps.
  *
  * @param onUserSignIn Allows for providing a callback to be called when a user
- * signs in.  This is useful for analytics tracking, subscription checks, etc.
+ * signs in.  This is useful for analytics tracking, subscription status checks, etc.
  */
 
 export interface RouteColor {
