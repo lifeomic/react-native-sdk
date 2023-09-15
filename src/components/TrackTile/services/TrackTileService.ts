@@ -131,7 +131,7 @@ export type TrackerValuesContext = {
   shouldUseOntology?: boolean;
 };
 
-export const TRACK_TILE_CAPABILITIES_VERSION = 2;
+export const TRACK_TILE_CAPABILITIES_VERSION = 3;
 export const TRACK_TILE_CAPABILITIES_VERSION_HEADER =
   'LifeOmic-TrackTile-Capabilities-Version';
 export const TRACKER_CODE = 'f0ff8f26-eb4d-4322-9683-390c90aab83d';
