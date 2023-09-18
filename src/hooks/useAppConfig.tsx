@@ -3,6 +3,7 @@ import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { Trace } from '../components/MyData/LineChart/TraceLine';
 import { useHttpClient } from './useHttpClient';
+import { appConfigNotifier } from '../common/AppConfigNotifier';
 
 export interface AppTile {
   id: string;
@@ -67,6 +68,7 @@ export interface AppConfig {
     url: string;
     title?: string;
   };
+  brand?: Record<string, any>;
 }
 
 type AppConfigContextProps = {
@@ -108,11 +110,13 @@ export const AppConfigContextProvider = ({
         isLoading.current = false;
         error.current = undefined;
         setAppConfig(res.data);
+        appConfigNotifier.emit(res.data);
       })
       .catch((err) => {
         isLoading.current = false;
         error.current = err;
         setAppConfig(undefined);
+        appConfigNotifier.emit(undefined);
       });
   }
 
