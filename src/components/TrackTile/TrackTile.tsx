@@ -53,9 +53,11 @@ export function TrackTile({
     );
   };
 
+  const showTitleCard = title || !hideSettingsButton;
+
   return (
     <Card elevation={0} style={styles.cardView}>
-      {title && (
+      {showTitleCard && (
         <Card.Title
           title={title}
           titleStyle={styles.titleText}

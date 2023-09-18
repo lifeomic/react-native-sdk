@@ -37,18 +37,31 @@ storiesOf('TrackTile', module)
       onOpenTracker={action('onOpenTracker')}
     />
   ))
-  .add('Custom title', () => (
+  .add('With title and settings button', () => (
     <TrackTile
       onOpenSettings={action('onOpenSettings')}
       onOpenTracker={action('onOpenTracker')}
-      title="Custom Title"
+      title="TrackTile Title"
     />
   ))
-  .add('Without settings', () => (
+  .add('Title without settings button', () => (
     <TrackTile
       onOpenSettings={action('onOpenSettings')}
       onOpenTracker={action('onOpenTracker')}
-      title="TrackTile Sans Settings"
+      title="TrackTile Title"
+      hideSettingsButton
+    />
+  ))
+  .add('Settings button without title', () => (
+    <TrackTile
+      onOpenSettings={action('onOpenSettings')}
+      onOpenTracker={action('onOpenTracker')}
+    />
+  ))
+  .add('Without settings button or title', () => (
+    <TrackTile
+      onOpenSettings={action('onOpenSettings')}
+      onOpenTracker={action('onOpenTracker')}
       hideSettingsButton
     />
   ))
