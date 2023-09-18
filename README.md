@@ -219,6 +219,39 @@ export default function App() {
 }
 ```
 
+### onAppSessionStart
+
+`onAppSessionStart` is a function that is invoked when a new logged-in app
+session start (user sign-in/sign-up, app refresh, etc.). It can be used for
+analytics purposes, checking subscription status, etc.
+
+````typescript
+```typescript
+import React, { FC } from 'react';
+import { authConfig } from './authConfig';
+import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+
+export default function App() {
+  const onAppSessionStart = async (resumeAppSession: () => void) => {
+   // track app session start metric
+   await trackAppSessionStart();
+   resumeAppSession();
+  };
+
+  return (
+    <DeveloperConfigProvider
+      developerConfig={{
+        onAppSessionStart,
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <RootStack />
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+}
+````
+
 ### Customizing the Default Login Screen with a Native View
 
 The default login screen adds a long button to a native view with the name
@@ -497,4 +530,3 @@ better solution.
 
 For specific guidance on upgrading between versions of this SDK, see
 [the upgrade guide](./UPGRADING.md).
-

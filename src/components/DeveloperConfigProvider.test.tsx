@@ -71,10 +71,10 @@ describe('with developerConfig injected into provider', () => {
   });
 
   test('allows for onUserSignIn to be configured', async () => {
-    const onUserSignIn = jest.fn();
+    const onAppSessionStart = jest.fn();
     const { result } = await renderHookInContext({
-      onUserSignIn,
+      onAppSessionStart,
     });
-    expect(result.current.onUserSignIn).toEqual(onUserSignIn);
+    expect(result.current.onAppSessionStart).toEqual(onAppSessionStart);
   });
 });

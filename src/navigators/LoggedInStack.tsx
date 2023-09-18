@@ -43,9 +43,9 @@ export function LoggedInStack() {
     isFetched: onboardingCourseIsFetched,
   } = useOnboardingCourse();
   const { isInitialLoading: loadingJoinCircles } = useJoinCircles();
-  const { onUserSignIn } = useDeveloperConfig();
+  const { onAppSessionStart } = useDeveloperConfig();
   const [shouldWaitForOnUserSignIn, setShouldWaitForOnUserSignIn] = useState(
-    !!onUserSignIn,
+    !!onAppSessionStart,
   );
 
   const loadingProject = !isFetchedProject || isLoadingProject;
@@ -57,6 +57,10 @@ export function LoggedInStack() {
     !onboardingCourseIsFetched || onboardingCourseIsLoading;
   const hasAccountAndProject = !!(activeProject?.id && account?.id);
   const hasUserAndPatient = !!(activeSubjectId && userData);
+
+  const resumeAppSession = useCallback(async () => {
+    setShouldWaitForOnUserSignIn(false);
+  }, [setShouldWaitForOnUserSignIn]);
 
   const initialRoute = !(hasAccountAndProject || hasUserAndPatient)
     ? 'InviteRequired'
@@ -105,26 +109,20 @@ export function LoggedInStack() {
         hasAccountAndProject &&
         hasUserAndPatient
       ) {
-        await onUserSignIn?.({
-          userId: userData.id,
-          account: account.id,
-          email: userData.profile.email,
-          patientId: activeSubjectId,
-          project: activeProject.id,
-        });
-        setShouldWaitForOnUserSignIn(false);
+        await onAppSessionStart?.(resumeAppSession);
       }
     };
 
     executeOnUserSignInIfNeeded();
   }, [
-    onUserSignIn,
     userData,
     account,
     activeProject,
     activeSubjectId,
     hasAccountAndProject,
     hasUserAndPatient,
+    onAppSessionStart,
+    resumeAppSession,
     shouldWaitForOnUserSignIn,
   ]);
 
