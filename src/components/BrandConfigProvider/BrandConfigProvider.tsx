@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ThemeProvider, ThemeProp } from './theme/ThemeProvider';
 import { StylesProvider } from './styles/StylesProvider';
 import { BrandConfigProviderStyles } from './styles/types';
 import { IconProvider, Icons } from './icons/IconProvider';
+import {
+  appConfigNotifier,
+  AppConfigChangeHandler,
+} from '../../common/AppConfigNotifier';
+import { merge } from 'lodash';
+
 interface Props {
   theme?: ThemeProp;
   styles?: BrandConfigProviderStyles;
@@ -11,10 +17,33 @@ interface Props {
 }
 
 export function BrandConfigProvider({ theme, styles, icons, children }: Props) {
+  const [brand, setBrand] = useState({
+    theme: theme || {},
+    styles: styles || {},
+    icons: icons,
+    iconAliases: {} as Record<string, string>,
+  });
+
+  useEffect(() => {
+    const listener: AppConfigChangeHandler = (config) => {
+      if (config?.brand) {
+        setBrand((currentBrand) => merge({}, currentBrand, config.brand));
+      }
+    };
+
+    appConfigNotifier.addListener(listener);
+
+    return () => {
+      appConfigNotifier.removeListener(listener);
+    };
+  }, []);
+
   return (
-    <ThemeProvider theme={theme || {}}>
-      <StylesProvider styles={styles || {}}>
-        <IconProvider icons={icons}>{children}</IconProvider>
+    <ThemeProvider theme={brand.theme}>
+      <StylesProvider styles={brand.styles}>
+        <IconProvider icons={brand.icons} iconAliases={brand.iconAliases}>
+          {children}
+        </IconProvider>
       </StylesProvider>
     </ThemeProvider>
   );
