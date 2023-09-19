@@ -11,6 +11,8 @@ import { Theme, createStyles } from '../components/BrandConfigProvider';
 import { Text, Divider } from 'react-native-paper';
 import { SettingsStackScreenProps } from '../navigators/types';
 import { useWearables } from '../hooks/useWearables';
+import { useAppConfig } from '../hooks/useAppConfig';
+import { openURL } from '../common/urls';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -22,7 +24,9 @@ export const SettingsScreen = ({
   const { account } = useActiveAccount();
   const { styles } = useStyles(defaultStyles);
   const { useWearableIntegrationsQuery } = useWearables();
-  const { data } = useWearableIntegrationsQuery();
+  const { data: wearablesData } = useWearableIntegrationsQuery();
+  const { data: appConfigData } = useAppConfig();
+  const supportLink = appConfigData?.supportLink;
 
   return (
     <View style={styles.container}>
@@ -37,12 +41,23 @@ export const SettingsScreen = ({
             title={account?.name || t('settings-account-selection', 'Accounts')}
             action={() => navigation.navigate('Settings/AccountSelection')}
           />
-          <Divider />
-          {!!data?.items?.length && (
-            <MainMenuItem
-              title={t('settings-sync-data', 'Sync Data')}
-              action={() => navigation.navigate('Settings/Wearables')}
-            />
+          {!!wearablesData?.items?.length && (
+            <>
+              <Divider />
+              <MainMenuItem
+                title={t('settings-sync-data', 'Sync Data')}
+                action={() => navigation.navigate('Settings/Wearables')}
+              />
+            </>
+          )}
+          {!!supportLink && (
+            <>
+              <Divider />
+              <MainMenuItem
+                title={t('settings-support', 'Support')}
+                action={() => openURL(supportLink)}
+              />
+            </>
           )}
         </ScrollView>
         <View style={styles.subMenuContainer}>

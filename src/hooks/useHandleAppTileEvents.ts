@@ -5,7 +5,6 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Linking } from 'react-native';
 import type {
   WebView,
   WebViewMessageEvent,
@@ -18,6 +17,7 @@ import {
 } from '../components/TrackTile/services/TrackTileService';
 import { HomeStackParamList } from '../navigators/types';
 import { CircleTile, useAppConfig } from './useAppConfig';
+import { openURL } from '../common/urls';
 
 type NavigationParams = {
   [x: string]: unknown | undefined;
@@ -158,18 +158,9 @@ export const useHandleAppTileEvents = (webView: WebView | null = null) => {
     }
   };
 
-  const enforceWebURLProtocol = (url: string) => {
-    const allowedProtocols = ['https://', 'http://'];
-    const startsWithAllowedProtocol = allowedProtocols.some((protocol) =>
-      url.startsWith(protocol),
-    );
-    return startsWithAllowedProtocol ? url : allowedProtocols[0].concat(url);
-  };
-
   const handleOpenUrlMessage = async (appletMessage: OpenUrlAppletMessage) => {
     const { url } = appletMessage.data;
-    const formattedURL = enforceWebURLProtocol(url);
-    await Linking.openURL(formattedURL);
+    await openURL(url);
   };
 
   const handleAppTileMessage = (event: WebViewMessageEvent) => {
