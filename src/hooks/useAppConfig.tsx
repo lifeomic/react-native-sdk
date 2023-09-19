@@ -68,7 +68,7 @@ export interface AppConfig {
     url: string;
     title?: string;
   };
-  supportLink?: string;
+  support?: { url: string };
   brand?: Record<string, any>;
 }
 

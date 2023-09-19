@@ -26,7 +26,7 @@ export const SettingsScreen = ({
   const { useWearableIntegrationsQuery } = useWearables();
   const { data: wearablesData } = useWearableIntegrationsQuery();
   const { data: appConfigData } = useAppConfig();
-  const supportLink = appConfigData?.supportLink;
+  const support = appConfigData?.support;
 
   return (
     <View style={styles.container}>
@@ -50,12 +50,12 @@ export const SettingsScreen = ({
               />
             </>
           )}
-          {!!supportLink && (
+          {!!support?.url && (
             <>
               <Divider />
               <MainMenuItem
                 title={t('settings-support', 'Support')}
-                action={() => openURL(supportLink)}
+                action={() => openURL(support.url)}
               />
             </>
           )}
