@@ -5,6 +5,8 @@ import DeviceInfo from 'react-native-device-info';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useWearables } from '../hooks/useWearables';
 import { SettingsScreen } from './SettingsScreen';
+import { openURL } from '../common/urls';
+import { useAppConfig } from '../hooks/useAppConfig';
 
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
@@ -12,11 +14,19 @@ jest.mock('../hooks/useActiveAccount', () => ({
 jest.mock('../hooks/useWearables', () => ({
   useWearables: jest.fn(),
 }));
+jest.mock('../hooks/useAppConfig', () => ({
+  useAppConfig: jest.fn(),
+}));
+jest.mock('../common/urls', () => ({
+  openURL: jest.fn(),
+}));
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useWearablesMock = useWearables as jest.Mock;
 const useNavigationMock = useNavigation as jest.Mock;
 const getVersionMock = DeviceInfo.getVersion as jest.Mock;
+const useAppConfigMock = useAppConfig as jest.Mock;
+const openURLMock = openURL as jest.Mock;
 
 const navigateMock = jest.fn();
 
@@ -32,6 +42,11 @@ beforeEach(() => {
   });
   useNavigationMock.mockReturnValue({
     navigate: navigateMock,
+  });
+  useAppConfigMock.mockReturnValue({
+    data: {
+      supportLink: 'http://unit-test/support',
+    },
   });
 });
 
@@ -91,4 +106,17 @@ test('navigates to account selection', async () => {
   fireEvent.press(getByText('Account Name'));
 
   expect(navigateMock).toHaveBeenCalledWith('Settings/AccountSelection');
+});
+
+test('opens the support link', async () => {
+  const { getByText } = await render(
+    <SettingsScreen navigation={useNavigation() as any} route={{} as any} />,
+  );
+
+  await waitFor(() => {
+    expect(getByText('Support')).toBeDefined();
+  });
+  fireEvent.press(getByText('Support'));
+
+  expect(openURLMock).toHaveBeenCalledWith('http://unit-test/support');
 });
