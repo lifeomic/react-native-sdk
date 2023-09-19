@@ -222,7 +222,7 @@ export default function App() {
 ### onAppSessionStart
 
 `onAppSessionStart` is a function that is invoked when a new logged-in app
-session start (user sign-in/sign-up, app refresh, etc.). It can be used for
+session starts (user sign-in/sign-up, app refresh, etc.). It can be used for
 analytics purposes, checking subscription status, etc.
 
 ````typescript
