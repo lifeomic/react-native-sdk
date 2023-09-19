@@ -70,7 +70,7 @@ describe('with developerConfig injected into provider', () => {
     );
   });
 
-  test('allows for onUserSignIn to be configured', async () => {
+  test('allows for onAppSessionStart to be configured', async () => {
     const onAppSessionStart = jest.fn();
     const { result } = await renderHookInContext({
       onAppSessionStart,

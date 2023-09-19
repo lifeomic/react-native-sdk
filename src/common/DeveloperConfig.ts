@@ -65,6 +65,10 @@ export type Navigator<
   React.ComponentType<Props>
 >;
 
+type OnAppSessionStartParams = {
+  resumeAppSession: () => void;
+};
+
 export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
   simpleTheme?: SimpleTheme;
@@ -107,7 +111,7 @@ export type DeveloperConfig = {
   ontology?: {
     educationContentOverrides?: Record<string, EducationContent>;
   };
-  onAppSessionStart?: (resumeAppSession: () => void) => Promise<void>;
+  onAppSessionStart?: (params: OnAppSessionStartParams) => Promise<void>;
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };

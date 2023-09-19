@@ -15,7 +15,6 @@ import { t } from 'i18next';
 import { usePendingInvite } from '../hooks/usePendingInvite';
 import { useSetUserProfileEffect } from '../hooks/useSetUserProfileEffect';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
-import { useUser } from '../hooks/useUser';
 import { useJoinCircles } from '../hooks/Circles/useJoinCircles';
 
 export function LoggedInStack() {
@@ -33,7 +32,6 @@ export function LoggedInStack() {
     isLoading: isLoadingProject,
     isFetched: isFetchedProject,
   } = useActiveProject();
-  const { data: userData } = useUser();
   const { useShouldRenderConsentScreen } = useConsent();
   const { shouldRenderConsentScreen, isLoading: loadingConsents } =
     useShouldRenderConsentScreen();
@@ -44,7 +42,7 @@ export function LoggedInStack() {
   } = useOnboardingCourse();
   const { isInitialLoading: loadingJoinCircles } = useJoinCircles();
   const { onAppSessionStart } = useDeveloperConfig();
-  const [shouldWaitForOnUserSignIn, setShouldWaitForOnUserSignIn] = useState(
+  const [shouldWaitForOnAppStart, setShouldWaitForOnAppStart] = useState(
     !!onAppSessionStart,
   );
 
@@ -56,13 +54,12 @@ export function LoggedInStack() {
   const loadingOnboardingCourse =
     !onboardingCourseIsFetched || onboardingCourseIsLoading;
   const hasAccountAndProject = !!(activeProject?.id && account?.id);
-  const hasUserAndPatient = !!(activeSubjectId && userData);
 
   const resumeAppSession = useCallback(async () => {
-    setShouldWaitForOnUserSignIn(false);
-  }, [setShouldWaitForOnUserSignIn]);
+    setShouldWaitForOnAppStart(false);
+  }, [setShouldWaitForOnAppStart]);
 
-  const initialRoute = !(hasAccountAndProject || hasUserAndPatient)
+  const initialRoute = !hasAccountAndProject
     ? 'InviteRequired'
     : shouldRenderConsentScreen
     ? 'screens/ConsentScreen'
@@ -84,10 +81,10 @@ export function LoggedInStack() {
       return t('root-stack-accepting-invitation', 'Accepting invitation');
     } else if (loadingJoinCircles) {
       return t('root-stack-waiting-for-circle-join', 'Joining Circles');
-    } else if (shouldWaitForOnUserSignIn) {
+    } else if (shouldWaitForOnAppStart) {
       return t(
-        'root-stack-waiting-for-on-user-signin',
-        'Processing user sign-in',
+        'root-stack-waiting-for-on-app-session-start',
+        'Processing app session start',
       );
     }
   }, [
@@ -97,33 +94,27 @@ export function LoggedInStack() {
     loadingConsents,
     loadingJoinCircles,
     loadingOnboardingCourse,
-    shouldWaitForOnUserSignIn,
+    shouldWaitForOnAppStart,
   ]);
 
   const loadingMessage = getLoadingMessage();
 
   useEffect(() => {
-    const executeOnUserSignInIfNeeded = async () => {
-      if (
-        shouldWaitForOnUserSignIn &&
-        hasAccountAndProject &&
-        hasUserAndPatient
-      ) {
-        await onAppSessionStart?.(resumeAppSession);
+    const executeOnAppStartIfNeeded = async () => {
+      if (shouldWaitForOnAppStart && hasAccountAndProject) {
+        await onAppSessionStart?.({ resumeAppSession });
       }
     };
 
-    executeOnUserSignInIfNeeded();
+    executeOnAppStartIfNeeded();
   }, [
-    userData,
     account,
     activeProject,
     activeSubjectId,
     hasAccountAndProject,
-    hasUserAndPatient,
     onAppSessionStart,
     resumeAppSession,
-    shouldWaitForOnUserSignIn,
+    shouldWaitForOnAppStart,
   ]);
 
   if (loadingMessage) {
