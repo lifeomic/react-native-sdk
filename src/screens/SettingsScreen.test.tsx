@@ -45,7 +45,9 @@ beforeEach(() => {
   });
   useAppConfigMock.mockReturnValue({
     data: {
-      supportLink: 'http://unit-test/support',
+      support: {
+        url: 'http://unit-test/support',
+      },
     },
   });
 });
