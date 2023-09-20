@@ -45,6 +45,8 @@ import { EducationContent } from '../components/TrackTile/services/TrackTileServ
  * for the `educationContent` property of terminology responses.  This enables
  * showing a custom thumbnail image in AdvancedTrackerDetails. The key provided
  * must be the `coding.code` value, e.g. '41950-7' for steps.
+ *
+ * @param onAppSessionStart Allows for providing a callback to be called when a logged in session starts.  This is useful for analytics tracking, subscription status checks, etc.
  */
 
 export interface RouteColor {
@@ -62,6 +64,10 @@ export type Navigator<
   NativeStackNavigationEventMap,
   React.ComponentType<Props>
 >;
+
+type OnAppSessionStartParams = {
+  resumeAppSession: () => void;
+};
 
 export type DeveloperConfig = {
   appTileScreens?: AppTileScreens;
@@ -105,6 +111,7 @@ export type DeveloperConfig = {
   ontology?: {
     educationContentOverrides?: Record<string, EducationContent>;
   };
+  onAppSessionStart?: (params: OnAppSessionStartParams) => Promise<void>;
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };

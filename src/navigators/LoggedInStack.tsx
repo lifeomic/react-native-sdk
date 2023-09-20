@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TabNavigator } from './TabNavigator';
 import { ConsentScreen } from '../screens/ConsentScreen';
 import { CircleThreadScreen } from '../screens/CircleThreadScreen';
@@ -14,7 +14,8 @@ import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { t } from 'i18next';
 import { usePendingInvite } from '../hooks/usePendingInvite';
 import { useSetUserProfileEffect } from '../hooks/useSetUserProfileEffect';
-import { useJoinCircles } from '../hooks';
+import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
+import { useJoinCircles } from '../hooks/Circles/useJoinCircles';
 
 export function LoggedInStack() {
   const Stack = createNativeStackNavigator<LoggedInRootParamList>();
@@ -27,6 +28,7 @@ export function LoggedInStack() {
   } = useActiveAccount();
   const {
     activeProject,
+    activeSubjectId,
     isLoading: isLoadingProject,
     isFetched: isFetchedProject,
   } = useActiveProject();
@@ -39,6 +41,10 @@ export function LoggedInStack() {
     isFetched: onboardingCourseIsFetched,
   } = useOnboardingCourse();
   const { isInitialLoading: loadingJoinCircles } = useJoinCircles();
+  const { onAppSessionStart } = useDeveloperConfig();
+  const [shouldWaitForOnAppStart, setShouldWaitForOnAppStart] = useState(
+    !!onAppSessionStart,
+  );
 
   const loadingProject = !isFetchedProject || isLoadingProject;
   const loadingAccount = !isFetchedAccount || isLoadingAccount;
@@ -47,8 +53,12 @@ export function LoggedInStack() {
     loadingAccount || (hasAccount && loadingProject);
   const loadingOnboardingCourse =
     !onboardingCourseIsFetched || onboardingCourseIsLoading;
-
   const hasAccountAndProject = !!(activeProject?.id && account?.id);
+
+  const resumeAppSession = useCallback(async () => {
+    setShouldWaitForOnAppStart(false);
+  }, [setShouldWaitForOnAppStart]);
+
   const initialRoute = !hasAccountAndProject
     ? 'InviteRequired'
     : shouldRenderConsentScreen
@@ -71,6 +81,11 @@ export function LoggedInStack() {
       return t('root-stack-accepting-invitation', 'Accepting invitation');
     } else if (loadingJoinCircles) {
       return t('root-stack-waiting-for-circle-join', 'Joining Circles');
+    } else if (shouldWaitForOnAppStart) {
+      return t(
+        'root-stack-waiting-for-on-app-session-start',
+        'Processing app session start',
+      );
     }
   }, [
     hasAccountAndProject,
@@ -79,9 +94,29 @@ export function LoggedInStack() {
     loadingConsents,
     loadingJoinCircles,
     loadingOnboardingCourse,
+    shouldWaitForOnAppStart,
   ]);
 
   const loadingMessage = getLoadingMessage();
+
+  useEffect(() => {
+    const executeOnAppStartIfNeeded = async () => {
+      if (shouldWaitForOnAppStart && hasAccountAndProject) {
+        await onAppSessionStart?.({ resumeAppSession });
+      }
+    };
+
+    executeOnAppStartIfNeeded();
+  }, [
+    account,
+    activeProject,
+    activeSubjectId,
+    hasAccountAndProject,
+    onAppSessionStart,
+    resumeAppSession,
+    shouldWaitForOnAppStart,
+  ]);
+
   if (loadingMessage) {
     return <ActivityIndicatorView message={loadingMessage} />;
   }

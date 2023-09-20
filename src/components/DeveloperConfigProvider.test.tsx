@@ -69,4 +69,12 @@ describe('with developerConfig injected into provider', () => {
       additionalScreens,
     );
   });
+
+  test('allows for onAppSessionStart to be configured', async () => {
+    const onAppSessionStart = jest.fn();
+    const { result } = await renderHookInContext({
+      onAppSessionStart,
+    });
+    expect(result.current.onAppSessionStart).toEqual(onAppSessionStart);
+  });
 });
