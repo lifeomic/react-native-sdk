@@ -6,146 +6,79 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { Subject, useMe } from './useMe';
-import { Project, useSubjectProjects } from './useSubjectProjects';
 import { useAsyncStorage } from './useAsyncStorage';
-import { useUser } from './useUser';
+import { useSession } from './useSession';
+import { useActiveAccount } from './useActiveAccount';
+import { SubjectWithProject } from '../types';
 const selectedProjectIdKey = 'selectedProjectIdKey';
 
-export type ActiveProjectProps = {
-  activeProject?: Project;
-  activeSubjectId?: string;
-  activeSubject?: Subject;
+export type ActiveSubjectProject = {
+  activeSubject?: SubjectWithProject;
 };
 
-export type ActiveProjectContextProps = ActiveProjectProps & {
+export type ActiveProjectContextProps = ActiveSubjectProject & {
   setActiveProjectId: (projectId: string) => void;
   isLoading: boolean;
-  isFetched: boolean;
-  error?: any;
 };
 
 export const ActiveProjectContext = createContext({
   setActiveProjectId: () => Promise.reject(),
   isLoading: true,
-  isFetched: false,
 } as ActiveProjectContextProps);
-
-const findProjectAndSubjectById = (
-  projectId?: string | null,
-  projects?: Project[],
-  subjects?: Subject[],
-) => {
-  const getDefault = () => {
-    const defaultProject = projects?.[0];
-    const defaultSubject = subjects?.find(
-      (s) => s.projectId === defaultProject?.id,
-    );
-    return { selectedProject: defaultProject, selectedSubject: defaultSubject };
-  };
-
-  if (!projectId) {
-    return getDefault();
-  }
-
-  const selectedProject = projects?.find((p) => p.id === projectId);
-  const selectedSubject = subjects?.find((s) => s.projectId === projectId);
-  if (!selectedProject || !selectedSubject) {
-    if (process.env.NODE_ENV !== 'test') {
-      console.warn('Ignoring attempt to set invalid projectId', projectId);
-    }
-    return getDefault();
-  }
-  return { selectedProject, selectedSubject };
-};
 
 export const ActiveProjectContextProvider = ({
   children,
 }: {
   children?: React.ReactNode;
 }) => {
-  const projectsResult = useSubjectProjects();
-  const projectLoading = projectsResult.isLoading || !projectsResult.isFetched;
+  const { userConfiguration, isLoaded } = useSession();
+  const { user, configurations } = userConfiguration;
+  const { account } = useActiveAccount();
 
-  const useMeResult = useMe();
-  const useMeLoading = useMeResult.isLoading || !useMeResult.isFetched;
-  const { data: userData } = useUser();
-  const userId = userData?.id;
   const [selectedId, setSelectedId] = useState<string>();
-  const [previousUserId, setPreviousUserId] = useState(userId);
+  const configuration = configurations.find((c) => c.account === account?.id);
+
   const [storedProjectIdResult, setStoredProjectId, isStorageLoaded] =
-    useAsyncStorage(
-      `${selectedProjectIdKey}:${userId}`,
-      !!selectedProjectIdKey && !!userId,
-    );
+    useAsyncStorage(`${selectedProjectIdKey}:${user.id}`, isLoaded);
 
   /**
    * Initial setting of activeProject
    */
-  const hookReturnValue = useMemo<ActiveProjectProps>(() => {
-    if (
-      !userId || // wait for user id before reading and writing to storage
-      projectLoading || // wait for projects endpoint
-      useMeLoading ||
-      !isStorageLoaded
-    ) {
-      return {};
+  const hookReturnValue = useMemo<ActiveSubjectProject | undefined>(() => {
+    if (!isLoaded || !isStorageLoaded) {
+      return undefined;
     }
 
-    const { selectedProject, selectedSubject } = findProjectAndSubjectById(
-      selectedId ?? storedProjectIdResult,
-      projectsResult.data,
-      useMeResult.data,
-    );
-
-    if (selectedProject && selectedSubject) {
-      return {
-        activeProject: selectedProject,
-        activeSubjectId: selectedSubject.subjectId,
-        activeSubject: selectedSubject,
-      };
-    }
-
-    return {};
+    const projectToSelect = selectedId ?? storedProjectIdResult;
+    const subjectAndProject = projectToSelect
+      ? configuration?.subjects.find((s) => s.projectId === projectToSelect)
+      : configuration?.subjects[0];
+    return subjectAndProject ? { activeSubject: subjectAndProject } : undefined;
   }, [
-    userId,
-    projectLoading,
-    useMeLoading,
+    configuration?.subjects,
+    isLoaded,
     isStorageLoaded,
-    selectedId,
     storedProjectIdResult,
-    projectsResult.data,
-    useMeResult.data,
+    selectedId,
   ]);
 
   useEffect(() => {
-    if (hookReturnValue?.activeProject?.id) {
-      setStoredProjectId(hookReturnValue?.activeProject?.id);
+    if (hookReturnValue?.activeSubject?.projectId) {
+      setStoredProjectId(hookReturnValue?.activeSubject?.projectId);
     }
-  }, [hookReturnValue?.activeProject?.id, setStoredProjectId]);
-
-  // Clear selected project when
-  // we've detected that the userId has changed
-  useEffect(() => {
-    if (userId !== previousUserId) {
-      projectsResult.refetch();
-      setPreviousUserId(userId);
-    }
-  }, [previousUserId, userId, projectsResult]);
+  }, [hookReturnValue, setStoredProjectId]);
 
   const setActiveProjectId = useCallback(
     (projectId: string) => {
-      const { selectedProject } = findProjectAndSubjectById(
-        projectId,
-        projectsResult.data,
-        useMeResult.data,
+      const subjectAndProject = configuration?.subjects.find(
+        (s) => s.projectId === projectId,
       );
 
-      if (selectedProject) {
-        setSelectedId(selectedProject.id);
+      if (subjectAndProject) {
+        setSelectedId(subjectAndProject.projectId);
       }
     },
-    [projectsResult.data, useMeResult.data],
+    [configuration?.subjects],
   );
 
   return (
@@ -153,17 +86,7 @@ export const ActiveProjectContextProvider = ({
       value={{
         ...hookReturnValue,
         setActiveProjectId,
-        isLoading: !!(
-          projectsResult.isLoading ||
-          useMeResult.isLoading ||
-          !isStorageLoaded
-        ),
-        isFetched: !!(
-          projectsResult.isFetched &&
-          useMeResult.isFetched &&
-          isStorageLoaded
-        ),
-        error: projectsResult.error || useMeResult.error,
+        isLoading: !isLoaded || !isStorageLoaded,
       }}
     >
       {children}

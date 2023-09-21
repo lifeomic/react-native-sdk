@@ -6,27 +6,20 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { Account } from '../types/rest-types';
-import { QueryObserverResult } from '@tanstack/react-query';
+import { Account, ProjectInvite } from '../types';
 import { useAsyncStorage } from './useAsyncStorage';
+import { useSession } from './useSession';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
-import { ProjectInvite } from '../types';
-import { useUser } from './useUser';
-import { useRestCache, useRestQuery } from './rest-api';
 
 export type ActiveAccountProps = {
   account?: Account;
-  accountsWithProduct?: Account[];
   accountHeaders?: Record<string, string>;
   trialExpired?: boolean;
 };
 
 export type ActiveAccountContextProps = ActiveAccountProps & {
-  refetch: () => Promise<QueryObserverResult<Account[], unknown>>;
   setActiveAccountId: (accountId: string) => Promise<void>;
   isLoading: boolean;
-  isFetched: boolean;
-  error?: any;
 };
 
 export const ActiveAccountContext = createContext({
@@ -37,9 +30,6 @@ export const ActiveAccountContext = createContext({
 } as ActiveAccountContextProps);
 
 const selectedAccountIdKey = 'selectedAccountId';
-
-const filterNonLRAccounts = (accounts?: Account[]) =>
-  accounts?.filter((a) => a.products?.indexOf('LR') > -1) || [];
 
 const getValidAccount = (validAccounts?: Account[], accountId?: string) => {
   return validAccounts?.find((a) => a.id === accountId);
@@ -61,42 +51,26 @@ export const ActiveAccountContextProvider = ({
    */
   accountIdToSelect?: string;
 }) => {
-  const accountsResult = useRestQuery(
-    'GET /v1/accounts',
-    {},
-    { select: (data) => data.accounts },
-  );
-
-  const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
-  const { data: userData } = useUser();
-  const userId = userData?.id;
+  const { isLoaded, userConfiguration, clearSession } = useSession();
+  const { user, accounts } = userConfiguration;
   const [selectedId, setSelectedId] = useState(accountIdToSelect);
-  const [previousUserId, setPreviousUserId] = useState(userId);
   const [storedAccountIdResult, setStoredAccountId, isStorageLoaded] =
     useAsyncStorage(
-      `${selectedAccountIdKey}:${userId}`,
-      !!selectedAccountIdKey && !!userId,
+      `${selectedAccountIdKey}:${user}`,
+      user.id !== 'placeholder',
     );
-  const cache = useRestCache();
 
   /**
    * Initial setting of activeAccount
    */
   const activeAccount = useMemo<ActiveAccountProps>(() => {
-    if (
-      !userId || // require user id before reading/writing to storage
-      !isStorageLoaded ||
-      accountsWithProduct.length < 1 // no valid accounts found server side
-    ) {
+    if (!isLoaded || !isStorageLoaded) {
       return {};
     }
 
     const accountToSelect = selectedId ?? storedAccountIdResult ?? undefined;
-
     const selectedAccount =
-      getValidAccount(accountsWithProduct, accountToSelect) ??
-      accountsWithProduct[0];
-
+      getValidAccount(accounts, accountToSelect) ?? accounts?.[0];
     return {
       account: selectedAccount,
       accountHeaders: {
@@ -104,13 +78,7 @@ export const ActiveAccountContextProvider = ({
       },
       trialExpired: getTrialExpired(selectedAccount),
     };
-  }, [
-    accountsWithProduct,
-    isStorageLoaded,
-    selectedId,
-    storedAccountIdResult,
-    userId,
-  ]);
+  }, [accounts, isLoaded, isStorageLoaded, selectedId, storedAccountIdResult]);
 
   useEffect(() => {
     if (activeAccount?.account?.id) {
@@ -118,66 +86,29 @@ export const ActiveAccountContextProvider = ({
     }
   }, [activeAccount?.account?.id, setStoredAccountId]);
 
-  // Clear selected account when
-  // we've detected that the userId has changed
-  useEffect(() => {
-    if (userId !== previousUserId) {
-      accountsResult.refetch();
-      setPreviousUserId(userId);
-    }
-  }, [previousUserId, userId, accountsResult]);
-
-  const setActiveAccountId = useCallback(
-    async (accountId: string) => {
-      try {
-        const selectedAccount = getValidAccount(accountsWithProduct, accountId);
-        if (!selectedAccount) {
-          if (process.env.NODE_ENV !== 'test') {
-            console.warn(
-              'Ignoring attempt to set invalid accountId',
-              accountId,
-            );
-          }
-          return;
-        }
-        setSelectedId(selectedAccount.id);
-      } catch (error) {
-        if (process.env.NODE_ENV !== 'test') {
-          console.warn('Unable to set active account', error);
-        }
-      }
-    },
-    [accountsWithProduct],
-  );
-
-  const refetch = useCallback(async () => {
-    return accountsResult.refetch();
-  }, [accountsResult]);
+  const setActiveAccountId = useCallback(async (accountId: string) => {
+    setSelectedId(accountId);
+  }, []);
 
   // Handle invite accept
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
-      cache.invalidateQueries({ 'GET /v1/accounts': 'all' });
-      await refetch();
       await setActiveAccountId(acceptedInvite.account);
+      clearSession();
       inviteNotifier.emit('inviteAccountSettled');
     };
     inviteNotifier.addListener('inviteAccepted', listener);
     return () => {
       inviteNotifier.removeListener('inviteAccepted', listener);
     };
-  }, [refetch, setActiveAccountId, cache]);
+  }, [setActiveAccountId, clearSession]);
 
   return (
     <ActiveAccountContext.Provider
       value={{
         ...activeAccount,
-        accountsWithProduct,
-        refetch,
         setActiveAccountId,
-        isLoading: accountsResult.isLoading || !isStorageLoaded,
-        isFetched: accountsResult.isFetched && isStorageLoaded,
-        error: accountsResult.error,
+        isLoading: !isLoaded || !isStorageLoaded,
       }}
     >
       {children}

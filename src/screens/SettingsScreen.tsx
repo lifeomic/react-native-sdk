@@ -11,8 +11,9 @@ import { Theme, createStyles } from '../components/BrandConfigProvider';
 import { Text, Divider } from 'react-native-paper';
 import { SettingsStackScreenProps } from '../navigators/types';
 import { useWearables } from '../hooks/useWearables';
-import { useAppConfig } from '../hooks/useAppConfig';
 import { openURL } from '../common/urls';
+import { useActiveProject } from '../hooks/useActiveProject';
+import { useSession } from '../hooks/useSession';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -25,8 +26,10 @@ export const SettingsScreen = ({
   const { styles } = useStyles(defaultStyles);
   const { useWearableIntegrationsQuery } = useWearables();
   const { data: wearablesData } = useWearableIntegrationsQuery();
-  const { data: appConfigData } = useAppConfig();
+  const { activeSubject } = useActiveProject();
+  const appConfigData = activeSubject?.project.appConfig;
   const supportLink = appConfigData?.supportLink;
+  const { clearSession } = useSession();
 
   return (
     <View style={styles.container}>
@@ -56,6 +59,15 @@ export const SettingsScreen = ({
               <MainMenuItem
                 title={t('settings-support', 'Support')}
                 action={() => openURL(supportLink)}
+              />
+            </>
+          )}
+          {{ __DEV__ } && (
+            <>
+              <Divider />
+              <MainMenuItem
+                title={'Clear Session Cache'}
+                action={() => clearSession()}
               />
             </>
           )}

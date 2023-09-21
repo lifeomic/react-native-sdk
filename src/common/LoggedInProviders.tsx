@@ -12,7 +12,7 @@ import { PushNotificationsProvider } from '../hooks/usePushNotifications';
 import { CircleTileContextProvider } from '../hooks/Circles/useActiveCircleTile';
 import { OnboardingCourseContextProvider } from '../hooks/useOnboardingCourse';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
-import { AppConfigContextProvider } from '../hooks/useAppConfig';
+import { SessionContextProvider } from '../hooks/useSession';
 
 export const LoggedInProviders = ({
   children,
@@ -21,9 +21,9 @@ export const LoggedInProviders = ({
 }) => {
   const { pushNotificationsConfig } = useDeveloperConfig();
   return (
-    <ActiveAccountContextProvider>
-      <ActiveProjectContextProvider>
-        <AppConfigContextProvider>
+    <SessionContextProvider>
+      <ActiveAccountContextProvider>
+        <ActiveProjectContextProvider>
           <TrackTileProvider>
             <WearableLifecycleProvider>
               <CircleTileContextProvider>
@@ -41,8 +41,8 @@ export const LoggedInProviders = ({
               </CircleTileContextProvider>
             </WearableLifecycleProvider>
           </TrackTileProvider>
-        </AppConfigContextProvider>
-      </ActiveProjectContextProvider>
-    </ActiveAccountContextProvider>
+        </ActiveProjectContextProvider>
+      </ActiveAccountContextProvider>
+    </SessionContextProvider>
   );
 };

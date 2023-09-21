@@ -1,18 +1,12 @@
 import { ConsentDirective, SurveyResponse } from '../hooks/todayTile/types';
-import { AppConfig } from '../hooks/useAppConfig';
-import { ProjectInvite, User } from '../types';
-
-export interface Account {
-  id: string;
-  name: string;
-  type: string;
-  description: string;
-  logo: string;
-  products: string[];
-  features: string[];
-  trialActive: boolean;
-  trialEndDate: string;
-}
+import {
+  AppConfig,
+  Account,
+  Entry,
+  Project,
+  ProjectInvite,
+  User,
+} from '../types';
 
 /**
  * This type definition describes known endpoints in our REST API.
@@ -30,6 +24,11 @@ export type RestAPIEndpoints = {
   'PATCH /v1/invitations/:inviteId': {
     Request: { status: 'ACCEPTED' };
     Response: ProjectInvite;
+  };
+
+  'GET /v1/user': {
+    Request: {};
+    Response: User;
   };
 
   'PATCH /v1/user': {
@@ -65,5 +64,22 @@ export type RestAPIEndpoints = {
   'GET /v1/life-research/projects/:projectId/app-config': {
     Request: { projectId: string };
     Response: AppConfig;
+  };
+
+  'GET /v1/fhir/dstu3/$me': {
+    Request: {};
+    Response: {
+      resourceType: 'Bundle';
+      entry: Entry[];
+    };
+  };
+
+  'GET /v1/projects': {
+    Request: {
+      id: string;
+    };
+    Response: {
+      items: Project[];
+    };
   };
 };
