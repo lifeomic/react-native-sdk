@@ -31,6 +31,8 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const todayTileEnabled = data?.homeTab?.tiles?.includes?.('todayTile');
   const myDataTileEnabled = data?.homeTab?.tiles?.includes?.('myDataTile');
   const todayTile = data?.homeTab?.todayTile;
+  const appTileSettings = data?.homeTab?.appTileSettings;
+
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
       navigation.navigate('Home/Circle/Discussion', { circleTile });
@@ -123,7 +125,9 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
           <Tile
             id={appTile.id}
             key={appTile.id}
-            title={appTile.title}
+            title={
+              appTileSettings?.appTiles[appTile.id]?.title || appTile.title
+            }
             onPress={onAppTilePress(appTile)}
             Icon={appTileIcon(appTile.id, appTile.icon, styles.iconImage)}
           />

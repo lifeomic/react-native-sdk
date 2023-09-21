@@ -29,40 +29,42 @@ jest.mock('../BrandConfigProvider/icons/IconProvider', () => ({
 
 jest.mock('../../components/TodayBadge', () => null);
 
+const mockAppConfigData = {
+  homeTab: {
+    tiles: ['trackTile', 'todayTile', 'circleTiles'],
+    trackTileSettings: {
+      title: 'TrackTile Title',
+    },
+    appTiles: [
+      {
+        id: 'tile-id-1',
+        title: 'My First Tile',
+        source: { url: 'https://tile.com' },
+      },
+      {
+        id: 'tile-id-2',
+        title: 'My Second Tile',
+        source: { url: 'https://tile.com' },
+      },
+    ],
+    todayTile: {
+      id: 'today-tile',
+      title: 'Today',
+      source: { url: 'https://today-tile.com' },
+    },
+    circleTiles: [
+      {
+        circleId: 'circle-id-1',
+        isMember: true,
+        circleName: 'My Circle',
+      },
+    ],
+  },
+};
+
 beforeEach(() => {
   (useAppConfig as jest.Mock).mockReturnValue({
-    data: {
-      homeTab: {
-        tiles: ['trackTile', 'todayTile', 'circleTiles'],
-        trackTileSettings: {
-          title: 'TrackTile Title',
-        },
-        appTiles: [
-          {
-            id: 'tile-id-1',
-            title: 'My First Tile',
-            source: { url: 'https://tile.com' },
-          },
-          {
-            id: 'tile-id-2',
-            title: 'My Second Tile',
-            source: { url: 'https://tile.com' },
-          },
-        ],
-        todayTile: {
-          id: 'today-tile',
-          title: 'Today',
-          source: { url: 'https://today-tile.com' },
-        },
-        circleTiles: [
-          {
-            circleId: 'circle-id-1',
-            isMember: true,
-            circleName: 'My Circle',
-          },
-        ],
-      },
-    },
+    data: mockAppConfigData,
   });
 });
 
@@ -74,6 +76,41 @@ test('renders multiple tiles', () => {
   expect(tileList.getByText('TrackTile Title')).toBeDefined();
 
   expect(tileList.getByText('My First Tile')).toBeDefined();
+  expect(tileList.getByTestId('tile-button-tile-id-1')).toBeDefined();
+
+  expect(tileList.getByText('My Second Tile')).toBeDefined();
+  expect(tileList.getByTestId('tile-button-tile-id-2')).toBeDefined();
+
+  expect(tileList.getByText('Today')).toBeDefined();
+  expect(tileList.getByTestId('tile-button-today-tile')).toBeDefined();
+});
+
+test('renders the override app tile title', () => {
+  const TITLE_OVERRIDE = 'My Custom Tile Title';
+  const appConfigDataWithOverride = {
+    ...mockAppConfigData,
+    homeTab: {
+      ...mockAppConfigData.homeTab,
+      appTileSettings: {
+        appTiles: {
+          'tile-id-1': {
+            title: TITLE_OVERRIDE,
+          },
+        },
+      },
+    },
+  };
+
+  (useAppConfig as jest.Mock).mockReturnValue({
+    data: appConfigDataWithOverride,
+  });
+  const tileList = render(
+    <TilesList navigation={useNavigation()} route={{} as any} />,
+  );
+
+  expect(tileList.getByText('TrackTile Title')).toBeDefined();
+
+  expect(tileList.getByText(TITLE_OVERRIDE)).toBeDefined();
   expect(tileList.getByTestId('tile-button-tile-id-1')).toBeDefined();
 
   expect(tileList.getByText('My Second Tile')).toBeDefined();
