@@ -23,6 +23,29 @@ export function useAsyncStorage(key: string, enabled: boolean = true) {
     [key, value, enabled],
   );
 
+  const mergeItem = useCallback(
+    (newValue: string) => {
+      if (newValue !== value && enabled) {
+        AsyncStorage?.mergeItem(key, newValue, async () => {
+          const mergedValue = await AsyncStorage.getItem(key);
+          setValue(() => mergedValue);
+        });
+      }
+    },
+    [enabled, key, value],
+  );
+
+  const clearItem = useCallback(() => {
+    AsyncStorage.removeItem(key);
+    setValue(null);
+  }, [key]);
+
   const isLoaded = typeof value !== 'undefined'; // Expect string or null when loaded
-  return [value, setItem, isLoaded] as [typeof value, typeof setItem, boolean];
+  return [value, setItem, isLoaded, mergeItem, clearItem] as [
+    typeof value,
+    typeof setItem,
+    boolean,
+    typeof mergeItem,
+    typeof clearItem,
+  ];
 }
