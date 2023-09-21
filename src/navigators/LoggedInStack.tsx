@@ -15,40 +15,25 @@ import { t } from 'i18next';
 import { usePendingInvite } from '../hooks/usePendingInvite';
 import { useSetUserProfileEffect } from '../hooks/useSetUserProfileEffect';
 import { useJoinCircles } from '../hooks';
+import { useSession } from '../hooks/useSession';
 
 export function LoggedInStack() {
   const Stack = createNativeStackNavigator<LoggedInRootParamList>();
   const { inviteParams } = usePendingInvite();
+  const { isLoaded } = useSession();
+  const { account, isLoading: isLoadingAccount } = useActiveAccount();
+  const { activeSubject, isLoading: isLoadingProject } = useActiveProject();
+
   useSetUserProfileEffect();
-  const {
-    account,
-    isLoading: isLoadingAccount,
-    isFetched: isFetchedAccount,
-  } = useActiveAccount();
-  const {
-    activeProject,
-    isLoading: isLoadingProject,
-    isFetched: isFetchedProject,
-  } = useActiveProject();
   const { useShouldRenderConsentScreen } = useConsent();
   const { shouldRenderConsentScreen, isLoading: loadingConsents } =
     useShouldRenderConsentScreen();
-  const {
-    shouldLaunchOnboardingCourse,
-    isLoading: onboardingCourseIsLoading,
-    isFetched: onboardingCourseIsFetched,
-  } = useOnboardingCourse();
+  const { shouldLaunchOnboardingCourse, isLoading: onboardingCourseIsLoading } =
+    useOnboardingCourse();
   const { isInitialLoading: loadingJoinCircles } = useJoinCircles();
 
-  const loadingProject = !isFetchedProject || isLoadingProject;
-  const loadingAccount = !isFetchedAccount || isLoadingAccount;
-  const hasAccount = !loadingAccount && !!account?.id;
-  const loadingAccountOrProject =
-    loadingAccount || (hasAccount && loadingProject);
-  const loadingOnboardingCourse =
-    !onboardingCourseIsFetched || onboardingCourseIsLoading;
-
-  const hasAccountAndProject = !!(activeProject?.id && account?.id);
+  const isLoading = !isLoaded || isLoadingAccount || isLoadingProject;
+  const hasAccountAndProject = !!(activeSubject?.project?.id && account?.id);
   const initialRoute = !hasAccountAndProject
     ? 'InviteRequired'
     : shouldRenderConsentScreen
@@ -58,11 +43,11 @@ export function LoggedInStack() {
     : 'app';
 
   const getLoadingMessage = useCallback(() => {
-    if (loadingAccountOrProject) {
-      return t('waiting-for-account-and-project', 'Loading account');
+    if (isLoading) {
+      return t('waiting-for-session', 'Loading session');
     } else if (hasAccountAndProject && loadingConsents) {
       return t('root-stack-waiting-for-consents', 'Loading consents');
-    } else if (hasAccountAndProject && loadingOnboardingCourse) {
+    } else if (hasAccountAndProject && onboardingCourseIsLoading) {
       return t(
         'root-stack-waiting-for-app-config',
         'Loading onboarding course data',
@@ -75,10 +60,10 @@ export function LoggedInStack() {
   }, [
     hasAccountAndProject,
     inviteParams?.inviteId,
-    loadingAccountOrProject,
+    isLoading,
     loadingConsents,
     loadingJoinCircles,
-    loadingOnboardingCourse,
+    onboardingCourseIsLoading,
   ]);
 
   const loadingMessage = getLoadingMessage();

@@ -2,22 +2,23 @@ import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from 'react-native-paper';
-import { useUser } from '../hooks/useUser';
 import { tID } from '../common/testID';
 import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { useActiveProject } from '../hooks';
+import { useSession } from '../hooks/useSession';
 
 export const ProfileScreen = () => {
   const { styles } = useStyles(defaultStyles);
-  const { isLoading, data } = useUser();
-  const { activeProject } = useActiveProject();
+  const { userConfiguration, isLoaded } = useSession();
+  const { user: data } = userConfiguration;
+  const { activeSubject } = useActiveProject();
 
   const userProfile = data?.profile;
 
-  if (isLoading) {
+  if (!isLoaded) {
     return (
       <ActivityIndicatorView
         message={t('profile-loading-user', 'Loading user profile')}
@@ -47,7 +48,7 @@ export const ProfileScreen = () => {
         />
         <Field label={t('profile-email', 'Email')} value={userProfile.email} />
         {__DEV__ && (
-          <Field label="Active Project" value={activeProject?.name} />
+          <Field label="Active Project" value={activeSubject?.project.name} />
         )}
       </ScrollView>
     </SafeAreaView>

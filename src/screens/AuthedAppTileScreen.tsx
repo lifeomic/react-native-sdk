@@ -26,17 +26,8 @@ export const AuthedAppTileScreen = ({
     });
   }, [navigation, route.params.appTile.title]);
 
-  const {
-    activeProject,
-    activeSubjectId,
-    isLoading: loadingProject,
-    isFetched: projectedFetched,
-  } = useActiveProject();
-  const {
-    account,
-    isLoading: loadingAccounts,
-    isFetched: accountFetched,
-  } = useActiveAccount();
+  const { activeSubject, isLoading: loadingProject } = useActiveProject();
+  const { account, isLoading: loadingAccounts } = useActiveAccount();
   const {
     data,
     isLoading: loadingCode,
@@ -46,8 +37,8 @@ export const AuthedAppTileScreen = ({
 
   // Conditions to be met before building the applet uri
   const isLoading = loadingCode || loadingAccounts || loadingProject;
-  const isFetched = codeFetched && accountFetched && projectedFetched;
-  const hasData = data?.code && account?.id && activeProject?.id;
+  const isFetched = codeFetched;
+  const hasData = data?.code && account?.id && activeSubject?.projectId;
 
   const readyToBuildUri = isFetched && !isLoading && hasData;
   const oauthCallbackUrl = appTile.callbackUrls?.[0]!;
@@ -62,12 +53,12 @@ export const AuthedAppTileScreen = ({
       parsed.accountId = account.id;
     }
 
-    if (activeProject?.id) {
-      parsed.projectId = activeProject.id;
+    if (activeSubject?.projectId) {
+      parsed.projectId = activeSubject?.projectId;
     }
 
-    if (activeSubjectId) {
-      parsed.patientId = activeSubjectId;
+    if (activeSubject?.subjectId) {
+      parsed.patientId = activeSubject?.subjectId;
     }
 
     for (const [key, value] of Object.entries(searchParams)) {
@@ -76,11 +67,11 @@ export const AuthedAppTileScreen = ({
 
     return `${oauthCallbackUrl}?${queryString.stringify(parsed)}`;
   }, [
-    account,
-    activeProject,
-    data,
+    data?.code,
+    account?.id,
+    activeSubject?.projectId,
+    activeSubject?.subjectId,
     oauthCallbackUrl,
-    activeSubjectId,
     searchParams,
   ]);
 

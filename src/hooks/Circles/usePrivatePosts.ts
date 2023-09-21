@@ -9,7 +9,7 @@ import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useActiveAccount } from '../useActiveAccount';
 import { Post, postDetailsFragment } from './types';
-import { useUser } from '../useUser';
+import { useSession } from '../useSession';
 import { IMessage } from 'react-native-gifted-chat';
 import uuid from 'react-native-uuid';
 import { t } from 'i18next';
@@ -84,7 +84,8 @@ export const postToMessage = (
 export function useInfinitePrivatePosts(userId: string) {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
-  const { data } = useUser();
+  const { userConfiguration } = useSession();
+  const { user: data } = userConfiguration;
 
   const queryPosts = async ({ pageParam }: { pageParam?: string }) => {
     const variables = {
@@ -125,7 +126,8 @@ export function usePollPageInfoForUsers(
 ) {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
-  const { data } = useUser();
+  const { userConfiguration } = useSession();
+  const { user: data } = userConfiguration;
 
   const queryPosts = async (userId: string) => {
     const variables = {
@@ -262,7 +264,8 @@ export function useCreatePrivatePostMutation() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
-  const { data: userData } = useUser();
+  const { userConfiguration } = useSession();
+  const { user: userData } = userConfiguration;
 
   const createPrivatePostMutation = async ({
     userIds,

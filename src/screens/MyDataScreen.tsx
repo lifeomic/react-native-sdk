@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { t } from 'i18next';
-import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { ScreenSurface } from '../components/ScreenSurface';
 import { LineChart } from '../components/MyData/LineChart';
@@ -22,7 +21,7 @@ import {
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { Divider, Text } from 'react-native-paper';
 import { createStyles } from '../components';
-import { useStyles, useTheme } from '../hooks';
+import { useActiveProject, useStyles, useTheme } from '../hooks';
 import { SocialShareExporter } from '../components/SocialShare/SocialShareExporter';
 
 type Period = {
@@ -40,7 +39,8 @@ const PERIODS: Period[] = [
 
 export const MyDataScreen = () => {
   const theme = useTheme();
-  const { data: config, isLoading: loadingAppConfig } = useAppConfig();
+  const { activeSubject, isLoading: loadingAppConfig } = useActiveProject();
+  const config = activeSubject?.project.appConfig;
   const { styles } = useStyles(defaultStyles);
   const [exportData, setExportData] = useState<any>();
   const [period, setPeriod] = useState(PERIODS[1]);

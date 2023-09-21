@@ -2,16 +2,20 @@ import React, { useCallback } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { tID } from '../common/testID';
-import { Account } from '../types/rest-types';
 import { SettingsStackScreenProps } from '../navigators/types';
 import { createStyles } from '../components';
 import { useStyles } from '../hooks';
+import { useSession } from '../hooks/useSession';
+import { Account } from '../types';
 
 export const AccountSelectionScreen = ({
   navigation,
 }: SettingsStackScreenProps<'Settings/AccountSelection'>) => {
   const { styles } = useStyles(defaultStyles);
-  const { accountsWithProduct, setActiveAccountId } = useActiveAccount();
+  const { userConfiguration } = useSession();
+  const { accounts } = userConfiguration;
+  const { setActiveAccountId } = useActiveAccount();
+
   const selectAccount = useCallback(
     (selectedAccount: Account) => async () => {
       await setActiveAccountId(selectedAccount.id);
@@ -26,7 +30,7 @@ export const AccountSelectionScreen = ({
     <View testID={tID('acounts-screen-container')} style={styles.container}>
       <ScrollView style={styles.scroll}>
         <View style={styles.content}>
-          {accountsWithProduct?.map((account) => (
+          {accounts?.map((account) => (
             <TouchableOpacity
               style={styles.button}
               onPress={selectAccount(account)}

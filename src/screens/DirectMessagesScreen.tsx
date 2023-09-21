@@ -5,7 +5,6 @@ import {
   useCreatePrivatePostMutation,
   postToMessage,
 } from '../hooks/Circles/usePrivatePosts';
-import { useUser } from '../hooks/useUser';
 import { useStyles } from '../hooks/useStyles';
 import {
   ActivityIndicatorView,
@@ -15,6 +14,7 @@ import { createStyles } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
+import { useSession } from '../hooks/useSession';
 
 export function DirectMessagesScreen({
   navigation,
@@ -38,7 +38,8 @@ export function DirectMessagesScreen({
     });
   }, [navigation, displayName]);
 
-  const { data: userData, isLoading: userLoading } = useUser();
+  const { userConfiguration, isLoaded } = useSession();
+  const { user: userData } = userConfiguration;
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useInfinitePrivatePosts(recipientUserId);
 
@@ -63,7 +64,7 @@ export function DirectMessagesScreen({
     />
   );
 
-  if (userLoading || isLoading || !userData?.id) {
+  if (!isLoaded || isLoading || !userData?.id) {
     return loadingIndicator;
   }
 

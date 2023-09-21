@@ -16,8 +16,9 @@ import {
   TRACKER_PILLAR_CODE_SYSTEM,
 } from '../components/TrackTile/services/TrackTileService';
 import { HomeStackParamList } from '../navigators/types';
-import { CircleTile, useAppConfig } from './useAppConfig';
 import { openURL } from '../common/urls';
+import { useActiveProject } from './useActiveProject';
+import { CircleTile } from '../types';
 
 type NavigationParams = {
   [x: string]: unknown | undefined;
@@ -65,7 +66,8 @@ type BeforeRemoveListener = EventListenerCallback<
 >;
 
 export const useHandleAppTileEvents = (webView: WebView | null = null) => {
-  const { data } = useAppConfig();
+  const { activeSubject } = useActiveProject();
+  const data = activeSubject?.project?.appConfig;
   const { pillarTrackers } = useTrackers();
   const { todayTileSettings, tiles } = data?.homeTab || {};
   const navigation = useNavigation<StackNavigationProp<HomeStackParamList>>();

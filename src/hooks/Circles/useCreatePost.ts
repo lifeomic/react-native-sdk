@@ -2,7 +2,7 @@ import { cloneDeep, omit } from 'lodash';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
-import { useUser } from '../useUser';
+import { useSession } from '../useSession';
 import { ParentType, Priority, AttachmentType, Post } from './types';
 import { InfinitePostsData } from './useInfinitePosts';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
@@ -27,7 +27,8 @@ type CreatePostInput = {
 export function useCreatePost() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
-  const { data } = useUser();
+  const { userConfiguration } = useSession();
+  const { user: data } = userConfiguration;
   const queryClient = useQueryClient();
   const { circleTile } = useActiveCircleTile();
 

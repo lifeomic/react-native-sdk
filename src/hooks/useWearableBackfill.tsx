@@ -24,11 +24,11 @@ export const useWearableBackfill = (
   const [enabledBackfillWearables, setEnabledBackfillWearables] = useState<
     string[]
   >([]);
-  const { activeProject, activeSubjectId } = useActiveProject();
+  const { activeSubject } = useActiveProject();
   const { graphQLClient } = useGraphQLClient();
   const { httpClient } = useHttpClient();
   const { data: isBackfillEnabled } = useFeature('ehrBackfill');
-  const { isFetched, accountHeaders } = useActiveAccount();
+  const { isLoading, accountHeaders } = useActiveAccount();
 
   const ehrTypes = useMemo(
     () => wearablesState?.items?.map((ehr) => ehr.ehrType as EHRType) ?? [],
@@ -40,11 +40,11 @@ export const useWearableBackfill = (
       graphQLClient.request<Response>(
         buildEHRRecordsQueryDocument(ehrTypes),
         {
-          patientId: activeSubjectId,
+          patientId: activeSubject?.subjectId,
         },
         accountHeaders,
       ),
-    [graphQLClient, activeSubjectId, ehrTypes, accountHeaders],
+    [graphQLClient, ehrTypes, activeSubject?.subjectId, accountHeaders],
   );
 
   const { data: syncStatus } = useQuery(
@@ -52,8 +52,8 @@ export const useWearableBackfill = (
     queryEHRSyncStatus,
     {
       enabled:
-        !!activeSubjectId &&
-        isFetched &&
+        !!activeSubject?.subjectId &&
+        !isLoading &&
         ehrTypes.length > 0 &&
         !!isBackfillEnabled,
       select(data) {
@@ -109,14 +109,19 @@ export const useWearableBackfill = (
       const createBackfillResponse = await httpClient.post<{
         ingestionId: string;
       }>(`/ehrs/${ehrId}/backfill`, {
-        project: activeProject,
+        project: activeSubject?.project,
         end: new Date(end).toISOString(),
         start: start.toISOString(),
       });
 
       return !!createBackfillResponse.data.ingestionId;
     },
-    [httpClient, activeProject, wearablesState?.items, isBackfillEnabled],
+    [
+      wearablesState?.items,
+      isBackfillEnabled,
+      httpClient,
+      activeSubject?.project,
+    ],
   );
 
   return { enabledBackfillWearables, backfillEHR };

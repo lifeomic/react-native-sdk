@@ -13,17 +13,17 @@ export function isConsentTask(value: TodayTask): value is ConsentTask {
 }
 
 const useConsentTasks = () => {
-  const { activeProject } = useActiveProject();
+  const { activeSubject } = useActiveProject();
   const { accountHeaders } = useActiveAccount();
 
   return useRestQuery(
     'GET /v1/consent/directives/me',
     {
-      projectId: activeProject?.id!,
+      projectId: activeSubject?.projectId!,
       includeForm: true,
     },
     {
-      enabled: !!accountHeaders && !!activeProject,
+      enabled: !!accountHeaders && !!activeSubject?.projectId,
       axios: { headers: accountHeaders },
       select: (data) => data.items,
     },
@@ -31,21 +31,24 @@ const useConsentTasks = () => {
 };
 
 const useGetSurveyResponsesForProject = () => {
-  const { activeSubjectId, activeProject } = useActiveProject();
+  const { activeSubject } = useActiveProject();
   const { accountHeaders } = useActiveAccount();
 
   return useRestQuery(
     'GET /v1/survey/projects/:projectId/responses',
     {
-      projectId: activeProject!.id,
-      author: activeSubjectId!,
-      patientId: activeSubjectId!,
+      projectId: activeSubject?.projectId!,
+      author: activeSubject?.subjectId!,
+      patientId: activeSubject?.subjectId!,
       includeSurveyName: false,
       status: 'in-progress',
       pageSize: 100,
     },
     {
-      enabled: !!accountHeaders && !!activeProject && !!activeSubjectId,
+      enabled:
+        !!accountHeaders &&
+        !!activeSubject?.projectId &&
+        !!activeSubject?.subjectId,
       axios: { headers: accountHeaders },
       select: (data) => data.items,
     },
@@ -65,7 +68,7 @@ const GetIncompleteActivitiesCount = gql`
 
 export const useGetIncompleteActivitiesCount = () => {
   const { graphQLClient } = useGraphQLClient();
-  const { isFetched, accountHeaders } = useActiveAccount();
+  const { isLoading, accountHeaders } = useActiveAccount();
 
   const queryForPostDetails = useCallback(async () => {
     return graphQLClient.request<GetIncompleteActivitiesCountQueryResponse>(
@@ -76,7 +79,7 @@ export const useGetIncompleteActivitiesCount = () => {
   }, [accountHeaders, graphQLClient]);
 
   return useQuery(['getIncompleteActivitiesCount'], queryForPostDetails, {
-    enabled: isFetched && !!accountHeaders,
+    enabled: !isLoading && !!accountHeaders,
   });
 };
 

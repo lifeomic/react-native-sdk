@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { Button, IconButton } from 'react-native-paper';
-import { useStyles, useUser } from '../../hooks';
+import { useStyles } from '../../hooks';
 import type { Post } from '../../hooks';
 import { createStyles, useIcons } from '../BrandConfigProvider';
 import EmojiPicker from 'rn-emoji-keyboard';
@@ -10,6 +10,7 @@ import {
   useUndoReactionMutation,
 } from '../../hooks';
 import { tID } from '../../common';
+import { useSession } from '../../hooks/useSession';
 
 interface ReactionsToolbarProps {
   post: Post;
@@ -19,13 +20,14 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
   const createReaction = useCreateReactionMutation();
   const undoReaction = useUndoReactionMutation();
   const { Smile } = useIcons();
-  const { data } = useUser();
+  const { userConfiguration } = useSession();
+  const { user } = userConfiguration;
   const [showPicker, setShowPicker] = useState(false);
   const { styles } = useStyles(defaultStyles);
 
   const handleEmojiSelection = useCallback(
     (emojiType: string | null) => {
-      if (emojiType === null || !post.id || !data?.id) {
+      if (emojiType === null || !post.id || !user.id) {
         return;
       }
 
@@ -48,14 +50,14 @@ export const ReactionsToolbar = ({ post }: ReactionsToolbarProps) => {
       // reaction exists locally and user has already reacted
       if (post.reactionTotals[reactionIndex].userHasReacted) {
         undoReaction.mutate({
-          userId: data.id,
+          userId: user.id,
           postId: post.id,
           type: emojiType,
         });
         return;
       }
     },
-    [post.id, post.reactionTotals, data?.id, createReaction, undoReaction],
+    [post.id, post.reactionTotals, user.id, createReaction, undoReaction],
   );
 
   return (

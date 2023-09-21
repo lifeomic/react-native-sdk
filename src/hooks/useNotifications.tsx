@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
-import { useUser } from './useUser';
+import { useSession } from './useSession';
 
 export type NotificationBase = {
   id: string;
@@ -139,7 +139,8 @@ const selectNotifications = (
 export function useNotifications() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
-  const { data } = useUser();
+  const { userConfiguration } = useSession();
+  const { user: data } = userConfiguration;
 
   const queryForNotifications = useCallback(() => {
     return graphQLClient.request<NotificationQueryResponse>(

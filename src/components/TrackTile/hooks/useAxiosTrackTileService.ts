@@ -28,13 +28,12 @@ import { pick, merge, pickBy, fromPairs } from 'lodash';
 import { useHttpClient } from '../../../hooks/useHttpClient';
 import { useActiveAccount } from './../../../hooks/useActiveAccount';
 import { useActiveProject } from './../../../hooks/useActiveProject';
-import { useUser } from '../../../hooks/useUser';
+import { useSession } from '../../../hooks/useSession';
 import { useDeveloperConfig } from '../../../hooks/useDeveloperConfig';
 import {
   RefreshParams,
   refreshNotifier,
 } from '../../../common/RefreshNotifier';
-import { useAppConfig } from '../../../hooks/useAppConfig';
 
 const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
   headers: {
@@ -45,16 +44,17 @@ const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
 
 export const useAxiosTrackTileService = (): TrackTileService => {
   const { httpClient } = useHttpClient();
-  const { activeSubjectId: patientId, activeProject } = useActiveProject();
+  const { activeSubject } = useActiveProject();
   const { account } = useActiveAccount();
-  const { data: userData } = useUser();
-  const { data: appConfig } = useAppConfig();
+  const { userConfiguration } = useSession();
+  const { user: userData } = userConfiguration;
+  const appConfig = activeSubject?.project?.appConfig;
   const userId = userData?.id;
   const [previousUserId, setPreviousUserId] = useState(userId);
   const { ontology: devConfigOntology } = useDeveloperConfig();
 
   const accountId = account?.id || '';
-  const projectId = activeProject?.id || '';
+  const projectId = activeSubject?.project?.id || '';
   const { includePublic = false } = appConfig?.homeTab?.trackTileSettings ?? {};
 
   const { current: cache } = useRef<{
@@ -205,7 +205,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   return {
     accountId,
     projectId,
-    patientId,
+    patientId: activeSubject?.subjectId,
 
     fetchTrackers: async () => {
       if (cache.trackers) {
@@ -273,7 +273,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
           variables: {
             dates: [`ge${start}`, `le${end}`],
             codeBelow: valuesContext.codeBelow,
-            patientId,
+            patientId: activeSubject?.subjectId,
           },
           query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
         },

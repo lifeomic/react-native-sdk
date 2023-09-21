@@ -3,13 +3,13 @@ import type {
   NavigatorScreenParams,
 } from '@react-navigation/native';
 import type { StackScreenProps } from '@react-navigation/stack';
-import { AppTile, CircleTile } from '../hooks/useAppConfig';
 import {
   Tracker,
   TrackerValue,
   TrackerValuesContext,
 } from '../components/TrackTile/main';
 import { Post } from '../hooks';
+import { AppTile, CircleTile } from '../types';
 
 export type RootStackParamList = LoggedInRootParamList;
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

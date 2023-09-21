@@ -1,12 +1,13 @@
 import React from 'react';
 import { IconButton } from 'react-native-paper';
-import { useStyles, useUser } from '../../hooks';
+import { useStyles } from '../../hooks';
 import { ParentType, Post, useDeletePost } from '../../hooks';
 import { t } from 'i18next';
 import { showCreateEditPostModal } from './CreateEditPostModal';
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import { isNumber } from 'lodash';
 import { createStyles, useIcons } from '../BrandConfigProvider';
+import { useSession } from '../../hooks/useSession';
 
 interface PostProps {
   post: Post;
@@ -19,7 +20,8 @@ export const ShowPostMenuButton = ({
   parentType,
   styles: instanceStyles,
 }: PostProps) => {
-  const { data } = useUser();
+  const { userConfiguration } = useSession();
+  const { user: data } = userConfiguration;
   const { MoreHorizontal } = useIcons();
   const deletePost = useDeletePost();
   const { showActionSheetWithOptions } = useActionSheet();

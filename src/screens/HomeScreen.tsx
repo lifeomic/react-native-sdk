@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useAppConfig } from '../hooks/useAppConfig';
 import { TilesList } from '../components/tiles/TilesList';
 import { ScreenSurface } from '../components/ScreenSurface';
 import { HomeStackScreenProps } from '../navigators/types';
 import { refreshNotifier } from '../common/RefreshNotifier';
 import { HeaderLeftRefreshButton } from '../components/HeaderLeftRefreshButton';
+import { useActiveProject } from '../hooks/useActiveProject';
 
 export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
-  const { data } = useAppConfig();
+  const { activeSubject } = useActiveProject();
+  const data = activeSubject?.project.appConfig;
   const [refreshing, setRefreshing] = useState(false);
   const { navigation } = navProps;
   const customHeaderTitle = data?.homeTab?.screenHeader?.title;

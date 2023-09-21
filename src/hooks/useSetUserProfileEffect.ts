@@ -1,13 +1,23 @@
 import { useEffect } from 'react';
 import { useActiveProject } from './useActiveProject';
-import { useUser } from './useUser';
+import { useRestMutation } from './rest-api';
+import { useQueryClient } from '@tanstack/react-query/build/lib/QueryClientProvider';
+import { useSession } from './useSession';
 
 export const useSetUserProfileEffect = () => {
-  const { isLoading, isFetched, data: user, updateUser } = useUser();
+  const client = useQueryClient();
+  const { mutateAsync: updateUser } = useRestMutation('PATCH /v1/user', {
+    onSuccess: (updatedUser) => {
+      client.setQueryData(['user'], () => updatedUser);
+    },
+  });
+
+  const { userConfiguration, isLoaded } = useSession();
+  const { user } = userConfiguration;
   const { activeSubject } = useActiveProject();
 
   useEffect(() => {
-    const hasFetchedUser = !isLoading && isFetched;
+    const hasFetchedUser = isLoaded;
     const userHasName = !!user?.profile.givenName || !!user?.profile.familyName;
     const name =
       activeSubject?.name?.find((v) => v.use === 'official') ??
@@ -22,5 +32,5 @@ export const useSetUserProfileEffect = () => {
         },
       });
     }
-  }, [isLoading, isFetched, user, activeSubject, updateUser]);
+  }, [user, activeSubject, updateUser, isLoaded]);
 };

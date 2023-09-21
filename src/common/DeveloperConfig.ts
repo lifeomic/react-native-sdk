@@ -1,6 +1,5 @@
 import React, { ComponentType } from 'react';
 import { getBundleId } from 'react-native-device-info';
-import { AppTile } from '../hooks/useAppConfig';
 import { SvgProps } from 'react-native-svg';
 import { Theme } from '../components/BrandConfigProvider';
 import {
@@ -18,6 +17,7 @@ import { ImageSourcePropType } from 'react-native';
 import { Route } from '../navigators/types';
 import { LogoHeaderOptions } from '../hooks/useLogoHeaderOptions';
 import { EducationContent } from '../components/TrackTile/services/TrackTileService';
+import { AppTile } from '../types';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.

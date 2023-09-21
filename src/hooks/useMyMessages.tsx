@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import { useAppConfig } from './useAppConfig';
 import { useUnreadMessages } from './useUnreadMessages';
-import { useUser } from './useUser';
 import { chunk, compact, find, uniq } from 'lodash';
 import { useLookupUsers } from './Circles/usePrivatePosts';
+import { useSession } from './useSession';
+import { useActiveProject } from './useActiveProject';
 
 export const useMyMessages = (tileId: string) => {
   const [pageIndex, setPageIndex] = useState(0);
-  const appConfig = useAppConfig();
-  const { data: userData } = useUser();
+  const { activeSubject } = useActiveProject();
+  const appConfig = activeSubject?.project?.appConfig;
+  const { userConfiguration } = useSession();
+  const { user: userData } = userConfiguration;
   const { unreadIds } = useUnreadMessages();
   const messageTile = find(
-    appConfig.data?.homeTab?.messageTiles,
+    appConfig?.homeTab?.messageTiles,
     (tile) => tile.id === tileId,
   );
   const recipientsUserIds = messageTile?.userIds.filter(

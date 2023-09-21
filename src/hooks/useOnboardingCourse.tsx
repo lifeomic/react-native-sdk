@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
-import { useAppConfig } from './useAppConfig';
 import { useActiveProject } from './useActiveProject';
 import { useAsyncStorage } from './useAsyncStorage';
 
@@ -9,8 +8,6 @@ export type OnboardingCourseContextProps = {
   onboardingCourseTitle?: string;
   onOnboardingCourseOpen: () => void;
   isLoading: boolean;
-  isFetched: boolean;
-  error?: any;
 };
 
 export const OnboardingCourseContext = createContext({
@@ -24,32 +21,29 @@ export const OnboardingCourseContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const {
-    data,
-    isLoading: isAppConfigLoading,
-    isFetched: isAppConfigFetched,
-    error,
-  } = useAppConfig();
+  const { activeSubject, isLoading } = useActiveProject();
+  const data = activeSubject?.project.appConfig;
+
   const onboardingCourseUrl = data?.onboardingCourse?.url;
   const onboardingCourseTitle = data?.onboardingCourse?.title;
-  const { activeProject } = useActiveProject();
   const [storedDidLaunchResult, storeDidLaunch, isStorageLoaded] =
     useAsyncStorage(
-      `${activeProject?.id}-didLaunchOnboardingCourse`,
-      !!activeProject?.id,
+      `${activeSubject?.project?.id}-didLaunchOnboardingCourse`,
+      !!activeSubject?.project?.id,
     );
+
   const [didLaunchCourse, setDidLaunchCourse] = useState<boolean | undefined>(
     undefined,
   );
 
-  const isLoading = isAppConfigLoading || !isStorageLoaded;
-  const isFetched = isAppConfigFetched && isStorageLoaded;
+  const isOnboardingLoading = isLoading || !isStorageLoaded;
+  const isFetched = isStorageLoaded;
 
   useEffect(() => {
-    if (activeProject?.id) {
+    if (activeSubject?.project?.id) {
       setDidLaunchCourse(storedDidLaunchResult === 'true');
     }
-  }, [storedDidLaunchResult, activeProject?.id]);
+  }, [storedDidLaunchResult, activeSubject?.project?.id]);
 
   /* Render the onboarding course if the following conditions are met:
     1. The app config and the async storage value have been fetched
@@ -71,9 +65,7 @@ export const OnboardingCourseContextProvider = ({
         onboardingCourseUrl,
         onboardingCourseTitle,
         onOnboardingCourseOpen,
-        isLoading: !!isLoading,
-        isFetched: !!isFetched,
-        error,
+        isLoading: !!isOnboardingLoading,
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { AppConfig } from '../hooks';
+import { AppConfig } from '../types';
 
 export const appConfigChangeEventType = 'appConfigChanged';
 export type AppConfigChangeHandler = (config: AppConfig | undefined) => void;

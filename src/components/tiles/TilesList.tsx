@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react';
 import { Image, ImageStyle, View } from 'react-native';
-import { AppTile, CircleTile, useAppConfig } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
 import { TrackTile } from '../TrackTile';
-import { useStyles, useDeveloperConfig } from '../../hooks';
+import { useStyles, useDeveloperConfig, useActiveProject } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { ChromiconName, createStyles, useIcons } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
@@ -13,6 +12,7 @@ import { HomeStackScreenProps } from '../../navigators/types';
 import { t } from '../../../lib/i18n';
 import { MessagesTile } from '../MessagesTile';
 import TodayBadge from '../TodayBadge';
+import { AppTile, CircleTile } from '../../types';
 
 interface Props extends HomeStackScreenProps<'Home'> {
   styles?: TilesListStyles;
@@ -21,7 +21,8 @@ interface Props extends HomeStackScreenProps<'Home'> {
 export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { appTileScreens } = useDeveloperConfig();
-  const { data } = useAppConfig();
+  const { activeSubject } = useActiveProject();
+  const data = activeSubject?.project?.appConfig;
 
   const pillarsTileEnabled = data?.homeTab?.tiles?.includes?.('pillarsTile');
   const pillarSettings = data?.homeTab?.pillarSettings;
