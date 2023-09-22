@@ -56,7 +56,7 @@ export const ActiveAccountContextProvider = ({
   const [selectedId, setSelectedId] = useState(accountIdToSelect);
   const [storedAccountIdResult, setStoredAccountId, isStorageLoaded] =
     useAsyncStorage(
-      `${selectedAccountIdKey}:${user}`,
+      `${selectedAccountIdKey}:${user.id}`,
       user.id !== 'placeholder',
     );
 
