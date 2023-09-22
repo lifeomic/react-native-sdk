@@ -65,7 +65,7 @@ export type Navigator<
   React.ComponentType<Props>
 >;
 
-type OnAppSessionStartParams = {
+export type OnAppSessionStartParams = {
   resumeAppSession: () => void;
 };
 
