@@ -96,7 +96,13 @@ export const useAxiosTrackTileService = (): TrackTileService => {
       return;
     }
 
-    const newSettings = pick(settings, ['order', 'target', 'unit', 'metricId']);
+    const newSettings = pick(settings, [
+      'order',
+      'target',
+      'unit',
+      'metricId',
+      'installed',
+    ]);
     const mergedTracker = merge({}, tracker, newSettings);
 
     cache.trackers = (cache.trackers ?? [])
