@@ -3,6 +3,7 @@ import { WebView } from 'react-native-webview';
 import {
   useActiveAccount,
   useActiveProject,
+  useAppConfig,
   useExchangeToken,
   useHandleAppTileEvents,
 } from '../hooks';
@@ -17,14 +18,18 @@ export const AuthedAppTileScreen = ({
 }: HomeStackScreenProps<'Home/AuthedAppTile'>) => {
   const { appTile, searchParams = {} } = route.params;
   const webViewRef = useRef<WebView>(null);
+  const { data: appConfig } = useAppConfig();
+  const titleOverride =
+    appConfig?.homeTab?.appTileSettings?.appTiles[appTile.id].title;
+
   const { handleAppTileMessage, handleAppTileNavigationStateChange } =
     useHandleAppTileEvents(webViewRef.current);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: route.params.appTile.title,
+      title: titleOverride || route.params.appTile.title,
     });
-  }, [navigation, route.params.appTile.title]);
+  }, [navigation, route.params.appTile.title, titleOverride]);
 
   const {
     activeProject,
