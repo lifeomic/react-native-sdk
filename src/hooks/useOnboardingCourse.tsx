@@ -35,7 +35,6 @@ export const OnboardingCourseContextProvider = ({
   );
 
   const isOnboardingLoading = isLoading || !isStorageLoaded;
-  const isFetched = isStorageLoaded;
 
   useEffect(() => {
     if (subject?.projectId) {
@@ -49,7 +48,7 @@ export const OnboardingCourseContextProvider = ({
     3. The onboarding course has not been launched
   */
   const shouldLaunchOnboardingCourse =
-    !!isFetched && !!onboardingCourseUrl && !didLaunchCourse;
+    !isOnboardingLoading && !!onboardingCourseUrl && !didLaunchCourse;
 
   const onOnboardingCourseOpen = useCallback(() => {
     setDidLaunchCourse(true);

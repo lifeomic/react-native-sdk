@@ -6,7 +6,7 @@ import { Consent, Questionnaire } from 'fhir/r3';
 
 export const useConsent = () => {
   const { accountHeaders, account } = useActiveAccount();
-  const { activeSubject: subject } = useActiveConfig();
+  const { subject } = useActiveConfig();
   const { httpClient } = useHttpClient();
 
   const useConsentDirectives = () => {
