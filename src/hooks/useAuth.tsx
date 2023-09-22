@@ -9,6 +9,7 @@ import { RefreshResult } from 'react-native-app-auth';
 import { SecureStore } from '../common/SecureStore';
 import { useCurrentAppState } from './useCurrentAppState';
 import { AxiosError } from 'axios';
+import { useSession } from './useSession';
 
 export interface AuthStatus {
   loading: boolean;
@@ -70,6 +71,7 @@ export const AuthContextProvider = ({
     RefreshHandler | undefined
   >();
   const { currentAppState } = useCurrentAppState();
+  const { clearSession } = useSession();
 
   const storeAuthResult = useCallback(async (result: AuthResult) => {
     await secureStorage.setObject(result);
@@ -104,9 +106,10 @@ export const AuthContextProvider = ({
           console.warn('Error occurred refreshing access token', error);
         }
         clearAuthResult();
+        clearSession();
       }
     },
-    [storeAuthResult, clearAuthResult],
+    [storeAuthResult, clearAuthResult, clearSession],
   );
 
   const initialize = useCallback(

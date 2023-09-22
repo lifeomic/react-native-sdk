@@ -14,6 +14,7 @@ import {
 import { AuthResult, useAuth } from './useAuth';
 import { usePendingInvite } from './usePendingInvite';
 import { useQueryClient } from '@tanstack/react-query';
+import { useSession } from './useSession';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
@@ -54,6 +55,7 @@ export const OAuthContextProvider = ({
     inviteParams: { inviteId, evc },
   } = usePendingInvite();
   const queryClient = useQueryClient();
+  const { clearSession } = useSession();
 
   // PKCE is required
   if (!authConfig.usePKCE) {
@@ -101,6 +103,7 @@ export const OAuthContextProvider = ({
           sendClientId: true,
         });
         await clearAuthResult();
+        clearSession();
         onSuccess?.();
       } catch (error) {
         await clearAuthResult();
@@ -113,6 +116,7 @@ export const OAuthContextProvider = ({
       authResult?.refreshToken,
       clearAuthResult,
       authConfig,
+      clearSession,
     ],
   );
 
