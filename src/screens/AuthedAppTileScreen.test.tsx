@@ -5,6 +5,7 @@ import { useExchangeToken } from '../hooks/useExchangeToken';
 import { useActiveProject } from '../hooks/useActiveProject';
 import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useHandleAppTileEvents } from '../hooks/useHandleAppTileEvents';
+import { useAppConfig } from '../hooks/useAppConfig';
 
 jest.mock('../hooks/useExchangeToken', () => ({
   useExchangeToken: jest.fn(),
@@ -18,6 +19,9 @@ jest.mock('../hooks/useActiveAccount', () => ({
 jest.mock('../hooks/useHandleAppTileEvents', () => ({
   useHandleAppTileEvents: jest.fn(),
 }));
+jest.mock('../hooks/useAppConfig', () => ({
+  useAppConfig: jest.fn(),
+}));
 jest.mock('@react-navigation/native', () => ({
   useFocusEffect: jest.fn(),
   createNavigationContainerRef: jest.fn(),
@@ -27,6 +31,7 @@ const useExchangeTokenMock = useExchangeToken as jest.Mock;
 const useActiveProjectMock = useActiveProject as jest.Mock;
 const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useHandleAppTileEventsMock = useHandleAppTileEvents as jest.Mock;
+const useAppConfigMock = useAppConfig as jest.Mock;
 
 const handleAppTileMessageMock = jest.fn();
 const handleAppTileNavigationStateChangeMock = jest.fn();
@@ -72,6 +77,7 @@ beforeEach(() => {
     handleAppTileMessage: handleAppTileMessageMock,
     handleAppTileNavigationStateChange: handleAppTileNavigationStateChangeMock,
   });
+  useAppConfigMock.mockReturnValue({ data: {} });
 });
 
 test('builds uri with code, projectId, patientId, and accountId', () => {
@@ -99,4 +105,34 @@ test('calls handleAppTileMessage', () => {
   };
   AppTileWebView.props.onMessage(event);
   expect(handleAppTileMessageMock).toBeCalledWith(event);
+});
+
+test('sets the appTitle title as the screen title', () => {
+  route.params.appTile = appTile;
+  render(<AuthedAppTileScreen navigation={navigation} route={route} />);
+  expect(navigation.setOptions).toBeCalledWith({
+    title: appTile.title,
+  });
+});
+
+test('sets the titleOverride as the screen title', () => {
+  route.params.appTile = appTile;
+  const TITLE_OVERRIDE = 'My title override';
+  useAppConfigMock.mockReturnValue({
+    data: {
+      homeTab: {
+        appTileSettings: {
+          appTiles: {
+            [appTile.id]: {
+              title: TITLE_OVERRIDE,
+            },
+          },
+        },
+      },
+    },
+  });
+  render(<AuthedAppTileScreen navigation={navigation} route={route} />);
+  expect(navigation.setOptions).toBeCalledWith({
+    title: TITLE_OVERRIDE,
+  });
 });
