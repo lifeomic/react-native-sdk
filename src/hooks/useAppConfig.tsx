@@ -63,6 +63,13 @@ export interface AppConfig {
       title?: string;
       enableRefresh?: boolean;
     };
+    appTileSettings?: {
+      appTiles: {
+        [key: string]: {
+          title?: string;
+        };
+      };
+    };
   };
   onboardingCourse?: {
     url: string;
