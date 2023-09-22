@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useActiveProject } from './useActiveProject';
+import { useActiveConfig } from './useActiveConfig';
 import { useRestMutation } from './rest-api';
 import { useQueryClient } from '@tanstack/react-query/build/lib/QueryClientProvider';
 import { useSession } from './useSession';
@@ -14,14 +14,13 @@ export const useSetUserProfileEffect = () => {
 
   const { userConfiguration, isLoaded } = useSession();
   const { user } = userConfiguration;
-  const { activeSubject } = useActiveProject();
+  const { subject } = useActiveConfig();
 
   useEffect(() => {
     const hasFetchedUser = isLoaded;
     const userHasName = !!user?.profile.givenName || !!user?.profile.familyName;
     const name =
-      activeSubject?.name?.find((v) => v.use === 'official') ??
-      activeSubject?.name?.[0];
+      subject?.name?.find((v) => v.use === 'official') ?? subject?.name?.[0];
     const subjectHasName = !!name?.family || !!name?.given?.length;
 
     if (hasFetchedUser && !userHasName && subjectHasName) {
@@ -32,5 +31,5 @@ export const useSetUserProfileEffect = () => {
         },
       });
     }
-  }, [user, activeSubject, updateUser, isLoaded]);
+  }, [user, updateUser, isLoaded, subject?.name]);
 };

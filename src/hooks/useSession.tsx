@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { Account, Subject, Entry, User, SubjectWithProject } from '../types';
+import { Account, Subject, Entry, User, SubjectConfig } from '../types';
 import { useAsyncStorage } from './useAsyncStorage';
 import { useHttpClient } from './useHttpClient';
 import { APIClient } from '@lifeomic/one-query';
@@ -15,7 +15,7 @@ import { useAuth } from './useAuth';
 
 type Configuration = {
   account: string;
-  subjects: SubjectWithProject[];
+  subjectConfigs: SubjectConfig[];
 };
 
 type UserConfiguration = {
@@ -154,12 +154,12 @@ const fetchAllUserSessionInfo = async (
         { headers: accountHeader },
       );
       const subjects = patientsToSubjects(useMeResponse.data.entry);
-      const subjectsWithProjects = await Promise.all(
-        subjects.map(async (s) => {
+      const subjectConfigs = await Promise.all(
+        subjects.map(async (subject) => {
           const projectResponse = await apiClient.request(
             'GET /v1/projects',
             {
-              id: s.projectId,
+              id: subject.projectId,
             },
             { headers: accountHeader },
           );
@@ -173,18 +173,16 @@ const fetchAllUserSessionInfo = async (
           );
 
           return {
-            ...s,
-            project: {
-              ...project,
-              appConfig: appConfig.data,
-            },
+            subject,
+            project,
+            appConfig: appConfig.data,
           };
         }),
       );
 
       return {
         account: account.id,
-        subjects: subjectsWithProjects,
+        subjectConfigs: subjectConfigs,
       };
     }),
   );

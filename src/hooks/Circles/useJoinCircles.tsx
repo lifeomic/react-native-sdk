@@ -1,25 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from '../useActiveAccount';
-import { useActiveProject } from '../useActiveProject';
+import { useActiveConfig } from '../useActiveConfig';
 import { useHttpClient } from '../useHttpClient';
 import { CircleTile } from '../../types';
 
 export function useJoinCircles() {
-  const { activeSubject } = useActiveProject();
-  const data = activeSubject?.project?.appConfig;
+  const { appConfig, subject } = useActiveConfig();
   const { accountHeaders } = useActiveAccount();
   const { httpClient } = useHttpClient();
 
   return useQuery(
-    [
-      `/v1/life-research/projects/${activeSubject?.project?.id}/app-config/circles`,
-    ],
+    [`/v1/life-research/projects/${subject?.projectId}/app-config/circles`],
     () => {
-      if (data?.homeTab?.circleTiles?.some((c) => !c.isMember)) {
+      if (appConfig?.homeTab?.circleTiles?.some((c) => !c.isMember)) {
         httpClient
           .patch<CircleTile[]>(
-            `/v1/life-research/projects/${activeSubject?.project?.id}/app-config/circles`,
-            data.homeTab.circleTiles.map((c) => ({ ...c, isMember: true })),
+            `/v1/life-research/projects/${subject?.projectId}/app-config/circles`,
+            appConfig.homeTab.circleTiles.map((c) => ({
+              ...c,
+              isMember: true,
+            })),
             { headers: accountHeaders },
           )
           .then((res) => {
@@ -30,8 +30,8 @@ export function useJoinCircles() {
     {
       enabled:
         !!accountHeaders &&
-        !!activeSubject?.project?.id &&
-        !!data?.homeTab?.circleTiles,
+        !!subject?.projectId &&
+        !!appConfig?.homeTab?.circleTiles,
     },
   );
 }

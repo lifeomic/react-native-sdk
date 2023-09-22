@@ -21,7 +21,7 @@ import {
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { Divider, Text } from 'react-native-paper';
 import { createStyles } from '../components';
-import { useActiveProject, useStyles, useTheme } from '../hooks';
+import { useActiveConfig, useStyles, useTheme } from '../hooks';
 import { SocialShareExporter } from '../components/SocialShare/SocialShareExporter';
 
 type Period = {
@@ -39,8 +39,7 @@ const PERIODS: Period[] = [
 
 export const MyDataScreen = () => {
   const theme = useTheme();
-  const { activeSubject, isLoading: loadingAppConfig } = useActiveProject();
-  const config = activeSubject?.project.appConfig;
+  const { appConfig, isLoading: loadingAppConfig } = useActiveConfig();
   const { styles } = useStyles(defaultStyles);
   const [exportData, setExportData] = useState<any>();
   const [period, setPeriod] = useState(PERIODS[1]);
@@ -143,17 +142,19 @@ export const MyDataScreen = () => {
           />
         </View>
 
-        {config?.homeTab?.myDataSettings?.components.map((component, index) => (
-          <React.Fragment key={`${component.type}-${index}`}>
-            {index > 0 && <Divider style={styles.divider} />}
-            <LineChart
-              {...component}
-              dateRange={range}
-              padding={Number(styles.container?.paddingHorizontal) * 2}
-              onShare={setExportData}
-            />
-          </React.Fragment>
-        ))}
+        {appConfig?.homeTab?.myDataSettings?.components.map(
+          (component, index) => (
+            <React.Fragment key={`${component.type}-${index}`}>
+              {index > 0 && <Divider style={styles.divider} />}
+              <LineChart
+                {...component}
+                dateRange={range}
+                padding={Number(styles.container?.paddingHorizontal) * 2}
+                onShare={setExportData}
+              />
+            </React.Fragment>
+          ),
+        )}
 
         <SocialShareExporter type="pointBreakdown" metadata={exportData} />
       </View>

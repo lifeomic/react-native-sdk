@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoggedInRootParamList } from './types';
 import { useConsent } from '../hooks/useConsent';
 import { useActiveAccount } from '../hooks/useActiveAccount';
-import { useActiveProject } from '../hooks/useActiveProject';
+import { useActiveConfig } from '../hooks/useActiveConfig';
 import { useOnboardingCourse } from '../hooks/useOnboardingCourse';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { t } from 'i18next';
@@ -22,7 +22,7 @@ export function LoggedInStack() {
   const { inviteParams } = usePendingInvite();
   const { isLoaded } = useSession();
   const { account, isLoading: isLoadingAccount } = useActiveAccount();
-  const { activeSubject, isLoading: isLoadingProject } = useActiveProject();
+  const { subject, isLoading: isLoadingProject } = useActiveConfig();
 
   useSetUserProfileEffect();
   const { useShouldRenderConsentScreen } = useConsent();
@@ -33,7 +33,7 @@ export function LoggedInStack() {
   const { isInitialLoading: loadingJoinCircles } = useJoinCircles();
 
   const isLoading = !isLoaded || isLoadingAccount || isLoadingProject;
-  const hasAccountAndProject = !!(activeSubject?.project?.id && account?.id);
+  const hasAccountAndProject = !!(subject?.projectId && account?.id);
   const initialRoute = !hasAccountAndProject
     ? 'InviteRequired'
     : shouldRenderConsentScreen

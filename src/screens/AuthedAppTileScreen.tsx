@@ -2,7 +2,7 @@ import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { WebView } from 'react-native-webview';
 import {
   useActiveAccount,
-  useActiveProject,
+  useActiveConfig,
   useExchangeToken,
   useHandleAppTileEvents,
 } from '../hooks';
@@ -26,7 +26,7 @@ export const AuthedAppTileScreen = ({
     });
   }, [navigation, route.params.appTile.title]);
 
-  const { activeSubject, isLoading: loadingProject } = useActiveProject();
+  const { subject, isLoading: loadingProject } = useActiveConfig();
   const { account, isLoading: loadingAccounts } = useActiveAccount();
   const {
     data,
@@ -38,7 +38,7 @@ export const AuthedAppTileScreen = ({
   // Conditions to be met before building the applet uri
   const isLoading = loadingCode || loadingAccounts || loadingProject;
   const isFetched = codeFetched;
-  const hasData = data?.code && account?.id && activeSubject?.projectId;
+  const hasData = data?.code && account?.id && subject?.projectId;
 
   const readyToBuildUri = isFetched && !isLoading && hasData;
   const oauthCallbackUrl = appTile.callbackUrls?.[0]!;
@@ -53,12 +53,12 @@ export const AuthedAppTileScreen = ({
       parsed.accountId = account.id;
     }
 
-    if (activeSubject?.projectId) {
-      parsed.projectId = activeSubject?.projectId;
+    if (subject?.projectId) {
+      parsed.projectId = subject?.projectId;
     }
 
-    if (activeSubject?.subjectId) {
-      parsed.patientId = activeSubject?.subjectId;
+    if (subject?.subjectId) {
+      parsed.patientId = subject?.subjectId;
     }
 
     for (const [key, value] of Object.entries(searchParams)) {
@@ -69,8 +69,8 @@ export const AuthedAppTileScreen = ({
   }, [
     data?.code,
     account?.id,
-    activeSubject?.projectId,
-    activeSubject?.subjectId,
+    subject?.projectId,
+    subject?.subjectId,
     oauthCallbackUrl,
     searchParams,
   ]);

@@ -12,7 +12,7 @@ import { Text, Divider } from 'react-native-paper';
 import { SettingsStackScreenProps } from '../navigators/types';
 import { useWearables } from '../hooks/useWearables';
 import { openURL } from '../common/urls';
-import { useActiveProject } from '../hooks/useActiveProject';
+import { useActiveConfig } from '../hooks/useActiveConfig';
 import { useSession } from '../hooks/useSession';
 
 const versionNumber = DeviceInfo.getVersion();
@@ -26,9 +26,8 @@ export const SettingsScreen = ({
   const { styles } = useStyles(defaultStyles);
   const { useWearableIntegrationsQuery } = useWearables();
   const { data: wearablesData } = useWearableIntegrationsQuery();
-  const { activeSubject } = useActiveProject();
-  const appConfigData = activeSubject?.project.appConfig;
-  const supportLink = appConfigData?.supportLink;
+  const { appConfig } = useActiveConfig();
+  const supportLink = appConfig?.supportLink;
   const { clearSession } = useSession();
 
   return (

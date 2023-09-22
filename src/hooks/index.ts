@@ -1,6 +1,6 @@
 export * from './NoInternetToastProvider';
 export * from './useActiveAccount';
-export * from './useActiveProject';
+export * from './useActiveConfig';
 export * from './useAuth';
 export * from './useConsent';
 export * from './useCurrentAppState';

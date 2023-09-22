@@ -52,12 +52,10 @@ export interface Project {
   name: string;
 }
 
-export type ProjectWithAppConfig = Project & {
-  appConfig: AppConfig;
-};
-
-export type SubjectWithProject = Subject & {
-  project: ProjectWithAppConfig;
+export type SubjectConfig = {
+  subject?: Subject;
+  project?: Project;
+  appConfig?: AppConfig;
 };
 
 export interface AppTile {

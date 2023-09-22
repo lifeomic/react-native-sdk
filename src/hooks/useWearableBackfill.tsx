@@ -4,7 +4,7 @@ import { gql } from 'graphql-request';
 import { useQuery } from '@tanstack/react-query';
 import { EHRType, WearablesSyncState } from '../components';
 import { useActiveAccount } from './useActiveAccount';
-import { useActiveProject } from './useActiveProject';
+import { useActiveConfig } from './useActiveConfig';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useHttpClient } from './useHttpClient';
 import { useFeature } from './useFeature';
@@ -24,7 +24,7 @@ export const useWearableBackfill = (
   const [enabledBackfillWearables, setEnabledBackfillWearables] = useState<
     string[]
   >([]);
-  const { activeSubject } = useActiveProject();
+  const { subject, project } = useActiveConfig();
   const { graphQLClient } = useGraphQLClient();
   const { httpClient } = useHttpClient();
   const { data: isBackfillEnabled } = useFeature('ehrBackfill');
@@ -40,11 +40,11 @@ export const useWearableBackfill = (
       graphQLClient.request<Response>(
         buildEHRRecordsQueryDocument(ehrTypes),
         {
-          patientId: activeSubject?.subjectId,
+          patientId: subject?.subjectId,
         },
         accountHeaders,
       ),
-    [graphQLClient, ehrTypes, activeSubject?.subjectId, accountHeaders],
+    [graphQLClient, ehrTypes, subject?.subjectId, accountHeaders],
   );
 
   const { data: syncStatus } = useQuery(
@@ -52,7 +52,7 @@ export const useWearableBackfill = (
     queryEHRSyncStatus,
     {
       enabled:
-        !!activeSubject?.subjectId &&
+        !!subject?.subjectId &&
         !isLoading &&
         ehrTypes.length > 0 &&
         !!isBackfillEnabled,
@@ -109,19 +109,14 @@ export const useWearableBackfill = (
       const createBackfillResponse = await httpClient.post<{
         ingestionId: string;
       }>(`/ehrs/${ehrId}/backfill`, {
-        project: activeSubject?.project,
+        project,
         end: new Date(end).toISOString(),
         start: start.toISOString(),
       });
 
       return !!createBackfillResponse.data.ingestionId;
     },
-    [
-      wearablesState?.items,
-      isBackfillEnabled,
-      httpClient,
-      activeSubject?.project,
-    ],
+    [wearablesState?.items, isBackfillEnabled, httpClient, project],
   );
 
   return { enabledBackfillWearables, backfillEHR };

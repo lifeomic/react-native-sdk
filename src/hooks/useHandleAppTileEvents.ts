@@ -17,7 +17,7 @@ import {
 } from '../components/TrackTile/services/TrackTileService';
 import { HomeStackParamList } from '../navigators/types';
 import { openURL } from '../common/urls';
-import { useActiveProject } from './useActiveProject';
+import { useActiveConfig } from './useActiveConfig';
 import { CircleTile } from '../types';
 
 type NavigationParams = {
@@ -66,10 +66,9 @@ type BeforeRemoveListener = EventListenerCallback<
 >;
 
 export const useHandleAppTileEvents = (webView: WebView | null = null) => {
-  const { activeSubject } = useActiveProject();
-  const data = activeSubject?.project?.appConfig;
+  const { appConfig } = useActiveConfig();
   const { pillarTrackers } = useTrackers();
-  const { todayTileSettings, tiles } = data?.homeTab || {};
+  const { todayTileSettings, tiles } = appConfig?.homeTab || {};
   const navigation = useNavigation<StackNavigationProp<HomeStackParamList>>();
   const [blockGoBack, setBlockGoBack] = useState(false);
 

@@ -7,16 +7,16 @@ import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
-import { useActiveProject } from '../hooks';
+import { useActiveConfig } from '../hooks';
 import { useSession } from '../hooks/useSession';
 
 export const ProfileScreen = () => {
   const { styles } = useStyles(defaultStyles);
   const { userConfiguration, isLoaded } = useSession();
-  const { user: data } = userConfiguration;
-  const { activeSubject } = useActiveProject();
+  const { user } = userConfiguration;
+  const { project } = useActiveConfig();
 
-  const userProfile = data?.profile;
+  const userProfile = user.profile;
 
   if (!isLoaded) {
     return (
@@ -37,7 +37,7 @@ export const ProfileScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <Field label={t('profile-username', 'Username')} value={data.id} />
+        <Field label={t('profile-username', 'Username')} value={user.id} />
         <Field
           label={t('profile-first-name', 'First Name')}
           value={userProfile.givenName}
@@ -47,9 +47,7 @@ export const ProfileScreen = () => {
           value={userProfile.familyName}
         />
         <Field label={t('profile-email', 'Email')} value={userProfile.email} />
-        {__DEV__ && (
-          <Field label="Active Project" value={activeSubject?.project.name} />
-        )}
+        {__DEV__ && <Field label="Active Project" value={project?.name} />}
       </ScrollView>
     </SafeAreaView>
   );

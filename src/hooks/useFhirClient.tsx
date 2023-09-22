@@ -3,7 +3,7 @@ import { Bundle, Observation, Coding } from 'fhir/r3';
 import formatISO from 'date-fns/formatISO';
 import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
-import { useActiveProject } from './useActiveProject';
+import { useActiveConfig } from './useActiveConfig';
 import merge from 'deepmerge';
 import { useState, useEffect, useCallback } from 'react';
 import queryString from 'query-string';
@@ -29,14 +29,14 @@ type DeleteParams = {
 export function useFhirClient() {
   const { httpClient } = useHttpClient();
   const { accountHeaders, account } = useActiveAccount();
-  const { activeSubject } = useActiveProject();
+  const { subject } = useActiveConfig();
 
   const toResource = (source: ResourceType) => {
     let resource = merge<ResourceType>({}, source);
 
     // Subject
     resource.subject = {
-      reference: `Patient/${activeSubject?.subjectId}`,
+      reference: `Patient/${subject?.subjectId}`,
     };
 
     // Project/dataset
@@ -48,7 +48,7 @@ export function useFhirClient() {
       resource = merge(resource, { meta: { tag: [] } });
       resource.meta!.tag!.push({
         system: 'http://lifeomic.com/fhir/dataset',
-        code: activeSubject?.projectId,
+        code: subject?.projectId,
       });
     }
 
@@ -95,8 +95,8 @@ export function useFhirClient() {
     const params = merge(
       {
         // Defaults:
-        _tag: `http://lifeomic.com/fhir/dataset|${activeSubject?.projectId}`,
-        patient: activeSubject?.subjectId,
+        _tag: `http://lifeomic.com/fhir/dataset|${subject?.projectId}`,
+        patient: subject?.subjectId,
         next: next.toString(),
         code: toFhirCodeFilter(),
         ...toDateRangeFilter(queryParams.dateRange),
@@ -143,8 +143,8 @@ export function useFhirClient() {
       {
         enabled:
           !!accountHeaders &&
-          !!activeSubject?.projectId &&
-          !!activeSubject?.subjectId &&
+          !!subject?.projectId &&
+          !!subject?.subjectId &&
           (queryParams.enabled ?? true),
         keepPreviousData: true,
       },
@@ -171,11 +171,7 @@ export function useFhirClient() {
   const useCreateResourceMutation = () => {
     return useMutation({
       mutationFn: async (resourceToUpsert: ResourceType) => {
-        if (
-          !accountHeaders ||
-          !activeSubject?.projectId ||
-          !activeSubject.subjectId
-        ) {
+        if (!accountHeaders || !subject?.projectId || !subject.subjectId) {
           throw new Error('Cannot mutate resource in current state');
         }
 
@@ -197,11 +193,7 @@ export function useFhirClient() {
   const useCreateBundleMutation = () => {
     return useMutation({
       mutationFn: async (resources: ResourceType[]) => {
-        if (
-          !accountHeaders ||
-          !activeSubject?.projectId ||
-          !activeSubject?.subjectId
-        ) {
+        if (!accountHeaders || !subject?.projectId || !subject?.subjectId) {
           throw new Error('Cannot mutate resource in current state');
         }
 

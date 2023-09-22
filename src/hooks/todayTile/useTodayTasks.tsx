@@ -3,7 +3,7 @@ import { useGraphQLClient } from '../useGraphQLClient';
 import { gql } from 'graphql-request';
 import { useActiveAccount } from '../useActiveAccount';
 import { useQuery } from '@tanstack/react-query';
-import { useActiveProject } from '../useActiveProject';
+import { useActiveConfig } from '../useActiveConfig';
 import { useRestQuery } from '../rest-api';
 import { ConsentTask, SurveyResponse } from './types';
 
@@ -13,17 +13,17 @@ export function isConsentTask(value: TodayTask): value is ConsentTask {
 }
 
 const useConsentTasks = () => {
-  const { activeSubject } = useActiveProject();
+  const { subject } = useActiveConfig();
   const { accountHeaders } = useActiveAccount();
 
   return useRestQuery(
     'GET /v1/consent/directives/me',
     {
-      projectId: activeSubject?.projectId!,
+      projectId: subject?.projectId!,
       includeForm: true,
     },
     {
-      enabled: !!accountHeaders && !!activeSubject?.projectId,
+      enabled: !!accountHeaders && !!subject?.projectId,
       axios: { headers: accountHeaders },
       select: (data) => data.items,
     },
@@ -31,24 +31,21 @@ const useConsentTasks = () => {
 };
 
 const useGetSurveyResponsesForProject = () => {
-  const { activeSubject } = useActiveProject();
+  const { subject } = useActiveConfig();
   const { accountHeaders } = useActiveAccount();
 
   return useRestQuery(
     'GET /v1/survey/projects/:projectId/responses',
     {
-      projectId: activeSubject?.projectId!,
-      author: activeSubject?.subjectId!,
-      patientId: activeSubject?.subjectId!,
+      projectId: subject?.projectId!,
+      author: subject?.subjectId!,
+      patientId: subject?.subjectId!,
       includeSurveyName: false,
       status: 'in-progress',
       pageSize: 100,
     },
     {
-      enabled:
-        !!accountHeaders &&
-        !!activeSubject?.projectId &&
-        !!activeSubject?.subjectId,
+      enabled: !!accountHeaders && !!subject?.projectId && !!subject?.subjectId,
       axios: { headers: accountHeaders },
       select: (data) => data.items,
     },

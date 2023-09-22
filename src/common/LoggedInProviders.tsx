@@ -3,7 +3,7 @@ import React from 'react';
 import { ActiveAccountContextProvider } from '../hooks/useActiveAccount';
 import { NotificationsManagerProvider } from '../hooks/useNotificationManager';
 import { UnreadMessagesContextProvider } from '../hooks/useUnreadMessages';
-import { ActiveProjectContextProvider } from '../hooks/useActiveProject';
+import { ActiveConfigContextProvider } from '../hooks/useActiveConfig';
 import Toast from 'react-native-toast-message';
 import { TrackTileProvider } from '../components/TrackTile/TrackTileProvider';
 import { WearableLifecycleProvider } from '../components/Wearables/WearableLifecycleProvider';
@@ -23,7 +23,7 @@ export const LoggedInProviders = ({
   return (
     <SessionContextProvider>
       <ActiveAccountContextProvider>
-        <ActiveProjectContextProvider>
+        <ActiveConfigContextProvider>
           <TrackTileProvider>
             <WearableLifecycleProvider>
               <CircleTileContextProvider>
@@ -41,7 +41,7 @@ export const LoggedInProviders = ({
               </CircleTileContextProvider>
             </WearableLifecycleProvider>
           </TrackTileProvider>
-        </ActiveProjectContextProvider>
+        </ActiveConfigContextProvider>
       </ActiveAccountContextProvider>
     </SessionContextProvider>
   );

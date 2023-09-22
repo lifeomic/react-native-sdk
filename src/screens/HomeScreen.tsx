@@ -4,15 +4,14 @@ import { ScreenSurface } from '../components/ScreenSurface';
 import { HomeStackScreenProps } from '../navigators/types';
 import { refreshNotifier } from '../common/RefreshNotifier';
 import { HeaderLeftRefreshButton } from '../components/HeaderLeftRefreshButton';
-import { useActiveProject } from '../hooks/useActiveProject';
+import { useActiveConfig } from '../hooks/useActiveConfig';
 
 export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
-  const { activeSubject } = useActiveProject();
-  const data = activeSubject?.project.appConfig;
+  const { appConfig } = useActiveConfig();
   const [refreshing, setRefreshing] = useState(false);
   const { navigation } = navProps;
-  const customHeaderTitle = data?.homeTab?.screenHeader?.title;
-  const headerRefreshEnabled = data?.homeTab?.screenHeader?.enableRefresh;
+  const customHeaderTitle = appConfig?.homeTab?.screenHeader?.title;
+  const headerRefreshEnabled = appConfig?.homeTab?.screenHeader?.enableRefresh;
 
   const refresh = useCallback(async () => {
     if (refreshing) {

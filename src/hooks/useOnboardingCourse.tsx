@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
-import { useActiveProject } from './useActiveProject';
+import { useActiveConfig } from './useActiveConfig';
 import { useAsyncStorage } from './useAsyncStorage';
 
 export type OnboardingCourseContextProps = {
@@ -21,15 +21,13 @@ export const OnboardingCourseContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { activeSubject, isLoading } = useActiveProject();
-  const data = activeSubject?.project.appConfig;
-
-  const onboardingCourseUrl = data?.onboardingCourse?.url;
-  const onboardingCourseTitle = data?.onboardingCourse?.title;
+  const { subject, appConfig, isLoading } = useActiveConfig();
+  const onboardingCourseUrl = appConfig?.onboardingCourse?.url;
+  const onboardingCourseTitle = appConfig?.onboardingCourse?.title;
   const [storedDidLaunchResult, storeDidLaunch, isStorageLoaded] =
     useAsyncStorage(
-      `${activeSubject?.project?.id}-didLaunchOnboardingCourse`,
-      !!activeSubject?.project?.id,
+      `${subject?.projectId}-didLaunchOnboardingCourse`,
+      !!subject?.projectId,
     );
 
   const [didLaunchCourse, setDidLaunchCourse] = useState<boolean | undefined>(
@@ -40,10 +38,10 @@ export const OnboardingCourseContextProvider = ({
   const isFetched = isStorageLoaded;
 
   useEffect(() => {
-    if (activeSubject?.project?.id) {
+    if (subject?.projectId) {
       setDidLaunchCourse(storedDidLaunchResult === 'true');
     }
-  }, [storedDidLaunchResult, activeSubject?.project?.id]);
+  }, [storedDidLaunchResult, subject?.projectId]);
 
   /* Render the onboarding course if the following conditions are met:
     1. The app config and the async storage value have been fetched

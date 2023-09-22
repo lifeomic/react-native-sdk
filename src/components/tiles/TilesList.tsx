@@ -3,7 +3,7 @@ import { Image, ImageStyle, View } from 'react-native';
 import { tID } from '../../common';
 import { Tile, TileStyles } from './Tile';
 import { TrackTile } from '../TrackTile';
-import { useStyles, useDeveloperConfig, useActiveProject } from '../../hooks';
+import { useStyles, useDeveloperConfig, useActiveConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { ChromiconName, createStyles, useIcons } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
@@ -21,17 +21,17 @@ interface Props extends HomeStackScreenProps<'Home'> {
 export function TilesList({ navigation, styles: instanceStyles }: Props) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { appTileScreens } = useDeveloperConfig();
-  const { activeSubject } = useActiveProject();
-  const data = activeSubject?.project?.appConfig;
+  const { appConfig } = useActiveConfig();
 
-  const pillarsTileEnabled = data?.homeTab?.tiles?.includes?.('pillarsTile');
-  const pillarSettings = data?.homeTab?.pillarSettings;
-  const trackTileEnabled = data?.homeTab?.tiles?.includes?.('trackTile');
-  const trackerSettings = data?.homeTab?.trackTileSettings;
+  const pillarsTileEnabled =
+    appConfig?.homeTab?.tiles?.includes?.('pillarsTile');
+  const pillarSettings = appConfig?.homeTab?.pillarSettings;
+  const trackTileEnabled = appConfig?.homeTab?.tiles?.includes?.('trackTile');
+  const trackerSettings = appConfig?.homeTab?.trackTileSettings;
   const trackTileTitle = trackerSettings?.title;
-  const todayTileEnabled = data?.homeTab?.tiles?.includes?.('todayTile');
-  const myDataTileEnabled = data?.homeTab?.tiles?.includes?.('myDataTile');
-  const todayTile = data?.homeTab?.todayTile;
+  const todayTileEnabled = appConfig?.homeTab?.tiles?.includes?.('todayTile');
+  const myDataTileEnabled = appConfig?.homeTab?.tiles?.includes?.('myDataTile');
+  const todayTile = appConfig?.homeTab?.todayTile;
   const onCircleTilePress = useCallback(
     (circleTile: CircleTile) => () => {
       navigation.navigate('Home/Circle/Discussion', { circleTile });
@@ -120,7 +120,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             onPress={() => navigation.navigate('Home/MyData')}
           />
         )}
-        {data?.homeTab?.appTiles?.map((appTile: AppTile) => (
+        {appConfig?.homeTab?.appTiles?.map((appTile: AppTile) => (
           <Tile
             id={appTile.id}
             key={appTile.id}
@@ -129,15 +129,17 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             Icon={appTileIcon(appTile.id, appTile.icon, styles.iconImage)}
           />
         ))}
-        {data?.homeTab?.messageTiles?.map(({ id, displayName, userIds }) => (
-          <MessagesTile
-            navigation={navigation}
-            title={displayName}
-            id={id}
-            recipientsUserIds={userIds}
-          />
-        ))}
-        {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
+        {appConfig?.homeTab?.messageTiles?.map(
+          ({ id, displayName, userIds }) => (
+            <MessagesTile
+              navigation={navigation}
+              title={displayName}
+              id={id}
+              recipientsUserIds={userIds}
+            />
+          ),
+        )}
+        {appConfig?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
           <Tile
             id={circleTile.circleId}
             key={circleTile.circleId}

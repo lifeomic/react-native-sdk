@@ -27,7 +27,7 @@ import {
 import { pick, merge, pickBy, fromPairs } from 'lodash';
 import { useHttpClient } from '../../../hooks/useHttpClient';
 import { useActiveAccount } from './../../../hooks/useActiveAccount';
-import { useActiveProject } from './../../../hooks/useActiveProject';
+import { useActiveConfig } from '../../../hooks/useActiveConfig';
 import { useSession } from '../../../hooks/useSession';
 import { useDeveloperConfig } from '../../../hooks/useDeveloperConfig';
 import {
@@ -44,17 +44,17 @@ const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
 
 export const useAxiosTrackTileService = (): TrackTileService => {
   const { httpClient } = useHttpClient();
-  const { activeSubject } = useActiveProject();
+  const { appConfig, subject } = useActiveConfig();
   const { account } = useActiveAccount();
   const { userConfiguration } = useSession();
   const { user: userData } = userConfiguration;
-  const appConfig = activeSubject?.project?.appConfig;
+
   const userId = userData?.id;
   const [previousUserId, setPreviousUserId] = useState(userId);
   const { ontology: devConfigOntology } = useDeveloperConfig();
 
   const accountId = account?.id || '';
-  const projectId = activeSubject?.project?.id || '';
+  const projectId = subject?.projectId || '';
   const { includePublic = false } = appConfig?.homeTab?.trackTileSettings ?? {};
 
   const { current: cache } = useRef<{
@@ -205,7 +205,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   return {
     accountId,
     projectId,
-    patientId: activeSubject?.subjectId,
+    patientId: subject?.subjectId,
 
     fetchTrackers: async () => {
       if (cache.trackers) {
@@ -273,7 +273,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
           variables: {
             dates: [`ge${start}`, `le${end}`],
             codeBelow: valuesContext.codeBelow,
-            patientId: activeSubject?.subjectId,
+            patientId: subject?.subjectId,
           },
           query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
         },

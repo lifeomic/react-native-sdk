@@ -3,12 +3,11 @@ import { useUnreadMessages } from './useUnreadMessages';
 import { chunk, compact, find, uniq } from 'lodash';
 import { useLookupUsers } from './Circles/usePrivatePosts';
 import { useSession } from './useSession';
-import { useActiveProject } from './useActiveProject';
+import { useActiveConfig } from './useActiveConfig';
 
 export const useMyMessages = (tileId: string) => {
   const [pageIndex, setPageIndex] = useState(0);
-  const { activeSubject } = useActiveProject();
-  const appConfig = activeSubject?.project?.appConfig;
+  const { appConfig } = useActiveConfig();
   const { userConfiguration } = useSession();
   const { user: userData } = userConfiguration;
   const { unreadIds } = useUnreadMessages();

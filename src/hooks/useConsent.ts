@@ -1,12 +1,12 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
-import { useActiveProject } from './useActiveProject';
+import { useActiveConfig } from './useActiveConfig';
 import { Consent, Questionnaire } from 'fhir/r3';
 
 export const useConsent = () => {
   const { accountHeaders, account } = useActiveAccount();
-  const { activeSubject } = useActiveProject();
+  const { activeSubject: subject } = useActiveConfig();
   const { httpClient } = useHttpClient();
 
   const useConsentDirectives = () => {
@@ -15,18 +15,18 @@ export const useConsent = () => {
         '/v1/consent/directives/me',
         {
           account,
-          projectId: activeSubject?.projectId,
+          projectId: subject?.projectId,
           accountHeaders,
         },
       ],
       () =>
         httpClient
           .get<{ items: ConsentAndForm[] }>('/v1/consent/directives/me', {
-            params: { projectId: activeSubject?.projectId, includeForm: true },
+            params: { projectId: subject?.projectId, includeForm: true },
             headers: { ...accountHeaders },
           })
           .then((res) => res.data),
-      { enabled: !!accountHeaders && !!activeSubject?.projectId },
+      { enabled: !!accountHeaders && !!subject?.projectId },
     );
   };
 

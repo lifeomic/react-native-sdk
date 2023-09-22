@@ -4,7 +4,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { HttpClientContextProvider } from '../../../src/hooks/useHttpClient';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ActiveAccountContext, ActiveProjectContext } from '../../../src/hooks';
+import { ActiveAccountContext, ActiveConfigContext } from '../../../src/hooks';
 
 export const DataProviderDecorator = (
   builder?: (adapter: MockAdapter) => void,
@@ -25,14 +25,14 @@ export const DataProviderDecorator = (
           } as any
         }
       >
-        <ActiveProjectContext.Provider
+        <ActiveConfigContext.Provider
           value={
             {
-              activeProject: {
+              project: {
                 id: 'mockProject',
                 name: 'mockProject',
               },
-              activeSubjectId: 'mockSubjectId',
+              subject: { subjectId: 'mockSubjectId' },
             } as any
           }
         >
@@ -41,7 +41,7 @@ export const DataProviderDecorator = (
               {StoryFn(storyCtx)}
             </HttpClientContextProvider>
           </QueryClientProvider>
-        </ActiveProjectContext.Provider>
+        </ActiveConfigContext.Provider>
       </ActiveAccountContext.Provider>
     );
   };
