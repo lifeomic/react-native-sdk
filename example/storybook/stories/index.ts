@@ -20,6 +20,7 @@ import './Notifications/NotificationsScreen.stories';
 import './OAuth.stories';
 import './TrackTile/Pillar.stories';
 import './TrackTile/PillarsTile.stories';
+import './SettingsScreen/SettingsScreen.stories';
 import './SharingRenderers';
 import './Wearables/SelectorRow.stories';
 import './Wearables/SelectorView.stories';

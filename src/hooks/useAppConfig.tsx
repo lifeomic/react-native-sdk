@@ -85,7 +85,8 @@ type AppConfigContextProps = {
   isFetched: boolean | undefined;
   error: any;
 };
-const AppConfigContext = createContext<AppConfigContextProps>({
+
+export const AppConfigContext = createContext<AppConfigContextProps>({
   data: undefined,
   isLoading: undefined,
   isFetched: undefined,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { t } from 'i18next';
 import DeviceInfo from 'react-native-device-info';
@@ -13,6 +13,9 @@ import { SettingsStackScreenProps } from '../navigators/types';
 import { useWearables } from '../hooks/useWearables';
 import { useAppConfig } from '../hooks/useAppConfig';
 import { openURL } from '../common/urls';
+import { useDeveloperConfig } from '../hooks';
+import identityFn from 'lodash/identity';
+import compact from 'lodash/compact';
 
 const versionNumber = DeviceInfo.getVersion();
 const buildNumber = DeviceInfo.getBuildNumber();
@@ -26,39 +29,48 @@ export const SettingsScreen = ({
   const { useWearableIntegrationsQuery } = useWearables();
   const { data: wearablesData } = useWearableIntegrationsQuery();
   const { data: appConfigData } = useAppConfig();
+  const { modifySettingScreenMenuItems = identityFn } = useDeveloperConfig();
   const support = appConfigData?.support;
+
+  const menuItems = useMemo(
+    () =>
+      modifySettingScreenMenuItems(
+        compact([
+          {
+            id: 'profile',
+            title: t('settings-profile-row-title', 'Profile'),
+            action: () => navigation.navigate('Settings/Profile'),
+          },
+          {
+            id: 'account',
+            title: account?.name || t('settings-account-selection', 'Accounts'),
+            action: () => navigation.navigate('Settings/AccountSelection'),
+          },
+          !!wearablesData?.items?.length && {
+            id: 'sync-data',
+            title: t('settings-sync-data', 'Sync Data'),
+            action: () => navigation.navigate('Settings/Wearables'),
+          },
+          !!support?.url && {
+            id: 'support',
+            title: t('settings-support', 'Support'),
+            action: () => openURL(support.url),
+          },
+        ]),
+      ),
+    [modifySettingScreenMenuItems, wearablesData, support, account, navigation],
+  );
 
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.scroll}>
-          <MainMenuItem
-            title={t('settings-profile-row-title', 'Profile')}
-            action={() => navigation.navigate('Settings/Profile')}
-          />
-          <Divider />
-          <MainMenuItem
-            title={account?.name || t('settings-account-selection', 'Accounts')}
-            action={() => navigation.navigate('Settings/AccountSelection')}
-          />
-          {!!wearablesData?.items?.length && (
-            <>
-              <Divider />
-              <MainMenuItem
-                title={t('settings-sync-data', 'Sync Data')}
-                action={() => navigation.navigate('Settings/Wearables')}
-              />
-            </>
-          )}
-          {!!support?.url && (
-            <>
-              <Divider />
-              <MainMenuItem
-                title={t('settings-support', 'Support')}
-                action={() => openURL(support.url)}
-              />
-            </>
-          )}
+          {menuItems?.map((item, index) => (
+            <React.Fragment key={item.id}>
+              {index > 0 && <Divider />}
+              <MainMenuItem {...item} />
+            </React.Fragment>
+          ))}
         </ScrollView>
         <View style={styles.subMenuContainer}>
           <OAuthLogoutButton

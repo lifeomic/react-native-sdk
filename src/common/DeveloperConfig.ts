@@ -47,6 +47,8 @@ import { EducationContent } from '../components/TrackTile/services/TrackTileServ
  * must be the `coding.code` value, e.g. '41950-7' for steps.
  *
  * @param onAppSessionStart Allows for providing a callback to be called when a logged in session starts.  This is useful for analytics tracking, subscription status checks, etc.
+ *
+ * @param modifySettingScreenMenuItems Allows modifying and injecting menu items into the settings screen
  */
 
 export interface RouteColor {
@@ -112,6 +114,9 @@ export type DeveloperConfig = {
     educationContentOverrides?: Record<string, EducationContent>;
   };
   onAppSessionStart?: (params: OnAppSessionStartParams) => Promise<void>;
+  modifySettingScreenMenuItems?: (
+    items: { id: string; title: string; action: () => void }[],
+  ) => { id: string; title: string; action: () => void }[];
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };
