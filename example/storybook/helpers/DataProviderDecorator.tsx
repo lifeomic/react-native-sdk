@@ -22,7 +22,6 @@ export const DataProviderDecorator = (
         value={
           {
             accountHeaders: {},
-            account: { id: 'mockAccount' },
           } as any
         }
       >
