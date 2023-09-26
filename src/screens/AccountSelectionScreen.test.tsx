@@ -1,14 +1,11 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { AccountSelectionScreen } from './AccountSelectionScreen';
-import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useNavigation } from '@react-navigation/native';
-
-jest.mock('../hooks/useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
-
-const useActiveAccountMock = useActiveAccount as jest.Mock;
+import {
+  mockActiveAccount,
+  mockUseSession,
+} from '../common/testHelpers/mockSession';
 
 const setActiveAccountId = jest.fn();
 const goBackMock = jest.fn();
@@ -23,17 +20,7 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 test('renders buttons to select account', async () => {
-  useActiveAccountMock.mockReturnValue({
-    accountsWithProduct: [
-      {
-        id: 'account1',
-      },
-      {
-        id: 'account2',
-      },
-    ],
-    setActiveAccountId,
-  });
+  mockUseSession({ accounts: [{ id: 'account1' }, { id: 'account2' }] });
   const { getByTestId } = await render(
     <AccountSelectionScreen
       navigation={useNavigation() as any}
@@ -46,17 +33,8 @@ test('renders buttons to select account', async () => {
 });
 
 test('allows for selecting account via button', async () => {
-  useActiveAccountMock.mockReturnValue({
-    accountsWithProduct: [
-      {
-        id: 'account1',
-      },
-      {
-        id: 'account2',
-      },
-    ],
-    setActiveAccountId,
-  });
+  mockUseSession({ accounts: [{ id: 'account1' }, { id: 'account2' }] });
+  mockActiveAccount(false, setActiveAccountId);
   const { getByTestId } = await render(
     <AccountSelectionScreen
       navigation={useNavigation() as any}

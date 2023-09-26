@@ -10,46 +10,12 @@ import {
   startOfYear,
   addDays,
 } from 'date-fns';
-import { AppConfig, useAppConfig } from '../hooks';
 import { MyDataScreen } from './MyDataScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
 jest.unmock('@react-navigation/native');
 jest.unmock('i18next');
-
-jest.mock('../hooks/useAppConfig', () => ({
-  useAppConfig: jest.fn(),
-}));
-
-const useAppConfigMock = useAppConfig as jest.Mock;
-
-const exampleAppConfig: AppConfig = {
-  homeTab: {
-    myDataSettings: {
-      components: [
-        {
-          title: 'Chart1',
-          type: 'LineChart',
-          trace1: {
-            coding: [],
-            label: 'Label1',
-            type: 'Observation',
-          },
-        },
-        {
-          title: 'Chart2',
-          type: 'LineChart',
-          trace1: {
-            coding: [],
-            label: 'Label1',
-            type: 'Observation',
-          },
-        },
-      ],
-    },
-  },
-};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,21 +33,6 @@ const myDataScreen = (
     </GraphQLClientContextProvider>
   </QueryClientProvider>
 );
-
-beforeEach(() => {
-  useAppConfigMock.mockReturnValue({
-    isLoading: false,
-    data: exampleAppConfig,
-  });
-});
-
-test('renders loading indicator while app config fetching', async () => {
-  useAppConfigMock.mockReturnValue({
-    isLoading: true,
-  });
-  const { getByTestId } = render(myDataScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
-});
 
 test('renders My Data Screen', async () => {
   const day = new Date();

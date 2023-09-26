@@ -1,6 +1,5 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { useUser } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 import { DirectMessagesScreen } from './DirectMessagesScreen';
@@ -12,9 +11,6 @@ import {
 
 jest.unmock('i18next');
 jest.unmock('@react-navigation/native');
-jest.mock('../hooks/useUser', () => ({
-  useUser: jest.fn(),
-}));
 jest.mock('../hooks/Circles/usePrivatePosts', () => {
   return {
     ...jest.requireActual('../hooks/Circles/usePrivatePosts'),
@@ -23,7 +19,6 @@ jest.mock('../hooks/Circles/usePrivatePosts', () => {
   };
 });
 
-const useUserMock = useUser as jest.Mock;
 const useInfinitePrivatePostsMock = useInfinitePrivatePosts as jest.Mock;
 const useCreatePrivatePostMutationMock =
   useCreatePrivatePostMutation as jest.Mock;
@@ -92,12 +87,6 @@ const directMessageScreen = (
 );
 
 beforeEach(() => {
-  useUserMock.mockReturnValue({
-    isLoading: false,
-    data: {
-      id: 'current_user',
-    },
-  });
   useInfinitePrivatePostsMock.mockReturnValue({
     isLoading: false,
     data: InfinitePrivatePostMock,
@@ -107,14 +96,6 @@ beforeEach(() => {
 const mockMutation = jest.fn();
 useCreatePrivatePostMutationMock.mockReturnValue({
   mutateAsync: mockMutation,
-});
-
-test('renders loading indicator while account fetching', async () => {
-  useUserMock.mockReturnValue({
-    isLoading: true,
-  });
-  const { getByTestId } = render(directMessageScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
 });
 
 test('renders loading indicator while posts are fetching', async () => {

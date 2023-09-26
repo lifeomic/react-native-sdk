@@ -1,21 +1,17 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { AppConfig, useActiveAccount, useAppConfig } from '../hooks';
 import { HomeScreen } from './HomeScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
+import {
+  mockActiveConfig,
+  mockUseSession,
+} from '../common/testHelpers/mockSession';
+import { AppConfig } from '../types';
 
 jest.unmock('i18next');
 jest.unmock('@react-navigation/native');
-jest.mock('../hooks/useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
-jest.mock('../hooks/useAppConfig', () => ({
-  useAppConfig: jest.fn(),
-}));
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
-const useAppConfigMock = useAppConfig as jest.Mock;
 const navigateMock = {
   navigate: jest.fn(),
   setOptions: jest.fn(),
@@ -64,13 +60,8 @@ const homeScreen = (
 );
 
 beforeEach(() => {
-  useActiveAccountMock.mockReturnValue({
-    isLoading: false,
-  });
-  useAppConfigMock.mockReturnValue({
-    isLoading: false,
-    data: exampleAppConfig,
-  });
+  mockUseSession({ appConfig: exampleAppConfig });
+  mockActiveConfig({ appConfig: exampleAppConfig });
 });
 
 test('sets the custom header title', async () => {

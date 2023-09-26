@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
-import { useActiveAccount, useUser } from '../hooks';
+import { useActiveAccount } from '../hooks';
 import { NotificationQueryResponse } from '../hooks/useNotifications';
 import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
 import { NotificationsScreen } from './NotificationsScreen';
@@ -9,9 +9,6 @@ import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
 jest.mock('../hooks/useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
-}));
-jest.mock('../hooks/useUser', () => ({
-  useUser: jest.fn(),
 }));
 
 const queryClient = new QueryClient({
@@ -32,29 +29,13 @@ const notificationsScreen = (
 );
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
-const useUserMock = useUser as jest.Mock;
 
 beforeEach(() => {
-  useUserMock.mockReturnValue({
-    data: {
-      id: 'userId',
-      profile: {},
-    },
-    isLoading: false,
-  });
   useActiveAccountMock.mockReturnValue({
     accountHeaders: {
       'LifeOmic-Account': 'unittest',
     },
   });
-});
-
-test('renders loading indicator while user is fetching', async () => {
-  useUserMock.mockReturnValue({
-    isLoading: true,
-  });
-  const { getByTestId } = render(notificationsScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
 });
 
 test('renders no notification message', async () => {

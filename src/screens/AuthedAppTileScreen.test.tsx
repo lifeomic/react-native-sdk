@@ -2,18 +2,15 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { AuthedAppTileScreen } from './AuthedAppTileScreen';
 import { useExchangeToken } from '../hooks/useExchangeToken';
-import { useActiveProject } from '../hooks/useActiveProject';
-import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useHandleAppTileEvents } from '../hooks/useHandleAppTileEvents';
+import {
+  mockAccount,
+  mockProject,
+  mockSubject,
+} from '../common/testHelpers/mockSession';
 
 jest.mock('../hooks/useExchangeToken', () => ({
   useExchangeToken: jest.fn(),
-}));
-jest.mock('../hooks/useActiveProject', () => ({
-  useActiveProject: jest.fn(),
-}));
-jest.mock('../hooks/useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
 }));
 jest.mock('../hooks/useHandleAppTileEvents', () => ({
   useHandleAppTileEvents: jest.fn(),
@@ -24,8 +21,6 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 const useExchangeTokenMock = useExchangeToken as jest.Mock;
-const useActiveProjectMock = useActiveProject as jest.Mock;
-const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useHandleAppTileEventsMock = useHandleAppTileEvents as jest.Mock;
 
 const handleAppTileMessageMock = jest.fn();
@@ -55,19 +50,6 @@ beforeEach(() => {
     isFetched: true,
     isLoading: false,
   });
-  useActiveAccountMock.mockReturnValue({
-    account: {
-      id: 'acct1',
-    },
-    isFetched: true,
-    isLoading: false,
-  });
-  useActiveProjectMock.mockReturnValue({
-    activeProject: { id: 'projectId' },
-    activeSubjectId: 'subjectId',
-    isFetched: true,
-    isLoading: false,
-  });
   useHandleAppTileEventsMock.mockReturnValue({
     handleAppTileMessage: handleAppTileMessageMock,
     handleAppTileNavigationStateChange: handleAppTileNavigationStateChangeMock,
@@ -82,7 +64,7 @@ test('builds uri with code, projectId, patientId, and accountId', () => {
   const AppTileWebView = getByTestId('app-tile-webview');
   expect(useExchangeTokenMock).toHaveBeenCalledTimes(1);
   expect(AppTileWebView.props.source).toMatchObject({
-    uri: 'http://unit-test/app-tile/callback?accountId=acct1&code=someCode&patientId=subjectId&projectId=projectId',
+    uri: `http://unit-test/app-tile/callback?accountId=${mockAccount.id}&code=someCode&patientId=${mockSubject.subjectId}&projectId=${mockProject.id}`,
   });
 });
 
