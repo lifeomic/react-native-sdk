@@ -12,7 +12,7 @@ import { activity, mindful, nutrition, sleep } from './util/ontologies';
 
 const ontology = {} as any;
 
-storiesOf('AdvancedTrackerDetails', module)
+storiesOf('TrackTile/AdvancedTrackerDetails', module)
   .addDecorator(withKnobs)
   .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator({ ontology })(storyFn, context),

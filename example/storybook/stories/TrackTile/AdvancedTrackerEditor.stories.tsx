@@ -24,7 +24,7 @@ const ontology = {} as any;
 
 const Stack = createNativeStackNavigator();
 
-storiesOf('AdvancedTrackerEditor', module)
+storiesOf('TrackTile/AdvancedTrackerEditor', module)
   .addDecorator(withKnobs)
   .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator({

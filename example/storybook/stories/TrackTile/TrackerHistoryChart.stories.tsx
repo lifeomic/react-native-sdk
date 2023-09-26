@@ -13,7 +13,7 @@ const defaultProps = {
   },
 };
 
-storiesOf('Tracker History Chart', module)
+storiesOf('TrackTile/Tracker History Chart', module)
   .addDecorator((Story) => (
     <View style={{ marginHorizontal: 34, marginVertical: 128, height: 250 }}>
       {Story()}

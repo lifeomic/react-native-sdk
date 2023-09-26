@@ -9,7 +9,7 @@ import { kebabCase, invert } from 'lodash';
 import { View, Text, ScrollView } from 'react-native';
 import { CenterView } from '../../helpers/CenterView';
 
-storiesOf('Indicator', module)
+storiesOf('TrackTile/Indicator', module)
   .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => {
     const names = Object.keys(Icons).map(kebabCase);

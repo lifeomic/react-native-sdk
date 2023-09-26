@@ -14,7 +14,7 @@ import {
 } from '@storybook/addon-knobs';
 import { CenterView } from '../../helpers/CenterView';
 
-storiesOf('Tracker', module)
+storiesOf('TrackTile/Tracker', module)
   .addDecorator(withKnobs)
   .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => {

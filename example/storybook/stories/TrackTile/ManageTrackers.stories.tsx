@@ -59,7 +59,7 @@ const defaultMetricTypes: Partial<Tracker>[] = [
   },
 ];
 
-storiesOf('ManageTrackers', module)
+storiesOf('TrackTile/ManageTrackers', module)
   .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator()(storyFn, context),
   )
