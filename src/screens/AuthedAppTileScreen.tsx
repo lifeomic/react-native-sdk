@@ -20,7 +20,7 @@ export const AuthedAppTileScreen = ({
   const webViewRef = useRef<WebView>(null);
   const { data: appConfig } = useAppConfig();
   const titleOverride =
-    appConfig?.homeTab?.appTileSettings?.appTiles[appTile.id].title;
+    appConfig?.homeTab?.appTileSettings?.appTiles[appTile.id]?.title;
 
   const { handleAppTileMessage, handleAppTileNavigationStateChange } =
     useHandleAppTileEvents(webViewRef.current);

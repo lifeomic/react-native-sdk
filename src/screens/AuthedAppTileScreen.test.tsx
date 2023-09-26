@@ -136,3 +136,20 @@ test('sets the titleOverride as the screen title', () => {
     title: TITLE_OVERRIDE,
   });
 });
+
+test('handles existing appTileSettings with no appTile override title', () => {
+  route.params.appTile = appTile;
+  useAppConfigMock.mockReturnValue({
+    data: {
+      homeTab: {
+        appTileSettings: {
+          appTiles: {},
+        },
+      },
+    },
+  });
+  render(<AuthedAppTileScreen navigation={navigation} route={route} />);
+  expect(navigation.setOptions).toBeCalledWith({
+    title: appTile.title,
+  });
+});
