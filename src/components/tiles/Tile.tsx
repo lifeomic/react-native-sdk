@@ -15,6 +15,7 @@ interface TileProps {
   testID?: string;
   showBadge?: boolean;
   badge?: () => React.JSX.Element | null;
+  style?: TileStyles;
 }
 
 export const Tile = ({
@@ -26,9 +27,10 @@ export const Tile = ({
   onPress,
   showBadge,
   badge,
+  style: instanceStyles,
 }: TileProps) => {
   const { ChevronRight } = useIcons();
-  const { styles } = useStyles(defaultStyles);
+  const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
     <TouchableOpacity
