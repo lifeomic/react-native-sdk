@@ -5,26 +5,14 @@ import {
 } from '../../../../../src/components/TrackTile/services/TrackTileService';
 
 export const getTrackers = ({
-  names,
   pillars,
 }: {
-  names?: string[];
   pillars?: boolean;
 } = {}) => {
-  const availableTrackers = [
-    nutrition,
-    activity,
-    mindfulness,
-    sleep,
-    school,
-  ].map((tracker) => ({
+  return [nutrition, activity, mindfulness, sleep, school].map((tracker) => ({
     ...tracker,
     system: pillars ? TRACKER_PILLAR_CODE_SYSTEM : TRACKER_CODE_SYSTEM,
   }));
-
-  return names
-    ? availableTrackers.filter((tracker) => names.includes(tracker.name))
-    : availableTrackers;
 };
 
 const baseTracker = {
