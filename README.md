@@ -164,6 +164,35 @@ export default function App() {
 }
 ```
 
+### Custom Home screen
+
+```typescript
+const CustomHomeScreen = () => {
+  const navigation = useNavigation<CustomHomeScreenNavigationProp>();
+  const route = useRoute<UserDetailsScreenRouteProp>();
+
+  return (
+    <View>
+      <Text>Custom Home Screen</Text>
+    </View>
+  );
+};
+
+function App() {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={{
+        CustomHomeScreen,
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <RootStack />
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+}
+```
+
 ### Custom Login Screen
 
 1- Define your custom login screen

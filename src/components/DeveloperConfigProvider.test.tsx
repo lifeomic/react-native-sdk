@@ -77,4 +77,12 @@ describe('with developerConfig injected into provider', () => {
     });
     expect(result.current.onAppSessionStart).toEqual(onAppSessionStart);
   });
+
+  test('allows CustomHomeScreen to be configured', async () => {
+    const CustomHomeScreen = () => <></>;
+    const { result } = await renderHookInContext({
+      CustomHomeScreen,
+    });
+    expect(result.current.CustomHomeScreen).toStrictEqual(CustomHomeScreen);
+  });
 });

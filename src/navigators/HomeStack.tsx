@@ -22,14 +22,15 @@ import { MessageScreen } from '../screens/MessageScreen';
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
 export function HomeStack() {
-  const { getAdditionalHomeScreens, logoHeaderConfig } = useDeveloperConfig();
+  const { getAdditionalHomeScreens, logoHeaderConfig, CustomHomeScreen } =
+    useDeveloperConfig();
 
   return (
     <Stack.Navigator
       screenOptions={{ header: AppNavHeader }}
       screenListeners={navigationScreenListeners(logoHeaderConfig)}
     >
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Home" component={CustomHomeScreen || HomeScreen} />
       <Stack.Screen name="Home/AppTile" component={AppTileScreen} />
       <Stack.Screen name="Home/AuthedAppTile" component={AuthedAppTileScreen} />
       <Stack.Screen name="Home/CustomAppTile" component={CustomAppTileScreen} />

@@ -105,6 +105,7 @@ export type DeveloperConfig = {
   getAdditionalHomeScreens?: <ParamList extends ParamListBase>(
     HomeStack: Navigator<ParamList, NativeStackNavigatorProps>,
   ) => JSX.Element[];
+  CustomHomeScreen?: () => JSX.Element;
   renderCustomLoginScreen?: () => JSX.Element;
   sharingRenderers?: {
     pointBreakdown: (props: PointBreakdownProps) => React.JSX.Element;
