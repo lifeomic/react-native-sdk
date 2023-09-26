@@ -5,65 +5,41 @@ import { MockEnvironmentDecorator } from './util/MockEnvironmentDecorator';
 import { action } from '@storybook/addon-actions';
 import { TrackTile } from '../../../../src/components/TrackTile';
 import { CenterView } from '../../helpers/CenterView';
+import { getTrackers } from './util/trackerData';
+import { boolean } from '@storybook/addon-knobs';
+import { PillarsTile } from '../../../../src/components/TrackTile/PillarsTile/PillarsTile';
 
-storiesOf('TrackTile', module)
+const trackers = [...getTrackers(), ...getTrackers({ pillars: true })];
+
+storiesOf('TrackTile/TrackTiles', module)
   .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator({
-      trackers: [
-        {
-          id: '1',
-          metricId: '1',
-          name: 'Test',
-          color: 'chartreuse',
-          resourceType: 'Procedure',
-          units: [
-            {
-              code: 'h',
-              default: true,
-              display: 'hour',
-              system: 'http://unitsofmeasure.org',
-              target: 5,
-              unit: 'h',
-            },
-          ],
-        },
-      ],
+      trackers,
     })(storyFn, context),
   )
-  .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => (
-    <TrackTile
-      onOpenSettings={action('onOpenSettings')}
-      onOpenTracker={action('onOpenTracker')}
-    />
+    <CenterView>
+      <TrackTile
+        onOpenSettings={action('onOpenSettings')}
+        onOpenTracker={action('onOpenTracker')}
+        title={boolean('Title', true) ? 'TrackTile Title' : undefined}
+        hideSettingsButton={boolean('Hide Settings Button', false)}
+      />
+    </CenterView>
   ))
-  .add('With title and settings button', () => (
-    <TrackTile
-      onOpenSettings={action('onOpenSettings')}
-      onOpenTracker={action('onOpenTracker')}
-      title="TrackTile Title"
-    />
-  ))
-  .add('Title without settings button', () => (
-    <TrackTile
-      onOpenSettings={action('onOpenSettings')}
-      onOpenTracker={action('onOpenTracker')}
-      title="TrackTile Title"
-      hideSettingsButton
-    />
-  ))
-  .add('Settings button without title', () => (
-    <TrackTile
-      onOpenSettings={action('onOpenSettings')}
-      onOpenTracker={action('onOpenTracker')}
-    />
-  ))
-  .add('Without settings button or title', () => (
-    <TrackTile
-      onOpenSettings={action('onOpenSettings')}
-      onOpenTracker={action('onOpenTracker')}
-      hideSettingsButton
-    />
+  .add('In context with Pillars', () => (
+    <>
+      <PillarsTile
+        onOpenDetails={action('onOpenDetails')}
+        onSaveNewValueOverride={action('onSaveNewValueOverride')}
+      />
+      <TrackTile
+        onOpenSettings={action('onOpenSettings')}
+        onOpenTracker={action('onOpenTracker')}
+        title={boolean('Title', true) ? 'TrackTile Title' : undefined}
+        hideSettingsButton={boolean('Hide Settings Button', false)}
+      />
+    </>
   ))
   .add('Custom style', () => {
     const styles = {
