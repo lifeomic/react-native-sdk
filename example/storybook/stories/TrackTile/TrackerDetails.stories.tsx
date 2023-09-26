@@ -68,7 +68,7 @@ const valuesContext = {
   codeBelow: TRACKER_CODE,
 };
 
-storiesOf('TrackerDetails', module)
+storiesOf('TrackTile/TrackerDetails', module)
   .addDecorator(withKnobs)
   .addDecorator((storyFn, context) =>
     MockEnvironmentDecorator({

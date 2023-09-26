@@ -106,7 +106,7 @@ const initialValue: TrackerValue = {
   code: { coding: [] },
 };
 
-storiesOf('Pillar', module)
+storiesOf('TrackTile/Pillar', module)
   .addDecorator(MockEnvironmentDecorator())
   .addDecorator((story) => <CenterView>{story()}</CenterView>)
   .add('default', () => <InteractivePillar />)
