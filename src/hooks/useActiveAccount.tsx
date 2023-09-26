@@ -18,15 +18,13 @@ export type ActiveAccountProps = {
 };
 
 export type ActiveAccountContextProps = ActiveAccountProps & {
-  setActiveAccountId: (accountId: string) => Promise<void>;
+  setActiveAccountId: (accountId: string) => void;
   isLoading: boolean;
 };
 
 export const ActiveAccountContext = createContext({
-  refetch: () => Promise.reject(),
-  setActiveAccountId: () => Promise.reject(),
+  setActiveAccountId: () => {},
   isLoading: true,
-  isFetched: false,
 } as ActiveAccountContextProps);
 
 const selectedAccountIdKey = 'selectedAccountId';
@@ -86,15 +84,17 @@ export const ActiveAccountContextProvider = ({
     }
   }, [activeAccount?.account?.id, setStoredAccountId]);
 
-  const setActiveAccountId = useCallback(async (accountId: string) => {
+  const setActiveAccountId = useCallback((accountId: string) => {
     setSelectedId(accountId);
   }, []);
 
   // Handle invite accept
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
+      console.log('Invite accepted', clearSession);
       await setActiveAccountId(acceptedInvite.account);
       clearSession();
+      console.log('ClearSession called');
       inviteNotifier.emit('inviteAccountSettled');
     };
     inviteNotifier.addListener('inviteAccepted', listener);
