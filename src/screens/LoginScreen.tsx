@@ -8,12 +8,13 @@ import LaunchScreen from '../components/LaunchScreen';
 import { Dialog, Portal, Text } from 'react-native-paper';
 
 export const LoginScreen: FC = () => {
-  const { renderCustomLoginScreen } = useDeveloperConfig();
+  const { renderCustomLoginScreen, componentProps = {} } = useDeveloperConfig();
   const { styles } = useStyles(defaultStyles);
   const [visible, setVisible] = useState(false);
   const [errorText, setErrorText] = useState('');
   const { AlertTriangle } = useIcons();
   const { inviteParams } = usePendingInvite();
+  const { LoginScreen: loginScreenProps = {} } = componentProps;
 
   const hideDialog = () => {
     setVisible(false);
@@ -22,9 +23,12 @@ export const LoginScreen: FC = () => {
 
   const getLoginButtonText = () => {
     if (inviteParams?.inviteId) {
-      return t('login-button-title-invite-found', 'Accept Invite');
+      return (
+        loginScreenProps.acceptInviteText ??
+        t('login-button-title-invite-found', 'Accept Invite')
+      );
     }
-    return t('login-button-title', 'Login');
+    return loginScreenProps.loginText ?? t('login-button-title', 'Login');
   };
 
   const onFail = (error: any) => {
