@@ -100,6 +100,10 @@ export type DeveloperConfig = {
         theme: Theme,
       ) => Record<string, { image?: ImageSourcePropType; color?: string }>;
     };
+    LoginScreen?: {
+      loginText?: string;
+      acceptInviteText?: string;
+    };
   };
   pushNotificationsConfig?: PushNotificationsConfig;
   getAdditionalHomeScreens?: <ParamList extends ParamListBase>(
