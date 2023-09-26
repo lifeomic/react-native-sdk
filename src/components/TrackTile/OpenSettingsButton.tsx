@@ -1,11 +1,13 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { t } from '../../../lib/i18n';
 import { TouchableOpacity, TouchableOpacityProps } from 'react-native';
 import { tID } from './common/testID';
 import { createStyles, useIcons } from '../BrandConfigProvider';
 import { useStyles } from '../../hooks';
 
-const OpenSettingsButton: FC<TouchableOpacityProps> = (props) => {
+type Props = TouchableOpacityProps & { size: number };
+
+const OpenSettingsButton = (props: Props) => {
   const { Settings } = useIcons();
   const { styles } = useStyles(defaultStyles);
 
@@ -21,7 +23,11 @@ const OpenSettingsButton: FC<TouchableOpacityProps> = (props) => {
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       {...props}
     >
-      <Settings stroke={styles.iconImage?.overlayColor} />
+      <Settings
+        stroke={styles.iconImage?.overlayColor}
+        width={styles.iconImage?.width || props.size}
+        height={styles.iconImage?.height || props.size}
+      />
     </TouchableOpacity>
   );
 };

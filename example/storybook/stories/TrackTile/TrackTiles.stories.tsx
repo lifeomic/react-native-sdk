@@ -8,6 +8,7 @@ import { CenterView } from '../../helpers/CenterView';
 import { getTrackers } from './util/trackerData';
 import { boolean } from '@storybook/addon-knobs';
 import { PillarsTile } from '../../../../src/components/TrackTile/PillarsTile/PillarsTile';
+import { DeveloperConfigProvider } from '../../../../src/components/DeveloperConfigProvider';
 
 const trackers = [...getTrackers(), ...getTrackers({ pillars: true })];
 
@@ -28,7 +29,18 @@ storiesOf('TrackTile/TrackTiles', module)
     </CenterView>
   ))
   .add('In context with Pillars', () => (
-    <>
+    <DeveloperConfigProvider
+      developerConfig={{
+        componentProps: {
+          TrackTile: {
+            hideSettingsButton: boolean(
+              'Hide Settings Button from DeveloperConfig',
+              false,
+            ),
+          },
+        },
+      }}
+    >
       <PillarsTile
         onOpenDetails={action('onOpenDetails')}
         onSaveNewValueOverride={action('onSaveNewValueOverride')}
@@ -37,9 +49,8 @@ storiesOf('TrackTile/TrackTiles', module)
         onOpenSettings={action('onOpenSettings')}
         onOpenTracker={action('onOpenTracker')}
         title={boolean('Title', true) ? 'TrackTile Title' : undefined}
-        hideSettingsButton={boolean('Hide Settings Button', false)}
       />
-    </>
+    </DeveloperConfigProvider>
   ))
   .add('Custom style', () => {
     const styles = {

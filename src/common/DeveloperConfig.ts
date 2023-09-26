@@ -88,6 +88,9 @@ export type DeveloperConfig = {
       showLabels?: boolean;
       tabs?: NavigationTab[];
     };
+    TrackTile?: {
+      hideSettingsButton?: boolean;
+    };
     TrackerDetails?: {
       showSimpleTargetMessage?: boolean;
       dayPickerShowTodaysUnits?: boolean;

@@ -12,6 +12,7 @@ import { useTrackerValues } from './hooks/useTrackerValues';
 import { createStyles } from '../BrandConfigProvider';
 import { useStyles } from '../../hooks/useStyles';
 import { Card } from 'react-native-paper';
+import { useDeveloperConfig } from '../../hooks/useDeveloperConfig';
 
 export type TrackTileProps = {
   title?: string;
@@ -25,12 +26,17 @@ export type TrackTileProps = {
 export function TrackTile({
   onOpenSettings,
   onOpenTracker,
-  hideSettingsButton = false,
+  hideSettingsButton,
   title = '',
   styles: instanceStyles,
   shouldUseOntology,
 }: TrackTileProps) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
+  const { componentProps } = useDeveloperConfig() || {};
+  if (hideSettingsButton === undefined) {
+    hideSettingsButton = componentProps?.TrackTile?.hideSettingsButton;
+  }
+
   const valuesContext: TrackerValuesContext = {
     system: TRACKER_CODE_SYSTEM,
     codeBelow: TRACKER_CODE,
@@ -44,6 +50,10 @@ export function TrackTile({
   const settingsButton = (props: { size: number }) => {
     if (hideSettingsButton) {
       return null;
+    }
+    if (!title) {
+      // The `size` prop defaults to 24 from React Native Paper
+      props.size = 18;
     }
     return (
       <OpenSettingsButton
@@ -63,7 +73,7 @@ export function TrackTile({
           titleStyle={styles.titleText}
           right={settingsButton}
           rightStyle={styles.settingsButton}
-          style={styles.titleView}
+          style={title ? styles.titleView : styles.titleViewWithoutTitle}
         />
       )}
       <TrackerRow
@@ -79,6 +89,9 @@ export function TrackTile({
 const defaultStyles = createStyles('TrackTile', (theme) => ({
   titleView: {
     marginVertical: -8,
+  },
+  titleViewWithoutTitle: {
+    marginVertical: -24,
   },
   titleText: {},
   cardView: {
