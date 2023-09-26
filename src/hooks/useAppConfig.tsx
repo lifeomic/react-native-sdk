@@ -64,11 +64,7 @@ export interface AppConfig {
       enableRefresh?: boolean;
     };
     appTileSettings?: {
-      appTiles: {
-        [key: string]: {
-          title?: string;
-        };
-      };
+      appTiles: Record<string, { title?: string } | undefined>;
     };
   };
   onboardingCourse?: {
