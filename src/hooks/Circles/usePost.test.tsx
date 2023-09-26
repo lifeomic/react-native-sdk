@@ -1,5 +1,4 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useActiveAccount } from '../useActiveAccount';
 import { PostDetailsPostQueryResponse } from './useInfinitePosts';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -7,10 +6,7 @@ import { GraphQLClientContextProvider } from '../useGraphQLClient';
 import { mockGraphQLResponse } from '../../common/testHelpers/mockGraphQLResponse';
 import { Post } from './types';
 import { usePost } from './usePost';
-
-jest.mock('../useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
+import { mockActiveAccount } from '../../common/testHelpers/mockSession';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,28 +32,17 @@ const renderHookWithInjectedClient = async (post: string | Post) => {
   );
 };
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
-
 describe('usePost', () => {
   beforeEach(() => {
-    useActiveAccountMock.mockReturnValue({
-      accountHeaders: {
-        'LifeOmic-Account': 'unittest',
-      },
-    });
+    mockActiveAccount();
   });
-
-  test('does not fetch the result if there are no account headers', async () => {
-    useActiveAccountMock.mockReturnValue({
-      isFetched: true,
-      accountHeaders: undefined,
-    });
-
+  test('returns placeholder if there are no account headers', async () => {
+    mockActiveAccount(true);
     const { result } = await renderHookWithInjectedClient('post');
 
     expect(result.current).toEqual(
       expect.objectContaining({
-        isLoading: false,
+        isPlaceholderData: true,
       }),
     );
   });

@@ -3,8 +3,8 @@ import { Text } from 'react-native';
 import { render } from '@testing-library/react-native';
 import { TilesList } from './TilesList';
 import { useNavigation } from '@react-navigation/native';
-import { useAppConfig } from '../../hooks/useAppConfig';
 import { useIcons } from '../BrandConfigProvider';
+import { mockActiveConfig } from '../../common/testHelpers/mockSession';
 
 jest.unmock('i18next');
 jest.mock('@react-navigation/native', () => ({
@@ -13,10 +13,6 @@ jest.mock('@react-navigation/native', () => ({
 }));
 jest.mock('../TrackTile', () => ({
   TrackTile: ({ title }: { title: string }) => <Text>{title}</Text>,
-}));
-
-jest.mock('../../hooks/useAppConfig', () => ({
-  useAppConfig: jest.fn(),
 }));
 
 jest.mock('../BrandConfigProvider/icons/IconProvider', () => ({
@@ -30,8 +26,8 @@ jest.mock('../BrandConfigProvider/icons/IconProvider', () => ({
 jest.mock('../../components/TodayBadge', () => null);
 
 beforeEach(() => {
-  (useAppConfig as jest.Mock).mockReturnValue({
-    data: {
+  mockActiveConfig({
+    appConfig: {
       homeTab: {
         tiles: ['trackTile', 'todayTile', 'circleTiles'],
         trackTileSettings: {
@@ -62,7 +58,7 @@ beforeEach(() => {
           },
         ],
       },
-    },
+    } as any,
   });
 });
 
@@ -84,27 +80,29 @@ test('renders multiple tiles', () => {
 });
 
 test('does not render the today tile if not enabled', () => {
-  (useAppConfig as jest.Mock).mockReturnValue({
-    data: {
-      homeTab: {
-        tiles: ['trackTile'],
-        trackTileSettings: {
-          title: 'TrackTile Title',
+  mockActiveConfig({
+    appConfig: {
+      data: {
+        homeTab: {
+          tiles: ['trackTile'],
+          trackTileSettings: {
+            title: 'TrackTile Title',
+          },
+          appTiles: [
+            {
+              id: 'tile-id-1',
+              title: 'My First Tile',
+              source: { url: 'https://tile.com' },
+            },
+            {
+              id: 'tile-id-2',
+              title: 'My Second Tile',
+              source: { url: 'https://tile.com' },
+            },
+          ],
         },
-        appTiles: [
-          {
-            id: 'tile-id-1',
-            title: 'My First Tile',
-            source: { url: 'https://tile.com' },
-          },
-          {
-            id: 'tile-id-2',
-            title: 'My Second Tile',
-            source: { url: 'https://tile.com' },
-          },
-        ],
       },
-    },
+    } as any,
   });
 
   const tileList = render(

@@ -8,7 +8,7 @@ import {
   useCreateReactionMutation,
   useUndoReactionMutation,
 } from '../../../hooks';
-import { useUser } from '../../../hooks/useUser';
+import { mockUser } from '../../../common/testHelpers/mockSession';
 
 jest.unmock('@react-navigation/native');
 jest.useFakeTimers();
@@ -16,18 +16,9 @@ jest.mock('../../../hooks/Circles/useReactionMutations', () => ({
   useCreateReactionMutation: jest.fn(),
   useUndoReactionMutation: jest.fn(),
 }));
-jest.mock('../../../hooks/useUser', () => ({
-  useUser: jest.fn(),
-}));
 
 const useCreateReactionMutationMock = useCreateReactionMutation as jest.Mock;
 const useUndoReactionMutationMock = useUndoReactionMutation as jest.Mock;
-const useUserMock = useUser as jest.Mock;
-useUserMock.mockReturnValue({
-  data: {
-    id: 'userId',
-  },
-});
 
 const baseURL = 'https://some-domain/unit-test';
 const toolbarComponent = (post: Post) => (
@@ -167,7 +158,7 @@ test('multiple emoji selections create and undo reaction respectively', async ()
   expect(undoReaction).toBeCalledWith({
     type: '😁',
     postId: '123',
-    userId: 'userId',
+    userId: mockUser.id,
   });
 
   toolbar.rerender(
@@ -212,6 +203,6 @@ test('multiple emoji selections create and undo reaction respectively', async ()
   expect(undoReaction).toBeCalledWith({
     type: '😁',
     postId: '123',
-    userId: 'userId',
+    userId: mockUser.id,
   });
 });

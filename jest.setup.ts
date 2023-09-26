@@ -2,6 +2,11 @@ import mockDeviceInfo from 'react-native-device-info/jest/react-native-device-in
 import mockRNCNetInfo from '@react-native-community/netinfo/jest/netinfo-mock';
 import i18next from './lib/i18n';
 import { initReactI18next } from 'react-i18next';
+import {
+  mockActiveAccount,
+  mockActiveConfig,
+  mockUseSession,
+} from './src/common/testHelpers/mockSession';
 
 jest.mock('react-native-device-info', () => ({
   ...mockDeviceInfo,
@@ -86,6 +91,10 @@ jest.mock('@react-navigation/native', () => ({
 beforeAll(async () => {
   // Setup minimal i18next instance
   jest.useRealTimers(); // Required to deal with hook timeout bug
+  mockUseSession();
+  mockActiveAccount();
+  mockActiveConfig();
+
   return i18next.use(initReactI18next).init({
     fallbackLng: 'en',
     supportedLngs: ['en'],

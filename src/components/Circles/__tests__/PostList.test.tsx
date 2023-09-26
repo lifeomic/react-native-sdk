@@ -4,24 +4,18 @@ import {
   render,
 } from '../../../common/testHelpers/testing-library-wrapper';
 import { PostsList } from '../PostsList';
-import { CircleTile } from '../../../hooks/useAppConfig';
 import { useInfinitePosts, useCreatePost } from '../../../hooks';
 import { CreateEditPostModal } from '../CreateEditPostModal';
+import { mockAppConfig } from '../../../common/testHelpers/mockSession';
 
 jest.unmock('@react-navigation/native');
 jest.mock('../../../hooks/Circles/useInfinitePosts');
 jest.mock('../../../hooks/Circles/useCreatePost');
 jest.mock('../ReactionsToolbar');
-const circleTile: CircleTile = {
-  circleName: 'Some Circle',
-  circleId: 'Some CircleId',
-  isMember: true,
-  buttonText: 'Some Text',
-};
 
 jest.mock('../../../hooks/Circles/useActiveCircleTile', () => ({
   useActiveCircleTile: jest.fn().mockImplementation(() => ({
-    circleTile: circleTile,
+    circleTile: mockAppConfig.homeTab?.circleTiles?.[0],
   })),
 }));
 

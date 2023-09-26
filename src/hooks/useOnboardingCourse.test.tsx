@@ -7,21 +7,6 @@ import {
 import * as useAsyncStorage from './useAsyncStorage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-jest.mock('./useAppConfig', () => ({
-  useAppConfig: () => ({
-    data: {
-      onboardingCourse: { url: 'http://example.com', title: 'Example Title' },
-    },
-    isLoading: false,
-    isFetched: true,
-    error: null,
-  }),
-}));
-
-jest.mock('./useActiveProject', () => ({
-  useActiveProject: () => ({ activeProject: { id: 'project-123' } }),
-}));
-
 let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 
 beforeEach(() => {
@@ -29,6 +14,8 @@ beforeEach(() => {
     '',
     (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
     true,
+    () => {},
+    () => {},
   ]);
 });
 
@@ -51,8 +38,6 @@ describe('useOnboardingCourse', () => {
     expect(result.current.onboardingCourseTitle).toBe('Example Title');
     expect(typeof result.current.onOnboardingCourseOpen).toBe('function');
     expect(result.current.isLoading).toBe(false);
-    expect(result.current.isFetched).toBe(true);
-    expect(result.current.error).toBeNull();
   });
 
   test('should set didLaunchCourse to true when calling onOnboardingCourseOpen', async () => {

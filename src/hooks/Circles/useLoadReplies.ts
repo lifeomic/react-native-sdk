@@ -11,7 +11,7 @@ import { useActiveCircleTile } from './useActiveCircleTile';
 export const useLoadReplies = () => {
   const { graphQLClient } = useGraphQLClient();
   const queryClient = useQueryClient();
-  const { isFetched, accountHeaders } = useActiveAccount();
+  const { accountHeaders } = useActiveAccount();
   const [queryVariables, setQueryVariables] = useState({
     after: undefined as string | undefined,
     id: '',
@@ -37,7 +37,7 @@ export const useLoadReplies = () => {
     ],
     queryForPostReplies,
     {
-      enabled: isFetched && !!accountHeaders && !!queryVariables.id,
+      enabled: !!accountHeaders && !!queryVariables.id,
       onSuccess(data) {
         if (!data) {
           return;

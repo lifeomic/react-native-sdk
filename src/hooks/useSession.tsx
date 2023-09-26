@@ -25,7 +25,7 @@ type UserConfiguration = {
   configurations: Configuration[];
 };
 
-type UserConfigurationsContextProps = {
+export type UserConfigurationsContextProps = {
   userConfiguration: UserConfiguration;
   isLoaded: boolean;
   clearSession: () => void;

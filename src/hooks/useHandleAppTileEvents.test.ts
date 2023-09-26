@@ -8,15 +8,15 @@ import {
   TRACKER_PILLAR_CODE_SYSTEM,
   Tracker,
 } from '../components/TrackTile/services/TrackTileService';
-import { useAppConfig } from './useAppConfig';
 import {
   AppTileMessageType,
   useHandleAppTileEvents,
 } from './useHandleAppTileEvents';
-
-jest.mock('./useAppConfig', () => ({
-  useAppConfig: jest.fn(),
-}));
+import {
+  mockActiveAccount,
+  mockActiveConfig,
+  mockUseSession,
+} from '../common/testHelpers/mockSession';
 
 jest.mock('../components/TrackTile/hooks/useTrackers', () => ({
   useTrackers: jest.fn(),
@@ -29,7 +29,6 @@ jest.mock('react-native', () => ({
 }));
 
 const useNavigationMock = useNavigation as jest.Mock;
-const useAppConfigMock = useAppConfig as jest.Mock;
 const useTrackersMock: jest.Mock<ReturnType<typeof useTrackers>> =
   useTrackers as jest.Mock;
 const openURLMock = Linking.openURL as jest.Mock;
@@ -40,7 +39,10 @@ const pushMock = jest.fn();
 const addListenerMock = jest.fn();
 const removeListenerMock = jest.fn();
 
-const surveysAppTile = { id: 'surveys', url: 'surveys.com' };
+const surveysAppTile = {
+  id: 'surveys',
+  url: 'surveys.com',
+};
 
 const pillarTracker = {
   metricId: 'test-tile-metric-id',
@@ -57,8 +59,15 @@ beforeEach(() => {
     removeListener: removeListenerMock,
   });
 
-  useAppConfigMock.mockReturnValue({
-    data: {
+  useTrackersMock.mockReturnValue({
+    pillarTrackers: [pillarTracker],
+    trackers: [],
+    error: false,
+    loading: false,
+  });
+
+  const sessionMock = {
+    appConfig: {
       homeTab: {
         todayTileSettings: {
           surveysTile: surveysAppTile,
@@ -66,14 +75,11 @@ beforeEach(() => {
         tiles: ['pillarsTile'],
       },
     },
-  });
+  } as any;
 
-  useTrackersMock.mockReturnValue({
-    pillarTrackers: [pillarTracker],
-    trackers: [],
-    error: false,
-    loading: false,
-  });
+  mockUseSession(sessionMock);
+  mockActiveConfig(sessionMock);
+  mockActiveAccount();
 });
 
 describe('handleAppTileMessage', () => {

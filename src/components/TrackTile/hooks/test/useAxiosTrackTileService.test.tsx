@@ -22,6 +22,11 @@ import {
 import { refreshNotifier } from '../../../../common/RefreshNotifier';
 import React from 'react';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import {
+  mockAccount,
+  mockProject,
+  mockSubject,
+} from '../../../../common/testHelpers/mockSession';
 
 const valuesContext: TrackerValuesContext = {
   system: TRACKER_CODE_SYSTEM,
@@ -31,14 +36,14 @@ const valuesContext: TrackerValuesContext = {
 const DATASTORE_HEADERS = {
   headers: expect.objectContaining({
     'LifeOmic-TrackTile-Capabilities-Version': 3,
-    'LifeOmic-Account': 'account-id',
+    'LifeOmic-Account': mockAccount.id,
   }),
 };
 
 const ACCOUNT_HEADERS = {
   headers: expect.objectContaining({
     'LifeOmic-TrackTile-Capabilities-Version': 3,
-    'LifeOmic-Account': 'account-id',
+    'LifeOmic-Account': mockAccount.id,
   }),
 };
 
@@ -60,25 +65,6 @@ jest.mock('../../../../hooks/useHttpClient', () => ({
   }),
 }));
 
-jest.mock('../../../../hooks/useActiveAccount', () => ({
-  useActiveAccount: () => ({
-    account: { id: 'account-id' },
-  }),
-}));
-
-jest.mock('../../../../hooks/useActiveProject', () => ({
-  useActiveProject: () => ({
-    activeProject: { id: 'project-id' },
-    activeSubjectId: 'patient-id',
-  }),
-}));
-
-jest.mock('../../../../hooks/useUser', () => ({
-  useUser: () => ({
-    data: { id: 'mockUser' },
-  }),
-}));
-
 const renderHookInContext = () => {
   return renderHook(() => useAxiosTrackTileService(), {
     wrapper: ({ children }) => (
@@ -95,8 +81,8 @@ describe('useAxiosTrackTileService', () => {
 
     expect(result.current).toEqual(
       expect.objectContaining({
-        accountId: 'account-id',
-        projectId: 'project-id',
+        accountId: mockAccount.id,
+        projectId: mockProject.id,
       }),
     );
   });
@@ -112,7 +98,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(getMock).toHaveBeenCalledWith(
-      '/v1/track-tiles/trackers?project=project-id',
+      `/v1/track-tiles/trackers?project=${mockProject.id}`,
       DATASTORE_HEADERS,
     );
     expect(returnedMetrics).toEqual([{ id: 'metric-id' }]);
@@ -144,7 +130,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(getMock).toHaveBeenCalledWith(
-      '/v1/track-tiles/trackers?project=project-id',
+      `/v1/track-tiles/trackers?project=${mockProject.id}`,
       ACCOUNT_HEADERS,
     );
     expect(returnedTrackers).toEqual([{ id: 'metric-id' }]);
@@ -160,7 +146,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(getMock).toHaveBeenCalledWith(
-      '/v1/track-tiles/trackers?project=project-id',
+      `/v1/track-tiles/trackers?project=${mockProject.id}`,
       DATASTORE_HEADERS,
     );
   });
@@ -175,7 +161,7 @@ describe('useAxiosTrackTileService', () => {
     });
 
     expect(getMock).toHaveBeenCalledWith(
-      '/v1/track-tiles/trackers?project=project-id',
+      `/v1/track-tiles/trackers?project=${mockProject.id}`,
       ACCOUNT_HEADERS,
     );
   });
@@ -342,7 +328,7 @@ describe('useAxiosTrackTileService', () => {
       {
         variables: {
           dates: ['ge2021-07-23T00:00:00.000Z', 'le2021-07-30T00:00:00.000Z'],
-          patientId: 'patient-id',
+          patientId: mockSubject.subjectId,
           codeBelow: valuesContext.codeBelow,
         },
         query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
@@ -436,7 +422,7 @@ describe('useAxiosTrackTileService', () => {
         variables: {
           dates: ['ge2021-07-23T00:00:00.000Z', 'le2021-07-30T00:00:00.000Z'],
           codeBelow: customValuesContext.codeBelow,
-          patientId: 'patient-id',
+          patientId: mockSubject.subjectId,
         },
         query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
       },
@@ -528,7 +514,7 @@ describe('useAxiosTrackTileService', () => {
             `ge${startOfDay(new Date('2021-07-23')).toISOString()}`,
             `le${endOfDay(new Date('2021-07-23')).toISOString()}`,
           ],
-          patientId: 'patient-id',
+          patientId: mockSubject.subjectId,
           codeBelow: valuesContext.codeBelow,
         },
         query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
@@ -544,7 +530,7 @@ describe('useAxiosTrackTileService', () => {
             `ge${startOfDay(new Date('2021-07-24')).toISOString()}`,
             `le${endOfDay(new Date('2021-07-24')).toISOString()}`,
           ],
-          patientId: 'patient-id',
+          patientId: mockSubject.subjectId,
           codeBelow: valuesContext.codeBelow,
         },
         query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
@@ -629,7 +615,7 @@ describe('useAxiosTrackTileService', () => {
             `ge${startOfDay(new Date('2021-07-23')).toISOString()}`,
             `le${endOfDay(new Date('2021-07-24')).toISOString()}`,
           ],
-          patientId: 'patient-id',
+          patientId: mockSubject.subjectId,
           codeBelow: pillarValuesContext.codeBelow,
         },
         query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,

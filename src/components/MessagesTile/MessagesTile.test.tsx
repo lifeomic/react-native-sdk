@@ -1,17 +1,12 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { useUser } from '../../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../../hooks/useGraphQLClient';
 import { MessagesTile } from '.';
 import { useUnreadMessages } from '../../hooks/useUnreadMessages';
 
-jest.mock('../../hooks/useUser', () => ({
-  useUser: jest.fn(),
-}));
 jest.mock('../../hooks/useUnreadMessages');
 
-const useUserMock = useUser as jest.Mock;
 const useUnreadMessagesMock = useUnreadMessages as jest.Mock;
 
 const navigateMock = {
@@ -42,12 +37,6 @@ const directMessageScreen = (
 );
 
 beforeEach(() => {
-  useUserMock.mockReturnValue({
-    isLoading: false,
-    data: {
-      id: 'current_user',
-    },
-  });
   useUnreadMessagesMock.mockReturnValue({
     unreadMessageUserIds: [],
   });

@@ -5,10 +5,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { useHttpClient } from '../useHttpClient';
-import { useActiveAccount } from '../useActiveAccount';
-import { useActiveProject } from '../useActiveProject';
-import { CircleTile, useAppConfig } from '../useAppConfig';
 import { useJoinCircles } from './useJoinCircles';
+import {
+  mockActiveConfig,
+  mockSubject,
+  mockUseSession,
+} from '../../common/testHelpers/mockSession';
+import { CircleTile } from '../../types';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,36 +32,17 @@ const renderHookInContext = async () => {
 const axiosInstance = axios.create();
 const axiosMock = new MockAdapter(axiosInstance);
 
-jest.mock('../useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
 jest.mock('../useHttpClient', () => ({
   useHttpClient: jest.fn(),
-}));
-jest.mock('../useActiveProject', () => ({
-  useActiveProject: jest.fn(),
 }));
 jest.mock('../useAuth', () => ({
   useAuth: jest.fn(),
 }));
-jest.mock('../useAppConfig', () => ({
-  useAppConfig: jest.fn(),
-}));
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
-const useActiveProjectMock = useActiveProject as jest.Mock;
 const useHttpClientMock = useHttpClient as jest.Mock;
 const useAuthMock = useAuth as jest.Mock;
-const useAppConfigMock = useAppConfig as jest.Mock;
 
 beforeEach(() => {
-  useActiveAccountMock.mockReturnValue({
-    accountHeaders: { 'LifeOmic-Account': 'acct1' },
-  });
-  useActiveProjectMock.mockReturnValue({
-    activeProject: { id: 'projectId' },
-    activeSubjectId: 'subjectId',
-  });
   useAuthMock.mockReturnValue({
     authResult: { accessToken: 'accessToken' },
   });
@@ -87,8 +71,18 @@ const circleTile3: CircleTile = {
 };
 
 test('joins circles listed in app-config', async () => {
-  useAppConfigMock.mockReturnValue({
-    data: {
+  mockUseSession({
+    appConfig: {
+      homeTab: {
+        tiles: [],
+        appTiles: [],
+        circleTiles: [circleTile1, circleTile2, circleTile3],
+      },
+    },
+  });
+  mockActiveConfig({
+    subject: mockSubject,
+    appConfig: {
       homeTab: {
         tiles: [],
         appTiles: [],
@@ -114,8 +108,17 @@ test('joins circles listed in app-config', async () => {
 });
 
 test('does nothing if all circles are joined', async () => {
-  useAppConfigMock.mockReturnValue({
-    data: {
+  mockUseSession({
+    appConfig: {
+      homeTab: {
+        tiles: [],
+        appTiles: [],
+        circleTiles: [circleTile3],
+      },
+    },
+  });
+  mockActiveConfig({
+    appConfig: {
       homeTab: {
         tiles: [],
         appTiles: [],

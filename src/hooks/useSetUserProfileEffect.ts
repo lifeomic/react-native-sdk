@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useActiveConfig } from './useActiveConfig';
 import { useRestMutation } from './rest-api';
-import { useQueryClient } from '@tanstack/react-query/build/lib/QueryClientProvider';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from './useSession';
 
 export const useSetUserProfileEffect = () => {

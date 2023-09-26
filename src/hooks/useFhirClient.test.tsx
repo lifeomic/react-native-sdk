@@ -1,12 +1,11 @@
 import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { useActiveAccount } from './useActiveAccount';
-import { useActiveProject } from './useActiveProject';
 import { useFhirClient } from './useFhirClient';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { useHttpClient } from './useHttpClient';
+import { mockAccount } from '../common/testHelpers/mockSession';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,18 +15,10 @@ const queryClient = new QueryClient({
   },
 });
 
-jest.mock('./useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
-jest.mock('./useActiveProject', () => ({
-  useActiveProject: jest.fn(),
-}));
 jest.mock('./useHttpClient', () => ({
   useHttpClient: jest.fn(),
 }));
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
-const useActiveProjectMock = useActiveProject as jest.Mock;
 const useHttpClientMock = useHttpClient as jest.Mock;
 
 const renderHookInContext = (useHook: Function) => {
@@ -42,14 +33,6 @@ const axiosInstance = axios.create();
 const axiosMock = new MockAdapter(axiosInstance);
 
 beforeEach(() => {
-  useActiveAccountMock.mockReturnValue({
-    accountHeaders: { 'LifeOmic-Account': 'acct1' },
-    account: { id: 'acct1' },
-  });
-  useActiveProjectMock.mockReturnValue({
-    activeProject: { id: 'projectId' },
-    activeSubjectId: 'subjectId',
-  });
   useHttpClientMock.mockReturnValue({ httpClient: axiosInstance });
   axiosMock.reset();
 });
@@ -418,7 +401,7 @@ describe('useUpsertMutation', () => {
       },
     };
     axiosMock
-      .onPost('https://fhir.us.lifeomic.com/acct1/dstu3')
+      .onPost(`https://fhir.us.lifeomic.com/${mockAccount.id}/dstu3`)
       .reply(200, resultBundle);
 
     function useTestHook() {
@@ -468,7 +451,7 @@ describe('useUpsertMutation', () => {
     });
 
     expect(axiosMock.history.post[0].url).toBe(
-      'https://fhir.us.lifeomic.com/acct1/dstu3',
+      `https://fhir.us.lifeomic.com/${mockAccount.id}/dstu3`,
     );
     expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({
       type: 'collection',

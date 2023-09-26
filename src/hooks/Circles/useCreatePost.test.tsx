@@ -6,6 +6,7 @@ import { GraphQLClientContextProvider } from '../useGraphQLClient';
 import nock from 'nock';
 import { Post, ParentType } from './types';
 import { useCreatePost } from './useCreatePost';
+import { mockUser } from '../../common/testHelpers/mockSession';
 
 jest.mock('./useActiveCircleTile', () => ({
   useActiveCircleTile: jest.fn().mockImplementation(() => ({
@@ -96,10 +97,11 @@ describe('useCreatePost', () => {
       replies: { edges: [], pageInfo: {} },
       id: '123',
       message: 'somePost',
+      authorId: mockUser.id,
       author: {
         profile: {
-          displayName: '',
-          picture: '',
+          displayName: mockUser.profile.displayName!,
+          picture: mockUser.profile.picture!,
         },
       },
     };
@@ -153,10 +155,11 @@ describe('useCreatePost', () => {
       replies: { edges: [], pageInfo: {} },
       id: '789',
       message: 'someCommentPost',
+      authorId: mockUser.id,
       author: {
         profile: {
-          displayName: '',
-          picture: '',
+          displayName: mockUser.profile.displayName!,
+          picture: mockUser.profile.picture!,
         },
       },
     };

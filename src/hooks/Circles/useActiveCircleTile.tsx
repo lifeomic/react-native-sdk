@@ -1,5 +1,5 @@
 import React, { useState, createContext, useContext } from 'react';
-import { CircleTile } from '..';
+import { CircleTile } from '../../types';
 
 type CircleContextProps = {
   circleTile?: CircleTile | null;

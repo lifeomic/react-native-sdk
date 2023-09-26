@@ -1,6 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useActiveAccount } from './useActiveAccount';
-import { useUser } from './useUser';
 import {
   FeedNotification,
   NotificationQueryResponse,
@@ -14,10 +13,6 @@ import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
 
 jest.mock('./useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
-}));
-
-jest.mock('./useUser', () => ({
-  useUser: jest.fn(),
 }));
 
 const queryClient = new QueryClient({
@@ -41,17 +36,9 @@ const renderHookWithInjectedClient = async () => {
   });
 };
 
-const useUserMock = useUser as jest.Mock;
 const useActiveAccountMock = useActiveAccount as jest.Mock;
 
 beforeEach(() => {
-  useUserMock.mockReturnValue({
-    data: {
-      id: 'userId',
-      profile: {},
-    },
-    isLoading: false,
-  });
   useActiveAccountMock.mockReturnValue({
     accountHeaders: {
       'LifeOmic-Account': 'unittest',

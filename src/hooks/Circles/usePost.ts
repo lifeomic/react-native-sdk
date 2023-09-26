@@ -8,7 +8,7 @@ import { PostDetailsPostQueryResponse } from './useInfinitePosts';
 
 export const usePost = (post: Partial<Post> & Pick<Post, 'id'>) => {
   const { graphQLClient } = useGraphQLClient();
-  const { isFetched, accountHeaders } = useActiveAccount();
+  const { accountHeaders, isLoading } = useActiveAccount();
 
   const queryForPostDetails = useCallback(async () => {
     return graphQLClient.request<PostDetailsPostQueryResponse, { id: string }>(
@@ -21,7 +21,7 @@ export const usePost = (post: Partial<Post> & Pick<Post, 'id'>) => {
   }, [accountHeaders, graphQLClient, post.id]);
 
   return useQuery(['postDetails', post.id], queryForPostDetails, {
-    enabled: isFetched && !!accountHeaders,
+    enabled: !isLoading && !!accountHeaders,
     placeholderData: {
       post,
     },

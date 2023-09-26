@@ -8,20 +8,12 @@ import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
 import { useHttpClient } from './useHttpClient';
 import { WearablesSyncState } from '../components';
 import { useFeature } from './useFeature';
+import { mockProject } from '../common/testHelpers/mockSession';
 
 jest.unmock('@react-navigation/native');
-jest.mock('./useActiveAccount', () => ({
-  useActiveAccount: jest.fn(() => ({ isFetched: true, accountHeaders: {} })),
-}));
 jest.mock('./useHttpClient', () => ({ useHttpClient: jest.fn(() => ({})) }));
 jest.mock('./useFeature', () => ({
   useFeature: jest.fn(() => ({ data: true })),
-}));
-jest.mock('./useActiveProject', () => ({
-  useActiveProject: jest.fn(() => ({
-    activeProject: 'project-id',
-    activeSubjectId: 'subjectId',
-  })),
 }));
 
 const queryClient = new QueryClient({
@@ -185,7 +177,7 @@ describe('useWearableBackfill', () => {
 
     expect(data).toEqual(true);
     expect(post).toHaveBeenCalledWith('/ehrs/ehrId/backfill', {
-      project: 'project-id',
+      project: mockProject,
       end: mockDate.toISOString(),
       start: addDays(mockDate, -30).toISOString(),
     });
