@@ -1,8 +1,9 @@
-import React, { useCallback } from 'react';
-import { Linking, View } from 'react-native';
+import React, { useCallback, useMemo } from 'react';
+import { Linking, Platform, View } from 'react-native';
 import { WearablesView } from '../components/Wearables';
 import { useWearables } from '../hooks/useWearables';
 import {
+  EHRType,
   SyncTypeSettings,
   WearableIntegration,
 } from '../components/Wearables/WearableTypes';
@@ -24,7 +25,13 @@ const WearablesScreen = () => {
   const { onPostToggle, onBackfill } = useWearableLifecycleHooks();
   const { enabledBackfillWearables, backfillEHR } = useWearableBackfill(data);
 
-  const wearables = data?.items || [];
+  const wearables = useMemo(() => {
+    let items = data?.items || [];
+    if (Platform.OS !== 'ios') {
+      items = items.filter((w) => w.ehrType !== EHRType.HealthKit);
+    }
+    return items;
+  }, [data?.items]);
 
   const toggleWearable = useCallback(
     async (ehrId: string, enabled: boolean) => {
