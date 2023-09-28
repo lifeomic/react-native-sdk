@@ -255,19 +255,25 @@ session starts (user sign-in/sign-up, app refresh, etc.). It can be used for
 analytics purposes, checking subscription status, etc.
 
 `onAppSessionStart` is invoked with an object containing a `resumeAppSession`.
-The app session will be paused until `resumeAppSession` is invoked.
+The app session will be paused until `resumeAppSession` is invoked. Other params
+are also passed, such as `activeSubjectId`.
 
-````typescript
 ```typescript
 import React, { FC } from 'react';
 import { authConfig } from './authConfig';
-import { RootProviders, RootStack, OnAppSessionStartParams } from '@lifeomic/react-native-sdk';
+import {
+  RootProviders,
+  RootStack,
+  OnAppSessionStartParams,
+} from '@lifeomic/react-native-sdk';
 
 export default function App() {
-  const onAppSessionStart = async ({ resumeAppSession }: OnAppSessionStartParams) => {
-   // track app session start metric
-   await trackAppSessionStart();
-   resumeAppSession();
+  const onAppSessionStart = async ({
+    resumeAppSession,
+  }: OnAppSessionStartParams) => {
+    // track app session start metric
+    await trackAppSessionStart();
+    resumeAppSession();
   };
 
   return (
@@ -282,7 +288,7 @@ export default function App() {
     </DeveloperConfigProvider>
   );
 }
-````
+```
 
 ### Customizing the Default Login Screen with a Native View
 

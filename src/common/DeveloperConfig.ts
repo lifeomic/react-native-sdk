@@ -18,6 +18,7 @@ import { ImageSourcePropType } from 'react-native';
 import { Route } from '../navigators/types';
 import { LogoHeaderOptions } from '../hooks/useLogoHeaderOptions';
 import { EducationContent } from '../components/TrackTile/services/TrackTileService';
+import { Project } from '../hooks/useSubjectProjects';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -69,6 +70,8 @@ export type Navigator<
 
 export type OnAppSessionStartParams = {
   resumeAppSession: () => void;
+  activeProject: Project;
+  activeSubjectId: string;
 };
 
 export type DeveloperConfig = {
