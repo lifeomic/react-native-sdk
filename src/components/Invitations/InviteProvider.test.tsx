@@ -118,15 +118,14 @@ describe('accepting invite', () => {
         params: { inviteId: mockInviteParams.inviteId },
       }),
     );
+    expect(result.current.inviteParams).toEqual({});
     expect(refreshForInviteAccept).toHaveBeenCalled();
     expect(acceptListener).toHaveBeenCalled();
-    expect(result.current.inviteParams?.inviteId).toBeDefined();
 
     await act(async () => {
       inviteNotifier.emit('inviteAccountSettled');
       await rerender({});
     });
-    expect(result.current.inviteParams).toEqual({});
 
     inviteNotifier.removeListener('inviteAccepted', acceptListener);
   });
