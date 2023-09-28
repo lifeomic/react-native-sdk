@@ -270,6 +270,8 @@ import {
 export default function App() {
   const onAppSessionStart = async ({
     resumeAppSession,
+    activeProject,
+    activeSubjectId,
   }: OnAppSessionStartParams) => {
     // track app session start metric
     await trackAppSessionStart();
