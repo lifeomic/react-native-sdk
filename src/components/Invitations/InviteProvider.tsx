@@ -51,6 +51,8 @@ export const InviteProvider = ({ children }: ProviderProps) => {
         // Before notifying others, refresh the auth token so that the new
         // auth token used has context of the accepted invite.
         await refreshForInviteAccept();
+        clearPendingInvite();
+        reset();
         inviteNotifier.emit('inviteAccepted', acceptedInvite);
       } catch (error) {
         if (

@@ -134,20 +134,6 @@ test('setActiveAccountId saves accountId', async () => {
   );
 });
 
-test('setActiveAccountId ignores invalid accountId', async () => {
-  const { result } = await renderHookInContext();
-
-  await act(async () => {
-    result.current.setActiveAccountId('invalid account');
-  });
-
-  await waitFor(() =>
-    expect(result.current).toMatchObject({
-      account: mockAccounts[0],
-    }),
-  );
-});
-
 test('indicates expired trial', async () => {
   const expiredTrialAccount = {
     id: 'acct',

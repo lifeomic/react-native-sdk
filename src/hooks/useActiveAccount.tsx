@@ -127,28 +127,9 @@ export const ActiveAccountContextProvider = ({
     }
   }, [previousUserId, userId, accountsResult]);
 
-  const setActiveAccountId = useCallback(
-    async (accountId: string) => {
-      try {
-        const selectedAccount = getValidAccount(accountsWithProduct, accountId);
-        if (!selectedAccount) {
-          if (process.env.NODE_ENV !== 'test') {
-            console.warn(
-              'Ignoring attempt to set invalid accountId',
-              accountId,
-            );
-          }
-          return;
-        }
-        setSelectedId(selectedAccount.id);
-      } catch (error) {
-        if (process.env.NODE_ENV !== 'test') {
-          console.warn('Unable to set active account', error);
-        }
-      }
-    },
-    [accountsWithProduct],
-  );
+  const setActiveAccountId = useCallback(async (accountId: string) => {
+    setSelectedId(accountId);
+  }, []);
 
   const refetch = useCallback(async () => {
     return accountsResult.refetch();
