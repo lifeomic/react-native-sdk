@@ -101,8 +101,12 @@ export function LoggedInStack() {
 
   useEffect(() => {
     const executeOnAppStartIfNeeded = async () => {
-      if (shouldWaitForOnAppStart && hasAccountAndProject) {
-        await onAppSessionStart?.({ resumeAppSession });
+      if (shouldWaitForOnAppStart && hasAccountAndProject && activeSubjectId) {
+        await onAppSessionStart?.({
+          resumeAppSession,
+          activeSubjectId,
+          activeProject,
+        });
       }
     };
 
