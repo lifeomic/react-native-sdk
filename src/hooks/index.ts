@@ -9,6 +9,7 @@ export * from './useDeveloperConfig';
 export * from './useEnvironmentSelection';
 export * from './useExchangeToken';
 export * from './useFhirClient';
+export * from './useGraphQLClient';
 export * from './useHandleAppTileEvents';
 export * from './useHttpClient';
 export * from './useMe';
