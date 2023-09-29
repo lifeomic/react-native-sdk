@@ -311,38 +311,40 @@ type ActivitiesInput = {
   endDateTime: string;
 };
 
+export type Activity = {
+  id: string;
+  slug: string;
+  displayName: string;
+  activityType: {
+    value: string;
+  };
+  assignmentDateTime: string;
+  completionDateTime: string;
+  status: string;
+  timeOfDay: {
+    value: string;
+  };
+  programSlug: {
+    value: string;
+  };
+  courseSlug: {
+    value: string;
+  };
+  fields: {
+    imageUrl?: string | null;
+    videoUrl?: {
+      value: string;
+    };
+    youtubeVideoId?: {
+      value: string;
+    };
+  };
+};
+
 type ActivitiesQueryResponse = {
   getAllActivities: {
     edges: {
-      node: {
-        id: string;
-        slug: string;
-        displayName: string;
-        activityType: {
-          value: string;
-        };
-        assignmentDateTime: string;
-        completionDateTime: string;
-        status: string;
-        timeOfDay: {
-          value: string;
-        };
-        programSlug: {
-          value: string;
-        };
-        courseSlug: {
-          value: string;
-        };
-        fields: {
-          imageUrl?: string | null;
-          videoUrl?: {
-            value: string;
-          };
-          youtubeVideoId?: {
-            value: string;
-          };
-        };
-      };
+      node: Activity;
     }[];
   };
 };

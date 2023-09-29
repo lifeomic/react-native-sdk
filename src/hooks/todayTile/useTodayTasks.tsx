@@ -30,7 +30,15 @@ const useConsentTasks = () => {
   );
 };
 
-const useGetSurveyResponsesForProject = () => {
+type SurveyResponseInput = {
+  includeSurveyName?: boolean;
+  status?: string;
+  pageSize?: number;
+};
+
+export const useGetSurveyResponsesForProject = (
+  input?: SurveyResponseInput,
+) => {
   const { activeSubjectId, activeProject } = useActiveProject();
   const { accountHeaders } = useActiveAccount();
 
@@ -40,9 +48,9 @@ const useGetSurveyResponsesForProject = () => {
       projectId: activeProject!.id,
       author: activeSubjectId!,
       patientId: activeSubjectId!,
-      includeSurveyName: false,
-      status: 'in-progress',
-      pageSize: 100,
+      includeSurveyName: input?.includeSurveyName ?? false,
+      status: input?.status ?? 'in-progress',
+      pageSize: input?.pageSize ?? 100,
     },
     {
       enabled: !!accountHeaders && !!activeProject && !!activeSubjectId,
