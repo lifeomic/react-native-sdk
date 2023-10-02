@@ -57,7 +57,10 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
     if (!todayTile) {
       return;
     }
-    navigation.navigate('Home/AuthedAppTile', { appTile: todayTile });
+    navigation.navigate('Home/AuthedAppTile', {
+      appTile: todayTile,
+      refreshTodayCountOnRemove: true,
+    });
   }, [navigation, todayTile]);
 
   return (

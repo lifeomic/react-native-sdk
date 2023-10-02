@@ -56,6 +56,7 @@ export type HomeStackParamList = {
   'Home/AuthedAppTile': {
     appTile: AppTile;
     searchParams?: { [key: string]: string };
+    refreshTodayCountOnRemove?: boolean;
   };
   'Home/CustomAppTile': { appTile: AppTile };
   'Home/Circle/Discussion': { circleTile: CircleTile };
