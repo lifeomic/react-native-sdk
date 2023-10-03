@@ -73,7 +73,7 @@ export const useHandleAppTileEvents = (webView: WebView | null = null) => {
 
   useEffect(() => {
     const listener: BeforeRemoveListener = (e) => {
-      if (blockGoBack) {
+      if (blockGoBack && e.data.action.type === 'GO_BACK') {
         e.preventDefault();
         webView?.goBack();
       }
