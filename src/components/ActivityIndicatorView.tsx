@@ -3,7 +3,7 @@ import { ActivityIndicator, View } from 'react-native';
 import useTimeout from 'react-use/lib/useTimeout';
 import { tID } from '../common/testID';
 import { createStyles } from '../components/BrandConfigProvider';
-import { useStyles, useTheme } from '../hooks';
+import { useDeveloperConfig, useStyles, useTheme } from '../hooks';
 import { Text } from 'react-native-paper';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function ActivityIndicatorView({
-  message: timeOutMessage,
+  message: messageText,
   timeOutMilliseconds,
   style: instanceStyles,
   ...props
@@ -21,8 +21,18 @@ export function ActivityIndicatorView({
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { colors } = useTheme();
   const [showMessage] = useTimeout(timeOutMilliseconds || 5000);
+  const { CustomActivityIndicatorView } = useDeveloperConfig();
 
-  return (
+  const timeOutMessage =
+    !!messageText && !!showMessage() ? (
+      <Text variant="labelSmall" style={styles.text}>
+        {messageText}
+      </Text>
+    ) : null;
+
+  return CustomActivityIndicatorView ? (
+    <CustomActivityIndicatorView timeoutMessage={timeOutMessage} />
+  ) : (
     <View style={styles.view}>
       <ActivityIndicator
         size="large"
@@ -31,11 +41,7 @@ export function ActivityIndicatorView({
         color={colors.primarySource}
         {...props}
       />
-      {timeOutMessage && showMessage() && (
-        <Text variant="labelSmall" style={styles.text}>
-          {timeOutMessage}
-        </Text>
-      )}
+      {timeOutMessage}
     </View>
   );
 }
