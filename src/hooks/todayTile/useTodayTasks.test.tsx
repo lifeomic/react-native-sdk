@@ -1,7 +1,7 @@
 import React from 'react';
-import { renderHook, waitFor } from '@testing-library/react-native';
+import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useTodayTasks } from './useTodayTasks';
+import { useTodayTasks, useInvalidateTodayCountCache } from './useTodayTasks';
 import { createRestAPIMock } from '../../test-utils/rest-api-mocking';
 import { useMe } from '../useMe';
 import { useUser } from '../useUser';
@@ -75,6 +75,7 @@ beforeEach(() => {
   useActiveAccountMock.mockReturnValue({
     accountHeaders: { 'LifeOmic-Account': 'lifeomic' },
   });
+  api.reset();
 });
 
 test('newTasks count 0 when no items are returns', async () => {
@@ -143,4 +144,37 @@ test('consents and surveys are summed and categorized correctly', async () => {
   await waitFor(() => {
     expect(result.current.newTasks.length).toEqual(2);
   });
+});
+
+test('clears the today tasks query cache when using function returned by useInvalidateTodayCountCache', async () => {
+  jest.useFakeTimers();
+  const spy = jest.spyOn(queryClient, 'refetchQueries');
+
+  const { result } = renderHook(() => useInvalidateTodayCountCache(), {
+    wrapper: ({ children }) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    ),
+  });
+
+  act(() => result.current());
+
+  act(() => jest.advanceTimersByTime(3500)); // Default delay
+
+  expect(
+    spy.mock.calls.filter(
+      ([key]) => key?.[0] === 'getIncompleteActivitiesCount',
+    ),
+  ).toHaveLength(1);
+
+  act(() => result.current(200)); // Custom delay
+
+  act(() => jest.advanceTimersByTime(200));
+
+  expect(
+    spy.mock.calls.filter(
+      ([key]) => key?.[0] === 'getIncompleteActivitiesCount',
+    ),
+  ).toHaveLength(2);
+
+  jest.useRealTimers();
 });
