@@ -20,7 +20,6 @@ export const useInvalidateTodayCountCache = () => {
   return useCallback(
     (delay = 3500) => {
       setTimeout(() => {
-        console.log('Fetch with delay', delay);
         restCache.invalidateQueries({
           'GET /v1/consent/directives/me': 'all',
           'GET /v1/survey/projects/:projectId/responses': 'all',
@@ -130,8 +129,6 @@ export const useTodayTasks = () => {
     ...inProgressConsentTasks,
     ...inProgressSurveyTasks,
   ] as TodayTask[];
-
-  console.log(newTasks);
 
   return {
     loading: loadingConsents || loadingSurveys || isInitialLoading,
