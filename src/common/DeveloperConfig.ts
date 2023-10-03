@@ -113,6 +113,7 @@ export type DeveloperConfig = {
     HomeStack: Navigator<ParamList, NativeStackNavigatorProps>,
   ) => JSX.Element[];
   CustomHomeScreen?: () => JSX.Element;
+  CustomActivityIndicatorView?: JSX.Element;
   renderCustomLoginScreen?: () => JSX.Element;
   sharingRenderers?: {
     pointBreakdown: (props: PointBreakdownProps) => React.JSX.Element;

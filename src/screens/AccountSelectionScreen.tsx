@@ -34,7 +34,7 @@ export const AccountSelectionScreen = ({
               testID={tID(`select-account-${account.id}`)}
               accessibilityRole="button"
             >
-              <Text>{account.name}</Text>
+              <Text style={styles.accountText}>{account.name}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -58,6 +58,7 @@ const defaultStyles = createStyles('AccountSelection', () => ({
   button: {
     marginBottom: 28,
   },
+  accountText: {},
 }));
 
 declare module '@styles' {

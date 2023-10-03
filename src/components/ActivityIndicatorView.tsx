@@ -3,7 +3,7 @@ import { ActivityIndicator, View } from 'react-native';
 import useTimeout from 'react-use/lib/useTimeout';
 import { tID } from '../common/testID';
 import { createStyles } from '../components/BrandConfigProvider';
-import { useStyles, useTheme } from '../hooks';
+import { useDeveloperConfig, useStyles, useTheme } from '../hooks';
 import { Text } from 'react-native-paper';
 
 interface Props {
@@ -21,22 +21,25 @@ export function ActivityIndicatorView({
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { colors } = useTheme();
   const [showMessage] = useTimeout(timeOutMilliseconds || 5000);
+  const { CustomActivityIndicatorView } = useDeveloperConfig();
 
   return (
-    <View style={styles.view}>
-      <ActivityIndicator
-        size="large"
-        animating
-        testID={tID('activity-indicator-view')}
-        color={colors.primarySource}
-        {...props}
-      />
-      {timeOutMessage && showMessage() && (
-        <Text variant="labelSmall" style={styles.text}>
-          {timeOutMessage}
-        </Text>
-      )}
-    </View>
+    CustomActivityIndicatorView ?? (
+      <View style={styles.view}>
+        <ActivityIndicator
+          size="large"
+          animating
+          testID={tID('activity-indicator-view')}
+          color={colors.primarySource}
+          {...props}
+        />
+        {timeOutMessage && showMessage() && (
+          <Text variant="labelSmall" style={styles.text}>
+            {timeOutMessage}
+          </Text>
+        )}
+      </View>
+    )
   );
 }
 
