@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function ActivityIndicatorView({
-  message: timeOutMessage,
+  message: messageText,
   timeOutMilliseconds,
   style: instanceStyles,
   ...props
@@ -23,23 +23,26 @@ export function ActivityIndicatorView({
   const [showMessage] = useTimeout(timeOutMilliseconds || 5000);
   const { CustomActivityIndicatorView } = useDeveloperConfig();
 
-  return (
-    CustomActivityIndicatorView ?? (
-      <View style={styles.view}>
-        <ActivityIndicator
-          size="large"
-          animating
-          testID={tID('activity-indicator-view')}
-          color={colors.primarySource}
-          {...props}
-        />
-        {timeOutMessage && showMessage() && (
-          <Text variant="labelSmall" style={styles.text}>
-            {timeOutMessage}
-          </Text>
-        )}
-      </View>
-    )
+  const timeOutMessage =
+    !!messageText && !!showMessage() ? (
+      <Text variant="labelSmall" style={styles.text}>
+        {messageText}
+      </Text>
+    ) : null;
+
+  return CustomActivityIndicatorView ? (
+    <CustomActivityIndicatorView timeoutMessage={timeOutMessage} />
+  ) : (
+    <View style={styles.view}>
+      <ActivityIndicator
+        size="large"
+        animating
+        testID={tID('activity-indicator-view')}
+        color={colors.primarySource}
+        {...props}
+      />
+      {timeOutMessage}
+    </View>
   );
 }
 
