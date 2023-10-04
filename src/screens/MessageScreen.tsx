@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect } from 'react';
 import { useStyles } from '../hooks/useStyles';
-import { Badge, Divider, List, Button } from 'react-native-paper';
+import { Divider, List, Button, Text } from 'react-native-paper';
 import { TouchableOpacity, ScrollView, View, ViewStyle } from 'react-native';
 import { createStyles } from '../components/BrandConfigProvider';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
@@ -9,7 +9,15 @@ import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { tID } from '../common/testID';
 import { useMyMessages } from '../hooks/useMyMessages';
-type User = GiftedUser & { id: string; name: string };
+import {
+  format,
+  differenceInMinutes,
+  differenceInHours,
+  differenceInDays,
+  differenceInSeconds,
+} from 'date-fns';
+
+type User = GiftedUser & { id: string; name: string; isUnread: boolean };
 
 export function MessageScreen({
   navigation,
@@ -41,23 +49,26 @@ export function MessageScreen({
 
   const renderLeft = useCallback(
     (props: { style: ViewStyle }, user: User) => (
-      <View style={props.style}>
+      <View
+        style={
+          user.isUnread ? [props.style, styles.newMessageIconView] : props.style
+        }
+      >
         <GiftedAvatar user={user} textStyle={{ fontWeight: '500' }} />
       </View>
     ),
-    [],
+    [styles.newMessageIconView],
   );
 
   const renderRight = useCallback(
-    (isUnread: boolean) =>
-      isUnread && (
-        <Badge
-          size={12}
-          style={styles.badgeView}
-          testID={tID('unread-badge')}
-        />
-      ),
-    [styles.badgeView],
+    (messageTime: string) => (
+      <View style={{ flexDirection: 'column', justifyContent: 'flex-end' }}>
+        <Text style={styles.listItemTimeText}>
+          {formatMessageTime(messageTime)}
+        </Text>
+      </View>
+    ),
+    [styles.listItemTimeText],
   );
 
   return (
@@ -76,18 +87,24 @@ export function MessageScreen({
               testID={tID('user-list-item')}
               titleStyle={styles.listItemText}
               style={styles.listItemView}
-              descriptionStyle={styles.listItemSubtitle}
+              descriptionNumberOfLines={1}
+              descriptionStyle={
+                user.isUnread
+                  ? [styles.listItemSubtitle, styles.newMessageText]
+                  : styles.listItemSubtitle
+              }
               left={(props) =>
                 renderLeft(props, {
                   _id: user.userId,
                   id: user.userId,
                   name: user.displayName,
                   avatar: user.picture,
+                  isUnread: user.isUnread,
                 })
               }
               title={user.displayName}
-              description={user.message}
-              right={() => renderRight(user.isUnread)}
+              description={`${user.messagePrefix}${user.message}`}
+              right={() => renderRight(user.messageTime)}
             />
             <Divider />
           </TouchableOpacity>
@@ -136,6 +153,17 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     },
     loadMoreButton: {},
     loadMoreText: {},
+    listItemTimeText: { paddingLeft: 15 },
+    newMessageIconView: {
+      marginRight: -1,
+      borderWidth: 2,
+      borderColor: theme.colors.text,
+      borderRadius: 32,
+    },
+    newMessageText: {
+      color: theme.colors.text,
+      fontWeight: '600',
+    },
   };
 });
 
@@ -143,3 +171,33 @@ declare module '@styles' {
   interface ComponentStyles
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
+
+const formatMessageTime = (timestamp?: string) => {
+  if (!timestamp) {
+    return '';
+  }
+
+  const currentDate = new Date();
+  const date = new Date(timestamp);
+
+  const secondsDifference = differenceInSeconds(currentDate, date);
+  const minutesDifference = differenceInMinutes(currentDate, date);
+  const differenceHours = differenceInHours(currentDate, date);
+  const daysDifference = differenceInDays(currentDate, date);
+
+  if (secondsDifference < 60) {
+    return 'now';
+  } else if (minutesDifference < 60) {
+    return `${minutesDifference}min`;
+  } else if (differenceHours === 1) {
+    return `${differenceHours}hour`;
+  } else if (differenceHours < 24) {
+    return `${differenceHours}hrs`;
+  } else if (daysDifference === 1) {
+    return `${daysDifference}day`;
+  } else if (daysDifference < 3) {
+    return `${daysDifference}days`;
+  } else {
+    return format(date, 'MMM d');
+  }
+};

@@ -10,6 +10,7 @@ import {
   useLookupUsersFirstPost,
 } from './Circles/usePrivatePosts';
 import { UseQueryResult } from '@tanstack/react-query';
+import { differenceInSeconds } from 'date-fns';
 
 export const useMyMessages = (tileId: string) => {
   const [pageIndex, setPageIndex] = useState(0);
@@ -75,10 +76,26 @@ export const useMyMessages = (tileId: string) => {
         displayName: data.user.profile.displayName,
         picture: data.user.profile.picture,
         isUnread: unreadIds?.includes(data.user.userId) ?? false,
-        message: data.privatePosts.edges?.[0]?.node.message,
+        message: data.privatePosts.edges?.[0]?.node.message ?? '',
+        messageTime: data.privatePosts.edges?.[0]?.node.createdAt,
+        messagePrefix:
+          data.privatePosts.edges?.[0]?.node.authorId === userData?.id
+            ? 'You: '
+            : '',
       };
     }),
-  );
+  ).sort((a, b) => {
+    if (!a.messageTime) {
+      return 0;
+    }
+    if (!b.messageTime) {
+      return -1;
+    }
+    return differenceInSeconds(
+      new Date(b.messageTime),
+      new Date(a.messageTime),
+    );
+  });
 
   const isLoading = userQueries.some(
     ({ isInitialLoading }) => isInitialLoading,
