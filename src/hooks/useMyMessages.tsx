@@ -75,7 +75,7 @@ export const useMyMessages = (tileId: string) => {
         displayName: data.user.profile.displayName,
         picture: data.user.profile.picture,
         isUnread: unreadIds?.includes(data.user.userId) ?? false,
-        message: data.privatePosts.edges[0].node.message,
+        message: data.privatePosts.edges?.[0]?.node.message,
       };
     }),
   );
