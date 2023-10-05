@@ -8,8 +8,67 @@ import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
-import { useActiveProject } from '../hooks';
+import { useActiveProject, useMe } from '../hooks';
 
+export const FhirProfileView = () => {
+  const { isLoading, data } = useMe();
+
+  const subject = data?.[0].subject;
+
+  if (isLoading) {
+    return (
+      <ActivityIndicatorView
+        message={t('profile-loading-user', 'Loading user profile')}
+      />
+    );
+  }
+
+  if (!subject) {
+    return (
+      <ActivityIndicatorView
+        message={t('profile-awaiting-user-data', 'Waiting on user data')}
+      />
+    );
+  }
+
+  const name = subject.name?.[0];
+  const address = subject.address?.[0];
+
+  return (
+    <>
+      <Field
+        label={t('fhir-profile-first-name', 'First Name')}
+        value={name?.given?.[0]}
+      />
+      <Field
+        label={t('fhir-profile-last-name', 'Last Name')}
+        value={name?.family}
+      />
+      <Field
+        label={t('fhir-profile-gender-identity', 'Gender Identity')}
+        // TODO: improve the display of this gender.
+        value={subject.gender}
+      />
+      <Field
+        label={t('fhir-profile-address', 'Address')}
+        value={address?.line?.[0]}
+      />
+      <Field label={t('fhir-profile-city', 'City')} value={address?.city} />
+      <Field
+        label={t('fhir-profile-zip-code', 'Zip Code')}
+        value={address?.postalCode}
+      />
+      <Field
+        label={t('fhir-profile-mobile-number', 'Mobile Number')}
+        value={subject.telecom?.find((t) => t.system === 'phone')?.value}
+      />
+      <Field
+        label={t('fhir-profile-email', 'Email Address')}
+        value={subject.telecom?.find((t) => t.system === 'email')?.value}
+      />
+    </>
+  );
+};
 export const ProfileScreen = () => {
   const { styles } = useStyles(defaultStyles);
   const { isLoading, data } = useUser();
