@@ -8,6 +8,7 @@ export interface Subject {
   subjectId: string;
   projectId: string;
   name: Patient['name'];
+  subject: Patient;
 }
 
 interface Entry {
@@ -38,6 +39,7 @@ export function useMe() {
                   (t) => t.system === 'http://lifeomic.com/fhir/dataset',
                 )?.code,
                 name: entry.resource.name,
+                subject: entry.resource,
               } as Subject),
           ),
         ),
