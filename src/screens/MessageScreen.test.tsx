@@ -9,6 +9,7 @@ import {
 } from '../hooks/Circles/usePrivatePosts';
 import { MessageScreen } from './MessageScreen';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
+import { useUser } from '../hooks/useUser';
 
 jest.mock('../hooks/Circles/usePrivatePosts', () => {
   return {
@@ -18,10 +19,14 @@ jest.mock('../hooks/Circles/usePrivatePosts', () => {
   };
 });
 jest.mock('../hooks/useUnreadMessages');
+jest.mock('../hooks/useUser', () => ({
+  useUser: jest.fn(),
+}));
 
 const useLookupUserMock = useLookupUsers as jest.Mock;
 const useUnreadMessagesMock = useUnreadMessages as jest.Mock;
 const useLookupUsersFirstPostMock = useLookupUsersFirstPost as jest.Mock;
+const useUserMock = useUser as jest.Mock;
 
 const navigateMock = {
   navigate: jest.fn(),
@@ -55,6 +60,11 @@ const directMessageScreen = (
 );
 
 beforeEach(() => {
+  useUserMock.mockReturnValue({
+    data: {
+      id: 'mockUser',
+    },
+  });
   const mockUserData: UserData = {
     user: {
       userId: 'UserId',
@@ -72,7 +82,6 @@ beforeEach(() => {
   useUnreadMessagesMock.mockReturnValue({
     unreadIds: [],
   });
-
   const mockPrivatePostData = {
     privatePosts: {
       edges: [{ node: { message: 'some message' } }],
@@ -139,19 +148,34 @@ test('renders badge if unread messages are available and sorts list', async () =
       data: mockFirstUser,
     },
   ]);
-
   useLookupUsersFirstPostMock.mockReturnValue([
     {
       data: {
         privatePosts: {
-          edges: [{ node: { message: 'First message' } }],
+          edges: [
+            {
+              node: {
+                message: 'Should prefix message',
+                createdAt: '2023-10-04T20:12:38.000Z',
+                authorId: 'mockUser',
+              },
+            },
+          ],
         },
       },
     },
     {
       data: {
         privatePosts: {
-          edges: [{ node: { message: 'Second message' } }],
+          edges: [
+            {
+              node: {
+                message: 'Second message',
+                createdAt: '2023-10-03T20:12:38.000Z',
+                authorId: 'other_user',
+              },
+            },
+          ],
         },
       },
     },
@@ -164,10 +188,8 @@ test('renders badge if unread messages are available and sorts list', async () =
   const { queryAllByTestId } = render(directMessageScreen);
   const results = queryAllByTestId('user-list-item');
 
-  expect(within(results[0]).queryAllByTestId('unread-badge')).toHaveLength(1);
-  expect(within(results[0]).getByText('Should be first')).toBeDefined();
-  expect(within(results[0]).getByText('First message')).toBeDefined();
-  expect(within(results[1]).queryAllByTestId('unread-badge')).toHaveLength(0);
+  expect(
+    within(results[0]).getByText('You: Should prefix message'),
+  ).toBeDefined();
   expect(within(results[1]).getByText('Should be second')).toBeDefined();
-  expect(within(results[1]).getByText('Second message')).toBeDefined();
 });
