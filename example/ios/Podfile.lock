@@ -407,15 +407,16 @@ PODS:
     - React-Core
   - RNDeviceInfo (10.5.1):
     - React-Core
-  - RNGestureHandler (2.9.0):
+  - RNGestureHandler (2.13.1):
     - React-Core
   - RNKeychain (8.1.1):
     - React-Core
-  - RNReanimated (2.14.4):
+  - RNReanimated (3.5.4):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
     - glog
+    - hermes-engine
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -425,6 +426,7 @@ PODS:
     - React-Core/RCTWebSocket
     - React-CoreModules
     - React-cxxreact
+    - React-hermes
     - React-jsi
     - React-jsiexecutor
     - React-jsinspector
@@ -702,9 +704,9 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: b90b71f45b8b97be43bc4284e71a6af48ac9f547
   RNCPicker: 567de6dc0c6735cf249700d940c80b90b090e4db
   RNDeviceInfo: fb81318c9cd5ebe30ebf12bcd046d818c87f9b53
-  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
+  RNGestureHandler: 38aa38413896620338948fbb5c90579a7b1c3fde
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
-  RNReanimated: cc5e3aa479cb9170bcccf8204291a6950a3be128
+  RNReanimated: be07c7ae209074d0e8a84cf38b7909457ac59a32
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNShare: c9981876caa44c46be70eed8a9ccac38828a3572
   RNSVG: 80584470ff1ffc7994923ea135a3e5ad825546b9
