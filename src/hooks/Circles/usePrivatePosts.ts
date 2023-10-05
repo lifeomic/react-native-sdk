@@ -185,6 +185,43 @@ export const useLookupUsers = (
   });
 };
 
+export const useLookupUsersFirstPost = (
+  userList?: { userId: string; enabled: boolean }[],
+) => {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+  const { data, isInitialLoading } = useUser();
+
+  const queryPosts = async (userId: string) => {
+    const variables = {
+      userIds: [data?.id, userId],
+      filter: {
+        order: 'NEWEST',
+      },
+      first: 1,
+    };
+
+    return graphQLClient.request<PrivatePostsData>(
+      privatePostsQueryDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useQueries({
+    queries: (userList ?? []).map((user) => {
+      return {
+        queryKey: ['privatePost', user.userId],
+        queryFn: () => queryPosts(user.userId),
+        enabled:
+          !!accountHeaders?.['LifeOmic-Account'] &&
+          !isInitialLoading &&
+          user.enabled, // throttle queries until we are attempting to load them on screen
+      };
+    }),
+  });
+};
+
 const userQueryDocument = gql`
   query User($userId: ID!) {
     user(userId: $userId) {

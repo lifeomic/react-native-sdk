@@ -2,8 +2,14 @@ import { useState } from 'react';
 import { useAppConfig } from './useAppConfig';
 import { useUnreadMessages } from './useUnreadMessages';
 import { useUser } from './useUser';
-import { chunk, compact, find, uniq } from 'lodash';
-import { useLookupUsers } from './Circles/usePrivatePosts';
+import { chunk, compact, find, merge, uniq } from 'lodash';
+import {
+  PrivatePostsData,
+  UserData,
+  useLookupUsers,
+  useLookupUsersFirstPost,
+} from './Circles/usePrivatePosts';
+import { UseQueryResult } from '@tanstack/react-query';
 
 export const useMyMessages = (tileId: string) => {
   const [pageIndex, setPageIndex] = useState(0);
@@ -51,9 +57,16 @@ export const useMyMessages = (tileId: string) => {
 
   // Get user details (picture/displayName) for usersInView
   const userQueries = useLookupUsers(userQueryList);
+  const userPostQueries = useLookupUsersFirstPost(userQueryList);
+
+  const queries = merge(userQueries, userPostQueries) as UseQueryResult<
+    PrivatePostsData & UserData,
+    unknown
+  >[];
+
   const userDetailsList = compact(
-    userQueries.map(({ data }) => {
-      if (!data) {
+    queries.map(({ data }) => {
+      if (!data?.privatePosts || !data.user) {
         return;
       }
 
@@ -62,6 +75,7 @@ export const useMyMessages = (tileId: string) => {
         displayName: data.user.profile.displayName,
         picture: data.user.profile.picture,
         isUnread: unreadIds?.includes(data.user.userId) ?? false,
+        message: data.privatePosts.edges?.[0]?.node.message,
       };
     }),
   );

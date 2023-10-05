@@ -76,6 +76,7 @@ export function MessageScreen({
               testID={tID('user-list-item')}
               titleStyle={styles.listItemText}
               style={styles.listItemView}
+              descriptionStyle={styles.listItemSubtitle}
               left={(props) =>
                 renderLeft(props, {
                   _id: user.userId,
@@ -85,6 +86,7 @@ export function MessageScreen({
                 })
               }
               title={user.displayName}
+              description={user.message}
               right={() => renderRight(user.isUnread)}
             />
             <Divider />
@@ -122,6 +124,9 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     },
     listItemText: {
       ...theme.fonts.titleMedium,
+    },
+    listItemSubtitle: {
+      ...theme.fonts.titleSmall,
     },
     userIconView: {
       marginLeft: theme.spacing.extraSmall,
