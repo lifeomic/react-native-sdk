@@ -368,7 +368,7 @@ describe('handleAppTileNavigationStateChange', () => {
     expect(handler).toBeDefined();
 
     act(() => {
-      handler({ preventDefault });
+      handler({ preventDefault, data: { action: { type: 'GO_BACK' } } });
     });
 
     expect(preventDefault).toHaveBeenCalled();
