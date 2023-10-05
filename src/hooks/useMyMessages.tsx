@@ -75,25 +75,23 @@ export const useMyMessages = (tileId: string) => {
         userId: data.user.userId,
         displayName: data.user.profile.displayName,
         picture: data.user.profile.picture,
-        isUnread: unreadIds?.includes(data.user.userId) ?? false,
-        message: data.privatePosts.edges?.[0]?.node.message ?? '',
-        messageTime: data.privatePosts.edges?.[0]?.node.createdAt,
-        messagePrefix:
-          data.privatePosts.edges?.[0]?.node.authorId === userData?.id
-            ? 'You: '
-            : '',
+        hasUnread: unreadIds?.includes(data.user.userId) ?? false,
+        lastMessage: data.privatePosts.edges?.[0]?.node.message ?? '',
+        lastMessageTime: data.privatePosts.edges?.[0]?.node.createdAt,
+        isCreatedBySelf:
+          data.privatePosts.edges?.[0]?.node.authorId === userData?.id,
       };
     }),
   ).sort((a, b) => {
-    if (!a.messageTime) {
+    if (!a.lastMessageTime) {
       return 0;
     }
-    if (!b.messageTime) {
+    if (!b.lastMessageTime) {
       return -1;
     }
     return differenceInSeconds(
-      new Date(b.messageTime),
-      new Date(a.messageTime),
+      new Date(b.lastMessageTime),
+      new Date(a.lastMessageTime),
     );
   });
 
