@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
-import { Bubble, GiftedChat, IMessage } from 'react-native-gifted-chat';
+import {
+  Bubble,
+  Composer,
+  GiftedChat,
+  IMessage,
+  InputToolbar,
+  Send,
+} from 'react-native-gifted-chat';
 import {
   useInfinitePrivatePosts,
   useCreatePrivatePostMutation,
@@ -11,7 +18,7 @@ import {
   ActivityIndicatorView,
   ActivityIndicatorViewStyles,
 } from '../components/ActivityIndicatorView';
-import { createStyles } from '../components/BrandConfigProvider';
+import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
 import { useUnreadMessages } from '../hooks/useUnreadMessages';
@@ -24,6 +31,8 @@ export function DirectMessagesScreen({
   const { styles } = useStyles(defaultStyles);
   const { markMessageRead } = useUnreadMessages();
   const userId = useRef<string>();
+  const { Send: SendIcon } = useIcons();
+  const textLength = useRef<number>(0);
 
   useEffect(() => {
     if (userId.current !== recipientUserId) {
@@ -82,6 +91,7 @@ export function DirectMessagesScreen({
           fetchNextPage();
         }
       }}
+      placeholder={t('message-placeholder', 'Write Your Message')}
       isLoadingEarlier={isFetchingNextPage}
       onSend={(m) => onSend(m, userData.id)}
       user={{
@@ -103,6 +113,44 @@ export function DirectMessagesScreen({
           />
         );
       }}
+      renderInputToolbar={(props) => {
+        return (
+          <InputToolbar
+            {...props}
+            containerStyle={[
+              styles.textInputContainer,
+              textLength.current === 0
+                ? styles.textInputBorder?.disabled
+                : styles.textInputBorder?.enabled,
+            ]}
+          />
+        );
+      }}
+      renderComposer={(props) => {
+        return (
+          <Composer
+            {...props}
+            placeholderTextColor={styles.placeholderText?.color?.toString()}
+          />
+        );
+      }}
+      renderSend={(props) => {
+        textLength.current = props.text?.length ?? 0;
+        const iconColor =
+          props.text?.length === 0
+            ? styles.sendIconColor?.disabled
+            : styles.sendIconColor?.enabled;
+
+        return (
+          <Send
+            {...props}
+            containerStyle={styles.sendButtonContainer}
+            alwaysShowSend
+          >
+            <SendIcon color={iconColor} />
+          </Send>
+        );
+      }}
     />
   );
 }
@@ -114,7 +162,8 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
     },
   } as ActivityIndicatorViewStyles,
   messagesContainerStyle: {
-    backgroundColor: theme.colors.elevation.level1,
+    backgroundColor: theme.colors.elevation.level0,
+    paddingBottom: theme.spacing.large,
   },
   rightMessageView: {
     backgroundColor: theme.colors.primary,
@@ -124,6 +173,37 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   },
   leftText: { ...theme.fonts.bodyMedium },
   rightText: { ...theme.fonts.bodyMedium },
+  textInputContainer: {
+    width: '90%',
+    marginBottom: theme.spacing.medium,
+    marginLeft: 20,
+  },
+  textInputBorder: {
+    enabled: {
+      borderColor: theme.colors.primary,
+      borderTopColor: theme.colors.primary,
+      borderTopWidth: 1.1,
+      borderWidth: 1,
+    },
+    disabled: {
+      borderColor: theme.colors.primaryContainer,
+      borderTopColor: theme.colors.primaryContainer,
+      borderTopWidth: 1.1,
+      borderWidth: 1,
+    },
+  },
+  sendButtonContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    marginRight: theme.spacing.small,
+  },
+  sendIconColor: {
+    enabled: theme.colors.primary,
+    disabled: theme.colors.primaryContainer,
+  },
+  placeholderText: {
+    color: theme.colors.surfaceDisabled,
+  },
 }));
 
 declare module '@styles' {
