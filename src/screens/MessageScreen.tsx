@@ -117,8 +117,8 @@ export function MessageScreen({
               descriptionNumberOfLines={1}
               descriptionStyle={
                 user.hasUnread
-                  ? [styles.listItemSubtitle, styles.newMessageText]
-                  : styles.listItemSubtitle
+                  ? [styles.listItemSubtitleText, styles.newMessageText]
+                  : styles.listItemSubtitleText
               }
               left={(props) =>
                 renderLeft(props, {
@@ -135,7 +135,7 @@ export function MessageScreen({
               }`}
               right={() => renderRight(user.lastMessageTime)}
             />
-            <Divider />
+            <Divider style={styles.listItemDividerView} />
           </TouchableOpacity>
         ))}
         {isLoading ? (
@@ -171,9 +171,10 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     listItemText: {
       ...theme.fonts.titleMedium,
     },
-    listItemSubtitle: {
+    listItemSubtitleText: {
       ...theme.fonts.titleSmall,
     },
+    listItemDividerView: {},
     userIconView: {
       marginLeft: theme.spacing.extraSmall,
     },

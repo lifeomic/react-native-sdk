@@ -130,6 +130,7 @@ export function DirectMessagesScreen({
         return (
           <Composer
             {...props}
+            textInputStyle={styles.inputTextStyle}
             placeholderTextColor={styles.placeholderText?.color?.toString()}
           />
         );
@@ -192,6 +193,7 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
       borderWidth: 1,
     },
   },
+  inputTextStyle: {},
   sendButtonContainer: {
     flexDirection: 'column',
     justifyContent: 'center',
