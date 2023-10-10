@@ -27,22 +27,6 @@ const useDeveloperConfigMock = useDeveloperConfig as jest.Mock;
 const useStylesMock = useStyles as jest.Mock;
 const usePendingInviteMock = usePendingInvite as jest.Mock;
 
-beforeEach(() => {
-  useStylesMock.mockReturnValue({
-    styles: {
-      containerView: {},
-    },
-  });
-
-  useDeveloperConfigMock.mockReturnValue({
-    renderCustomLoginScreen: null,
-  });
-
-  usePendingInviteMock.mockReturnValue({
-    inviteParams: undefined,
-  });
-});
-
 const loginScreenInContext = (
   <PaperProvider>
     <LoginScreen />
@@ -50,6 +34,23 @@ const loginScreenInContext = (
 );
 
 describe('LoginScreen', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+
+    useStylesMock.mockReturnValue({
+      styles: {
+        containerView: {},
+      },
+    });
+
+    useDeveloperConfigMock.mockReturnValue({
+      renderCustomLoginScreen: null,
+    });
+
+    usePendingInviteMock.mockReturnValue({
+      inviteParams: undefined,
+    });
+  });
   it('renders correctly', () => {
     const { getByText } = render(loginScreenInContext);
 
@@ -99,7 +100,6 @@ describe('LoginScreen', () => {
     expect(
       findByText('We encountered an error trying to log you in.'),
     ).toBeDefined();
-    oAuthLoginButtonSpy.mockRestore();
   });
 
   const NON_ERRORING_FAILURE_MESSAGES = [
@@ -126,7 +126,6 @@ describe('LoginScreen', () => {
       });
 
       expect(queryByText('Authentication Error')).toBeNull();
-      oAuthLoginButtonSpy.mockRestore();
     },
   );
 });
