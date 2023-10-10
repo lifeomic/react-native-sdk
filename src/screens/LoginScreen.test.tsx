@@ -99,6 +99,7 @@ describe('LoginScreen', () => {
     expect(
       findByText('We encountered an error trying to log you in.'),
     ).toBeDefined();
+    oAuthLoginButtonSpy.mockRestore();
   });
 
   const NON_ERRORING_FAILURE_MESSAGES = [
@@ -125,6 +126,7 @@ describe('LoginScreen', () => {
       });
 
       expect(queryByText('Authentication Error')).toBeNull();
+      oAuthLoginButtonSpy.mockRestore();
     },
   );
 });
