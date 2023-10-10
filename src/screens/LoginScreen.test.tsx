@@ -27,22 +27,6 @@ const useDeveloperConfigMock = useDeveloperConfig as jest.Mock;
 const useStylesMock = useStyles as jest.Mock;
 const usePendingInviteMock = usePendingInvite as jest.Mock;
 
-beforeEach(() => {
-  useStylesMock.mockReturnValue({
-    styles: {
-      containerView: {},
-    },
-  });
-
-  useDeveloperConfigMock.mockReturnValue({
-    renderCustomLoginScreen: null,
-  });
-
-  usePendingInviteMock.mockReturnValue({
-    inviteParams: undefined,
-  });
-});
-
 const loginScreenInContext = (
   <PaperProvider>
     <LoginScreen />
@@ -50,6 +34,23 @@ const loginScreenInContext = (
 );
 
 describe('LoginScreen', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+
+    useStylesMock.mockReturnValue({
+      styles: {
+        containerView: {},
+      },
+    });
+
+    useDeveloperConfigMock.mockReturnValue({
+      renderCustomLoginScreen: null,
+    });
+
+    usePendingInviteMock.mockReturnValue({
+      inviteParams: undefined,
+    });
+  });
   it('renders correctly', () => {
     const { getByText } = render(loginScreenInContext);
 
