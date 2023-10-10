@@ -121,6 +121,7 @@ export const AuthedAppTileScreen = ({
       source={source}
       ref={webViewRef}
       cacheEnabled={false}
+      incognito={true}
       onMessage={handleAppTileMessage}
       onNavigationStateChange={handleAppTileNavigationStateChange}
       onLoad={handlePageLoaded}
