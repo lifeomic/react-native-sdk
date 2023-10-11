@@ -3,7 +3,6 @@ import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { useAuth } from '../hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { LoggedInProviders } from '../common/LoggedInProviders';
 import { LoginScreen } from '../screens/LoginScreen';
 import { NotLoggedInRootParamList } from './types';
 import { LoggedInStack } from './LoggedInStack';
@@ -19,11 +18,7 @@ export function RootStack() {
   }
 
   if (isLoggedIn) {
-    return (
-      <LoggedInProviders>
-        <LoggedInStack />
-      </LoggedInProviders>
-    );
+    return <LoggedInStack />;
   }
 
   const Stack = createNativeStackNavigator<NotLoggedInRootParamList>();
