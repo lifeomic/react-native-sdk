@@ -12,6 +12,7 @@ import { NoInternetToastProvider } from '../hooks/NoInternetToastProvider';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemedNavigationContainer } from './ThemedNavigationContainer';
+import { LoggedInProviders } from './LoggedInProviders';
 const queryClient = new QueryClient();
 
 export function RootProviders({
@@ -35,7 +36,7 @@ export function RootProviders({
                     <ActionSheetProvider>
                       <SafeAreaProvider>
                         <ThemedNavigationContainer>
-                          {children}
+                          <LoggedInProviders>{children}</LoggedInProviders>
                         </ThemedNavigationContainer>
                       </SafeAreaProvider>
                     </ActionSheetProvider>
