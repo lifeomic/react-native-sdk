@@ -1,5 +1,11 @@
-import React, { useCallback, useMemo } from 'react';
-import { Linking, Platform, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import {
+  AppState,
+  AppStateStatus,
+  Linking,
+  Platform,
+  View,
+} from 'react-native';
 import { WearablesView } from '../components/Wearables';
 import { useWearables } from '../hooks/useWearables';
 import {
@@ -66,6 +72,20 @@ const WearablesScreen = () => {
     },
     [onBackfill, backfillEHR],
   );
+
+  // When toggling oauth-based wearable, need to refresh when
+  // coming back into the app:
+  useEffect(() => {
+    const handleAppStateChange = (newState: AppStateStatus) => {
+      if (newState === 'active') {
+        refetch();
+      }
+    };
+    const listener = AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      listener.remove();
+    };
+  }, [refetch]);
 
   return (
     <View style={[styles.container]}>
