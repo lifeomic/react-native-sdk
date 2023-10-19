@@ -21,48 +21,45 @@ import {
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
-import { useUnreadMessages } from '../hooks/useUnreadMessages';
+import { useMarkAsRead } from '../hooks/useConversations';
 
 export function DirectMessagesScreen({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/DirectMessage'>) {
-  const { recipientUserId, displayName } = route.params;
+  const { users, conversationId } = route.params;
   const { styles } = useStyles(defaultStyles);
-  const { markMessageRead } = useUnreadMessages();
-  const userId = useRef<string>();
   const { Send: SendIcon } = useIcons();
   const textLength = useRef<number>(0);
+  const { mutateAsync: markAsRead } = useMarkAsRead();
+  const { data: userData, isLoading: userLoading } = useUser();
+  const otherProfiles = users.filter((user) => user.id !== userData?.id);
 
   useEffect(() => {
-    if (userId.current !== recipientUserId) {
-      userId.current = recipientUserId;
-      markMessageRead?.(recipientUserId);
-    }
-  });
+    markAsRead({ conversationId });
+  }, [conversationId, markAsRead]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: displayName,
+      title: otherProfiles.map((user) => user.profile.displayName).join(', '),
     });
-  }, [navigation, displayName]);
+  }, [navigation, otherProfiles]);
 
-  const { data: userData, isLoading: userLoading } = useUser();
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useInfinitePrivatePosts(recipientUserId);
+    useInfinitePrivatePosts(users.map((user) => user.id));
 
   const { mutateAsync } = useCreatePrivatePostMutation();
 
   const onSend = useCallback(
-    (newMessages: IMessage[] = [], userId: string) => {
+    (newMessages: IMessage[] = []) => {
       newMessages.map((m) => {
         mutateAsync({
-          userIds: { currentUserId: userId, recipientUserId },
+          userIds: users.map((user) => user.id),
           post: { message: m.text },
         });
       });
     },
-    [mutateAsync, recipientUserId],
+    [mutateAsync, users],
   );
 
   const loadingIndicator = (
@@ -93,7 +90,7 @@ export function DirectMessagesScreen({
       }}
       placeholder={t('message-placeholder', 'Write Your Message')}
       isLoadingEarlier={isFetchingNextPage}
-      onSend={(m) => onSend(m, userData.id)}
+      onSend={(m) => onSend(m)}
       user={{
         _id: userData.id,
       }}

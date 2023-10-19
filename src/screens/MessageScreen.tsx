@@ -1,14 +1,20 @@
 import React, { useCallback, useLayoutEffect } from 'react';
 import { useStyles } from '../hooks/useStyles';
-import { Divider, List, Button, Text, Badge } from 'react-native-paper';
-import { TouchableOpacity, ScrollView, View, ViewStyle } from 'react-native';
-import { createStyles } from '../components/BrandConfigProvider';
-import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
+import {
+  Divider,
+  List,
+  Button,
+  Text,
+  Badge,
+  IconButton,
+} from 'react-native-paper';
+import { TouchableOpacity, ScrollView, View } from 'react-native';
+import { createStyles, useIcons } from '../components/BrandConfigProvider';
+import { GiftedAvatar } from 'react-native-gifted-chat';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { tID } from '../common/testID';
-import { useMyMessages } from '../hooks/useMyMessages';
 import {
   format,
   differenceInMinutes,
@@ -16,39 +22,66 @@ import {
   differenceInDays,
   differenceInSeconds,
 } from 'date-fns';
-
-type User = GiftedUser & { id: string; name: string; isUnread: boolean };
+import { useInfiniteConversations } from '../hooks/useConversations';
+import { useAppConfig } from '../hooks/useAppConfig';
+import compact from 'lodash/compact';
+import { UserProfile, useUser } from '../hooks';
 
 export function MessageScreen({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/Messages'>) {
   const { tileId } = route.params;
+  const { data: appConfig } = useAppConfig();
+  const messageTiles = appConfig?.homeTab?.messageTiles;
+  const tile = messageTiles?.find((messageTile) => messageTile.id === tileId);
+  const userProfiles = tile?.userProfiles;
+  const { data: userData } = useUser();
+
+  const getUserProfiles = (userIds: string[], omitSelf?: boolean) => {
+    const ids = omitSelf
+      ? userIds.filter((id) => id !== userData?.id)
+      : userIds;
+    return compact(
+      userProfiles?.filter((userProfile) => ids.includes(userProfile.id)),
+    );
+  };
+
+  const { Edit2 } = useIcons();
+  const { data, fetchNextPage, hasNextPage, isLoading } =
+    useInfiniteConversations();
+
+  const iconButton = useCallback(
+    () => (
+      <IconButton
+        icon={Edit2}
+        onPress={() => navigation.navigate('Home/ComposeMessage', { tileId })}
+      />
+    ),
+    [Edit2, navigation, tileId],
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: t('messages-title', 'My Messages'),
+      title: t('messages-title', 'Messages'),
+      headerRight: iconButton,
     });
-  }, [navigation]);
+  }, [iconButton, navigation]);
 
   const { styles } = useStyles(defaultStyles);
-  const { userDetailsList, fetchNextPage, hasNextPage, isLoading } =
-    useMyMessages(tileId);
 
   const handlePostTapped = useCallback(
-    (userId: string | undefined, displayName?: string) => () => {
-      if (userId) {
-        navigation.navigate('Home/DirectMessage', {
-          recipientUserId: userId,
-          displayName,
-        });
-      }
+    (tappedUsers: UserProfile[], conversationId: string) => () => {
+      navigation.navigate('Home/DirectMessage', {
+        users: tappedUsers,
+        conversationId,
+      });
     },
     [navigation],
   );
 
   const renderLeft = useCallback(
-    (props: { style: ViewStyle }, user: User) => (
+    (selectedProfiles: UserProfile[], hasUnread: boolean) => (
       <View
         style={{
           flexDirection: 'row',
@@ -61,30 +94,30 @@ export function MessageScreen({
             size={10}
             style={[
               styles.badgeView,
-              user.isUnread
+              hasUnread
                 ? styles.badgeColor?.enabled
                 : styles.badgeColor?.disabled,
             ]}
             testID={tID('unread-badge')}
           />
         }
-        <View
-          style={
-            user.isUnread
-              ? [props.style, styles.newMessageIconView]
-              : props.style
+        <View>
+          {
+            // TODO: Combine multiple GiftedAvatars
           }
-        >
-          <GiftedAvatar user={user} textStyle={{ fontWeight: '500' }} />
+          <GiftedAvatar
+            key={selectedProfiles[0].id}
+            user={{
+              name: selectedProfiles[0].profile.displayName,
+              avatar: selectedProfiles[0].profile.picture,
+              _id: selectedProfiles[0].id,
+            }}
+            textStyle={{ fontWeight: '500' }}
+          />
         </View>
       </View>
     ),
-    [
-      styles.badgeColor?.disabled,
-      styles.badgeColor?.enabled,
-      styles.badgeView,
-      styles.newMessageIconView,
-    ],
+    [styles.badgeColor?.disabled, styles.badgeColor?.enabled, styles.badgeView],
   );
 
   const renderRight = useCallback(
@@ -98,16 +131,23 @@ export function MessageScreen({
     [styles.listItemTimeText],
   );
 
+  const conversations = data?.pages?.flatMap((page) =>
+    page.conversations.edges.flatMap((edge) => edge.node),
+  );
+
   return (
     <View style={styles.rootView}>
       <ScrollView
         scrollEventThrottle={400}
         contentContainerStyle={styles.scrollView}
       >
-        {userDetailsList?.map((user) => (
+        {conversations?.map((node) => (
           <TouchableOpacity
-            key={`message-${user.userId}`}
-            onPress={handlePostTapped(user.userId, user.displayName)}
+            key={`message-${node.conversationId}`}
+            onPress={handlePostTapped(
+              getUserProfiles(node.userIds),
+              node.conversationId,
+            )}
             activeOpacity={0.6}
           >
             <List.Item
@@ -116,24 +156,22 @@ export function MessageScreen({
               style={styles.listItemView}
               descriptionNumberOfLines={1}
               descriptionStyle={
-                user.hasUnread
+                node
                   ? [styles.listItemSubtitleText, styles.newMessageText]
                   : styles.listItemSubtitleText
               }
-              left={(props) =>
-                renderLeft(props, {
-                  _id: user.userId,
-                  id: user.userId,
-                  name: user.displayName,
-                  avatar: user.picture,
-                  isUnread: user.hasUnread,
-                })
+              left={() =>
+                renderLeft(getUserProfiles(node.userIds, true), node.hasUnread)
               }
-              title={user.displayName}
-              description={`${user.isCreatedBySelf ? styles.selfPrefix : ''} ${
-                user.lastMessage
-              }`}
-              right={() => renderRight(user.lastMessageTime)}
+              title={getUserProfiles(node.userIds, true)
+                .map((profile) => profile.profile.displayName)
+                .join(', ')}
+              description={`${
+                node.latestMessageUserId === userData?.id
+                  ? styles.selfPrefix
+                  : ''
+              } ${node.latestMessageText}`}
+              right={() => renderRight(node.latestMessageTime)}
             />
             <Divider style={styles.listItemDividerView} />
           </TouchableOpacity>

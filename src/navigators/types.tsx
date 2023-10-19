@@ -9,7 +9,7 @@ import {
   TrackerValue,
   TrackerValuesContext,
 } from '../components/TrackTile/main';
-import { Post } from '../hooks';
+import { Post, UserProfile } from '../hooks';
 import { AppTileParams } from '../screens';
 import { AuthedAppTileParams } from '../screens/AuthedAppTileScreen';
 
@@ -81,9 +81,12 @@ export type HomeStackParamList = {
   'Home/Messages': {
     tileId: string;
   };
+  'Home/ComposeMessage': {
+    tileId: string;
+  };
   'Home/DirectMessage': {
-    recipientUserId: string;
-    displayName?: string;
+    users: UserProfile[];
+    conversationId: string;
   };
 };
 
