@@ -23,29 +23,16 @@ import {
   differenceInSeconds,
 } from 'date-fns';
 import { useInfiniteConversations } from '../hooks/useConversations';
-import { useAppConfig } from '../hooks/useAppConfig';
-import compact from 'lodash/compact';
 import { UserProfile, useUser } from '../hooks';
+import { useProfilesForTile } from '../hooks/useUserProfiles';
 
 export function MessageScreen({
   navigation,
   route,
 }: HomeStackScreenProps<'Home/Messages'>) {
   const { tileId } = route.params;
-  const { data: appConfig } = useAppConfig();
-  const messageTiles = appConfig?.homeTab?.messageTiles;
-  const tile = messageTiles?.find((messageTile) => messageTile.id === tileId);
-  const userProfiles = tile?.userProfiles;
+  const { all, others } = useProfilesForTile(tileId);
   const { data: userData } = useUser();
-
-  const getUserProfiles = (userIds: string[], omitSelf?: boolean) => {
-    const ids = omitSelf
-      ? userIds.filter((id) => id !== userData?.id)
-      : userIds;
-    return compact(
-      userProfiles?.filter((userProfile) => ids.includes(userProfile.id)),
-    );
-  };
 
   const { Edit2 } = useIcons();
   const { data, fetchNextPage, hasNextPage, isLoading } =
@@ -81,42 +68,44 @@ export function MessageScreen({
   );
 
   const renderLeft = useCallback(
-    (selectedProfiles: UserProfile[], hasUnread: boolean) => (
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          marginLeft: 8,
-        }}
-      >
-        {
-          <Badge
-            size={10}
-            style={[
-              styles.badgeView,
-              hasUnread
-                ? styles.badgeColor?.enabled
-                : styles.badgeColor?.disabled,
-            ]}
-            testID={tID('unread-badge')}
-          />
-        }
-        <View>
+    (selectedProfiles: UserProfile[], hasUnread: boolean) => {
+      return (
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'center',
+            marginLeft: 8,
+          }}
+        >
           {
-            // TODO: Combine multiple GiftedAvatars
+            <Badge
+              size={10}
+              style={[
+                styles.badgeView,
+                hasUnread
+                  ? styles.badgeColor?.enabled
+                  : styles.badgeColor?.disabled,
+              ]}
+              testID={tID('unread-badge')}
+            />
           }
-          <GiftedAvatar
-            key={selectedProfiles[0].id}
-            user={{
-              name: selectedProfiles[0].profile.displayName,
-              avatar: selectedProfiles[0].profile.picture,
-              _id: selectedProfiles[0].id,
-            }}
-            textStyle={{ fontWeight: '500' }}
-          />
+          <View>
+            {
+              // TODO: Combine multiple GiftedAvatars
+            }
+            <GiftedAvatar
+              key={selectedProfiles[0].id}
+              user={{
+                name: selectedProfiles[0].profile.displayName,
+                avatar: selectedProfiles[0].profile.picture,
+                _id: selectedProfiles[0].id,
+              }}
+              textStyle={{ fontWeight: '500' }}
+            />
+          </View>
         </View>
-      </View>
-    ),
+      );
+    },
     [styles.badgeColor?.disabled, styles.badgeColor?.enabled, styles.badgeView],
   );
 
@@ -145,7 +134,7 @@ export function MessageScreen({
           <TouchableOpacity
             key={`message-${node.conversationId}`}
             onPress={handlePostTapped(
-              getUserProfiles(node.userIds),
+              all.filter((profile) => node.userIds.includes(profile.id)),
               node.conversationId,
             )}
             activeOpacity={0.6}
@@ -161,9 +150,13 @@ export function MessageScreen({
                   : styles.listItemSubtitleText
               }
               left={() =>
-                renderLeft(getUserProfiles(node.userIds, true), node.hasUnread)
+                renderLeft(
+                  others.filter((profile) => node.userIds.includes(profile.id)),
+                  node.hasUnread,
+                )
               }
-              title={getUserProfiles(node.userIds, true)
+              title={others
+                .filter((profile) => node.userIds.includes(profile.id))
                 .map((profile) => profile.profile.displayName)
                 .join(', ')}
               description={`${

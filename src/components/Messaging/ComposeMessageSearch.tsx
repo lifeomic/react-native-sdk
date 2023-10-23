@@ -3,9 +3,9 @@ import { ScrollView, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
 import { Divider, List } from 'react-native-paper';
 import { tID } from '../TrackTile/common/testID';
-import { UserProfile, useAppConfig, useStyles } from '../../hooks';
-import { ActivityIndicatorView } from '../ActivityIndicatorView';
+import { UserProfile, useStyles } from '../../hooks';
 import { createStyles } from '../../components/BrandConfigProvider';
+import { useProfilesForTile } from '../../hooks/useUserProfiles';
 
 type User = GiftedUser & { id: string; name: string; isUnread: boolean };
 
@@ -22,19 +22,15 @@ export const ComposeMessageSearch = ({
   searchTerm,
   selectedUserIds,
 }: Props) => {
-  console.log(selectedUserIds);
-  const { data, isLoading } = useAppConfig();
   const { styles } = useStyles(defaultStyles);
-  const messageTiles = data?.homeTab?.messageTiles;
-  const tile = messageTiles?.find((messageTile) => messageTile.id === tileId);
-  const users = tile?.userProfiles?.filter(
-    (userProfile) => !selectedUserIds.includes(userProfile.id),
-  );
+  const { others } = useProfilesForTile(tileId);
+
   const filteredList = searchTerm
-    ? users?.filter(
-        (user) =>
-          user?.profile.displayName?.includes(searchTerm) ||
-          user.id.includes(searchTerm),
+    ? others?.filter(
+        (profile) =>
+          (!selectedUserIds.includes(profile.id) &&
+            profile?.profile.displayName?.includes(searchTerm)) ||
+          profile.id.includes(searchTerm),
       )
     : [];
 
@@ -79,7 +75,6 @@ export const ComposeMessageSearch = ({
             <Divider style={styles.listItemDividerView} />
           </TouchableOpacity>
         ))}
-        {isLoading && <ActivityIndicatorView />}
       </ScrollView>
     </View>
   );

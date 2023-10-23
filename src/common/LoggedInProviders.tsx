@@ -13,6 +13,7 @@ import { CircleTileContextProvider } from '../hooks/Circles/useActiveCircleTile'
 import { OnboardingCourseContextProvider } from '../hooks/useOnboardingCourse';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { AppConfigContextProvider } from '../hooks/useAppConfig';
+import { UserProfilesContextProvider } from '../hooks/useUserProfiles';
 
 export const LoggedInProviders = ({
   children,
@@ -24,23 +25,25 @@ export const LoggedInProviders = ({
     <ActiveAccountContextProvider>
       <ActiveProjectContextProvider>
         <AppConfigContextProvider>
-          <TrackTileProvider>
-            <WearableLifecycleProvider>
-              <CircleTileContextProvider>
-                <OnboardingCourseContextProvider>
-                  <PushNotificationsProvider config={pushNotificationsConfig}>
-                    <NotificationsManagerProvider>
-                      <UnreadMessagesContextProvider>
-                        {children}
-                      </UnreadMessagesContextProvider>
-                    </NotificationsManagerProvider>
-                  </PushNotificationsProvider>
-                  <CreateEditPostModal />
-                  <Toast />
-                </OnboardingCourseContextProvider>
-              </CircleTileContextProvider>
-            </WearableLifecycleProvider>
-          </TrackTileProvider>
+          <UserProfilesContextProvider>
+            <TrackTileProvider>
+              <WearableLifecycleProvider>
+                <CircleTileContextProvider>
+                  <OnboardingCourseContextProvider>
+                    <PushNotificationsProvider config={pushNotificationsConfig}>
+                      <NotificationsManagerProvider>
+                        <UnreadMessagesContextProvider>
+                          {children}
+                        </UnreadMessagesContextProvider>
+                      </NotificationsManagerProvider>
+                    </PushNotificationsProvider>
+                    <CreateEditPostModal />
+                    <Toast />
+                  </OnboardingCourseContextProvider>
+                </CircleTileContextProvider>
+              </WearableLifecycleProvider>
+            </TrackTileProvider>
+          </UserProfilesContextProvider>
         </AppConfigContextProvider>
       </ActiveProjectContextProvider>
     </ActiveAccountContextProvider>
