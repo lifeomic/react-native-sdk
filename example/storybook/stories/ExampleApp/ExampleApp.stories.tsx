@@ -294,7 +294,7 @@ storiesOf('Example App', module)
                   },
                   {
                     name: 'Authed App Tile',
-                    type: 'authedAppTile',
+                    type: 'appTile',
                     icon: 'user-key',
                     initialParams: {
                       appTile: {

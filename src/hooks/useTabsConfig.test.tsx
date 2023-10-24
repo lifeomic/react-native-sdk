@@ -109,7 +109,6 @@ test('returns tabs in app config', () => {
 
 test.each([
   ['appTile', 'AppTileStack'],
-  ['authedAppTile', 'AuthedAppTileStack'],
   ['home', 'HomeStack'],
   ['notifications', 'NotificationsStack'],
   ['settings', 'SettingsStack'],

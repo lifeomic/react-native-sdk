@@ -3,7 +3,6 @@ import { camelCase, upperFirst } from 'lodash';
 import { SvgProps } from 'react-native-svg/lib/typescript/ReactNativeSVG';
 import {
   AppTileStack,
-  AuthedAppTileStack,
   HomeStack,
   NotificationsStack,
   SettingsStack,
@@ -33,8 +32,6 @@ const stackFromTab = (
   switch (tab.type) {
     case 'appTile':
       return AppTileStack;
-    case 'authedAppTile':
-      return AuthedAppTileStack;
     case 'customTab':
       return stacks?.[tab.initialParams.name] || (() => null); // No screen defined
     case 'home':

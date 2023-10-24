@@ -34,13 +34,7 @@ export interface MessageTile {
 }
 
 type Tile = 'todayTile' | 'trackTile' | 'pillarsTile' | 'myDataTile';
-type TabType =
-  | 'appTile'
-  | 'authedAppTile'
-  | 'customTab'
-  | 'home'
-  | 'notifications'
-  | 'settings';
+type TabType = 'appTile' | 'customTab' | 'home' | 'notifications' | 'settings';
 
 export interface AppConfig {
   homeTab?: {
