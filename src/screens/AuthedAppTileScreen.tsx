@@ -65,6 +65,9 @@ export const AuthedAppTileScreen = ({
     titleOverride,
     canGoBack,
     tabMode,
+    ChevronLeft,
+    styles.backAction,
+    styles.backActionIcon?.color,
   ]);
 
   const {

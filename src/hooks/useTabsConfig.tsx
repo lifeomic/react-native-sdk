@@ -54,21 +54,25 @@ export const fromAppConfigTabs = (
   tabs?: TabConfig[],
   stacks?: DeveloperConfig['CustomStacks'],
 ) => {
-  if (!tabs) return tabs;
+  if (!tabs) {
+    return tabs;
+  }
 
   return tabs.map((tab) => {
     return {
       ...tab,
       component: stackFromTab(tab, stacks),
-      icon: (props: SvgProps) => {
-        const iconName = upperFirst(camelCase(tab.icon ?? 'Menu'));
-        const { Menu, [iconName]: TabIcon = Menu } = useIcons();
-
-        return <TabIcon key={iconName} {...props} />;
-      },
+      icon: (props: SvgProps) => <DynamicTabIcon {...tab} {...props} />,
       svgProps: () => tab.svgProps,
       svgPropsActive: () => tab.svgPropsActive,
       svgPropsInactive: () => tab.svgPropsInactive,
     } as NavigationTab;
   });
+};
+
+const DynamicTabIcon = (props: SvgProps & { icon?: string }) => {
+  const iconName = upperFirst(camelCase(props.icon ?? 'Menu'));
+  const { Menu, [iconName]: TabIcon = Menu } = useIcons();
+
+  return <TabIcon key={iconName} {...props} />;
 };

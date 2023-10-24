@@ -37,7 +37,15 @@ export const AppTileScreen = ({ navigation, route }: AppTileScreenProps) => {
           )
         : undefined,
     });
-  }, [navigation, route.params.appTile.title, canGoBack, tabMode]);
+  }, [
+    navigation,
+    route.params.appTile.title,
+    canGoBack,
+    tabMode,
+    ChevronLeft,
+    styles.backAction,
+    styles.backActionIcon?.color,
+  ]);
 
   return (
     <WebView
