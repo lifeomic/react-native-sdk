@@ -61,16 +61,18 @@ test('returns tabs in app config', () => {
   const PlanetIconMock = jest.fn();
   useAppConfigMock.mockReturnValue({
     data: {
-      tabs: [
-        {
-          icon: 'Planet',
-          name: 'Test Tab',
-          type: 'home',
-          svgProps: { color: 'red' },
-          svgPropsActive: { color: 'yellow' },
-          svgPropsInactive: { color: 'blue' },
-        },
-      ],
+      tabsConfig: {
+        tabs: [
+          {
+            icon: 'Planet',
+            name: 'Test Tab',
+            type: 'home',
+            svgProps: { color: 'red' },
+            svgPropsActive: { color: 'yellow' },
+            svgPropsInactive: { color: 'blue' },
+          },
+        ],
+      },
     },
   });
 
@@ -114,12 +116,14 @@ test.each([
 ])('for tab.type %p uses %p for the stack', (type, stackName) => {
   useAppConfigMock.mockReturnValue({
     data: {
-      tabs: [
-        {
-          name: 'Test Tab',
-          type: type as any,
-        },
-      ],
+      tabsConfig: {
+        tabs: [
+          {
+            name: 'Test Tab',
+            type: type as any,
+          },
+        ],
+      },
     },
   });
 
@@ -142,15 +146,17 @@ test('can specify a customTab stack', () => {
   });
   useAppConfigMock.mockReturnValue({
     data: {
-      tabs: [
-        {
-          name: 'Test Tab',
-          type: 'customTab',
-          initialParams: {
-            name: 'CustomStack',
+      tabsConfig: {
+        tabs: [
+          {
+            name: 'Test Tab',
+            type: 'customTab',
+            initialParams: {
+              name: 'CustomStack',
+            },
           },
-        },
-      ],
+        ],
+      },
     },
   });
 
@@ -167,15 +173,17 @@ test('can specify a customTab stack', () => {
 test('handles missing customTab stack', () => {
   useAppConfigMock.mockReturnValue({
     data: {
-      tabs: [
-        {
-          name: 'Test Tab',
-          type: 'customTab',
-          initialParams: {
-            name: 'MissingStack', // This stack does not exist in Dev config
+      tabsConfig: {
+        tabs: [
+          {
+            name: 'Test Tab',
+            type: 'customTab',
+            initialParams: {
+              name: 'MissingStack', // This stack does not exist in Dev config
+            },
           },
-        },
-      ],
+        ],
+      },
     },
   });
 
@@ -192,12 +200,14 @@ test('handles missing customTab stack', () => {
 test('handles unknown tab type', () => {
   useAppConfigMock.mockReturnValue({
     data: {
-      tabs: [
-        {
-          name: 'Test Tab',
-          type: 'unknownTabType' as any,
-        },
-      ],
+      tabsConfig: {
+        tabs: [
+          {
+            name: 'Test Tab',
+            type: 'unknownTabType' as any,
+          },
+        ],
+      },
     },
   });
 
@@ -215,18 +225,20 @@ test('defaults to Menu icon for unknown/missing icon', () => {
   const MenuItemMock = jest.fn();
   useAppConfigMock.mockReturnValue({
     data: {
-      tabs: [
-        {
-          name: 'Test Tab',
-          type: 'home',
-          icon: 'unknownIcon',
-        },
-        {
-          name: 'Test Tab 2',
-          type: 'home',
-          icon: undefined,
-        },
-      ],
+      tabsConfig: {
+        tabs: [
+          {
+            name: 'Test Tab',
+            type: 'home',
+            icon: 'unknownIcon',
+          },
+          {
+            name: 'Test Tab 2',
+            type: 'home',
+            icon: undefined,
+          },
+        ],
+      },
     },
   });
 

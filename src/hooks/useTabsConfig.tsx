@@ -13,14 +13,14 @@ import { useDeveloperConfig } from './useDeveloperConfig';
 import { useIcons } from '../components/BrandConfigProvider';
 import { DeveloperConfig, NavigationTab } from '../common/DeveloperConfig';
 
-type TabConfig = Exclude<AppConfig['tabs'], undefined>[number];
+type TabConfig = Exclude<AppConfig['tabsConfig'], undefined>['tabs'][number];
 
 export const useTabsConfig = (defaultTabs: NavigationTab[] = []) => {
   const { data: appConfig } = useAppConfig();
   const { componentProps, CustomStacks } = useDeveloperConfig();
 
   return (
-    fromAppConfigTabs(appConfig?.tabs, CustomStacks) ??
+    fromAppConfigTabs(appConfig?.tabsConfig?.tabs, CustomStacks) ??
     componentProps?.TabBar?.tabs ??
     defaultTabs
   );

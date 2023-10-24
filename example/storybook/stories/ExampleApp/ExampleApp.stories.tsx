@@ -267,61 +267,63 @@ storiesOf('Example App', module)
                   components: [],
                 },
               },
-              tabs: [
-                {
-                  name: 'Home',
-                  type: 'home',
-                  icon: 'home',
-                },
-                {
-                  name: 'Notifications',
-                  type: 'notifications',
-                  icon: 'bell',
-                },
-                {
-                  name: 'Settings',
-                  type: 'settings',
-                  icon: 'settings',
-                },
-                {
-                  name: 'Custom',
-                  type: 'customTab',
-                  icon: 'zap',
-                  initialParams: {
-                    name: 'CustomTabStack',
+              tabsConfig: {
+                tabs: [
+                  {
+                    name: 'Home',
+                    type: 'home',
+                    icon: 'home',
                   },
-                },
-                {
-                  name: 'Authed App Tile',
-                  type: 'authedAppTile',
-                  icon: 'user-key',
-                  initialParams: {
-                    appTile: {
-                      title: 'Authed App Tile',
-                      source: {
-                        url: 'https://lifeapplets.dev.lifeomic.com/my-data/#/',
-                      },
-                      callbackUrls: [
-                        'https://lifeapplets.dev.lifeomic.com/my-data/',
-                      ],
-                      clientId: 'example', // requires real client id to work
+                  {
+                    name: 'Notifications',
+                    type: 'notifications',
+                    icon: 'bell',
+                  },
+                  {
+                    name: 'Settings',
+                    type: 'settings',
+                    icon: 'settings',
+                  },
+                  {
+                    name: 'Custom',
+                    type: 'customTab',
+                    icon: 'zap',
+                    initialParams: {
+                      name: 'CustomTabStack',
                     },
                   },
-                },
-                {
-                  name: 'App tile',
-                  type: 'appTile',
-                  icon: 'user',
-                  initialParams: {
-                    appTile: {
-                      title: 'App Tile',
-                      source: {
-                        url: 'https://wikipedia.com',
+                  {
+                    name: 'Authed App Tile',
+                    type: 'authedAppTile',
+                    icon: 'user-key',
+                    initialParams: {
+                      appTile: {
+                        title: 'Authed App Tile',
+                        source: {
+                          url: 'https://lifeapplets.dev.lifeomic.com/my-data/#/',
+                        },
+                        callbackUrls: [
+                          'https://lifeapplets.dev.lifeomic.com/my-data/',
+                        ],
+                        clientId: 'example', // requires real client id to work
                       },
                     },
                   },
-                },
-              ],
+                  {
+                    name: 'App tile',
+                    type: 'appTile',
+                    icon: 'user',
+                    initialParams: {
+                      appTile: {
+                        title: 'App Tile',
+                        source: {
+                          url: 'https://wikipedia.com',
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
             },
             isLoading: false,
             isFetched: true,

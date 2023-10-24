@@ -81,18 +81,20 @@ export interface AppConfig {
   };
   support?: { url: string };
   brand?: Record<string, any>;
-  tabs?: {
-    type: TabType;
-    name: string;
-    label?: string;
-    icon?: string;
-    svgProps?: SvgProps;
-    svgPropsActive?: SvgProps;
-    svgPropsInactive?: SvgProps;
-    headerShown?: boolean;
-    color?: string;
-    initialParams?: any;
-  }[];
+  tabsConfig?: {
+    tabs: {
+      type: TabType;
+      name: string;
+      label?: string;
+      icon?: string;
+      svgProps?: SvgProps;
+      svgPropsActive?: SvgProps;
+      svgPropsInactive?: SvgProps;
+      headerShown?: boolean;
+      color?: string;
+      initialParams?: any;
+    }[];
+  };
 }
 
 type AppConfigContextProps = {
