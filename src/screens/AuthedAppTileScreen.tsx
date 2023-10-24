@@ -1,24 +1,43 @@
 import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { WebView } from 'react-native-webview';
+import { Appbar } from 'react-native-paper';
 import {
+  AppTile,
   useActiveAccount,
   useActiveProject,
   useAppConfig,
   useExchangeToken,
   useHandleAppTileEvents,
+  useStyles,
 } from '../hooks';
 import queryString from 'query-string';
 import { ActivityIndicator } from 'react-native-paper';
-import { HomeStackScreenProps } from '../navigators/types';
 import { useFocusEffect } from '@react-navigation/native';
+import { StackScreenProps } from '@react-navigation/stack';
+import { useIcons } from '../components';
+import { defaultStyles as AppNavHeaderStyles } from '../components/AppNavHeader';
+
+export type AuthedAppTileParams = {
+  appTile: AppTile;
+  searchParams?: { [key: string]: string };
+  refreshTodayCountOnRemove?: boolean;
+  tabMode?: boolean;
+};
+type AuthedAppTileScreenProps = StackScreenProps<
+  Record<string, AuthedAppTileParams>,
+  string
+>;
 
 export const AuthedAppTileScreen = ({
   navigation,
   route,
-}: HomeStackScreenProps<'Home/AuthedAppTile'>) => {
-  const { appTile, searchParams = {} } = route.params;
+}: AuthedAppTileScreenProps) => {
+  const { appTile, tabMode, searchParams = {} } = route.params;
+  const { ChevronLeft } = useIcons();
   const webViewRef = useRef<WebView>(null);
   const { data: appConfig } = useAppConfig();
+  const [canGoBack, setCanGoBack] = useState(false);
+  const { styles } = useStyles(AppNavHeaderStyles);
   const titleOverride =
     appConfig?.homeTab?.appTileSettings?.appTiles[appTile.id]?.title;
 
@@ -28,8 +47,25 @@ export const AuthedAppTileScreen = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       title: titleOverride || route.params.appTile.title,
+      headerLeft: tabMode
+        ? () => (
+            <Appbar.Action
+              icon={ChevronLeft}
+              color={styles.backActionIcon?.color}
+              onPress={() => webViewRef.current?.goBack()}
+              style={styles.backAction}
+              disabled={!canGoBack}
+            />
+          )
+        : undefined,
     });
-  }, [navigation, route.params.appTile.title, titleOverride]);
+  }, [
+    navigation,
+    route.params.appTile.title,
+    titleOverride,
+    canGoBack,
+    tabMode,
+  ]);
 
   const {
     activeProject,
@@ -123,7 +159,10 @@ export const AuthedAppTileScreen = ({
       cacheEnabled={false}
       incognito={true}
       onMessage={handleAppTileMessage}
-      onNavigationStateChange={handleAppTileNavigationStateChange}
+      onNavigationStateChange={(e) => {
+        setCanGoBack(e.canGoBack);
+        handleAppTileNavigationStateChange(e);
+      }}
       onLoad={handlePageLoaded}
       testID="app-tile-webview"
     />

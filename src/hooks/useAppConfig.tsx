@@ -4,6 +4,7 @@ import { useActiveProject } from './useActiveProject';
 import { Trace } from '../components/MyData/LineChart/TraceLine';
 import { useHttpClient } from './useHttpClient';
 import { appConfigNotifier } from '../common/AppConfigNotifier';
+import { SvgProps } from 'react-native-svg';
 
 export interface AppTile {
   id: string;
@@ -33,6 +34,13 @@ export interface MessageTile {
 }
 
 type Tile = 'todayTile' | 'trackTile' | 'pillarsTile' | 'myDataTile';
+type TabType =
+  | 'appTile'
+  | 'authedAppTile'
+  | 'customTab'
+  | 'home'
+  | 'notifications'
+  | 'settings';
 
 export interface AppConfig {
   homeTab?: {
@@ -73,6 +81,18 @@ export interface AppConfig {
   };
   support?: { url: string };
   brand?: Record<string, any>;
+  tabs?: {
+    type: TabType;
+    name: string;
+    label?: string;
+    icon?: string;
+    svgProps?: SvgProps;
+    svgPropsActive?: SvgProps;
+    svgPropsInactive?: SvgProps;
+    headerShown?: boolean;
+    color?: string;
+    initialParams?: any;
+  }[];
 }
 
 type AppConfigContextProps = {

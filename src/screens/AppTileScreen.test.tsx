@@ -1,15 +1,24 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
+import { useNavigation } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 import { AppTileScreen } from './AppTileScreen';
 
 jest.mock('react-native-webview', () => ({
   WebView: jest.fn().mockReturnValue(<></>),
 }));
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: jest.fn(),
+}));
+jest.mock('../components/TrackTile/hooks/useTrackers', () => ({
+  useTrackers: jest.fn(() => ({})),
+}));
 
 const webviewMock = WebView as jest.Mock;
 const navigation = {
   setOptions: jest.fn(),
+  addListener: jest.fn(),
 } as any;
 const route = { params: {} } as any;
 const exampleAppTile = {
@@ -19,9 +28,11 @@ const exampleAppTile = {
     url: 'http://unit-test/app-tile',
   },
 };
+const useNavigationMock = useNavigation as any as jest.Mock;
 
 beforeEach(() => {
   route.params.appTile = exampleAppTile;
+  useNavigationMock.mockReturnValue(navigation);
 });
 
 test('renders webview with source prop', () => {

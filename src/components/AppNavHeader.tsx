@@ -126,7 +126,7 @@ const Title = ({
 );
 
 const backActionIcon: { color?: string } = {};
-const defaultStyles = createStyles('AppNavHeader', (theme) => ({
+export const defaultStyles = createStyles('AppNavHeader', (theme) => ({
   view: {
     backgroundColor: theme.colors.background,
   },

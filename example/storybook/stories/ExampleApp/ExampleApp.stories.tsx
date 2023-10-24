@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, Text } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import { authConfig, baseURL } from '../../helpers/oauthConfig';
 import {
@@ -8,6 +9,7 @@ import {
   LogoHeader,
   BrandConfigProvider,
   getDefaultTabs,
+  AppConfigContext,
 } from '../../../../src';
 import { withKnobs, color, boolean, number } from '@storybook/addon-knobs';
 import Color from 'color';
@@ -239,4 +241,95 @@ storiesOf('Example App', module)
         </RootProviders>
       </DeveloperConfigProvider>
     );
-  });
+  })
+  .add('With App Config Configured Tabs', () => (
+    <DeveloperConfigProvider
+      developerConfig={{
+        apiBaseURL: baseURL,
+        CustomStacks: {
+          CustomTabStack: () => (
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <Text style={{ textAlign: 'center' }}>
+                {'Custom Screen\nCould be a whole @react-navigation/stack'}
+              </Text>
+            </View>
+          ),
+        },
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <AppConfigContext.Provider
+          value={{
+            data: {
+              homeTab: {
+                tiles: ['myDataTile'],
+                myDataSettings: {
+                  components: [],
+                },
+              },
+              tabs: [
+                {
+                  name: 'Home',
+                  type: 'home',
+                  icon: 'home',
+                },
+                {
+                  name: 'Notifications',
+                  type: 'notifications',
+                  icon: 'bell',
+                },
+                {
+                  name: 'Settings',
+                  type: 'settings',
+                  icon: 'settings',
+                },
+                {
+                  name: 'Custom',
+                  type: 'customTab',
+                  icon: 'zap',
+                  initialParams: {
+                    name: 'CustomTabStack',
+                  },
+                },
+                {
+                  name: 'Authed App Tile',
+                  type: 'authedAppTile',
+                  icon: 'user-key',
+                  initialParams: {
+                    appTile: {
+                      title: 'Authed App Tile',
+                      source: {
+                        url: 'https://lifeapplets.dev.lifeomic.com/my-data/#/',
+                      },
+                      callbackUrls: [
+                        'https://lifeapplets.dev.lifeomic.com/my-data/',
+                      ],
+                      clientId: 'example', // requires real client id to work
+                    },
+                  },
+                },
+                {
+                  name: 'App tile',
+                  type: 'appTile',
+                  icon: 'user',
+                  initialParams: {
+                    appTile: {
+                      title: 'App Tile',
+                      source: {
+                        url: 'https://wikipedia.com',
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+            isLoading: false,
+            isFetched: true,
+            error: undefined,
+          }}
+        >
+          <RootStack />
+        </AppConfigContext.Provider>
+      </RootProviders>
+    </DeveloperConfigProvider>
+  ));

@@ -48,6 +48,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       <View style={indicatorStyle} />
       <View style={styles.barButtonContainer}>
         {routes.map((route, routeIndex) => {
+          const tab = tabs?.[routeIndex];
           const Icon = tabs?.[routeIndex].icon;
           const isActive = routeIndex === activeRouteIndex;
           const svgProps = tabs?.[routeIndex].svgProps?.(theme);
@@ -67,7 +68,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
               navigation.navigate({
                 name: route.name,
                 merge: true,
-                params: undefined,
+                params: tab?.initialParams,
               });
             }
           };
