@@ -161,7 +161,7 @@ test('mutation when a new message is sent', async () => {
     },
   });
 
-  const textInput = getByTestId('Type a message...');
+  const textInput = getByTestId('Write Your Message');
   fireEvent.changeText(textInput, 'some new message');
   const sendButton = getByTestId('GC_SEND_TOUCHABLE');
   fireEvent.press(sendButton);

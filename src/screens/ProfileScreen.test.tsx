@@ -1,14 +1,21 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { ProfileScreen } from './ProfileScreen';
+import { FhirProfileView, ProfileScreen } from './ProfileScreen';
 import { useUser } from '../hooks/useUser';
+import { useMe } from '../hooks/useMe';
 import { User } from '../types';
+import { Patient } from 'fhir/r3';
 
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));
 
+jest.mock('../hooks/useMe', () => ({
+  useMe: jest.fn(),
+}));
+
 const useUserMock = useUser as jest.Mock;
+const useMeMock = jest.mocked(useMe);
 
 const mockUser = (user: User) => {
   useUserMock.mockReturnValue({
@@ -77,4 +84,42 @@ test('does not render fields which are not populated', () => {
   expect(queryByTestId('Last Name')).toBeNull();
   expect(queryByTestId('Username')).not.toBeNull();
   expect(queryByTestId('Email')).not.toBeNull();
+});
+
+describe('FhirProfileView', () => {
+  test('renders correct data', () => {
+    const subject: Patient = {
+      resourceType: 'Patient',
+      name: [{ family: 'Smith', given: ['John'] }],
+      gender: 'female',
+      address: [
+        { line: ['123 Main St'], city: 'Indianapolis', postalCode: '12345' },
+      ],
+      telecom: [
+        { system: 'phone', value: '0987654321' },
+        { system: 'email', value: 'john.smith@lifeomic.com' },
+      ],
+    };
+    useMeMock.mockReturnValue({
+      data: [
+        {
+          name: undefined,
+          projectId: 'test-project',
+          subjectId: 'test-subject',
+          subject,
+        },
+      ],
+    } as any);
+
+    const { queryByText } = render(<FhirProfileView />);
+
+    expect(queryByText('John')).not.toBeNull();
+    expect(queryByText('Smith')).not.toBeNull();
+    expect(queryByText('123 Main St')).not.toBeNull();
+    expect(queryByText('Indianapolis')).not.toBeNull();
+    expect(queryByText('12345')).not.toBeNull();
+    expect(queryByText('female')).not.toBeNull();
+    expect(queryByText('0987654321')).not.toBeNull();
+    expect(queryByText('john.smith@lifeomic.com')).not.toBeNull();
+  });
 });

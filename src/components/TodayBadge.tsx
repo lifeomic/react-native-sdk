@@ -2,11 +2,9 @@ import React from 'react';
 import { Badge } from 'react-native-paper';
 import { isConsentTask, useTodayTasks } from '../hooks/todayTile/useTodayTasks';
 import { t } from 'i18next';
-import { useFocusEffect } from '@react-navigation/native';
 
 const TodayBadge = () => {
-  const { newTasks, incompleteActivitiesCount, refetch } = useTodayTasks();
-  useFocusEffect(refetch);
+  const { newTasks, incompleteActivitiesCount } = useTodayTasks();
 
   const filteredTasks = newTasks.filter((task) => {
     return (

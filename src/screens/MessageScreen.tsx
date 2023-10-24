@@ -1,6 +1,6 @@
 import React, { useCallback, useLayoutEffect } from 'react';
 import { useStyles } from '../hooks/useStyles';
-import { Badge, Divider, List, Button } from 'react-native-paper';
+import { Divider, List, Button, Text, Badge } from 'react-native-paper';
 import { TouchableOpacity, ScrollView, View, ViewStyle } from 'react-native';
 import { createStyles } from '../components/BrandConfigProvider';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
@@ -9,7 +9,15 @@ import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { tID } from '../common/testID';
 import { useMyMessages } from '../hooks/useMyMessages';
-type User = GiftedUser & { id: string; name: string };
+import {
+  format,
+  differenceInMinutes,
+  differenceInHours,
+  differenceInDays,
+  differenceInSeconds,
+} from 'date-fns';
+
+type User = GiftedUser & { id: string; name: string; isUnread: boolean };
 
 export function MessageScreen({
   navigation,
@@ -41,23 +49,53 @@ export function MessageScreen({
 
   const renderLeft = useCallback(
     (props: { style: ViewStyle }, user: User) => (
-      <View style={props.style}>
-        <GiftedAvatar user={user} textStyle={{ fontWeight: '500' }} />
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          marginLeft: 8,
+        }}
+      >
+        {
+          <Badge
+            size={10}
+            style={[
+              styles.badgeView,
+              user.isUnread
+                ? styles.badgeColor?.enabled
+                : styles.badgeColor?.disabled,
+            ]}
+            testID={tID('unread-badge')}
+          />
+        }
+        <View
+          style={
+            user.isUnread
+              ? [props.style, styles.newMessageIconView]
+              : props.style
+          }
+        >
+          <GiftedAvatar user={user} textStyle={{ fontWeight: '500' }} />
+        </View>
       </View>
     ),
-    [],
+    [
+      styles.badgeColor?.disabled,
+      styles.badgeColor?.enabled,
+      styles.badgeView,
+      styles.newMessageIconView,
+    ],
   );
 
   const renderRight = useCallback(
-    (isUnread: boolean) =>
-      isUnread && (
-        <Badge
-          size={12}
-          style={styles.badgeView}
-          testID={tID('unread-badge')}
-        />
-      ),
-    [styles.badgeView],
+    (messageTime: string) => (
+      <View style={{ flexDirection: 'column', justifyContent: 'flex-end' }}>
+        <Text style={styles.listItemTimeText}>
+          {formatMessageTime(messageTime)}
+        </Text>
+      </View>
+    ),
+    [styles.listItemTimeText],
   );
 
   return (
@@ -76,18 +114,28 @@ export function MessageScreen({
               testID={tID('user-list-item')}
               titleStyle={styles.listItemText}
               style={styles.listItemView}
+              descriptionNumberOfLines={1}
+              descriptionStyle={
+                user.hasUnread
+                  ? [styles.listItemSubtitleText, styles.newMessageText]
+                  : styles.listItemSubtitleText
+              }
               left={(props) =>
                 renderLeft(props, {
                   _id: user.userId,
                   id: user.userId,
                   name: user.displayName,
                   avatar: user.picture,
+                  isUnread: user.hasUnread,
                 })
               }
               title={user.displayName}
-              right={() => renderRight(user.isUnread)}
+              description={`${user.isCreatedBySelf ? styles.selfPrefix : ''} ${
+                user.lastMessage
+              }`}
+              right={() => renderRight(user.lastMessageTime)}
             />
-            <Divider />
+            <Divider style={styles.listItemDividerView} />
           </TouchableOpacity>
         ))}
         {isLoading ? (
@@ -123,14 +171,40 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     listItemText: {
       ...theme.fonts.titleMedium,
     },
+    listItemSubtitleText: {
+      ...theme.fonts.titleSmall,
+    },
+    listItemDividerView: {},
     userIconView: {
       marginLeft: theme.spacing.extraSmall,
     },
     badgeView: {
       alignSelf: 'center',
+      paddingRight: 0,
+      marginRight: -10,
+    },
+    badgeColor: {
+      enabled: {
+        backgroundColor: theme.colors.primary,
+      },
+      disabled: {
+        backgroundColor: 'transparent',
+      },
     },
     loadMoreButton: {},
     loadMoreText: {},
+    listItemTimeText: { paddingLeft: 15 },
+    newMessageIconView: {
+      marginRight: -1,
+      borderWidth: 2,
+      borderColor: theme.colors.text,
+      borderRadius: 32,
+    },
+    newMessageText: {
+      color: theme.colors.text,
+      fontWeight: '600',
+    },
+    selfPrefix: t('messages-self-prefix', 'You: '),
   };
 });
 
@@ -138,3 +212,35 @@ declare module '@styles' {
   interface ComponentStyles
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
+
+const formatMessageTime = (timestamp?: string) => {
+  if (!timestamp) {
+    return '';
+  }
+
+  const currentDate = new Date();
+  const date = new Date(timestamp);
+
+  const secondsDifference = differenceInSeconds(currentDate, date);
+  const minutesDifference = differenceInMinutes(currentDate, date);
+  const differenceHours = differenceInHours(currentDate, date);
+  const daysDifference = differenceInDays(currentDate, date);
+
+  if (secondsDifference < 60) {
+    return 'now';
+  } else if (minutesDifference === 1) {
+    return `${minutesDifference}min`;
+  } else if (minutesDifference < 60) {
+    return `${minutesDifference}mins`;
+  } else if (differenceHours === 1) {
+    return `${differenceHours}hr`;
+  } else if (differenceHours < 24) {
+    return `${differenceHours}hrs`;
+  } else if (daysDifference === 1) {
+    return `${daysDifference}day`;
+  } else if (daysDifference < 3) {
+    return `${daysDifference}days`;
+  } else {
+    return format(date, 'MMM d');
+  }
+};

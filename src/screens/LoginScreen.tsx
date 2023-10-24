@@ -33,7 +33,10 @@ export const LoginScreen: FC = () => {
 
   const onFail = (error: any) => {
     const errorString: string = error.toString();
-    if (errorString.includes('User cancelled flow')) {
+    if (
+      errorString.includes('User cancelled flow') ||
+      errorString.includes('org.openid.appauth.general error -3') // User Cancelled Flow https://github.com/openid/AppAuth-iOS/blob/master/Source/AppAuthCore/OIDError.h#L103
+    ) {
       return;
     }
 

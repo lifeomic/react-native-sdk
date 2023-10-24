@@ -2,15 +2,35 @@ import { useCallback } from 'react';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { gql } from 'graphql-request';
 import { useActiveAccount } from '../useActiveAccount';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActiveProject } from '../useActiveProject';
-import { useRestQuery } from '../rest-api';
+import { useRestQuery, useRestCache } from '../rest-api';
 import { ConsentTask, SurveyResponse } from './types';
 
 export type TodayTask = SurveyResponse | ConsentTask;
 export function isConsentTask(value: TodayTask): value is ConsentTask {
   return !!(value as ConsentTask).form;
 }
+
+export const useInvalidateTodayCountCache = () => {
+  const restCache = useRestCache();
+  const queryClient = useQueryClient();
+
+  // We wait 3.5 seconds by default to give the backend a chance to update
+  return useCallback(
+    (delay = 3500) => {
+      setTimeout(() => {
+        restCache.invalidateQueries({
+          'GET /v1/consent/directives/me': 'all',
+          'GET /v1/survey/projects/:projectId/responses': 'all',
+        });
+
+        queryClient.refetchQueries(['getIncompleteActivitiesCount']);
+      }, delay);
+    },
+    [restCache, queryClient],
+  );
+};
 
 const useConsentTasks = () => {
   const { activeProject } = useActiveProject();

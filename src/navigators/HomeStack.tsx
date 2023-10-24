@@ -18,12 +18,16 @@ import { YoutubePlayerScreen } from '../screens/YoutubePlayerScreen';
 import { navigationScreenListeners } from '../hooks/useLogoHeaderOptions';
 import { DirectMessagesScreen } from '../screens/DirectMessagesScreen';
 import { MessageScreen } from '../screens/MessageScreen';
+import { useInvalidateTodayCountCache } from '../hooks/todayTile/useTodayTasks';
+import { useQueryClient } from '@tanstack/react-query/build/lib/QueryClientProvider';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
 export function HomeStack() {
   const { getAdditionalHomeScreens, logoHeaderConfig, CustomHomeScreen } =
     useDeveloperConfig();
+  const invalidateTodayTasksCache = useInvalidateTodayCountCache();
+  const queryClient = useQueryClient();
 
   return (
     <Stack.Navigator
@@ -32,7 +36,17 @@ export function HomeStack() {
     >
       <Stack.Screen name="Home" component={CustomHomeScreen || HomeScreen} />
       <Stack.Screen name="Home/AppTile" component={AppTileScreen} />
-      <Stack.Screen name="Home/AuthedAppTile" component={AuthedAppTileScreen} />
+      <Stack.Screen
+        name="Home/AuthedAppTile"
+        component={AuthedAppTileScreen}
+        listeners={(props) => ({
+          beforeRemove: () => {
+            if (props.route.params.refreshTodayCountOnRemove) {
+              invalidateTodayTasksCache();
+            }
+          },
+        })}
+      />
       <Stack.Screen name="Home/CustomAppTile" component={CustomAppTileScreen} />
       <Stack.Screen name="Home/TrackTile" component={TrackTileTrackerScreen} />
       <Stack.Screen
@@ -66,6 +80,11 @@ export function HomeStack() {
       <Stack.Screen
         name="Home/DirectMessage"
         component={DirectMessagesScreen}
+        listeners={() => ({
+          beforeRemove: () => {
+            queryClient.invalidateQueries({ queryKey: ['privatePost'] });
+          },
+        })}
       />
       {getAdditionalHomeScreens?.(Stack)}
     </Stack.Navigator>
