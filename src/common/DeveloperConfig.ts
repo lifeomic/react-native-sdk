@@ -4,6 +4,7 @@ import { AppTile } from '../hooks/useAppConfig';
 import { SvgProps } from 'react-native-svg';
 import { Theme } from '../components/BrandConfigProvider';
 import {
+  LinkingOptions,
   NavigationState,
   ParamListBase,
   TypedNavigator,
@@ -50,6 +51,8 @@ import { Project } from '../hooks/useSubjectProjects';
  * @param onAppSessionStart Allows for providing a callback to be called when a logged in session starts.  This is useful for analytics tracking, subscription status checks, etc.
  *
  * @param modifySettingScreenMenuItems Allows modifying and injecting menu items into the settings screen
+ *
+ * @param navigationLinking Allows for configuring deep linking
  */
 
 export interface RouteColor {
@@ -125,6 +128,7 @@ export type DeveloperConfig = {
   modifySettingScreenMenuItems?: (
     items: { id: string; title: string; action: () => void }[],
   ) => { id: string; title: string; action: () => void }[];
+  navigationLinking?: LinkingOptions<any>;
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };

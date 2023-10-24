@@ -85,4 +85,19 @@ describe('with developerConfig injected into provider', () => {
     });
     expect(result.current.CustomHomeScreen).toStrictEqual(CustomHomeScreen);
   });
+
+  test('allows for navigationLinking to be configured', async () => {
+    const navigationLinking = {
+      prefixes: ['myapp://'],
+      config: {
+        screens: {
+          Home: '',
+        },
+      },
+    };
+    const { result } = await renderHookInContext({
+      navigationLinking,
+    });
+    expect(result.current.navigationLinking).toEqual(navigationLinking);
+  });
 });
