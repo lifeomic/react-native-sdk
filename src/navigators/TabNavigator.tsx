@@ -6,12 +6,17 @@ import { SettingsStack } from './SettingsStack';
 import { HomeStack } from './HomeStack';
 import { NotificationsStack } from './NotificationsStack';
 import { useStyles } from '../hooks/useStyles';
-import { createStyles } from '../components/BrandConfigProvider';
+import {
+  Icons,
+  createStyles,
+  useIcons,
+} from '../components/BrandConfigProvider';
 import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
 import { useDeveloperConfig } from '../hooks';
+import { useTabsConfig } from '../hooks/useTabsConfig';
 import { TabBar } from './TabBar';
 import { NavigationTab } from '../common/DeveloperConfig';
 import { Bell, Home, Settings } from '@lifeomic/chromicons-native';
@@ -19,9 +24,10 @@ import { Bell, Home, Settings } from '@lifeomic/chromicons-native';
 export function TabNavigator() {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
+  const icons = useIcons();
   const { componentProps } = useDeveloperConfig();
   const { useTabBar } = componentProps?.TabNavigator || {};
-  const tabs = componentProps?.TabBar?.tabs ?? getDefaultTabs();
+  const tabs = useTabsConfig(getDefaultTabs(icons));
 
   const Tab = useTabBar
     ? createBottomTabNavigator<TabParamList>()
@@ -51,19 +57,20 @@ export function TabNavigator() {
             headerShown: tab?.headerShown,
             tabBarColor: tab?.color,
           }}
+          initialParams={tab.initialParams}
         />
       ))}
     </Tab.Navigator>
   );
 }
 
-export function getDefaultTabs() {
+export function getDefaultTabs(icons: Partial<Icons> = {}) {
   const defaults: NavigationTab[] = [
     {
       name: 'HomeTab',
       component: HomeStack,
       label: t('tabs-home', 'Home'),
-      icon: Home,
+      icon: icons.Home ?? Home,
       color: 'red',
       headerShown: false,
     },
@@ -71,14 +78,14 @@ export function getDefaultTabs() {
       name: 'NotificationsTab',
       component: NotificationsStack,
       label: t('tabs-notifications', 'Notifications'),
-      icon: Bell,
+      icon: icons.Bell ?? Bell,
       headerShown: false,
     },
     {
       name: 'SettingsTab',
       component: SettingsStack,
       label: t('tabs-settings', 'Settings'),
-      icon: Settings,
+      icon: icons.Settings ?? Settings,
       headerShown: false,
     },
   ];

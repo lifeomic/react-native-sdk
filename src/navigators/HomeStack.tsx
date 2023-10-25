@@ -19,7 +19,7 @@ import { navigationScreenListeners } from '../hooks/useLogoHeaderOptions';
 import { DirectMessagesScreen } from '../screens/DirectMessagesScreen';
 import { MessageScreen } from '../screens/MessageScreen';
 import { useInvalidateTodayCountCache } from '../hooks/todayTile/useTodayTasks';
-import { useQueryClient } from '@tanstack/react-query/build/lib/QueryClientProvider';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 

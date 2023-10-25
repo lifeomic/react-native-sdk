@@ -119,6 +119,7 @@ export type DeveloperConfig = {
   CustomActivityIndicatorView?: React.FC<{
     timeoutMessage: JSX.Element | null;
   }>;
+  CustomStacks?: Record<string, () => JSX.Element>;
   renderCustomLoginScreen?: () => JSX.Element;
   sharingRenderers?: {
     pointBreakdown: (props: PointBreakdownProps) => React.JSX.Element;
@@ -165,6 +166,7 @@ export type NavigationTab = {
   svgPropsInactive?: (theme: Theme) => SvgProps;
   headerShown?: boolean;
   color?: string;
+  initialParams?: any;
 };
 
 export type PushNotificationsConfig = {
