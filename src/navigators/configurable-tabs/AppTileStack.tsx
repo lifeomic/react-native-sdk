@@ -21,7 +21,7 @@ export function AppTileStack() {
   const { logoHeaderConfig } = useDeveloperConfig();
   const { params } = useRoute();
 
-  const initialRouteName = !!(params as any)?.appTile?.clientId
+  const initialRouteName = (params as any)?.appTile?.clientId
     ? 'AuthedAppTile'
     : 'AppTile';
 
