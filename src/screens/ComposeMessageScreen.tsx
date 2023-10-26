@@ -8,6 +8,7 @@ import { createStyles, useIcons } from '../components';
 import { ComposeInputBar } from '../components/Messaging/ComposeInputBar';
 import { UserProfile } from '../hooks/useAppConfig';
 import { useStyles } from '../components/BrandConfigProvider/styles/StylesProvider';
+import { tID } from '../components/TrackTile/common/testID';
 
 export function ComposeMessageScreen({
   navigation,
@@ -33,7 +34,11 @@ export function ComposeMessageScreen({
       <View style={styles.toUsersView}>
         <Text>To: </Text>
         {selectedProfiles.map((userProfile) => (
-          <Chip key={userProfile.id} style={styles.chipView}>
+          <Chip
+            key={userProfile.id}
+            style={styles.chipView}
+            testID={tID('chip')}
+          >
             {userProfile.profile.displayName}
           </Chip>
         ))}
@@ -46,6 +51,7 @@ export function ComposeMessageScreen({
         placeholder={t('search-patient', 'Search by Name')}
         icon={Search}
         clearIcon={ClearList}
+        testID={tID('search-bar')}
       />
       <ComposeMessageSearch
         searchTerm={searchQuery}

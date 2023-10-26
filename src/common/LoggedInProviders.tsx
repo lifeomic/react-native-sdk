@@ -2,7 +2,6 @@ import React from 'react';
 
 import { ActiveAccountContextProvider } from '../hooks/useActiveAccount';
 import { NotificationsManagerProvider } from '../hooks/useNotificationManager';
-import { UnreadMessagesContextProvider } from '../hooks/useUnreadMessages';
 import { ActiveProjectContextProvider } from '../hooks/useActiveProject';
 import Toast from 'react-native-toast-message';
 import { TrackTileProvider } from '../components/TrackTile/TrackTileProvider';
@@ -32,9 +31,7 @@ export const LoggedInProviders = ({
                   <OnboardingCourseContextProvider>
                     <PushNotificationsProvider config={pushNotificationsConfig}>
                       <NotificationsManagerProvider>
-                        <UnreadMessagesContextProvider>
-                          {children}
-                        </UnreadMessagesContextProvider>
+                        {children}
                       </NotificationsManagerProvider>
                     </PushNotificationsProvider>
                     <CreateEditPostModal />

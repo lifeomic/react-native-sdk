@@ -60,6 +60,7 @@ export const ComposeInputBar = ({ users }: Props) => {
         icon={() => <SendIcon color={iconColor} />}
         onPress={onSend}
         disabled={disabled}
+        testID={'send-button'}
       />
     );
   }, [

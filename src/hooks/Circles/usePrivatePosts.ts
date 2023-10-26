@@ -5,7 +5,7 @@ import {
   useQueries,
   useQueryClient,
 } from '@tanstack/react-query';
-import { GraphQLClient, gql } from 'graphql-request';
+import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useActiveAccount } from '../useActiveAccount';
 import { Post, postDetailsFragment } from './types';
@@ -42,16 +42,6 @@ export type PostDetailsPostQueryResponse = {
 
 export type PostRepliesQueryResponse = {
   post: Pick<Post, 'replies'>;
-};
-
-export type UserData = {
-  user: {
-    userId: string;
-    profile: {
-      displayName: string;
-      picture?: string;
-    };
-  };
 };
 
 export const postToMessage = (
@@ -157,88 +147,6 @@ export function usePollPageInfoForUsers(
     }),
   });
 }
-
-export const queryUser = async (
-  graphQLClient: GraphQLClient,
-  userId: string,
-  accountHeaders?: Record<string, string>,
-) => {
-  const variables = {
-    userId: userId,
-  };
-
-  return graphQLClient.request<UserData>(
-    userQueryDocument,
-    variables,
-    accountHeaders,
-  );
-};
-
-export const useLookupUsers = (
-  userList?: { userId: string; enabled: boolean }[],
-) => {
-  const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
-
-  return useQueries({
-    queries: (userList ?? []).map((user) => {
-      return {
-        queryKey: ['user', user.userId],
-        queryFn: () => queryUser(graphQLClient, user.userId, accountHeaders),
-        enabled: !!accountHeaders?.['LifeOmic-Account'] && user.enabled, // throttle queries until we are attempting to load them on screen
-      };
-    }),
-  });
-};
-
-export const useLookupUsersFirstPost = (
-  userList?: { userId: string; enabled: boolean }[],
-) => {
-  const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
-  const { data, isInitialLoading } = useUser();
-
-  const queryPosts = async (userId: string) => {
-    const variables = {
-      userIds: [data?.id, userId],
-      filter: {
-        order: 'NEWEST',
-      },
-      first: 1,
-    };
-
-    return graphQLClient.request<PrivatePostsData>(
-      privatePostsQueryDocument,
-      variables,
-      accountHeaders,
-    );
-  };
-
-  return useQueries({
-    queries: (userList ?? []).map((user) => {
-      return {
-        queryKey: ['privatePost', user.userId],
-        queryFn: () => queryPosts(user.userId),
-        enabled:
-          !!accountHeaders?.['LifeOmic-Account'] &&
-          !isInitialLoading &&
-          user.enabled, // throttle queries until we are attempting to load them on screen
-      };
-    }),
-  });
-};
-
-const userQueryDocument = gql`
-  query User($userId: ID!) {
-    user(userId: $userId) {
-      userId
-      profile {
-        displayName
-        picture
-      }
-    }
-  }
-`;
 
 const privatePostsPageInfoQueryDocument = gql`
   query PrivatePosts(

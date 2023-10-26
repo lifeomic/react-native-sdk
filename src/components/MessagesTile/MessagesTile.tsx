@@ -8,7 +8,6 @@ import { useHasUnread } from '../../hooks/useConversations';
 interface Props extends Pick<HomeStackScreenProps<'Home'>, 'navigation'> {
   id: string;
   title: string;
-  recipientsUserIds: string[];
 }
 
 export function MessagesTile({ navigation, title, id }: Props) {

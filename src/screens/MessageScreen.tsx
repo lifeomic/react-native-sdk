@@ -69,42 +69,46 @@ export function MessageScreen({
 
   const renderLeft = useCallback(
     (selectedProfiles: UserProfile[], hasUnread: boolean) => {
-      return (
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            marginLeft: 8,
-          }}
-        >
-          {
-            <Badge
-              size={10}
-              style={[
-                styles.badgeView,
-                hasUnread
-                  ? styles.badgeColor?.enabled
-                  : styles.badgeColor?.disabled,
-              ]}
-              testID={tID('unread-badge')}
-            />
-          }
-          <View>
+      if (selectedProfiles && selectedProfiles.length > 0) {
+        return (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              marginLeft: 8,
+            }}
+          >
             {
-              // TODO: Combine multiple GiftedAvatars
+              <Badge
+                size={10}
+                style={[
+                  styles.badgeView,
+                  hasUnread
+                    ? styles.badgeColor?.enabled
+                    : styles.badgeColor?.disabled,
+                ]}
+                testID={
+                  hasUnread ? tID('unread-badge') : tID('unread-badge-hidden')
+                }
+              />
             }
-            <GiftedAvatar
-              key={selectedProfiles[0].id}
-              user={{
-                name: selectedProfiles[0].profile.displayName,
-                avatar: selectedProfiles[0].profile.picture,
-                _id: selectedProfiles[0].id,
-              }}
-              textStyle={{ fontWeight: '500' }}
-            />
+            <View>
+              {
+                // TODO: Combine multiple GiftedAvatars
+              }
+              <GiftedAvatar
+                key={selectedProfiles[0].id}
+                user={{
+                  name: selectedProfiles[0].profile.displayName,
+                  avatar: selectedProfiles[0].profile.picture,
+                  _id: selectedProfiles[0].id,
+                }}
+                textStyle={{ fontWeight: '500' }}
+              />
+            </View>
           </View>
-        </View>
-      );
+        );
+      }
     },
     [styles.badgeColor?.disabled, styles.badgeColor?.enabled, styles.badgeView],
   );
