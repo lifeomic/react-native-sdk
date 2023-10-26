@@ -49,7 +49,6 @@ export const UserProfilesContextProvider = ({
     ? userIds.map(async (userId) => {
         const cacheKey = `profile/${userId}`;
         const cachedItem = await cache?.get(cacheKey);
-
         if (!cachedItem) {
           return apiClient
             .request(
@@ -109,8 +108,6 @@ export const useProfilesForTile = (tileId: string) => {
   const userIds = messageTiles?.find(
     (messageTile) => messageTile.id === tileId,
   )?.userIds;
-
-  console.log(JSON.stringify(userIds, undefined, 2));
 
   const { getProfiles } = useUserProfiles();
   const profiles = getProfiles();
