@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-export type EventTypeHandlers = {
+export type AnalyticsEventTypeHandlers = {
   track: (eventName: string, event: unknown) => void;
   userPropertyUpdate: (
     key: string,
@@ -9,29 +9,30 @@ export type EventTypeHandlers = {
   reset: () => void;
 };
 
-export type EventTypes = keyof EventTypeHandlers;
-export type EventTypeHandler<T extends EventTypes> = EventTypeHandlers[T];
+export type AnalyticsEventTypes = keyof AnalyticsEventTypeHandlers;
+export type AnalyticsEventTypeHandler<T extends AnalyticsEventTypes> =
+  AnalyticsEventTypeHandlers[T];
 
 export class AnalyticsEvents {
   private emitter = new EventEmitter();
 
-  public addListener<EventType extends EventTypes>(
+  public addListener<EventType extends AnalyticsEventTypes>(
     eventType: EventType,
-    listener: EventTypeHandler<EventType>,
+    listener: AnalyticsEventTypeHandler<EventType>,
   ) {
     return this.emitter.addListener(eventType, listener);
   }
 
-  public removeListener<EventType extends EventTypes>(
+  public removeListener<EventType extends AnalyticsEventTypes>(
     eventType: EventType,
-    listener: EventTypeHandler<EventType>,
+    listener: AnalyticsEventTypeHandler<EventType>,
   ) {
     return this.emitter.removeListener(eventType, listener);
   }
 
-  public emit<EventType extends EventTypes>(
+  public emit<EventType extends AnalyticsEventTypes>(
     eventType: EventType,
-    ...params: Parameters<EventTypeHandler<EventType>>
+    ...params: Parameters<AnalyticsEventTypeHandler<EventType>>
   ) {
     return this.emitter.emit(eventType, ...params);
   }
@@ -44,8 +45,8 @@ export type Tracker<CustomEventMap extends Record<string, unknown>> = {
     name: Key,
     event: CustomEventMap[Key],
   ): void;
-  userPropertyUpdate: EventTypeHandlers['userPropertyUpdate'];
-  reset: EventTypeHandlers['reset'];
+  userPropertyUpdate: AnalyticsEventTypeHandlers['userPropertyUpdate'];
+  reset: AnalyticsEventTypeHandlers['reset'];
 };
 
 // Wrapper around analyticsEvents to allow users to set types
@@ -65,4 +66,5 @@ export type SDKTrackEvents = {
   LoginWithInvite: Record<string, any>;
 };
 
+// class for internal tracking use only
 export const sdkTracker = createAnalyticsEmitter<SDKTrackEvents>();
