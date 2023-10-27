@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useAppConfig } from './useAppConfig';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
@@ -26,7 +32,7 @@ export const UserProfilesContextProvider = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const { accountHeaders, isLoading } = useActiveAccount();
+  const { accountHeaders, isLoading, account } = useActiveAccount();
   const { apiClient } = useHttpClient();
   const { cache } = useCache();
   const appConfig = useAppConfig();
@@ -43,38 +49,47 @@ export const UserProfilesContextProvider = ({
     new Map(Object.entries(userIds.map(placeHolderProfile))),
   );
 
-  // Kick off background tasks to either pull a user's profile
-  // from cache or fetch it
-  const getUserProfilePromises = !isLoading
-    ? userIds.map(async (userId) => {
+  useEffect(() => {
+    if (!isLoading && accountHeaders) {
+      const getProfileFromCache = async (userId: string) => {
         const cacheKey = `profile/${userId}`;
         const cachedItem = await cache?.get(cacheKey);
-        if (!cachedItem) {
-          return apiClient
-            .request(
-              'GET /v1/users/:userId',
-              {
-                userId,
-              },
-              { headers: accountHeaders },
-            )
-            .then((res) => {
-              if (res.status === 200) {
-                cache?.set(cacheKey, JSON.stringify(res.data));
-                profiles.current?.set(`profile/${userId}`, res.data);
-              }
-            });
+        if (cachedItem) {
+          const userProfile = JSON.parse(cachedItem) as UserProfile;
+          profiles.current?.set(cacheKey, userProfile);
         }
+        return cachedItem;
+      };
 
-        const userProfile = JSON.parse(cachedItem) as UserProfile;
-        profiles.current?.set(`profile/${userId}`, userProfile);
-      })
-    : [];
+      const fetchProfileFromApi = async (userId: string) => {
+        const response = await apiClient.request(
+          'GET /v1/users/:userId',
+          { userId },
+          { headers: accountHeaders },
+        );
 
-  // After promises have settled update state
-  Promise.all(getUserProfilePromises).then(() => {
-    setProfileState(profiles.current);
-  });
+        if (response.status === 200) {
+          const cacheKey = `profile/${userId}`;
+          cache?.set(cacheKey, JSON.stringify(response.data));
+          profiles.current?.set(cacheKey, response.data);
+        }
+      };
+
+      const fetchUserProfile = async (userId: string) => {
+        const cachedProfile = await getProfileFromCache(userId);
+        if (!cachedProfile) {
+          await fetchProfileFromApi(userId);
+        }
+      };
+
+      const getUserProfilePromises =
+        !isLoading && account ? userIds.map(fetchUserProfile) : [];
+
+      Promise.all(getUserProfilePromises).then(() => {
+        setProfileState(profiles.current);
+      });
+    }
+  }, [isLoading, account, userIds, cache, apiClient, accountHeaders]);
 
   const getProfiles = () => {
     return profileState ? Array.from(profileState, ([_, value]) => value) : [];
