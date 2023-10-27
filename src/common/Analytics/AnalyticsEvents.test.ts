@@ -1,7 +1,11 @@
-import { analyticsEvents, createAnalyticsTracker } from './AnalyticsEvents';
+import {
+  analyticsEvents,
+  createAnalyticsTracker,
+  sdkTracker,
+} from './AnalyticsEvents';
 
 describe('AnalyticsEvents', () => {
-  it('allows tracking SDK events', async () => {
+  it('allows directly tracking without types', async () => {
     const eventKey = 'LoginWithInvite';
     const event = {
       user: 'abc123',
@@ -11,6 +15,21 @@ describe('AnalyticsEvents', () => {
     analyticsEvents.emit('track', eventKey, event);
     analyticsEvents.removeListener('track', listener);
     analyticsEvents.emit('track', eventKey, event);
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(listener).toHaveBeenCalledWith(eventKey, event);
+  });
+
+  it('allows tracking SDK events', async () => {
+    const eventKey = 'LoginWithInvite';
+    const event = {
+      user: 'abc123',
+    };
+    const listener = jest.fn();
+    analyticsEvents.addListener('track', listener);
+    sdkTracker.track(eventKey, event);
+    analyticsEvents.removeListener('track', listener);
+    sdkTracker.track(eventKey, event);
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith(eventKey, event);
