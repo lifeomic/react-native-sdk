@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
 export type TrackEvents = {
-  LOGIN_WITH_INVITE: any;
+  LoginWithInvite: Record<string, any>;
 };
 
 export type EventKeys = keyof TrackEvents;
@@ -18,29 +18,29 @@ export type EventTypeHandlers = {
 
 export type EventTypes = keyof EventTypeHandlers;
 export type EventTypeHandler<T extends EventTypes> = EventTypeHandlers[T];
-export class InviteNotifier {
+export class AnalyticsEvents {
   private emitter = new EventEmitter();
 
-  public addListener<T extends EventTypes>(
-    eventType: T,
-    listener: EventTypeHandler<T>,
+  public addListener<ET extends EventTypes>(
+    eventType: ET,
+    listener: EventTypeHandler<ET>,
   ) {
     return this.emitter.addListener(eventType, listener);
   }
 
-  public removeListener<T extends EventTypes>(
+  public removeListener<ET extends EventTypes>(
     eventType: EventTypes,
-    listener: EventTypeHandler<T>,
+    listener: EventTypeHandler<ET>,
   ) {
     return this.emitter.removeListener(eventType, listener);
   }
 
-  public emit<T extends EventTypes>(
-    eventType: T,
-    ...params: Parameters<EventTypeHandler<T>>
+  public emit<ET extends EventTypes>(
+    eventType: ET,
+    ...params: Parameters<EventTypeHandler<ET>>
   ) {
     return this.emitter.emit(eventType, ...params);
   }
 }
 
-export const inviteNotifier = new InviteNotifier();
+export const analyticsEvents = new AnalyticsEvents();

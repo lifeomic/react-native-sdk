@@ -1,4 +1,4 @@
-import { inviteNotifier } from './AnalyticsEvents';
+import { analyticsEvents } from './AnalyticsEvents';
 
 describe('AnalyticsEvents', () => {
   it('allows track events', async () => {
@@ -6,10 +6,10 @@ describe('AnalyticsEvents', () => {
       user: 'abc123',
     };
     const listener = jest.fn();
-    inviteNotifier.addListener('track', listener);
-    inviteNotifier.emit('track', 'LOGIN_WITH_INVITE', event);
-    inviteNotifier.removeListener('track', listener);
-    inviteNotifier.emit('track', 'LOGIN_WITH_INVITE', event);
+    analyticsEvents.addListener('track', listener);
+    analyticsEvents.emit('track', 'LoginWithInvite', event);
+    analyticsEvents.removeListener('track', listener);
+    analyticsEvents.emit('track', 'LoginWithInvite', event);
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith('LOGIN_WITH_INVITE', event);
