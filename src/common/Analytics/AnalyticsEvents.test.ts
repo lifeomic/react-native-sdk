@@ -1,6 +1,6 @@
 import {
   analyticsEvents,
-  createAnalyticsTracker,
+  createAnalyticsEmitter,
   sdkTracker,
 } from './AnalyticsEvents';
 
@@ -47,7 +47,7 @@ describe('AnalyticsEvents', () => {
     };
     const listener = jest.fn();
     analyticsEvents.addListener('track', listener);
-    const tracker = createAnalyticsTracker<MyTrackEvents>();
+    const tracker = createAnalyticsEmitter<MyTrackEvents>();
     tracker.track(eventKey, event);
     analyticsEvents.removeListener('track', listener);
     tracker.track(eventKey, event);

@@ -49,7 +49,7 @@ export type Tracker<CustomEventMap extends Record<string, unknown>> = {
 };
 
 // Wrapper around analyticsEvents to allow users to set types
-export const createAnalyticsTracker = <
+export const createAnalyticsEmitter = <
   EventMap extends Record<string, unknown>,
 >(): Tracker<EventMap> => {
   return {
@@ -65,4 +65,4 @@ export type SDKTrackEvents = {
   LoginWithInvite: Record<string, any>;
 };
 
-export const sdkTracker = createAnalyticsTracker<SDKTrackEvents>();
+export const sdkTracker = createAnalyticsEmitter<SDKTrackEvents>();
