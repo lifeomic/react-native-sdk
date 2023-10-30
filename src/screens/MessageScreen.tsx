@@ -167,7 +167,7 @@ export function MessageScreen({
                 node.latestMessageUserId === userData?.id
                   ? styles.selfPrefix
                   : ''
-              } ${node.latestMessageText}`}
+              }${node.latestMessageText}`}
               right={() => renderRight(node.latestMessageTime)}
             />
             <Divider style={styles.listItemDividerView} />
@@ -216,7 +216,7 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     badgeView: {
       alignSelf: 'center',
       paddingRight: 0,
-      marginRight: -10,
+      marginRight: 10,
     },
     badgeColor: {
       enabled: {

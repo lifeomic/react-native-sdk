@@ -37,7 +37,7 @@ export type RestAPIEndpoints = {
     Response: User;
   };
 
-  'GET /v1/users/:userId': {
+  'GET /v1/account/users/:userId': {
     Request: {};
     Response: User;
   };

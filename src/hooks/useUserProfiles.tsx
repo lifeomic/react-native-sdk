@@ -11,6 +11,7 @@ import { useHttpClient } from './useHttpClient';
 import { compact, uniq } from 'lodash';
 import { useCache } from './CacheProvider';
 import { useUser } from './useUser';
+import { useAuth } from './useAuth';
 
 export type UserProfile = {
   id: string;
@@ -37,6 +38,7 @@ export const UserProfilesContextProvider = ({
   const { cache } = useCache();
   const appConfig = useAppConfig();
   const profiles = useRef<Map<string, UserProfile>>(new Map());
+  const { isLoggedIn } = useAuth();
   const placeHolderProfile = (userId: string) => ({
     id: userId,
     profile: {
@@ -50,7 +52,7 @@ export const UserProfilesContextProvider = ({
   );
 
   useEffect(() => {
-    if (!isLoading && accountHeaders) {
+    if (!isLoading && isLoggedIn && accountHeaders) {
       const getProfileFromCache = async (userId: string) => {
         const cacheKey = `profile/${userId}`;
         const cachedItem = await cache?.get(cacheKey);
@@ -63,9 +65,11 @@ export const UserProfilesContextProvider = ({
 
       const fetchProfileFromApi = async (userId: string) => {
         const response = await apiClient.request(
-          'GET /v1/users/:userId',
+          'GET /v1/account/users/:userId',
           { userId },
-          { headers: accountHeaders },
+          {
+            headers: accountHeaders,
+          },
         );
 
         if (response.status === 200) {
@@ -89,7 +93,16 @@ export const UserProfilesContextProvider = ({
         setProfileState(profiles.current);
       });
     }
-  }, [isLoading, account, userIds, cache, apiClient, accountHeaders]);
+  }, [
+    isLoading,
+    account,
+    userIds,
+    cache,
+    apiClient,
+    accountHeaders,
+    isLoggedIn,
+    profileState,
+  ]);
 
   const getProfiles = () => {
     return profileState ? Array.from(profileState, ([_, value]) => value) : [];
