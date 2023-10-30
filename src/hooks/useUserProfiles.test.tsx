@@ -22,6 +22,11 @@ const queryClient = new QueryClient({
 
 jest.mock('./useActiveAccount');
 jest.mock('./useUser');
+jest.mock('./useAuth', () => ({
+  useAuth: () => ({
+    isLoggedIn: true,
+  }),
+}));
 
 const useUserMock = useUser as jest.Mock;
 useUserMock.mockReturnValue({
@@ -55,6 +60,7 @@ beforeEach(() => {
   });
   (useActiveAccount as jest.Mock).mockReturnValue({
     isLoading: false,
+    accountHeaders: { 'LifeOmic-Account': 'someAccount' },
   });
 });
 
@@ -79,7 +85,7 @@ test('Eventually fetches profiles from the API', async () => {
   const profile2 = jest.fn();
   const profile3 = jest.fn();
 
-  api.mockOrdered('GET /v1/users/:userId', [
+  api.mockOrdered('GET /v1/account/users/:userId', [
     profile1.mockResolvedValue({
       status: 200,
       data: { id: 'user1', profile: { displayName: 'Tom' } } as any,

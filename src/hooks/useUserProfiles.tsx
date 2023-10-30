@@ -87,7 +87,7 @@ export const UserProfilesContextProvider = ({
       };
 
       const getUserProfilePromises =
-        !isLoading && account ? userIds.map(fetchUserProfile) : [];
+        !isLoading && accountHeaders ? userIds.map(fetchUserProfile) : [];
 
       Promise.all(getUserProfilePromises).then(() => {
         setProfileState(profiles.current);
