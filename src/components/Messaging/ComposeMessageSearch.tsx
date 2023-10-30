@@ -3,15 +3,16 @@ import { ScrollView, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
 import { Divider, List } from 'react-native-paper';
 import { tID } from '../TrackTile/common/testID';
-import { UserProfile, useStyles } from '../../hooks';
+import { useStyles } from '../../hooks';
 import { createStyles } from '../../components/BrandConfigProvider';
 import { useProfilesForTile } from '../../hooks/useUserProfiles';
+import { User as UserDetails } from '../../types';
 
 type User = GiftedUser & { id: string; name: string; isUnread: boolean };
 
 type Props = {
   tileId: string;
-  onUserClicked: (userProfile: UserProfile) => void;
+  onUserClicked: (userProfile: UserDetails) => void;
   searchTerm: string;
   selectedUserIds: string[];
 };

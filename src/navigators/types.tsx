@@ -9,9 +9,10 @@ import {
   TrackerValue,
   TrackerValuesContext,
 } from '../components/TrackTile/main';
-import { Post, UserProfile } from '../hooks';
+import { Post } from '../hooks';
 import { AppTileParams } from '../screens';
 import { AuthedAppTileParams } from '../screens/AuthedAppTileScreen';
+import { User } from '../types';
 
 export type RootStackParamList = LoggedInRootParamList;
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -85,7 +86,7 @@ export type HomeStackParamList = {
     tileId: string;
   };
   'Home/DirectMessage': {
-    users: UserProfile[];
+    users: User[];
     conversationId: string;
   };
 };

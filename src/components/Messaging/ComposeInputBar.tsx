@@ -11,12 +11,12 @@ import { Composer } from 'react-native-gifted-chat/lib/Composer';
 import { useNavigation } from '@react-navigation/native';
 import { HomeStackParamList } from '../../navigators';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { UserProfile } from '../../hooks/useAppConfig';
 import { useUser } from '../../hooks/useUser';
 import { uniq } from 'lodash';
+import { User } from '../../types';
 
 type Props = {
-  users: UserProfile[];
+  users: User[];
 };
 
 export const ComposeInputBar = ({ users }: Props) => {

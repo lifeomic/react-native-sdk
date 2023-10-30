@@ -25,18 +25,12 @@ export interface CircleTile {
   isMember: boolean;
 }
 
-export type UserProfile = {
-  id: string;
-  profile: { displayName?: string; picture?: string };
-};
-
 export interface MessageTile {
   id: string;
   providerUserIds: string;
   userIds: string[];
   role: string;
   displayName: string;
-  userProfiles?: UserProfile[];
 }
 
 type Tile = 'todayTile' | 'trackTile' | 'pillarsTile' | 'myDataTile';

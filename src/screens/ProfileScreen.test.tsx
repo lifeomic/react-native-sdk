@@ -62,7 +62,7 @@ test('renders profile label/values given user profile', () => {
   expect(getByTestId('Email')).toBeDefined();
 
   expect(getByText(new RegExp(exampleProfile.id))).toBeDefined();
-  expect(getByText(new RegExp(exampleProfile.profile.email))).toBeDefined();
+  expect(getByText(new RegExp(exampleProfile.profile.email!))).toBeDefined();
   expect(
     getByText(new RegExp(exampleProfile.profile.familyName!)),
   ).toBeDefined();

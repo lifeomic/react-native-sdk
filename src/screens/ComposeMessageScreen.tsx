@@ -6,9 +6,9 @@ import { t } from 'i18next';
 import { HomeStackScreenProps } from '../navigators/types';
 import { createStyles, useIcons } from '../components';
 import { ComposeInputBar } from '../components/Messaging/ComposeInputBar';
-import { UserProfile } from '../hooks/useAppConfig';
 import { useStyles } from '../components/BrandConfigProvider/styles/StylesProvider';
 import { tID } from '../components/TrackTile/common/testID';
+import { User } from '../types';
 
 export function ComposeMessageScreen({
   navigation,
@@ -17,7 +17,7 @@ export function ComposeMessageScreen({
   const { tileId } = route.params;
   const [searchQuery, setSearchQuery] = useState<string>('');
   const onChangeSearch = (query: string) => setSearchQuery(query);
-  const [selectedProfiles, setSelectedProfiles] = useState<UserProfile[]>([]);
+  const [selectedProfiles, setSelectedProfiles] = useState<User[]>([]);
   const { styles } = useStyles(defaultStyles);
 
   useLayoutEffect(() => {

@@ -23,8 +23,9 @@ import {
   differenceInSeconds,
 } from 'date-fns';
 import { useInfiniteConversations } from '../hooks/useConversations';
-import { UserProfile, useUser } from '../hooks';
+import { useUser } from '../hooks';
 import { useProfilesForTile } from '../hooks/useUserProfiles';
+import { User } from '../types';
 
 export function MessageScreen({
   navigation,
@@ -58,7 +59,7 @@ export function MessageScreen({
   const { styles } = useStyles(defaultStyles);
 
   const handlePostTapped = useCallback(
-    (tappedUsers: UserProfile[], conversationId: string) => () => {
+    (tappedUsers: User[], conversationId: string) => () => {
       navigation.navigate('Home/DirectMessage', {
         users: tappedUsers,
         conversationId,
@@ -68,7 +69,7 @@ export function MessageScreen({
   );
 
   const renderLeft = useCallback(
-    (selectedProfiles: UserProfile[], hasUnread: boolean) => {
+    (selectedProfiles: User[], hasUnread: boolean) => {
       if (selectedProfiles && selectedProfiles.length > 0) {
         return (
           <View
