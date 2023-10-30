@@ -18,6 +18,12 @@ jest.mock('./useUser', () => ({
   useUser: jest.fn(),
 }));
 
+jest.mock('./useAuth', () => ({
+  useAuth: () => ({
+    isLoggedIn: true,
+  }),
+}));
+
 const useUserMock = useUser as jest.Mock;
 
 let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
