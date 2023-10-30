@@ -13,6 +13,7 @@ import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
 import { useUser } from './useUser';
 import { useRestCache, useRestQuery } from './rest-api';
+import { useAuth } from './useAuth';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -61,10 +62,11 @@ export const ActiveAccountContextProvider = ({
    */
   accountIdToSelect?: string;
 }) => {
+  const { isLoggedIn } = useAuth();
   const accountsResult = useRestQuery(
     'GET /v1/accounts',
     {},
-    { select: (data) => data.accounts },
+    { select: (data) => data.accounts, enabled: isLoggedIn },
   );
 
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);

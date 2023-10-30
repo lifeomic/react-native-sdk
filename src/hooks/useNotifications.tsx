@@ -4,6 +4,7 @@ import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
 import { useUser } from './useUser';
+import { useAuth } from './useAuth';
 
 export type NotificationBase = {
   id: string;
@@ -140,6 +141,7 @@ export function useNotifications() {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
   const { data } = useUser();
+  const { isLoggedIn } = useAuth();
 
   const queryForNotifications = useCallback(() => {
     return graphQLClient.request<NotificationQueryResponse>(
@@ -152,7 +154,7 @@ export function useNotifications() {
   }, [accountHeaders, data?.id, graphQLClient]);
 
   return useQuery(['notifications'], queryForNotifications, {
-    enabled: !!accountHeaders?.['LifeOmic-Account'] && !!data?.id,
+    enabled: !!accountHeaders?.['LifeOmic-Account'] && !!data?.id && isLoggedIn,
     select: selectNotifications,
   });
 }
