@@ -13,6 +13,7 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemedNavigationContainer } from './ThemedNavigationContainer';
 import { LoggedInProviders } from './LoggedInProviders';
+import { CacheContextProvider } from '../hooks/CacheProvider';
 const queryClient = new QueryClient();
 
 export function RootProviders({
@@ -25,28 +26,30 @@ export function RootProviders({
   const { apiBaseURL, theme } = useDeveloperConfig();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthContextProvider>
-        <HttpClientContextProvider baseURL={apiBaseURL}>
-          <GraphQLClientContextProvider baseURL={apiBaseURL}>
-            <InviteProvider>
-              <OAuthContextProvider authConfig={authConfig}>
-                <BrandConfigProvider theme={theme}>
-                  <NoInternetToastProvider>
-                    <ActionSheetProvider>
-                      <SafeAreaProvider>
-                        <ThemedNavigationContainer>
-                          <LoggedInProviders>{children}</LoggedInProviders>
-                        </ThemedNavigationContainer>
-                      </SafeAreaProvider>
-                    </ActionSheetProvider>
-                  </NoInternetToastProvider>
-                </BrandConfigProvider>
-              </OAuthContextProvider>
-            </InviteProvider>
-          </GraphQLClientContextProvider>
-        </HttpClientContextProvider>
-      </AuthContextProvider>
-    </QueryClientProvider>
+    <CacheContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthContextProvider>
+          <HttpClientContextProvider baseURL={apiBaseURL}>
+            <GraphQLClientContextProvider baseURL={apiBaseURL}>
+              <InviteProvider>
+                <OAuthContextProvider authConfig={authConfig}>
+                  <BrandConfigProvider theme={theme}>
+                    <NoInternetToastProvider>
+                      <ActionSheetProvider>
+                        <SafeAreaProvider>
+                          <ThemedNavigationContainer>
+                            <LoggedInProviders>{children}</LoggedInProviders>
+                          </ThemedNavigationContainer>
+                        </SafeAreaProvider>
+                      </ActionSheetProvider>
+                    </NoInternetToastProvider>
+                  </BrandConfigProvider>
+                </OAuthContextProvider>
+              </InviteProvider>
+            </GraphQLClientContextProvider>
+          </HttpClientContextProvider>
+        </AuthContextProvider>
+      </QueryClientProvider>
+    </CacheContextProvider>
   );
 }
