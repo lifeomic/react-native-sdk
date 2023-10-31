@@ -32,7 +32,7 @@ export function ComposeMessageScreen({
     <View style={styles.rootContainer}>
       <Divider style={styles.dividerView} />
       <View style={styles.toUsersView}>
-        <Text>To: </Text>
+        <Text>{t('recipients-list', { defaultValue: 'To: ' })} </Text>
         {selectedProfiles.map((userProfile) => (
           <Chip
             key={userProfile.id}

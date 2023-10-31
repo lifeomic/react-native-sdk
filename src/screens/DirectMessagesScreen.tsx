@@ -21,7 +21,10 @@ import {
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
-import { useMarkAsRead } from '../hooks/useConversations';
+import {
+  useInfiniteConversations,
+  useMarkAsRead,
+} from '../hooks/useConversations';
 
 export function DirectMessagesScreen({
   navigation,
@@ -32,12 +35,20 @@ export function DirectMessagesScreen({
   const { Send: SendIcon } = useIcons();
   const textLength = useRef<number>(0);
   const { mutateAsync: markAsRead } = useMarkAsRead();
+  const { data: conversations } = useInfiniteConversations();
   const { data: userData, isLoading: userLoading } = useUser();
   const otherProfiles = users.filter((user) => user.id !== userData?.id);
 
   useEffect(() => {
-    markAsRead({ conversationId });
-  }, [conversationId, markAsRead]);
+    const conversation = conversations?.pages
+      .flat()
+      .flatMap((data) => data.conversations.edges)
+      .find(({ node }) => node.conversationId === conversationId)?.node;
+
+    if (conversation?.hasUnread) {
+      markAsRead({ conversationId });
+    }
+  }, [conversationId, conversations?.pages, markAsRead]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
