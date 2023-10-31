@@ -7,12 +7,16 @@ import React, {
   useMemo,
 } from 'react';
 import { Account } from '../types/rest-types';
-import { QueryObserverResult } from '@tanstack/react-query';
+import {
+  QueryObserverResult,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useAsyncStorage } from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
 import { useUser } from './useUser';
-import { useRestCache, useRestQuery } from './rest-api';
+import { _useAxiosAPIClient } from './rest-api';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -61,10 +65,10 @@ export const ActiveAccountContextProvider = ({
    */
   accountIdToSelect?: string;
 }) => {
-  const accountsResult = useRestQuery(
-    'GET /v1/accounts',
-    {},
-    { select: (data) => data.accounts },
+  const queryClient = useQueryClient();
+  const client = _useAxiosAPIClient(undefined);
+  const accountsResult = useQuery(['accounts'], () =>
+    client.get<Account[]>('/v1/accounts').then((res) => res.data),
   );
 
   const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
@@ -77,7 +81,6 @@ export const ActiveAccountContextProvider = ({
       `${selectedAccountIdKey}:${userId}`,
       !!selectedAccountIdKey && !!userId,
     );
-  const cache = useRestCache();
 
   /**
    * Initial setting of activeAccount
@@ -138,7 +141,7 @@ export const ActiveAccountContextProvider = ({
   // Handle invite accept
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
-      cache.invalidateQueries({ 'GET /v1/accounts': 'all' });
+      queryClient.invalidateQueries(['accounts']);
       await refetch();
       await setActiveAccountId(acceptedInvite.account);
       inviteNotifier.emit('inviteAccountSettled');
@@ -147,7 +150,7 @@ export const ActiveAccountContextProvider = ({
     return () => {
       inviteNotifier.removeListener('inviteAccepted', listener);
     };
-  }, [refetch, setActiveAccountId, cache]);
+  }, [refetch, setActiveAccountId, queryClient]);
 
   return (
     <ActiveAccountContext.Provider
