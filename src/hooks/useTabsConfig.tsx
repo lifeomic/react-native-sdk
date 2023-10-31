@@ -4,6 +4,7 @@ import { SvgProps } from 'react-native-svg/lib/typescript/ReactNativeSVG';
 import {
   AppTileStack,
   HomeStack,
+  MessageTileStack,
   NotificationsStack,
   SettingsStack,
 } from '../navigators';
@@ -40,6 +41,8 @@ const stackFromTab = (
       return NotificationsStack;
     case 'settings':
       return SettingsStack;
+    case 'messageTile':
+      return MessageTileStack;
     default:
       const exhaustiveCheck: never = tab.type;
       console.warn(`Unhandled tab type: ${exhaustiveCheck}`);

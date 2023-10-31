@@ -43,6 +43,7 @@ const directMessageScreen = (
         },
       } as any
     }
+    routeMapIn={{ DirectMessageScreen: 'Home/DirectMessage' }}
   />
 );
 

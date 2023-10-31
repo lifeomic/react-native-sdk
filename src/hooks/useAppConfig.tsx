@@ -34,7 +34,13 @@ export interface MessageTile {
 }
 
 type Tile = 'todayTile' | 'trackTile' | 'pillarsTile' | 'myDataTile';
-type TabType = 'appTile' | 'customTab' | 'home' | 'notifications' | 'settings';
+type TabType =
+  | 'appTile'
+  | 'customTab'
+  | 'home'
+  | 'notifications'
+  | 'settings'
+  | 'messageTile';
 
 export interface AppConfig {
   homeTab?: {
@@ -79,7 +85,7 @@ export interface AppConfig {
     tabs: {
       type: TabType;
       name: string;
-      label?: string;
+      label: string;
       icon?: string;
       svgProps?: SvgProps;
       svgPropsActive?: SvgProps;

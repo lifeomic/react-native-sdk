@@ -12,7 +12,8 @@ import {
 import { Post } from '../hooks';
 import { AppTileParams } from '../screens';
 import { AuthedAppTileParams } from '../screens/AuthedAppTileScreen';
-import { User } from '../types';
+import { MessageTileParams } from '../screens/MessageScreen';
+import { DirectMessageParams } from '../screens/DirectMessagesScreen';
 
 export type RootStackParamList = LoggedInRootParamList;
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -79,15 +80,10 @@ export type HomeStackParamList = {
   };
   'Home/MyData': undefined;
   'Home/YoutubePlayer': { youtubeVideoId: string; videoName?: string };
-  'Home/Messages': {
-    tileId: string;
-  };
+  'Home/Messages': MessageTileParams;
+  'Home/DirectMessage': DirectMessageParams;
   'Home/ComposeMessage': {
     tileId: string;
-  };
-  'Home/DirectMessage': {
-    users: User[];
-    conversationId: string;
   };
 };
 
