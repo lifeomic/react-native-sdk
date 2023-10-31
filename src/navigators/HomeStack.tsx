@@ -20,6 +20,7 @@ import { DirectMessagesScreen } from '../screens/DirectMessagesScreen';
 import { MessageScreen } from '../screens/MessageScreen';
 import { useInvalidateTodayCountCache } from '../hooks/todayTile/useTodayTasks';
 import { useQueryClient } from '@tanstack/react-query';
+import { ComposeMessageScreen } from '../screens/ComposeMessageScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -78,11 +79,16 @@ export function HomeStack() {
       />
       <Stack.Screen name="Home/Messages" component={MessageScreen} />
       <Stack.Screen
+        name="Home/ComposeMessage"
+        component={ComposeMessageScreen}
+        options={{ presentation: 'containedModal' }}
+      />
+      <Stack.Screen
         name="Home/DirectMessage"
         component={DirectMessagesScreen}
         listeners={() => ({
           beforeRemove: () => {
-            queryClient.invalidateQueries({ queryKey: ['privatePost'] });
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
           },
         })}
       />

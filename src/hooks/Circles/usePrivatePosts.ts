@@ -11,8 +11,9 @@ import { useActiveAccount } from '../useActiveAccount';
 import { Post, postDetailsFragment } from './types';
 import { useUser } from '../useUser';
 import { IMessage } from 'react-native-gifted-chat';
-import uuid from 'react-native-uuid';
 import { t } from 'i18next';
+import { uniq } from 'lodash';
+import uuid from 'react-native-uuid';
 
 /**
  * privatePosts
@@ -43,16 +44,6 @@ export type PostRepliesQueryResponse = {
   post: Pick<Post, 'replies'>;
 };
 
-export type UserData = {
-  user: {
-    userId: string;
-    profile: {
-      displayName: string;
-      picture?: string;
-    };
-  };
-};
-
 export const postToMessage = (
   post: Partial<Post> & Pick<Post, 'id'>,
 ): IMessage => {
@@ -81,14 +72,15 @@ export const postToMessage = (
   This hook will query continuously so use it sparingly and only
   when absolutely necessary.
 */
-export function useInfinitePrivatePosts(userId: string) {
+export function useInfinitePrivatePosts(userIds: string[]) {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
   const { data } = useUser();
+  const uniqueUsers = uniq([data?.id, ...userIds].sort());
 
   const queryPosts = async ({ pageParam }: { pageParam?: string }) => {
     const variables = {
-      userIds: [data?.id, userId],
+      userIds: uniqueUsers,
       filter: {
         order: 'NEWEST',
       },
@@ -102,7 +94,7 @@ export function useInfinitePrivatePosts(userId: string) {
     );
   };
 
-  return useInfiniteQuery(['privatePosts', data?.id, userId], queryPosts, {
+  return useInfiniteQuery(['privatePosts', ...uniqueUsers], queryPosts, {
     enabled: !!accountHeaders?.['LifeOmic-Account'] && !!data?.id,
     getNextPageParam: (lastPage) => {
       return lastPage.privatePosts.pageInfo.hasNextPage
@@ -156,84 +148,6 @@ export function usePollPageInfoForUsers(
   });
 }
 
-export const useLookupUsers = (
-  userList?: { userId: string; enabled: boolean }[],
-) => {
-  const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
-
-  const queryUser = async (userId: string) => {
-    const variables = {
-      userId: userId,
-    };
-
-    return graphQLClient.request<UserData>(
-      userQueryDocument,
-      variables,
-      accountHeaders,
-    );
-  };
-
-  return useQueries({
-    queries: (userList ?? []).map((user) => {
-      return {
-        queryKey: ['user', user.userId],
-        queryFn: () => queryUser(user.userId),
-        enabled: !!accountHeaders?.['LifeOmic-Account'] && user.enabled, // throttle queries until we are attempting to load them on screen
-      };
-    }),
-  });
-};
-
-export const useLookupUsersFirstPost = (
-  userList?: { userId: string; enabled: boolean }[],
-) => {
-  const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
-  const { data, isInitialLoading } = useUser();
-
-  const queryPosts = async (userId: string) => {
-    const variables = {
-      userIds: [data?.id, userId],
-      filter: {
-        order: 'NEWEST',
-      },
-      first: 1,
-    };
-
-    return graphQLClient.request<PrivatePostsData>(
-      privatePostsQueryDocument,
-      variables,
-      accountHeaders,
-    );
-  };
-
-  return useQueries({
-    queries: (userList ?? []).map((user) => {
-      return {
-        queryKey: ['privatePost', user.userId],
-        queryFn: () => queryPosts(user.userId),
-        enabled:
-          !!accountHeaders?.['LifeOmic-Account'] &&
-          !isInitialLoading &&
-          user.enabled, // throttle queries until we are attempting to load them on screen
-      };
-    }),
-  });
-};
-
-const userQueryDocument = gql`
-  query User($userId: ID!) {
-    user(userId: $userId) {
-      userId
-      profile {
-        displayName
-        picture
-      }
-    }
-  }
-`;
-
 const privatePostsPageInfoQueryDocument = gql`
   query PrivatePosts(
     $userIds: [ID!]!
@@ -286,10 +200,7 @@ const privatePostsQueryDocument = gql`
  * CreatePrivatePost
  */
 interface CreatePrivatePostMutationProps {
-  userIds: {
-    currentUserId: string;
-    recipientUserId: string;
-  };
+  userIds: string[];
   post: {
     message: string;
   };
@@ -307,8 +218,9 @@ export function useCreatePrivatePostMutation() {
   }: CreatePrivatePostMutationProps) => {
     const variables = {
       input: {
-        userIds: [userIds.currentUserId, userIds.recipientUserId],
+        userIds: userIds.sort(),
         post,
+        createConversation: true,
       },
     };
 
@@ -324,24 +236,16 @@ export function useCreatePrivatePostMutation() {
     onMutate: async (variables) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({
-        queryKey: [
-          'privatePosts',
-          variables.userIds.currentUserId,
-          variables.userIds.recipientUserId,
-        ],
+        queryKey: ['privatePosts', ...variables.userIds],
       });
 
       // Snapshot the previous value
       const previousPosts = queryClient.getQueryData([
-        ['privatePosts', variables.userIds.currentUserId],
+        ['privatePosts', ...variables.userIds],
       ]);
 
       queryClient.setQueryData(
-        [
-          'privatePosts',
-          variables.userIds.currentUserId,
-          variables.userIds.recipientUserId,
-        ],
+        ['privatePosts', ...variables.userIds],
         (currentCache: InfinitePrivatePostsData | undefined) => {
           const post: Partial<Post> = {
             id: uuid.v4().toString(),
@@ -356,10 +260,12 @@ export function useCreatePrivatePostMutation() {
             },
           };
 
-          const result = { ...currentCache } as InfinitePrivatePostsData;
+          const result = currentCache
+            ? ({ ...currentCache } as InfinitePrivatePostsData)
+            : currentCache;
 
           // Since this is a new post always append to the first page as the first node
-          result.pages[0].privatePosts.edges.unshift({ node: post as Post });
+          result?.pages[0].privatePosts.edges.unshift({ node: post as Post });
           return result;
         },
       );
@@ -384,6 +290,7 @@ const createPrivatePostMutationDocument = gql`
           }
         }
       }
+      conversationId
     }
   }
 `;

@@ -4,15 +4,15 @@ import { useUser } from '../../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../../hooks/useGraphQLClient';
 import { MessagesTile } from '.';
-import { useUnreadMessages } from '../../hooks/useUnreadMessages';
+import { useHasUnread } from '../../hooks/useConversations';
 
 jest.mock('../../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));
-jest.mock('../../hooks/useUnreadMessages');
+jest.mock('../../hooks/useConversations');
 
 const useUserMock = useUser as jest.Mock;
-const useUnreadMessagesMock = useUnreadMessages as jest.Mock;
+const useHasUnreadMock = useHasUnread as jest.Mock;
 
 const navigateMock = {
   navigate: jest.fn(),
@@ -35,7 +35,6 @@ const directMessageScreen = (
         navigation={navigateMock as any}
         id="some-messages-tile"
         title="Message your doctor"
-        recipientsUserIds={['doctorId']}
       />
     </GraphQLClientContextProvider>
   </QueryClientProvider>
@@ -48,9 +47,7 @@ beforeEach(() => {
       id: 'current_user',
     },
   });
-  useUnreadMessagesMock.mockReturnValue({
-    unreadMessageUserIds: [],
-  });
+  useHasUnreadMock.mockReturnValue(false);
 });
 
 test('calls navigate with params', async () => {
@@ -65,10 +62,7 @@ test('calls navigate with params', async () => {
 });
 
 test('renders badge if unread messages are available', async () => {
-  useUnreadMessagesMock.mockReturnValue({
-    unreadIds: ['doctorId'],
-  });
-
+  useHasUnreadMock.mockReturnValue(true);
   const { getByTestId } = render(directMessageScreen);
   expect(getByTestId('tile-badge')).toBeDefined();
 });
