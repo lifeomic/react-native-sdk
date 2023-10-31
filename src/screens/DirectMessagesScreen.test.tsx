@@ -26,6 +26,15 @@ jest.mock('../hooks/useConversations', () => ({
   useMarkAsRead: jest.fn().mockReturnValue({
     mutateAsync: jest.fn(),
   }),
+  useInfiniteConversations: jest.fn().mockReturnValue({
+    pages: [
+      {
+        conversations: {
+          edges: [{ node: { hasUnread: true, conversationsId: 'someId' } }],
+        },
+      },
+    ],
+  }),
 }));
 
 const useUserMock = useUser as jest.Mock;

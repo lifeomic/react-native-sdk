@@ -75,10 +75,10 @@ export type PageInfoData = {
 
 export function useHasUnread() {
   const { data } = useInfiniteConversations();
-  const conversations = data?.pages.flatMap((page) =>
-    page.conversations.edges.map((edge) => edge.node),
-  );
-  return conversations?.some((c) => c.hasUnread === true);
+  return data?.pages
+    .flat()
+    .flatMap((pageData) => pageData.conversations.edges)
+    .some(({ node }) => node.hasUnread === true);
 }
 
 export function useInfiniteConversations() {
