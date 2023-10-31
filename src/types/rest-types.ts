@@ -37,6 +37,11 @@ export type RestAPIEndpoints = {
     Response: User;
   };
 
+  'GET /v1/account/users/:userId': {
+    Request: {};
+    Response: User;
+  };
+
   'GET /v1/survey/projects/:projectId/responses': {
     Request: {
       patientId: string;
