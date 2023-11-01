@@ -11,7 +11,6 @@ import { PushNotificationsProvider } from '../hooks/usePushNotifications';
 import { CircleTileContextProvider } from '../hooks/Circles/useActiveCircleTile';
 import { OnboardingCourseContextProvider } from '../hooks/useOnboardingCourse';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
-import { AppConfigContextProvider } from '../hooks/useAppConfig';
 
 export const LoggedInProviders = ({
   children,
@@ -22,23 +21,21 @@ export const LoggedInProviders = ({
   return (
     <ActiveAccountContextProvider>
       <ActiveProjectContextProvider>
-        <AppConfigContextProvider>
-          <TrackTileProvider>
-            <WearableLifecycleProvider>
-              <CircleTileContextProvider>
-                <OnboardingCourseContextProvider>
-                  <PushNotificationsProvider config={pushNotificationsConfig}>
-                    <NotificationsManagerProvider>
-                      {children}
-                    </NotificationsManagerProvider>
-                  </PushNotificationsProvider>
-                  <CreateEditPostModal />
-                  <Toast />
-                </OnboardingCourseContextProvider>
-              </CircleTileContextProvider>
-            </WearableLifecycleProvider>
-          </TrackTileProvider>
-        </AppConfigContextProvider>
+        <TrackTileProvider>
+          <WearableLifecycleProvider>
+            <CircleTileContextProvider>
+              <OnboardingCourseContextProvider>
+                <PushNotificationsProvider config={pushNotificationsConfig}>
+                  <NotificationsManagerProvider>
+                    {children}
+                  </NotificationsManagerProvider>
+                </PushNotificationsProvider>
+                <CreateEditPostModal />
+                <Toast />
+              </OnboardingCourseContextProvider>
+            </CircleTileContextProvider>
+          </WearableLifecycleProvider>
+        </TrackTileProvider>
       </ActiveProjectContextProvider>
     </ActiveAccountContextProvider>
   );

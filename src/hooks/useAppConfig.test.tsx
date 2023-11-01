@@ -1,11 +1,6 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import {
-  AppConfig,
-  useAppConfig,
-  AppTile,
-  AppConfigContextProvider,
-} from './useAppConfig';
+import { AppConfig, useAppConfig, AppTile } from './useAppConfig';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { HttpClientContextProvider } from './useHttpClient';
@@ -33,9 +28,7 @@ const mockAppTile = (id: string): AppTile => ({
 const renderHookInContext = async () => {
   return renderHook(() => useAppConfig(), {
     wrapper: ({ children }) => (
-      <HttpClientContextProvider>
-        <AppConfigContextProvider>{children}</AppConfigContextProvider>
-      </HttpClientContextProvider>
+      <HttpClientContextProvider>{children}</HttpClientContextProvider>
     ),
   });
 };
