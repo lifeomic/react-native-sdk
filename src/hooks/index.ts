@@ -24,3 +24,4 @@ export * from './useTheme';
 export * from './useUser';
 export * from './useWearables';
 export * from './useUnreadMessages';
+export * from './useAccountClient';

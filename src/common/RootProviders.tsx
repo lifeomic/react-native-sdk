@@ -13,15 +13,25 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemedNavigationContainer } from './ThemedNavigationContainer';
 import { LoggedInProviders } from './LoggedInProviders';
+import { AccountClientProvider } from '../hooks/AccountClientProvider';
+
 const queryClient = new QueryClient();
+
+export type RootProvidersProps = {
+  authConfig: AuthConfiguration;
+  /**
+   * A loading UI to show while the app is initializing.
+   */
+  loading: React.ReactElement;
+
+  children?: React.ReactNode;
+};
 
 export function RootProviders({
   authConfig,
+  loading,
   children,
-}: {
-  authConfig: AuthConfiguration;
-  children?: React.ReactNode;
-}) {
+}: RootProvidersProps) {
   const { apiBaseURL, theme } = useDeveloperConfig();
 
   return (
@@ -29,21 +39,23 @@ export function RootProviders({
       <AuthContextProvider>
         <HttpClientContextProvider baseURL={apiBaseURL}>
           <GraphQLClientContextProvider baseURL={apiBaseURL}>
-            <InviteProvider>
-              <OAuthContextProvider authConfig={authConfig}>
-                <BrandConfigProvider theme={theme}>
-                  <NoInternetToastProvider>
-                    <ActionSheetProvider>
-                      <SafeAreaProvider>
-                        <ThemedNavigationContainer>
-                          <LoggedInProviders>{children}</LoggedInProviders>
-                        </ThemedNavigationContainer>
-                      </SafeAreaProvider>
-                    </ActionSheetProvider>
-                  </NoInternetToastProvider>
-                </BrandConfigProvider>
-              </OAuthContextProvider>
-            </InviteProvider>
+            <AccountClientProvider loading={loading}>
+              <InviteProvider>
+                <OAuthContextProvider authConfig={authConfig}>
+                  <BrandConfigProvider theme={theme}>
+                    <NoInternetToastProvider>
+                      <ActionSheetProvider>
+                        <SafeAreaProvider>
+                          <ThemedNavigationContainer>
+                            <LoggedInProviders>{children}</LoggedInProviders>
+                          </ThemedNavigationContainer>
+                        </SafeAreaProvider>
+                      </ActionSheetProvider>
+                    </NoInternetToastProvider>
+                  </BrandConfigProvider>
+                </OAuthContextProvider>
+              </InviteProvider>
+            </AccountClientProvider>
           </GraphQLClientContextProvider>
         </HttpClientContextProvider>
       </AuthContextProvider>
