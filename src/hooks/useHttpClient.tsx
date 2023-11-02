@@ -48,7 +48,7 @@ export const HttpClientContextProvider = ({
   const { authResult, refreshForAuthFailure } = useAuth();
 
   const axiosInstance = injectedAxiosInstance || defaultAxiosInstance;
-  const apiClient = defaultAPIClientInstance;
+  const apiClient = new APIClient<RestAPIEndpoints>(axiosInstance);
 
   if (baseURL || !axiosInstance.defaults.baseURL) {
     axiosInstance.defaults.baseURL = baseURL || defaultBaseURL;

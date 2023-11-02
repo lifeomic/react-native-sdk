@@ -10,7 +10,7 @@ export const DataProviderDecorator = (
   builder?: (adapter: MockAdapter) => void,
 ) => {
   const axiosInstance = axios.create();
-  const mock = new MockAdapter(axiosInstance);
+  const mock = new MockAdapter(axiosInstance, { onNoMatch: 'passthrough' });
 
   if (builder) {
     builder(mock);
@@ -21,7 +21,12 @@ export const DataProviderDecorator = (
       <ActiveAccountContext.Provider
         value={
           {
-            accountHeaders: {},
+            account: {
+              id: 'mockaccount',
+            },
+            accountHeaders: {
+              'LifeOmic-Account': 'mockaccount',
+            },
           } as any
         }
       >

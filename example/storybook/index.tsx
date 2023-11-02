@@ -9,11 +9,15 @@ import {
 } from '@storybook/react-native';
 import { withKnobs } from '@storybook/addon-knobs';
 import { BrandConfigProvider } from '../../src';
+import { initializeApiMocking } from './helpers/api-mocking';
 
 import './rn-addons';
 
 // LifeOmic app initialization
 init();
+
+// Set up nice API mocking.
+initializeApiMocking();
 
 // enables knobs for all stories
 addDecorator(withKnobs);

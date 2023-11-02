@@ -54,6 +54,7 @@ export const ActiveAccountContextProvider = ({
   children,
   accountIdToSelect,
 }: {
+  fallback: React.ReactNode;
   children?: React.ReactNode;
   /** Force provider to select the available account
    * that matches the specified account id.
