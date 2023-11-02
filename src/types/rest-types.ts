@@ -1,6 +1,7 @@
 import { ConsentDirective, SurveyResponse } from '../hooks/todayTile/types';
 import { AppConfig } from '../hooks/useAppConfig';
 import { ProjectInvite, User } from '../types';
+import { FhirAPIEndpoints } from './fhir-api-types';
 
 export interface Account {
   id: string;
@@ -19,7 +20,7 @@ export interface Account {
  *
  * It is structured in the format specified by [one-query](https://github.com/lifeomic/one-query).
  */
-export type RestAPIEndpoints = {
+export type RestAPIEndpoints = FhirAPIEndpoints & {
   'GET /v1/accounts': {
     Request: {};
     Response: {
