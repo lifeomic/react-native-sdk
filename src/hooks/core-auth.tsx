@@ -9,7 +9,7 @@ export type CoreAuthProviderProps = {
   baseURL: string;
   children: React.ReactNode;
   /**
-   * Overrides the active account setting.
+   * Overrides the active account id.
    */
   accountOverride?: string;
 };
@@ -32,7 +32,10 @@ export const CoreAuthProvider: React.FC<CoreAuthProviderProps> = ({
   accountOverride,
 }) => {
   // 1. First, determine the active account.
-  const query = useQuery(['accounts'], async () => {
+  const query = useQuery(['accounts', accountOverride], async () => {
+    if (accountOverride) {
+      return accountOverride;
+    }
     const token = await getAccessToken();
     const client = new APIClient<RestAPIEndpoints>(
       axios.create({
@@ -75,19 +78,26 @@ export const useCoreAuthContext = (): UseCoreAuthContextReturn => {
     headers: { 'LifeOmic-Account': value.account },
   });
 
+  // Add the Authorization + LifeOmic-Account headers.
   client.interceptors.request.use(async (config) => {
     const token = await getAccessToken();
     config.headers.Authorization = `Bearer ${token}`;
+
+    // Support "unsetting" the LifeOmic-Account header with ''
+    if (config.headers['LifeOmic-Account'] === '') {
+      delete config.headers['LifeOmic-Account'];
+    }
+
     return config;
   });
 
+  // Add some nice error logging in dev.
   client.interceptors.response.use(undefined, async function (error: Error) {
     if (axios.isAxiosError(error)) {
       if (__DEV__ && process.env.NODE_ENV !== 'test') {
         console.warn('Request Failed: ', error.toJSON());
       }
     }
-
     return Promise.reject(error);
   });
 
