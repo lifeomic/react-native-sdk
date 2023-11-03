@@ -38,6 +38,11 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
     Response: User;
   };
 
+  'GET /v1/account/users/:userId': {
+    Request: {};
+    Response: User;
+  };
+
   'GET /v1/survey/projects/:projectId/responses': {
     Request: {
       patientId: string;
