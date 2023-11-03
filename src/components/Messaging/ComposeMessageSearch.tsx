@@ -36,7 +36,6 @@ export const ComposeMessageSearch = ({
   const selectedPatients = selectedUserIds.filter(
     (id) => !providerUserIds?.includes(id),
   );
-  console.log(selectedUserIds, providerUserIds, selectedPatients);
   const others = compact(profiles).filter(
     (profile) => profile.id !== userData?.id,
   );
