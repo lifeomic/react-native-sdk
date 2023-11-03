@@ -59,16 +59,11 @@ test('gets profiles based on tileId and populates with placeholder data', async 
     },
   });
 
-  const all = [getProfile('user1'), getProfile('user2'), getProfile('user3')];
-  const others = [getProfile('user2'), getProfile('user3')];
-
+  const data = [getProfile('user1'), getProfile('user2'), getProfile('user3')];
   const { result } = await renderHookInContext();
   await waitFor(() => result.current);
-  expect(result.current).toEqual({
-    all: all,
-    others: others,
-    isFetching: false,
-    isLoading: false,
+  expect(result.current).toMatchObject({
+    data,
   });
 });
 
@@ -92,27 +87,13 @@ test('Eventually fetches profiles from the API', async () => {
     }),
   ]);
 
-  const all = [
+  const data = [
     {
       id: 'user1',
       profile: {
         displayName: 'Tom',
       },
     },
-    {
-      id: 'user2',
-      profile: {
-        displayName: 'Jim',
-      },
-    },
-    {
-      id: 'user3',
-      profile: {
-        displayName: 'Frank',
-      },
-    },
-  ];
-  const others = [
     {
       id: 'user2',
       profile: {
@@ -143,10 +124,7 @@ test('Eventually fetches profiles from the API', async () => {
     expect(profile3).toHaveBeenCalled();
   });
 
-  expect(result.current).toEqual({
-    all: all,
-    others: others,
-    isFetching: false,
-    isLoading: false,
+  expect(result.current).toMatchObject({
+    data,
   });
 });

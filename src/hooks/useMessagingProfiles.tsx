@@ -1,8 +1,6 @@
 import { useAppConfig } from './useAppConfig';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
-import { compact } from 'lodash';
-import { useUser } from './useUser';
 import { UseQueryOptions, useQueries } from '@tanstack/react-query';
 import { combineQueries } from '@lifeomic/one-query';
 
@@ -60,25 +58,13 @@ export const useMessagingProfiles = (userIds?: string[]) => {
 
 export const useProfilesForTile = (tileId: string) => {
   const { data: appConfig } = useAppConfig();
-  const { data: userData } = useUser();
 
   const messageTiles = appConfig?.homeTab?.messageTiles;
   const userIds = messageTiles?.find(
     (messageTile) => messageTile.id === tileId,
   )?.userIds;
 
-  const profiles = useMessagingProfiles(userIds);
-
-  const relevantProfiles = compact(
-    profiles.data?.filter((userProfile) => userIds?.includes(userProfile.id)),
-  );
-
-  return {
-    all: relevantProfiles,
-    others: relevantProfiles.filter((profile) => profile.id !== userData?.id),
-    isLoading: profiles.isLoading,
-    isFetching: profiles.isFetching,
-  };
+  return useMessagingProfiles(userIds);
 };
 
 export const useProfilesForAllTiles = () => {

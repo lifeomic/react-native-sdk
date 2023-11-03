@@ -3,10 +3,11 @@ import { ScrollView, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
 import { Divider, List } from 'react-native-paper';
 import { tID } from '../TrackTile/common/testID';
-import { useStyles } from '../../hooks';
+import { useAppConfig, useStyles, useUser } from '../../hooks';
 import { createStyles } from '../../components/BrandConfigProvider';
 import { useProfilesForTile } from '../../hooks/useMessagingProfiles';
 import { User as UserDetails } from '../../types';
+import compact from 'lodash/compact';
 
 type User = GiftedUser & { id: string; name: string; isUnread: boolean };
 
@@ -24,8 +25,21 @@ export const ComposeMessageSearch = ({
   selectedUserIds,
 }: Props) => {
   const { styles } = useStyles(defaultStyles);
-  const { others } = useProfilesForTile(tileId);
+  const { data: appConfig } = useAppConfig();
+  const messageTiles = appConfig?.homeTab?.messageTiles;
+  const providerUserIds = messageTiles?.find(
+    (messageTile) => messageTile.id === tileId,
+  )?.providerUserIds;
 
+  const { data: profiles } = useProfilesForTile(tileId);
+  const { data: userData } = useUser();
+  const selectedPatients = selectedUserIds.filter(
+    (id) => !providerUserIds?.includes(id),
+  );
+  console.log(selectedUserIds, providerUserIds, selectedPatients);
+  const others = compact(profiles).filter(
+    (profile) => profile.id !== userData?.id,
+  );
   const filteredList = searchTerm
     ? others?.filter(
         (profile) =>
@@ -57,11 +71,24 @@ export const ComposeMessageSearch = ({
             key={`message-${user.id}`}
             onPress={() => onUserClicked(user)}
             activeOpacity={0.6}
+            // Group messaging can only be between one patient and multiple providers
+            disabled={
+              selectedPatients.length > 0 && !providerUserIds?.includes(user.id)
+            }
           >
             <List.Item
               testID={tID('user-list-item')}
               titleStyle={styles.listItemText}
-              style={styles.listItemView}
+              style={
+                selectedPatients.length > 0 &&
+                !providerUserIds?.includes(user.id)
+                  ? styles.listItem?.disabledStyle
+                  : styles.listItem?.enabledStyle
+              }
+              disabled={
+                selectedPatients.length > 0 &&
+                !providerUserIds?.includes(user.id)
+              }
               left={(props) =>
                 renderLeft(props, {
                   _id: user.id,
@@ -88,8 +115,13 @@ const defaultStyles = createStyles('ComposeMessageSearch', (theme) => {
       flexShrink: 1,
     },
     scrollView: { minHeight: '80%' },
-    listItemView: {
-      backgroundColor: theme.colors.elevation.level3,
+    listItem: {
+      enabledStyle: {
+        backgroundColor: theme.colors.elevation.level3,
+      },
+      disabledStyle: {
+        backgroundColor: theme.colors.onSurfaceDisabled,
+      },
     },
     listItemText: {
       ...theme.fonts.titleMedium,
