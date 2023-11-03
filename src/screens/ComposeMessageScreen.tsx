@@ -22,7 +22,7 @@ export function ComposeMessageScreen({
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: 'New Message',
+      title: t('compose-new-message-title', 'New Message'),
     });
   }, [navigation]);
 

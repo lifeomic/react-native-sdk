@@ -56,8 +56,8 @@ export const ComposeInputBar = ({ users }: Props) => {
 
     return (
       <IconButton
-        // eslint-disable-next-line react/no-unstable-nested-components
-        icon={() => <SendIcon color={iconColor} />}
+        icon={SendIcon}
+        iconColor={iconColor}
         onPress={onSend}
         disabled={disabled}
         testID={'send-button'}
@@ -82,7 +82,7 @@ export const ComposeInputBar = ({ users }: Props) => {
             {...props}
             onTextChanged={(text) => setMessageText(text)}
             text={messageText}
-            textInputStyle={styles.inputTextStyle}
+            textInputStyle={styles.inputText}
             placeholderTextColor={styles.placeholderText?.color?.toString()}
           />
         );
@@ -103,7 +103,7 @@ const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
     bottom: 10,
     marginHorizontal: 16,
   },
-  inputTextStyle: {},
+  inputText: {},
   sendIconColor: {
     enabled: theme.colors.primary,
     disabled: theme.colors.primaryContainer,

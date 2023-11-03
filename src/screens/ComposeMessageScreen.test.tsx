@@ -176,7 +176,7 @@ test('compose button disabled with user selected but no message text', () => {
   expect(replaceMock).not.toHaveBeenCalled();
 });
 
-test('compose button disabled with message text but no user selected', async () => {
+test('compose button enabled when user selected and message entered', async () => {
   const { getByTestId } = render(
     <GraphQLClientContextProvider baseURL={baseURL}>
       <ComposeMessageScreen

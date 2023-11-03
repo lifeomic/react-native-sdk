@@ -164,11 +164,14 @@ export function MessageScreen({
                 .filter((profile) => node.userIds.includes(profile.id))
                 .map((profile) => profile.profile.displayName)
                 .join(', ')}
-              description={`${
+              description={
                 node.latestMessageUserId === userData?.id
-                  ? styles.selfPrefix
-                  : ''
-              }${node.latestMessageText}`}
+                  ? t('message-preview-prefixed', {
+                      defaultValue: 'You: {{messageText}}',
+                      messageText: node.latestMessageText,
+                    })
+                  : node.latestMessageText
+              }
               right={() => renderRight(node.latestMessageTime)}
             />
             <Divider style={styles.listItemDividerView} />
@@ -240,7 +243,6 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
       color: theme.colors.text,
       fontWeight: '600',
     },
-    selfPrefix: t('messages-self-prefix', 'You: '),
   };
 });
 
