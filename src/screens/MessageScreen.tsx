@@ -27,6 +27,7 @@ import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 import { User } from '../types';
 import { ParamListBase } from '@react-navigation/native';
 import { DirectMessageParams } from './DirectMessagesScreen';
+import { ComposeMessageParams } from './ComposeMessageScreen';
 import {
   ScreenParamTypes as BaseScreenParamTypes,
   toRouteMap,
@@ -38,6 +39,7 @@ export type MessageTileParams = {
 
 type SubRoutesParamList = {
   DirectMessageScreen: DirectMessageParams;
+  ComposeMessageScreen: ComposeMessageParams;
 };
 
 type ScreenParamTypes<ParamList extends ParamListBase> = BaseScreenParamTypes<
@@ -64,7 +66,9 @@ export function MessageScreen<ParamList extends ParamListBase>({
     () => (
       <IconButton
         icon={Edit2}
-        onPress={() => navigation.navigate('Home/ComposeMessage', { tileId })}
+        onPress={() =>
+          navigation.navigate(routeMap.ComposeMessageScreen, { tileId })
+        }
       />
     ),
     [Edit2, navigation, tileId],

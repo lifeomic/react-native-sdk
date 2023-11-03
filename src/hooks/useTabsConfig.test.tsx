@@ -65,7 +65,8 @@ test('returns tabs in app config', () => {
         tabs: [
           {
             icon: 'Planet',
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: 'home',
             svgProps: { color: 'red' },
             svgPropsActive: { color: 'yellow' },
@@ -82,7 +83,8 @@ test('returns tabs in app config', () => {
     {
       component: Stacks.HomeStack,
       icon: expect.any(Function),
-      name: 'Test Tab',
+      name: 'test-tab',
+      label: 'Test Tab',
       svgProps: expect.any(Function),
       svgPropsActive: expect.any(Function),
       svgPropsInactive: expect.any(Function),
@@ -118,7 +120,8 @@ test.each([
       tabsConfig: {
         tabs: [
           {
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: type as any,
           },
         ],
@@ -148,7 +151,8 @@ test('can specify a customTab stack', () => {
       tabsConfig: {
         tabs: [
           {
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: 'customTab',
             initialParams: {
               name: 'CustomStack',
@@ -175,7 +179,8 @@ test('handles missing customTab stack', () => {
       tabsConfig: {
         tabs: [
           {
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: 'customTab',
             initialParams: {
               name: 'MissingStack', // This stack does not exist in Dev config
@@ -202,7 +207,8 @@ test('handles unknown tab type', () => {
       tabsConfig: {
         tabs: [
           {
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: 'unknownTabType' as any,
           },
         ],
@@ -230,11 +236,13 @@ test('defaults to Menu icon for unknown/missing icon', () => {
             name: 'Test Tab',
             type: 'home',
             icon: 'unknownIcon',
+            label: 'Home',
           },
           {
             name: 'Test Tab 2',
             type: 'home',
             icon: undefined,
+            label: 'Home2',
           },
         ],
       },

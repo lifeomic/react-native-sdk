@@ -14,17 +14,26 @@ import {
   DirectMessagesScreen,
 } from '../../screens/DirectMessagesScreen';
 import { useAppConfig } from '../../hooks';
+import {
+  ComposeMessageParams,
+  createComposeMessageScreen,
+} from '../../screens/ComposeMessageScreen';
 
 type MessageTileStackParamList = {
   'MessageTileStack/Messages': MessageTileParams;
   'MessageTileStack/DirectMessage': DirectMessageParams;
+  'MessageTileStack/ComposeMessage': ComposeMessageParams;
 };
 
 const Stack = createNativeStackNavigator<MessageTileStackParamList>();
-
 const MessageScreen = createMessageScreen<MessageTileStackParamList>({
   DirectMessageScreen: 'MessageTileStack/DirectMessage',
+  ComposeMessageScreen: 'MessageTileStack/ComposeMessage',
 });
+const ComposeMessageScreen =
+  createComposeMessageScreen<MessageTileStackParamList>({
+    DirectMessageScreen: 'MessageTileStack/DirectMessage',
+  });
 
 export function MessageTileStack() {
   const { logoHeaderConfig } = useDeveloperConfig();
@@ -49,9 +58,14 @@ export function MessageTileStack() {
         component={DirectMessagesScreen}
         listeners={() => ({
           beforeRemove: () => {
-            queryClient.invalidateQueries({ queryKey: ['privatePost'] });
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
           },
         })}
+      />
+      <Stack.Screen
+        name="MessageTileStack/ComposeMessage"
+        component={ComposeMessageScreen}
+        options={{ presentation: 'containedModal' }}
       />
     </Stack.Navigator>
   );
