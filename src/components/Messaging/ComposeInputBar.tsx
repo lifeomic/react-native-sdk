@@ -50,7 +50,14 @@ export function ComposeInputBar<ParamList extends ParamListBase>({
     };
 
     sendMessageAndNavigate();
-  }, [data, messageText, mutateAsync, navigation, users]);
+  }, [
+    data,
+    messageText,
+    mutateAsync,
+    navigation,
+    users,
+    routeMap.DirectMessageScreen,
+  ]);
 
   const SendButton = useCallback(() => {
     const disabled =

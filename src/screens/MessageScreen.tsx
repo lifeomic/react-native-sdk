@@ -71,7 +71,7 @@ export function MessageScreen<ParamList extends ParamListBase>({
         }
       />
     ),
-    [Edit2, navigation, tileId],
+    [Edit2, navigation, tileId, routeMap.ComposeMessageScreen],
   );
 
   useLayoutEffect(() => {
