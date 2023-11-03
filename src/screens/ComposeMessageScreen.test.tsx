@@ -1,12 +1,12 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
-import { useProfilesForTile } from '../hooks/useUserProfiles';
+import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 import { ComposeMessageScreen } from './ComposeMessageScreen';
 import { useUser } from '../hooks/useUser';
 import { useNavigation } from '@react-navigation/native';
 
-jest.mock('../hooks/useUserProfiles');
+jest.mock('../hooks/useMessagingProfiles');
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));

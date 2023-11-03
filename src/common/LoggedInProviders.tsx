@@ -29,9 +29,7 @@ export const LoggedInProviders = ({
                 <OnboardingCourseContextProvider>
                   <PushNotificationsProvider config={pushNotificationsConfig}>
                     <NotificationsManagerProvider>
-                      <UnreadMessagesContextProvider>
-                        {children}
-                      </UnreadMessagesContextProvider>
+                      {children}
                     </NotificationsManagerProvider>
                   </PushNotificationsProvider>
                   <CreateEditPostModal />

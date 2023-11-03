@@ -24,7 +24,7 @@ import {
 } from 'date-fns';
 import { useInfiniteConversations } from '../hooks/useConversations';
 import { useUser } from '../hooks';
-import { useProfilesForTile } from '../hooks/useUserProfiles';
+import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 import { User } from '../types';
 
 export function MessageScreen({

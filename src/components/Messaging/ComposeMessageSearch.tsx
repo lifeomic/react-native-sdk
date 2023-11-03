@@ -5,7 +5,7 @@ import { Divider, List } from 'react-native-paper';
 import { tID } from '../TrackTile/common/testID';
 import { useStyles } from '../../hooks';
 import { createStyles } from '../../components/BrandConfigProvider';
-import { useProfilesForTile } from '../../hooks/useUserProfiles';
+import { useProfilesForTile } from '../../hooks/useMessagingProfiles';
 import { User as UserDetails } from '../../types';
 
 type User = GiftedUser & { id: string; name: string; isUnread: boolean };

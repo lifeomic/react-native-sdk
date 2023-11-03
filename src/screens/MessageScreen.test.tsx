@@ -3,13 +3,13 @@ import { fireEvent, render, within } from '@testing-library/react-native';
 import { MessageScreen } from './MessageScreen';
 import { useUser } from '../hooks/useUser';
 import { useInfiniteConversations } from '../hooks/useConversations';
-import { useProfilesForTile } from '../hooks/useUserProfiles';
+import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));
 jest.mock('../hooks/useConversations');
-jest.mock('../hooks/useUserProfiles');
+jest.mock('../hooks/useMessagingProfiles');
 
 const mockMeProfile = {
   id: 'me',
