@@ -1,112 +1,89 @@
 import React from 'react';
 import { fireEvent, render, within } from '@testing-library/react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
-import {
-  UserData,
-  useLookupUsers,
-  useLookupUsersFirstPost,
-} from '../hooks/Circles/usePrivatePosts';
 import { MessageScreen } from './MessageScreen';
-import { useUnreadMessages } from '../hooks/useUnreadMessages';
 import { useUser } from '../hooks/useUser';
+import { useInfiniteConversations } from '../hooks/useConversations';
+import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 
-jest.mock('../hooks/Circles/usePrivatePosts', () => {
-  return {
-    ...jest.requireActual('../hooks/Circles/usePrivatePosts'),
-    useLookupUsers: jest.fn(),
-    useLookupUsersFirstPost: jest.fn(),
-  };
-});
-jest.mock('../hooks/useUnreadMessages');
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));
+jest.mock('../hooks/useConversations');
+jest.mock('../hooks/useMessagingProfiles');
 
-const useLookupUserMock = useLookupUsers as jest.Mock;
-const useUnreadMessagesMock = useUnreadMessages as jest.Mock;
-const useLookupUsersFirstPostMock = useLookupUsersFirstPost as jest.Mock;
+const mockMeProfile = {
+  id: 'me',
+  profile: {
+    displayName: 'Me',
+  },
+};
+const mockYouProfile = {
+  id: 'you',
+  profile: {
+    displayName: 'You',
+  },
+};
+
+const useInfiniteConversationsMock = useInfiniteConversations as jest.Mock;
 const useUserMock = useUser as jest.Mock;
+const useProfilesForTileMock = useProfilesForTile as jest.Mock;
 
 const navigateMock = {
   navigate: jest.fn(),
   setOptions: jest.fn(),
 };
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
-
-const baseURL = 'https://some-domain/unit-test';
 const directMessageScreen = (
-  <QueryClientProvider client={queryClient}>
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <MessageScreen
-        navigation={navigateMock as any}
-        route={
-          {
-            params: {
-              recipientsUserIds: ['no_unread_messages', 'other_user'],
-            },
-          } as any
-        }
-      />
-    </GraphQLClientContextProvider>
-  </QueryClientProvider>
+  <MessageScreen
+    navigation={navigateMock as any}
+    route={
+      {
+        params: {
+          tileId: 'mockTileId',
+        },
+      } as any
+    }
+  />
 );
 
 beforeEach(() => {
   useUserMock.mockReturnValue({
     data: {
-      id: 'mockUser',
+      id: 'me',
     },
   });
-  const mockUserData: UserData = {
-    user: {
-      userId: 'UserId',
-      profile: {
-        displayName: 'UserDisplayName',
-        picture: 'UserPicture',
-      },
+  useInfiniteConversationsMock.mockReturnValue({
+    data: {
+      pages: [
+        {
+          conversations: {
+            edges: [
+              {
+                node: {
+                  conversationId: 'someId',
+                  userIds: ['me', 'you'],
+                  latestMessageText: 'some message',
+                  latestMessageTime: new Date().toISOString(),
+                  latestMessageUserId: 'you',
+                  hasUnread: true,
+                },
+              },
+            ],
+          },
+        },
+      ],
     },
-  };
-  useLookupUserMock.mockReturnValue([
-    {
-      data: mockUserData,
-    },
-  ]);
-  useUnreadMessagesMock.mockReturnValue({
-    unreadIds: [],
   });
-  const mockPrivatePostData = {
-    privatePosts: {
-      edges: [{ node: { message: 'some message' } }],
-    },
-  };
-  useLookupUsersFirstPostMock.mockReturnValue([{ data: mockPrivatePostData }]);
+  useProfilesForTileMock.mockReturnValue({
+    others: [mockYouProfile],
+    all: [mockMeProfile, mockYouProfile],
+  });
 });
 
-test('renders loading indicator while lookup queries are fetching', async () => {
-  useLookupUserMock.mockReturnValue([
-    {
-      isInitialLoading: false,
-    },
-    {
-      isInitialLoading: true,
-    },
-  ]);
-  const { getByTestId } = render(directMessageScreen);
-  expect(getByTestId('activity-indicator-view')).toBeDefined();
-});
-
-test('renders displayName', async () => {
+test('renders default displayName as loading while profiles are being fetched', () => {
   const { getByTestId, getByText } = render(directMessageScreen);
   expect(getByTestId('user-list-item')).toBeDefined();
-  expect(getByText('UserDisplayName')).toBeDefined();
+  expect(getByText('You')).toBeDefined();
 });
 
 test('calls navigate with params', async () => {
@@ -115,74 +92,43 @@ test('calls navigate with params', async () => {
   expect(userListItem).toBeDefined();
   fireEvent.press(userListItem);
   expect(navigateMock.navigate).toBeCalledWith('Home/DirectMessage', {
-    displayName: 'UserDisplayName',
-    recipientUserId: 'UserId',
+    conversationId: 'someId',
+    users: [mockMeProfile, mockYouProfile],
   });
 });
 
-test('renders badge if unread messages are available and sorts list', async () => {
-  const mockFirstUser: UserData = {
-    user: {
-      userId: 'no_unread_messages',
-      profile: {
-        displayName: 'Should be second',
-        picture: 'UserPicture',
-      },
-    },
-  };
-  const mockSecondUser: UserData = {
-    user: {
-      userId: 'other_user',
-      profile: {
-        displayName: 'Should be first',
-        picture: 'UserPicture',
-      },
-    },
-  };
-
-  useLookupUserMock.mockReturnValue([
-    {
-      data: mockSecondUser,
-    },
-    {
-      data: mockFirstUser,
-    },
-  ]);
-  useLookupUsersFirstPostMock.mockReturnValue([
-    {
-      data: {
-        privatePosts: {
-          edges: [
-            {
-              node: {
-                message: 'Should prefix message',
-                createdAt: '2023-10-04T20:12:38.000Z',
-                authorId: 'mockUser',
+test('renders badge if unread messages are available', async () => {
+  useInfiniteConversationsMock.mockReturnValue({
+    data: {
+      pages: [
+        {
+          conversations: {
+            edges: [
+              {
+                node: {
+                  conversationId: 'someId',
+                  userIds: ['me', 'you'],
+                  latestMessageText: 'Should prefix message',
+                  latestMessageTime: new Date().toISOString(),
+                  latestMessageUserId: 'me',
+                  hasUnread: false,
+                },
               },
-            },
-          ],
-        },
-      },
-    },
-    {
-      data: {
-        privatePosts: {
-          edges: [
-            {
-              node: {
-                message: 'Second message',
-                createdAt: '2023-10-03T20:12:38.000Z',
-                authorId: 'other_user',
+              {
+                node: {
+                  conversationId: 'someId2',
+                  userIds: ['me', 'you'],
+                  latestMessageText: 'Should not prefix message',
+                  latestMessageTime: new Date().toISOString(),
+                  latestMessageUserId: 'you',
+                  hasUnread: true,
+                },
               },
-            },
-          ],
+            ],
+          },
         },
-      },
+      ],
     },
-  ]);
-
-  useUnreadMessagesMock.mockReturnValue({
-    unreadIds: ['other_user'],
   });
 
   const { queryAllByTestId } = render(directMessageScreen);
@@ -191,5 +137,10 @@ test('renders badge if unread messages are available and sorts list', async () =
   expect(
     within(results[0]).getByText('You: Should prefix message'),
   ).toBeDefined();
-  expect(within(results[1]).getByText('Should be second')).toBeDefined();
+  expect(within(results[0]).queryAllByTestId('unread-badge').length).toBe(0);
+
+  expect(
+    within(results[1]).getByText('Should not prefix message'),
+  ).toBeDefined();
+  expect(within(results[1]).getByTestId('unread-badge')).toBeDefined();
 });

@@ -13,6 +13,11 @@ jest.mock('../hooks/useActiveAccount', () => ({
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));
+jest.mock('../hooks/useAuth', () => ({
+  useAuth: () => ({
+    isLoggedIn: true,
+  }),
+}));
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -3,7 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { isArray } from 'lodash';
 import React from 'react';
-import { Query, QueryClient } from '@tanstack/query-core';
+import {
+  Query,
+  QueryClient,
+  defaultShouldDehydrateQuery,
+} from '@tanstack/query-core';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,7 +30,7 @@ const filterQueryByKey = (q: any) => {
     // Match on first part of key only to ignore unique ids
     const keyPart = query.queryKey?.[0];
     if (queriesToPersist.includes(keyPart)) {
-      return true;
+      return defaultShouldDehydrateQuery(q);
     }
   }
 

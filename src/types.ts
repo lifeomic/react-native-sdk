@@ -14,7 +14,7 @@ export interface ProjectInvite {
 export interface User {
   id: string;
   profile: {
-    email: string;
+    email?: string;
     displayName?: string;
     givenName?: string;
     familyName?: string;

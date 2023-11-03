@@ -20,6 +20,12 @@ jest.mock('./useUser', () => ({
   useUser: jest.fn(),
 }));
 
+jest.mock('./useAuth', () => ({
+  useAuth: () => ({
+    isLoggedIn: true,
+  }),
+}));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

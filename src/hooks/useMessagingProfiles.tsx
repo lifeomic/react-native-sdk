@@ -19,6 +19,7 @@ const createQueryOptions = (
   ...options,
   queryKey: ['profile', userId],
   queryFn: fetchProfile,
+  cacheTime: 1000 * 60 * 60 * 24,
 });
 
 const placeHolderProfile = (userId: string) => ({
@@ -78,4 +79,11 @@ export const useProfilesForTile = (tileId: string) => {
     isLoading: profiles.isLoading,
     isFetching: profiles.isFetching,
   };
+};
+
+export const useProfilesForAllTiles = () => {
+  const { data: appConfig } = useAppConfig();
+  const messageTiles = appConfig?.homeTab?.messageTiles;
+  const userIds = messageTiles?.flatMap((messageTile) => messageTile.userIds);
+  return useMessagingProfiles(userIds);
 };

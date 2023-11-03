@@ -22,6 +22,20 @@ jest.mock('../hooks/Circles/usePrivatePosts', () => {
     useCreatePrivatePostMutation: jest.fn(),
   };
 });
+jest.mock('../hooks/useConversations', () => ({
+  useMarkAsRead: jest.fn().mockReturnValue({
+    mutateAsync: jest.fn(),
+  }),
+  useInfiniteConversations: jest.fn().mockReturnValue({
+    pages: [
+      {
+        conversations: {
+          edges: [{ node: { hasUnread: true, conversationsId: 'someId' } }],
+        },
+      },
+    ],
+  }),
+}));
 
 const useUserMock = useUser as jest.Mock;
 const useInfinitePrivatePostsMock = useInfinitePrivatePosts as jest.Mock;
@@ -72,6 +86,19 @@ const queryClient = new QueryClient({
   },
 });
 
+const mockMeProfile = {
+  id: 'me',
+  profile: {
+    displayName: 'Me',
+  },
+};
+const mockYouProfile = {
+  id: 'you',
+  profile: {
+    displayName: 'You',
+  },
+};
+
 const baseURL = 'https://some-domain/unit-test';
 const directMessageScreen = (
   <QueryClientProvider client={queryClient}>
@@ -81,8 +108,8 @@ const directMessageScreen = (
         route={
           {
             params: {
-              recipientUserId: 'other_user',
-              displayName: 'Other User',
+              users: [mockMeProfile, mockYouProfile],
+              conversationId: 'someId',
             },
           } as any
         }
@@ -91,22 +118,21 @@ const directMessageScreen = (
   </QueryClientProvider>
 );
 
+const mockMutation = jest.fn();
 beforeEach(() => {
   useUserMock.mockReturnValue({
     isLoading: false,
     data: {
-      id: 'current_user',
+      id: 'me',
     },
   });
   useInfinitePrivatePostsMock.mockReturnValue({
     isLoading: false,
     data: InfinitePrivatePostMock,
   });
-});
-
-const mockMutation = jest.fn();
-useCreatePrivatePostMutationMock.mockReturnValue({
-  mutateAsync: mockMutation,
+  useCreatePrivatePostMutationMock.mockReturnValue({
+    mutateAsync: mockMutation,
+  });
 });
 
 test('renders loading indicator while account fetching', async () => {
@@ -129,7 +155,7 @@ test('sets the custom header title', async () => {
   render(directMessageScreen);
   await waitFor(() => {
     expect(navigateMock.setOptions).toHaveBeenCalledWith({
-      title: 'Other User',
+      title: 'You',
     });
   });
 });

@@ -12,6 +12,7 @@ import {
 import { Post } from '../hooks';
 import { AppTileParams } from '../screens';
 import { AuthedAppTileParams } from '../screens/AuthedAppTileScreen';
+import { User } from '../types';
 
 export type RootStackParamList = LoggedInRootParamList;
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -81,9 +82,12 @@ export type HomeStackParamList = {
   'Home/Messages': {
     tileId: string;
   };
+  'Home/ComposeMessage': {
+    tileId: string;
+  };
   'Home/DirectMessage': {
-    recipientUserId: string;
-    displayName?: string;
+    users: User[];
+    conversationId: string;
   };
 };
 
