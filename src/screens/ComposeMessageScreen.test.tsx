@@ -243,6 +243,7 @@ test('cannot select more than one non-provider', async () => {
     <GraphQLClientContextProvider baseURL={baseURL}>
       <ComposeMessageScreen
         navigation={useNavigation() as any}
+        routeMapIn={routeMap}
         route={
           {
             params: {
@@ -271,6 +272,7 @@ test('can select more than one provider', async () => {
   const { getByTestId, queryAllByTestId } = render(
     <GraphQLClientContextProvider baseURL={baseURL}>
       <ComposeMessageScreen
+        routeMapIn={routeMap}
         navigation={useNavigation() as any}
         route={
           {
