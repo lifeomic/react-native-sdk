@@ -2,7 +2,6 @@ import {
   InfiniteData,
   useInfiniteQuery,
   useMutation,
-  useQueries,
   useQueryClient,
 } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
@@ -68,6 +67,10 @@ export const postToMessage = (
   };
 };
 
+const uniqSort = (userIds: Array<string | undefined>) => {
+  return uniq(userIds).sort();
+};
+
 /*
   This hook will query continuously so use it sparingly and only
   when absolutely necessary.
@@ -76,11 +79,11 @@ export function useInfinitePrivatePosts(userIds: string[]) {
   const { graphQLClient } = useGraphQLClient();
   const { accountHeaders } = useActiveAccount();
   const { data } = useUser();
-  const uniqueUsers = uniq([data?.id, ...userIds].sort());
+  const users = uniqSort([data?.id, ...userIds]);
 
   const queryPosts = async ({ pageParam }: { pageParam?: string }) => {
     const variables = {
-      userIds: uniqueUsers,
+      userIds: users,
       filter: {
         order: 'NEWEST',
       },
@@ -94,7 +97,7 @@ export function useInfinitePrivatePosts(userIds: string[]) {
     );
   };
 
-  return useInfiniteQuery(['privatePosts', ...uniqueUsers], queryPosts, {
+  return useInfiniteQuery(['privatePosts', ...users], queryPosts, {
     enabled: !!accountHeaders?.['LifeOmic-Account'] && !!data?.id,
     getNextPageParam: (lastPage) => {
       return lastPage.privatePosts.pageInfo.hasNextPage
@@ -106,62 +109,6 @@ export function useInfinitePrivatePosts(userIds: string[]) {
     // Switch to Websocket/Subscription model would be an improvement
   });
 }
-
-/*
-  This hook will query continuously so use it sparingly and only
-  when absolutely necessary.
-*/
-export function usePollPageInfoForUsers(
-  userIds?: string[],
-  refetchInterval: number = 10000,
-) {
-  const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
-  const { data } = useUser();
-
-  const queryPosts = async (userId: string) => {
-    const variables = {
-      userIds: [data?.id, userId],
-      filter: {
-        order: 'NEWEST',
-      },
-    };
-
-    return graphQLClient.request<PageInfoData>(
-      privatePostsPageInfoQueryDocument,
-      variables,
-      accountHeaders,
-    );
-  };
-
-  return useQueries({
-    queries: (userIds ?? []).map((userId) => {
-      return {
-        queryKey: ['privatePosts', userId],
-        queryFn: () => queryPosts(userId),
-        enabled: !!accountHeaders?.['LifeOmic-Account'],
-        refetchInterval,
-        // Continuously polls while query component is focused
-        // so new unread messages can be detected
-      };
-    }),
-  });
-}
-
-const privatePostsPageInfoQueryDocument = gql`
-  query PrivatePosts(
-    $userIds: [ID!]!
-    $filter: PrivatePostFilter!
-    $after: String
-  ) {
-    privatePosts(userIds: $userIds, filter: $filter, after: $after) {
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-    }
-  }
-`;
 
 const privatePostsQueryDocument = gql`
   ${postDetailsFragment}
@@ -218,7 +165,7 @@ export function useCreatePrivatePostMutation() {
   }: CreatePrivatePostMutationProps) => {
     const variables = {
       input: {
-        userIds: userIds.sort(),
+        userIds: uniqSort([userData?.id, ...userIds]),
         post,
         createConversation: true,
       },
@@ -234,18 +181,19 @@ export function useCreatePrivatePostMutation() {
   return useMutation(['createPrivatePost'], {
     mutationFn: createPrivatePostMutation,
     onMutate: async (variables) => {
+      const userIds = uniqSort(variables.userIds);
       // Cancel outgoing refetches
       await queryClient.cancelQueries({
-        queryKey: ['privatePosts', ...variables.userIds],
+        queryKey: ['privatePosts', ...userIds],
       });
 
       // Snapshot the previous value
       const previousPosts = queryClient.getQueryData([
-        ['privatePosts', ...variables.userIds],
+        ['privatePosts', ...userIds],
       ]);
 
       queryClient.setQueryData(
-        ['privatePosts', ...variables.userIds],
+        ['privatePosts', ...userIds],
         (currentCache: InfinitePrivatePostsData | undefined) => {
           const post: Partial<Post> = {
             id: uuid.v4().toString(),
