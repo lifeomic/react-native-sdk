@@ -65,7 +65,6 @@ test('posts token/clientId to /v1/client-tokens', async () => {
   expect(axiosMock.history.post[0].url).toBe('/v1/client-tokens');
   expect(axiosMock.history.post[0].data).toBe(
     JSON.stringify({
-      accessToken: 'someToken',
       targetClientId: 'someClientId',
     }),
   );

@@ -43,6 +43,15 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
     Response: User;
   };
 
+  'POST /v1/client-tokens': {
+    Request: {
+      targetClientId: string;
+    };
+    Response: {
+      code: string;
+    };
+  };
+
   'GET /v1/survey/projects/:projectId/responses': {
     Request: {
       patientId: string;
