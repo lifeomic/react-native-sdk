@@ -16,6 +16,10 @@ versions of this library.
 
 ### 3.x -> 4.x
 
+- `TabBar` default styles have changed. Run the app post upgrade if you use the
+  `TabBar` to examine updated styles and apply overrides as needed (note,
+  default tabs do not use `TabBar`).
+
 - The `TabBar` styles have been removed from `BrandConfigProvider` and should
   now be provided as properties of the `TabBar` config on the `DeveloperConfig`
   for each individual tab.
