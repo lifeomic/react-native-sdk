@@ -18,7 +18,7 @@ versions of this library.
 
 - The `TabBar` styles have been removed from `BrandConfigProvider` and should
   now be provided as properties of the `TabBar` config on the `DeveloperConfig`
-  for the individual tab.
+  for each individual tab.
 
 Before:
 
@@ -53,27 +53,29 @@ After:
   developerConfig={{
     componentProps: {
       TabBar: {
-        tabs: {
-          name: 'Tab',
-          component: SomeComponent,
-          styles: {
-            labelActiveText: {
-              backgroundColor: 'red',
-            },
-            labelInactiveText: {
-              backgroundColor: 'yellow',
-            },
-            activeIndicatorView: {
-              backgroundColor: 'blue',
-            },
-            tabActiveView: {
-              backgroundColor: 'green',
-            },
-            tabInactiveView: {
-              backgroundColor: 'orange',
+        tabs: [
+          {
+            name: 'Tab',
+            component: SomeComponent,
+            styles: {
+              labelActiveText: {
+                backgroundColor: 'red',
+              },
+              labelInactiveText: {
+                backgroundColor: 'yellow',
+              },
+              activeIndicatorView: {
+                backgroundColor: 'blue',
+              },
+              tabActiveView: {
+                backgroundColor: 'green',
+              },
+              tabInactiveView: {
+                backgroundColor: 'orange',
+              },
             },
           },
-        },
+        ],
       },
     },
   }}
@@ -81,7 +83,7 @@ After:
 ```
 
 - The Svg Props for a tabs defined in the `DeveloperConfig` have also been moved
-  into a new style property on the tab.
+  into a new styles property on each tab.
 
 Before:
 
@@ -90,19 +92,21 @@ Before:
   developerConfig={{
     componentProps: {
       TabBar: {
-        tabs: {
-          name: 'Tab',
-          component: SomeComponent,
-          svgProps: {
-            color: 'red',
+        tabs: [
+          {
+            name: 'Tab',
+            component: SomeComponent,
+            svgProps: {
+              color: 'red',
+            },
+            svgPropsActive: {
+              color: 'yellow',
+            },
+            svgPropsInactive: {
+              color: 'blue',
+            },
           },
-          svgPropsActive: {
-            color: 'yellow',
-          },
-          svgPropsInactive: {
-            color: 'blue',
-          },
-        },
+        ],
       },
     },
   }}
@@ -116,21 +120,23 @@ After:
   developerConfig={{
     componentProps: {
       TabBar: {
-        tabs: {
-          name: 'Tab',
-          component: SomeComponent,
-          styles: {
-            svgProps: {
-              color: 'red',
-            },
-            svgPropsActive: {
-              color: 'yellow',
-            },
-            svgPropsInactive: {
-              color: 'blue',
+        tabs: [
+          {
+            name: 'Tab',
+            component: SomeComponent,
+            styles: {
+              svgProps: {
+                color: 'red',
+              },
+              svgPropsActive: {
+                color: 'yellow',
+              },
+              svgPropsInactive: {
+                color: 'blue',
+              },
             },
           },
-        },
+        ],
       },
     },
   }}
