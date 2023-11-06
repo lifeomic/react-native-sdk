@@ -9,13 +9,17 @@ import {
   StyleProp,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SvgProps } from 'react-native-svg';
 import { t } from 'i18next';
-import { createStyles } from '../components/BrandConfigProvider';
+import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useStyles } from '../hooks/useStyles';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
-import { useTheme } from '../hooks/useTheme';
 import { LabelPosition } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
+import { useTabsConfig } from '../hooks/useTabsConfig';
+import { getDefaultTabs } from './getDefaultTabs';
+import { NavigationTab } from '../common';
+import { TabStyle } from '../hooks';
 
 const defaultBottomInset = 12;
 
@@ -26,21 +30,17 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const width = Dimensions.get('window').width / routes.length;
   const { styles } = useStyles(defaultStyles);
   const { componentProps } = useDeveloperConfig();
-  const { tabs, showLabels } = componentProps?.TabBar || {};
-  const theme = useTheme();
+  const icons = useIcons();
+  const tabConfig = useTabsConfig(getDefaultTabs(icons));
+  const { tabs = tabConfig.tabs, showLabels } = componentProps?.TabBar || {};
 
   const bottomInset = inset.bottom || defaultBottomInset;
-
-  const activeIndicators = [
-    styles.activeIndicator0View,
-    styles.activeIndicator1View,
-    styles.activeIndicator2View,
-  ];
 
   const indicatorStyle = [
     { left: activeRouteIndex * width, width },
     styles.activeIndicatorView,
-    activeIndicators[activeRouteIndex],
+    tabConfig.styles?.activeIndicatorView,
+    tabs[activeRouteIndex]?.styles?.activeIndicatorView,
   ];
 
   return (
@@ -51,10 +51,22 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           const tab = tabs?.[routeIndex];
           const Icon = tabs?.[routeIndex].icon;
           const isActive = routeIndex === activeRouteIndex;
-          const svgProps = tabs?.[routeIndex].svgProps?.(theme);
+          const svgProps = {
+            ...styles.svgProps,
+            ...tabConfig?.styles?.svgProps,
+            ...tabs?.[routeIndex]?.styles?.svgProps,
+          };
           const altSvgProps = isActive
-            ? tabs?.[routeIndex].svgPropsActive?.(theme)
-            : tabs?.[routeIndex].svgPropsInactive?.(theme);
+            ? {
+                ...styles.svgPropsActive,
+                ...tabConfig?.styles?.svgPropsActive,
+                ...tabs?.[routeIndex]?.styles?.svgPropsActive,
+              }
+            : {
+                ...styles.svgPropsInactive,
+                ...tabConfig?.styles?.svgPropsInactive,
+                ...tabs?.[routeIndex]?.styles?.svgPropsInactive,
+              };
           const options = descriptors[route.key].options;
 
           const navigateToTab = () => {
@@ -78,7 +90,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
               key={route.key}
               width={width}
               isActive={isActive}
-              activeRouteIndex={activeRouteIndex}
+              tab={tab}
               // @ts-ignore
               icon={<Icon {...svgProps} {...altSvgProps} />}
               label={options.tabBarLabel}
@@ -121,66 +133,56 @@ interface TabBarButtonProps
       }) => ReactNode);
   width: number;
   isActive: boolean;
-  activeRouteIndex: number;
   icon: JSX.Element | undefined;
   showLabel?: boolean;
+  tab?: NavigationTab;
+  tabStyles?: TabStyle;
 }
 
 const TabBarButton = ({
   label,
   width,
   isActive,
-  activeRouteIndex,
   onPress,
   onLongPress,
   accessibilityLabel,
   accessibilityRole,
   accessibilityState,
   icon,
+  tab,
+  tabStyles,
 }: TabBarButtonProps) => {
   const inset = useSafeAreaInsets();
   const { styles } = useStyles(defaultStyles);
 
   const bottomInset = inset.bottom || defaultBottomInset;
 
-  // Since we've only defined styles for the first 3 tabs
-  // any additional tabs will use the styles of the last tab
-  const limitedRouteIndex = Math.min(activeRouteIndex, 2);
-
-  const tabViewStylesActive = [
-    styles.tabActive0View,
-    styles.tabActive1View,
-    styles.tabActive2View,
-  ];
-
-  const tabViewStylesInactive = [
-    styles.tabInactive0View,
-    styles.tabInactive1View,
-    styles.tabInactive2View,
-  ];
-
-  const labelTextStylesActive = [
-    styles.labelActiveText0,
-    styles.labelActiveText1,
-    styles.labelActiveText2,
-  ];
-
-  const labelTextStylesInactive = [
-    styles.labelInactive0Text,
-    styles.labelInactive1Text,
-    styles.labelInactive2Text,
-  ];
-
   const tabViewStyle = [
-    isActive
-      ? [styles.tabActiveView, tabViewStylesActive[limitedRouteIndex]]
-      : [styles.tabInactiveView, tabViewStylesInactive[limitedRouteIndex]],
     { width, paddingBottom: bottomInset },
+    isActive
+      ? [
+          styles.tabActiveView,
+          tabStyles?.tabActiveView,
+          tab?.styles?.tabActiveView,
+        ]
+      : [
+          styles.tabInactiveView,
+          tabStyles?.tabInactiveView,
+          tab?.styles?.tabInactiveView,
+        ],
   ];
 
   const labelTextStyle = isActive
-    ? [styles.labelActiveText, labelTextStylesActive[limitedRouteIndex]]
-    : [styles.labelInactiveText, labelTextStylesInactive[limitedRouteIndex]];
+    ? [
+        styles.labelActiveText,
+        tabStyles?.labelActiveText,
+        tab?.styles?.labelActiveText,
+      ]
+    : [
+        styles.labelInactiveText,
+        tabStyles?.labelInactiveText,
+        tab?.styles?.labelInactiveText,
+      ];
 
   const hitSlop = {
     left: 15,
@@ -260,57 +262,35 @@ const defaultStyles = createStyles('TabBar', (theme) => ({
   },
   labelActiveText: {
     alignSelf: 'center',
+    color: theme.colors.onSurface,
   },
-  labelActiveText0: {},
-  labelActiveText1: {},
-  labelActiveText2: {},
   labelInactiveText: {
     alignSelf: 'center',
+    color: theme.colors.onSurfaceDisabled,
   },
-  labelInactive0Text: {},
-  labelInactive1Text: {},
-  labelInactive2Text: {},
   activeIndicatorView: {
     position: 'absolute',
-    top: -6,
     height: 2 * 3,
     zIndex: 1,
-  },
-  activeIndicator0View: {
-    backgroundColor: theme.colors.primary,
-  },
-  activeIndicator1View: {
-    backgroundColor: theme.colors.secondary,
-  },
-  activeIndicator2View: {
-    backgroundColor: theme.colors.tertiary,
+    backgroundColor: theme.colors.scrim,
   },
   tabActiveView: {
     height: '100%',
     paddingTop: 2,
-  },
-  tabActive0View: {
-    backgroundColor: theme.colors.primaryContainer,
-  },
-  tabActive1View: {
-    backgroundColor: theme.colors.secondaryContainer,
-  },
-  tabActive2View: {
-    backgroundColor: theme.colors.tertiaryContainer,
+    backgroundColor: theme.colors.background,
   },
   tabInactiveView: {
     height: '100%',
     paddingTop: 2,
+    backgroundColor: theme.colors.background,
   },
-  tabInactive0View: {
-    backgroundColor: theme.colors.surface,
-  },
-  tabInactive1View: {
-    backgroundColor: theme.colors.surface,
-  },
-  tabInactive2View: {
-    backgroundColor: theme.colors.surface,
-  },
+  svgProps: {} as SvgProps,
+  svgPropsActive: {
+    color: theme.colors.onSurface,
+  } as SvgProps,
+  svgPropsInactive: {
+    color: theme.colors.onSurfaceDisabled,
+  } as SvgProps,
 }));
 
 declare module '@styles' {

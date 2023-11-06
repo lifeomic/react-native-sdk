@@ -19,11 +19,13 @@ export const useTabsConfig = (defaultTabs: NavigationTab[] = []) => {
   const { data: appConfig } = useAppConfig();
   const { componentProps, CustomStacks } = useDeveloperConfig();
 
-  return (
-    fromAppConfigTabs(appConfig?.tabsConfig?.tabs, CustomStacks) ??
-    componentProps?.TabBar?.tabs ??
-    defaultTabs
-  );
+  return {
+    ...appConfig?.tabsConfig,
+    tabs:
+      fromAppConfigTabs(appConfig?.tabsConfig?.tabs, CustomStacks) ??
+      componentProps?.TabBar?.tabs ??
+      defaultTabs,
+  };
 };
 
 const stackFromTab = (
@@ -63,9 +65,6 @@ export const fromAppConfigTabs = (
       ...tab,
       component: stackFromTab(tab, stacks),
       icon: (props: SvgProps) => <DynamicTabIcon {...tab} {...props} />,
-      svgProps: () => tab.svgProps,
-      svgPropsActive: () => tab.svgPropsActive,
-      svgPropsInactive: () => tab.svgPropsInactive,
     } as NavigationTab;
   });
 };
