@@ -17,7 +17,7 @@ export function TabNavigator() {
   const theme = useTheme();
   const icons = useIcons();
   const { componentProps } = useDeveloperConfig();
-  const { useTabBar = true } = componentProps?.TabNavigator || {};
+  const { useTabBar } = componentProps?.TabNavigator || {};
   const { tabs } = useTabsConfig(getDefaultTabs(icons));
 
   const Tab = useTabBar
