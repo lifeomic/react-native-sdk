@@ -121,20 +121,7 @@ export function MessageScreen<ParamList extends ParamListBase>({
                 }
               />
             }
-            <View>
-              {
-                // TODO: Combine multiple GiftedAvatars
-              }
-              <GiftedAvatar
-                key={selectedProfiles[0].id}
-                user={{
-                  name: selectedProfiles[0].profile.displayName,
-                  avatar: selectedProfiles[0].profile.picture,
-                  _id: selectedProfiles[0].id,
-                }}
-                textStyle={{ fontWeight: '500' }}
-              />
-            </View>
+            <MultiGiftedAvatar profiles={selectedProfiles} />
           </View>
         );
       }
@@ -239,6 +226,48 @@ export const createMessageScreen = <ParamList extends ParamListBase>(
   );
 };
 
+type MultiGiftedAvatarProps = {
+  profiles: User[];
+};
+
+const MultiGiftedAvatar = ({ profiles }: MultiGiftedAvatarProps) => {
+  const { styles } = useStyles(defaultStyles);
+  const diameter = profiles.length < 2 ? 40 : 20;
+  const fontSize = diameter / 2;
+  const adjustments = profiles.length === 2 ? -8 : 0;
+  const paddedProfiles =
+    profiles.length === 2
+      ? [
+          profiles[0],
+          { id: '#pad1', profile: {} },
+          { id: '#pad2', profile: {} },
+          profiles[1],
+        ]
+      : profiles.splice(0, 4); // Max of 4 icons
+
+  return (
+    <View style={styles.multiGiftedAvatarView}>
+      {paddedProfiles.map((profile, i) => (
+        <View key={profile.id} style={styles.profileView}>
+          <GiftedAvatar
+            user={{
+              name: profile.profile.displayName,
+              avatar: profile.profile.picture,
+              _id: profile.id,
+            }}
+            avatarStyle={{
+              height: diameter,
+              width: diameter,
+              borderRadius: 64,
+              marginLeft: i === 3 ? adjustments : 0,
+            }}
+            textStyle={{ fontWeight: '500', fontSize: fontSize }}
+          />
+        </View>
+      ))}
+    </View>
+  );
+};
 const defaultStyles = createStyles('MessageScreen', (theme) => {
   return {
     rootView: {
@@ -285,6 +314,15 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     newMessageText: {
       color: theme.colors.text,
       fontWeight: '600',
+    },
+    multiGiftedAvatarView: {
+      flex: 1,
+      flexWrap: 'wrap',
+      maxHeight: 40,
+      marginRight: 50,
+    },
+    profileView: {
+      height: 20,
     },
   };
 });
