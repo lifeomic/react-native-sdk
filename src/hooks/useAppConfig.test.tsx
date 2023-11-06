@@ -5,6 +5,7 @@ import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { HttpClientContextProvider } from './useHttpClient';
 import { createRestAPIMock } from '../test-utils/rest-api-mocking';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const api = createRestAPIMock();
 
@@ -28,7 +29,9 @@ const mockAppTile = (id: string): AppTile => ({
 const renderHookInContext = async () => {
   return renderHook(() => useAppConfig(), {
     wrapper: ({ children }) => (
-      <HttpClientContextProvider>{children}</HttpClientContextProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        <HttpClientContextProvider>{children}</HttpClientContextProvider>
+      </QueryClientProvider>
     ),
   });
 };
