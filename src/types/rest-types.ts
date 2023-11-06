@@ -28,6 +28,16 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
     };
   };
 
+  'GET /v1/features': {
+    Request: {
+      project?: string;
+      tag?: string;
+    };
+    Response: {
+      [feature: string]: boolean;
+    };
+  };
+
   'PATCH /v1/invitations/:inviteId': {
     Request: { status: 'ACCEPTED' };
     Response: ProjectInvite;
