@@ -1,8 +1,10 @@
+import { useEffect } from 'react';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { Trace } from '../components/MyData/LineChart/TraceLine';
 import { SvgProps } from 'react-native-svg';
 import { useRestQuery } from './rest-api';
+import { appConfigNotifier } from '../common/AppConfigNotifier';
 
 export interface AppTile {
   id: string;
@@ -98,7 +100,8 @@ export interface AppConfig {
 export const useAppConfig = () => {
   const { accountHeaders } = useActiveAccount();
   const { activeProject } = useActiveProject();
-  return useRestQuery(
+
+  const query = useRestQuery(
     'GET /v1/life-research/projects/:projectId/app-config',
     { projectId: activeProject?.id! },
     {
@@ -108,4 +111,10 @@ export const useAppConfig = () => {
       },
     },
   );
+
+  useEffect(() => {
+    appConfigNotifier.emit(query.data);
+  }, [query.data]);
+
+  return query;
 };
