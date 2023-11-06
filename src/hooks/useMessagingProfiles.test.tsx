@@ -5,7 +5,9 @@ import { useAppConfig } from './useAppConfig';
 import { useActiveAccount } from './useActiveAccount';
 import { useUser } from './useUser';
 import { createRestAPIMock } from '../test-utils/rest-api-mocking';
-import { PersistedQueryProvider } from './PersistedQueryProvider';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/query-core';
+
 const api = createRestAPIMock();
 
 jest.mock('./useAppConfig');
@@ -27,7 +29,9 @@ useUserMock.mockReturnValue({
 const renderHookInContext = async () => {
   return renderHook(() => useProfilesForTile('someTileId'), {
     wrapper: ({ children }) => (
-      <PersistedQueryProvider>{children}</PersistedQueryProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        {children}
+      </QueryClientProvider>
     ),
   });
 };
@@ -67,7 +71,7 @@ test('gets profiles based on tileId and populates with placeholder data', async 
   expect(result.current).toEqual({
     all: all,
     others: others,
-    isFetching: false,
+    isFetching: true,
     isLoading: false,
   });
 });
