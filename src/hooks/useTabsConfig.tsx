@@ -21,9 +21,12 @@ export const useTabsConfig = (defaultTabs: NavigationTab[] = []) => {
 
   return {
     ...appConfig?.tabsConfig,
+    useTabBar:
+      componentProps?.TabNavigator?.useTabBar ??
+      appConfig?.tabsConfig?.useTabBar,
     tabs:
-      fromAppConfigTabs(appConfig?.tabsConfig?.tabs, CustomStacks) ??
       componentProps?.TabBar?.tabs ??
+      fromAppConfigTabs(appConfig?.tabsConfig?.tabs, CustomStacks) ??
       defaultTabs,
   };
 };

@@ -5,3 +5,4 @@ export * from './SettingsStack';
 export * from './TabNavigator';
 export * from './types';
 export * from './ConfigurableTabStacks';
+export * from './getDefaultTabs';

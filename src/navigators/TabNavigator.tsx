@@ -7,7 +7,6 @@ import { useTheme } from '../hooks/useTheme';
 import { shadow } from 'react-native-paper';
 import { ViewStyle } from 'react-native';
 import { TabParamList } from './types';
-import { useDeveloperConfig } from '../hooks';
 import { useTabsConfig } from '../hooks/useTabsConfig';
 import { TabBar } from './TabBar';
 import { getDefaultTabs } from './getDefaultTabs';
@@ -16,9 +15,7 @@ export function TabNavigator() {
   const { styles } = useStyles(defaultStyles);
   const theme = useTheme();
   const icons = useIcons();
-  const { componentProps } = useDeveloperConfig();
-  const { useTabBar } = componentProps?.TabNavigator || {};
-  const { tabs } = useTabsConfig(getDefaultTabs(icons));
+  const { tabs, useTabBar } = useTabsConfig(getDefaultTabs(icons));
 
   const Tab = useTabBar
     ? createBottomTabNavigator<TabParamList>()

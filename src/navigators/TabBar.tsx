@@ -49,23 +49,23 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       <View style={styles.barButtonContainer}>
         {routes.map((route, routeIndex) => {
           const tab = tabs?.[routeIndex];
-          const Icon = tabs?.[routeIndex].icon;
+          const Icon = tab.icon;
           const isActive = routeIndex === activeRouteIndex;
           const svgProps = {
             ...styles.svgProps,
             ...tabConfig?.styles?.svgProps,
-            ...tabs?.[routeIndex]?.styles?.svgProps,
+            ...tab?.styles?.svgProps,
           };
           const altSvgProps = isActive
             ? {
                 ...styles.svgPropsActive,
                 ...tabConfig?.styles?.svgPropsActive,
-                ...tabs?.[routeIndex]?.styles?.svgPropsActive,
+                ...tab?.styles?.svgPropsActive,
               }
             : {
                 ...styles.svgPropsInactive,
                 ...tabConfig?.styles?.svgPropsInactive,
-                ...tabs?.[routeIndex]?.styles?.svgPropsInactive,
+                ...tab?.styles?.svgPropsInactive,
               };
           const options = descriptors[route.key].options;
 
