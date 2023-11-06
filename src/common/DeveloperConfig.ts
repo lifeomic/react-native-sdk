@@ -1,6 +1,6 @@
 import React, { ComponentType } from 'react';
 import { getBundleId } from 'react-native-device-info';
-import { AppTile } from '../hooks/useAppConfig';
+import { AppTile, TabStyle } from '../hooks/useAppConfig';
 import { SvgProps } from 'react-native-svg';
 import { Theme } from '../components/BrandConfigProvider';
 import {
@@ -161,9 +161,7 @@ export type NavigationTab = {
   component: () => JSX.Element;
   label?: string;
   icon: (props: SvgProps) => JSX.Element;
-  svgProps?: (theme: Theme) => SvgProps;
-  svgPropsActive?: (theme: Theme) => SvgProps;
-  svgPropsInactive?: (theme: Theme) => SvgProps;
+  styles?: TabStyle;
   headerShown?: boolean;
   color?: string;
   initialParams?: any;

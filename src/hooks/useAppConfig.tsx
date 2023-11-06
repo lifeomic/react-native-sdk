@@ -5,6 +5,7 @@ import { Trace } from '../components/MyData/LineChart/TraceLine';
 import { useHttpClient } from './useHttpClient';
 import { appConfigNotifier } from '../common/AppConfigNotifier';
 import { SvgProps } from 'react-native-svg';
+import { TextStyle, ViewStyle } from 'react-native';
 
 export interface AppTile {
   id: string;
@@ -41,6 +42,17 @@ type TabType =
   | 'notifications'
   | 'settings'
   | 'messageTile';
+
+export type TabStyle = {
+  labelActiveText?: TextStyle;
+  labelInactiveText?: TextStyle;
+  activeIndicatorView?: ViewStyle;
+  tabActiveView?: ViewStyle;
+  tabInactiveView?: ViewStyle;
+  svgProps?: SvgProps;
+  svgPropsActive?: SvgProps;
+  svgPropsInactive?: SvgProps;
+};
 
 export interface AppConfig {
   homeTab?: {
@@ -82,14 +94,14 @@ export interface AppConfig {
   support?: { url: string };
   brand?: Record<string, any>;
   tabsConfig?: {
+    styles?: TabStyle;
+    useTabBar?: boolean;
     tabs: {
       type: TabType;
       name: string;
       label: string;
       icon?: string;
-      svgProps?: SvgProps;
-      svgPropsActive?: SvgProps;
-      svgPropsInactive?: SvgProps;
+      styles?: TabStyle;
       headerShown?: boolean;
       color?: string;
       initialParams?: any;
