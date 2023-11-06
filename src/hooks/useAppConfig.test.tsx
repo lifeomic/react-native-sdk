@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { AppConfig, useAppConfig, AppTile } from './useAppConfig';
+import { useAppConfig, AppTile } from './useAppConfig';
 import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { HttpClientContextProvider } from './useHttpClient';
@@ -36,19 +36,11 @@ const renderHookInContext = async () => {
   });
 };
 
-const configWith = (homeTab: AppConfig['homeTab']) => {
-  api.mock(
-    'GET /v1/life-research/projects/:projectId/app-config',
-    jest.fn().mockReturnValue({
-      status: 200,
-      data: { homeTab },
-    }),
-  );
-};
-
 beforeEach(() => {
   useActiveAccountMock.mockReturnValue({
-    account: 'acct1',
+    accountHeaders: {
+      'LifeOmic-Account': 'acct1',
+    },
   });
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
@@ -57,7 +49,14 @@ beforeEach(() => {
 
 test('configured appTiles are returned', async () => {
   const mockAppTiles = ['appTile-1', 'appTile-2', 'appTile-3'].map(mockAppTile);
-  configWith({ appTiles: mockAppTiles });
+  api.mock('GET /v1/life-research/projects/:projectId/app-config', {
+    status: 200,
+    data: {
+      homeTab: {
+        appTiles: mockAppTiles,
+      },
+    },
+  });
   const { result } = await renderHookInContext();
 
   await waitFor(() => {
