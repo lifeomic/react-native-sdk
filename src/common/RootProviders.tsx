@@ -12,7 +12,9 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemedNavigationContainer } from './ThemedNavigationContainer';
 import { LoggedInProviders } from './LoggedInProviders';
-import { PersistedQueryProvider } from '../hooks/PersistedQueryProvider';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 
 export function RootProviders({
   authConfig,
@@ -24,7 +26,7 @@ export function RootProviders({
   const { apiBaseURL, theme } = useDeveloperConfig();
 
   return (
-    <PersistedQueryProvider>
+    <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
         <HttpClientContextProvider baseURL={apiBaseURL}>
           <GraphQLClientContextProvider baseURL={apiBaseURL}>
@@ -46,6 +48,6 @@ export function RootProviders({
           </GraphQLClientContextProvider>
         </HttpClientContextProvider>
       </AuthContextProvider>
-    </PersistedQueryProvider>
+    </QueryClientProvider>
   );
 }
