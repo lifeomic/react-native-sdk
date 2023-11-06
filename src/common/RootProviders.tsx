@@ -25,7 +25,7 @@ export function RootProviders({
   const { apiBaseURL, theme } = useDeveloperConfig();
 
   return (
-    <QueryClientProvider client={new QueryClient()} >
+    <QueryClientProvider client={new QueryClient()}>
       <AuthContextProvider>
         <HttpClientContextProvider baseURL={apiBaseURL}>
           <GraphQLClientContextProvider baseURL={apiBaseURL}>
