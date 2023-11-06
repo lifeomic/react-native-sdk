@@ -2,11 +2,8 @@ import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useActiveAccount } from './useActiveAccount';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios';
-import { useHttpClient } from './useHttpClient';
-import { useAuth } from './useAuth';
-import { ExchangeResult, useExchangeToken } from './useExchangeToken';
+import { useExchangeToken } from './useExchangeToken';
+import { createRestAPIMock } from '../test-utils/rest-api-mocking';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,22 +13,13 @@ const queryClient = new QueryClient({
   },
 });
 
+const api = createRestAPIMock();
+
 jest.mock('./useActiveAccount', () => ({
   useActiveAccount: jest.fn(),
 }));
-jest.mock('./useHttpClient', () => ({
-  useHttpClient: jest.fn(),
-}));
-jest.mock('./useUser', () => ({
-  useUser: jest.fn(),
-}));
-jest.mock('./useAuth', () => ({
-  useAuth: jest.fn(),
-}));
 
 const useActiveAccountMock = useActiveAccount as jest.Mock;
-const useHttpClientMock = useHttpClient as jest.Mock;
-const useAuthMock = useAuth as jest.Mock;
 
 const renderHookInContext = async () => {
   return renderHook(() => useExchangeToken('someAppTileId', 'someClientId'), {
@@ -41,34 +29,30 @@ const renderHookInContext = async () => {
   });
 };
 
-const axiosInstance = axios.create();
-const axiosMock = new MockAdapter(axiosInstance);
-
 beforeEach(() => {
   useActiveAccountMock.mockReturnValue({
     accountHeaders: { 'LifeOmic-Account': 'acct1' },
   });
-  useHttpClientMock.mockReturnValue({ httpClient: axiosInstance });
-  useAuthMock.mockReturnValue({
-    authResult: {
-      accessToken: 'someToken',
-    },
-  });
 });
 
 test('posts token/clientId to /v1/client-tokens', async () => {
-  axiosMock.onPost('/v1/client-tokens').reply<ExchangeResult>(200, {
-    code: 'some-code',
-  });
-  const { result } = await renderHookInContext();
-  await waitFor(() => result.current.isSuccess === true);
-  expect(axiosMock.history.post[0].url).toBe('/v1/client-tokens');
-  expect(axiosMock.history.post[0].data).toBe(
-    JSON.stringify({
-      targetClientId: 'someClientId',
-    }),
+  const mock = jest.fn();
+  api.mock(
+    'POST /v1/client-tokens',
+    mock.mockReturnValue({ status: 200, data: { code: 'some-code' } }),
   );
+  const { result } = await renderHookInContext();
   await waitFor(() => {
-    expect(result.current.data).toEqual({ code: 'some-code' });
+    expect(result.current.status === 'success');
+    expect(result.current.data?.code).toStrictEqual('some-code');
+  });
+
+  expect(mock).toHaveBeenCalledTimes(1);
+  expect(mock).toHaveBeenCalledWith({
+    body: { targetClientId: 'someClientId' },
+    headers: expect.objectContaining({
+      'lifeomic-account': 'acct1',
+    }),
+    params: {},
   });
 });

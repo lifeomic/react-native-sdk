@@ -2,10 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 
-export type ExchangeResult = {
-  code: string;
-};
-
 export function useExchangeToken(appTileId: string, clientId?: string) {
   const { apiClient } = useHttpClient();
   const { accountHeaders } = useActiveAccount();
