@@ -17,12 +17,20 @@ import { MyDataScreen } from '../screens/MyDataScreen';
 import { YoutubePlayerScreen } from '../screens/YoutubePlayerScreen';
 import { navigationScreenListeners } from '../hooks/useLogoHeaderOptions';
 import { DirectMessagesScreen } from '../screens/DirectMessagesScreen';
-import { MessageScreen } from '../screens/MessageScreen';
+import { createMessageScreen } from '../screens/MessageScreen';
 import { useInvalidateTodayCountCache } from '../hooks/todayTile/useTodayTasks';
 import { useQueryClient } from '@tanstack/react-query';
-import { ComposeMessageScreen } from '../screens/ComposeMessageScreen';
+import { createComposeMessageScreen } from '../screens/ComposeMessageScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
+
+const MessageScreen = createMessageScreen<HomeStackParamList>({
+  DirectMessageScreen: 'Home/DirectMessage',
+  ComposeMessageScreen: 'Home/ComposeMessage',
+});
+const ComposeMessageScreen = createComposeMessageScreen<HomeStackParamList>({
+  DirectMessageScreen: 'Home/DirectMessage',
+});
 
 export function HomeStack() {
   const { getAdditionalHomeScreens, logoHeaderConfig, CustomHomeScreen } =

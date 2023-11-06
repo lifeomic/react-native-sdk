@@ -3,17 +3,31 @@ import { Searchbar, Chip, Text, Divider } from 'react-native-paper';
 import { ComposeMessageSearch } from '../components/Messaging/ComposeMessageSearch';
 import { View } from 'react-native';
 import { t } from 'i18next';
-import { HomeStackScreenProps } from '../navigators/types';
 import { createStyles, useIcons } from '../components';
 import { ComposeInputBar } from '../components/Messaging/ComposeInputBar';
 import { useStyles } from '../components/BrandConfigProvider/styles/StylesProvider';
 import { tID } from '../components/TrackTile/common/testID';
 import { User } from '../types';
+import { ScreenParamTypes as BaseScreenParamTypes } from './utils/stack-helpers';
+import { DirectMessageParams } from './DirectMessagesScreen';
+import { ParamListBase } from '@react-navigation/native';
 
-export function ComposeMessageScreen({
+export type ComposeMessageParams = {
+  tileId: string;
+};
+
+type SubRoutesParamList = {
+  DirectMessageScreen: DirectMessageParams;
+};
+
+export type ComposeScreenParamTypes<ParamList extends ParamListBase> =
+  BaseScreenParamTypes<ComposeMessageParams, ParamList, SubRoutesParamList>;
+
+export function ComposeMessageScreen<ParamList extends ParamListBase>({
   navigation,
   route,
-}: HomeStackScreenProps<'Home/ComposeMessage'>) {
+  routeMapIn,
+}: ComposeScreenParamTypes<ParamList>['ComponentProps']) {
   const { tileId } = route.params;
   const [searchQuery, setSearchQuery] = useState<string>('');
   const onChangeSearch = (query: string) => setSearchQuery(query);
@@ -61,10 +75,18 @@ export function ComposeMessageScreen({
         }
         selectedUserIds={selectedProfiles.map((userProfile) => userProfile.id)}
       />
-      <ComposeInputBar users={selectedProfiles} />
+      <ComposeInputBar users={selectedProfiles} routeMapIn={routeMapIn} />
     </View>
   );
 }
+
+export const createComposeMessageScreen = <ParamList extends ParamListBase>(
+  routeMap: ComposeScreenParamTypes<ParamList>['RouteMap'],
+) => {
+  return (props: ComposeScreenParamTypes<ParamList>['ScreenProps']) => (
+    <ComposeMessageScreen {...props} routeMapIn={routeMap} />
+  );
+};
 
 const defaultStyles = createStyles('ComposeMessageScreen', () => ({
   rootContainer: { flex: 1 },

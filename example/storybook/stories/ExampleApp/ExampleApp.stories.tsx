@@ -270,22 +270,26 @@ storiesOf('Example App', module)
               tabsConfig: {
                 tabs: [
                   {
-                    name: 'Home',
+                    name: 'af5242b5-2cc6-4189-8859-f92552aea14b',
+                    label: 'Home',
                     type: 'home',
                     icon: 'home',
                   },
                   {
-                    name: 'Notifications',
+                    name: 'a70e806d-f108-4c45-ab70-d40fc5f757fb',
+                    label: 'Notifications',
                     type: 'notifications',
                     icon: 'bell',
                   },
                   {
-                    name: 'Settings',
+                    name: 'ca21f64d-4ea8-46ac-ab9a-f47055e8225f',
+                    label: 'Settings',
                     type: 'settings',
                     icon: 'settings',
                   },
                   {
-                    name: 'Custom',
+                    name: '5e3228b9-7e12-4fb8-bb04-c180ebd139db',
+                    label: 'Custom',
                     type: 'customTab',
                     icon: 'zap',
                     initialParams: {
@@ -293,7 +297,8 @@ storiesOf('Example App', module)
                     },
                   },
                   {
-                    name: 'Authed App Tile',
+                    name: 'ff49b800-5940-4bad-a55d-790ad1d0661a',
+                    label: 'Authed App Tile',
                     type: 'appTile',
                     icon: 'user-key',
                     initialParams: {
@@ -310,7 +315,8 @@ storiesOf('Example App', module)
                     },
                   },
                   {
-                    name: 'App tile',
+                    name: '2fd1c6ce-946d-4499-a24d-8c048569ed32',
+                    label: 'App Tile',
                     type: 'appTile',
                     icon: 'user',
                     initialParams: {

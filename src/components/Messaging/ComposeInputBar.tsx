@@ -8,26 +8,31 @@ import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
 import { IconButton } from 'react-native-paper';
 import { InputToolbar } from 'react-native-gifted-chat/lib/InputToolbar';
 import { Composer } from 'react-native-gifted-chat/lib/Composer';
-import { useNavigation } from '@react-navigation/native';
-import { HomeStackParamList } from '../../navigators';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { useUser } from '../../hooks/useUser';
 import { uniq } from 'lodash';
 import { User } from '../../types';
+import type { ComposeScreenParamTypes } from '../../screens/ComposeMessageScreen';
+import { toRouteMap } from '../../screens/utils/stack-helpers';
 
-type Props = {
+type Props<ParamList extends ParamListBase> = {
   users: User[];
+  routeMapIn: ComposeScreenParamTypes<ParamList>['RouteMap'];
 };
 
-export const ComposeInputBar = ({ users }: Props) => {
+type NavigationProp<ParamList extends ParamListBase> =
+  ComposeScreenParamTypes<ParamList>['ComponentProps']['navigation'];
+
+export function ComposeInputBar<ParamList extends ParamListBase>({
+  users,
+  routeMapIn,
+}: Props<ParamList>) {
+  const routeMap = toRouteMap(routeMapIn);
   const { Send: SendIcon } = useIcons();
   const [messageText, setMessageText] = useState<string>('');
   const { styles } = useStyles(defaultStyles);
   const { mutateAsync } = useCreatePrivatePostMutation();
-  const navigation =
-    useNavigation<
-      StackNavigationProp<HomeStackParamList, 'Home/ComposeMessage'>
-    >();
+  const navigation = useNavigation<NavigationProp<ParamList>>();
   const { data } = useUser();
 
   const onSend = useCallback(() => {
@@ -38,14 +43,21 @@ export const ComposeInputBar = ({ users }: Props) => {
         userIds: uniqueIds,
         post: { message: messageText },
       });
-      navigation.replace('Home/DirectMessage', {
+      navigation.replace(routeMap.DirectMessageScreen, {
         users,
         conversationId: result.createPrivatePost.conversationId,
       });
     };
 
     sendMessageAndNavigate();
-  }, [data, messageText, mutateAsync, navigation, users]);
+  }, [
+    data,
+    messageText,
+    mutateAsync,
+    navigation,
+    users,
+    routeMap.DirectMessageScreen,
+  ]);
 
   const SendButton = useCallback(() => {
     const disabled =
@@ -90,7 +102,7 @@ export const ComposeInputBar = ({ users }: Props) => {
       renderSend={() => <SendButton />}
     />
   );
-};
+}
 
 const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
   activityIndicator: {

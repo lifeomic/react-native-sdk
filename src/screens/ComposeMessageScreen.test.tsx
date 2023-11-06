@@ -35,6 +35,10 @@ const useUserMock = useUser as jest.Mock;
 
 const baseURL = 'https://some-domain/unit-test';
 
+const routeMap = {
+  DirectMessageScreen: 'Home/DirectMessages',
+};
+
 beforeEach(() => {
   const otherProfiles = [...Array(10)].map((_, i) => ({
     id: `user-${i}`,
@@ -62,6 +66,7 @@ test('no items when nothing is searched', () => {
             },
           } as any
         }
+        routeMapIn={routeMap}
       />
     </GraphQLClientContextProvider>,
   );
@@ -80,6 +85,7 @@ test('all items returned when matched', () => {
             },
           } as any
         }
+        routeMapIn={routeMap}
       />
     </GraphQLClientContextProvider>,
   );
@@ -100,6 +106,7 @@ test('single item returned when searched', () => {
             },
           } as any
         }
+        routeMapIn={routeMap}
       />
     </GraphQLClientContextProvider>,
   );
@@ -120,6 +127,7 @@ test('item added as chip but removed from search when selected', () => {
             },
           } as any
         }
+        routeMapIn={routeMap}
       />
     </GraphQLClientContextProvider>,
   );
@@ -145,6 +153,7 @@ test('compose button disabled by default', () => {
             },
           } as any
         }
+        routeMapIn={routeMap}
       />
     </GraphQLClientContextProvider>,
   );
@@ -165,6 +174,7 @@ test('compose button disabled with user selected but no message text', () => {
             },
           } as any
         }
+        routeMapIn={routeMap}
       />
     </GraphQLClientContextProvider>,
   );
@@ -188,6 +198,7 @@ test('compose button enabled when user selected and message entered', async () =
             },
           } as any
         }
+        routeMapIn={routeMap}
       />
     </GraphQLClientContextProvider>,
   );

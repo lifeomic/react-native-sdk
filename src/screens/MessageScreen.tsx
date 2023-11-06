@@ -11,7 +11,6 @@ import {
 import { TouchableOpacity, ScrollView, View } from 'react-native';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import { GiftedAvatar } from 'react-native-gifted-chat';
-import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { tID } from '../common/testID';
@@ -26,12 +25,36 @@ import { useInfiniteConversations } from '../hooks/useConversations';
 import { useUser } from '../hooks';
 import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 import { User } from '../types';
+import { ParamListBase } from '@react-navigation/native';
+import { DirectMessageParams } from './DirectMessagesScreen';
+import { ComposeMessageParams } from './ComposeMessageScreen';
+import {
+  ScreenParamTypes as BaseScreenParamTypes,
+  toRouteMap,
+} from './utils/stack-helpers';
 
-export function MessageScreen({
+export type MessageTileParams = {
+  tileId: string;
+};
+
+type SubRoutesParamList = {
+  DirectMessageScreen: DirectMessageParams;
+  ComposeMessageScreen: ComposeMessageParams;
+};
+
+type ScreenParamTypes<ParamList extends ParamListBase> = BaseScreenParamTypes<
+  MessageTileParams,
+  ParamList,
+  SubRoutesParamList
+>;
+
+export function MessageScreen<ParamList extends ParamListBase>({
   navigation,
   route,
-}: HomeStackScreenProps<'Home/Messages'>) {
+  routeMapIn,
+}: ScreenParamTypes<ParamList>['ComponentProps']) {
   const { tileId } = route.params;
+  const routeMap = toRouteMap(routeMapIn);
   const { all, others } = useProfilesForTile(tileId);
   const { data: userData } = useUser();
 
@@ -43,10 +66,12 @@ export function MessageScreen({
     () => (
       <IconButton
         icon={Edit2}
-        onPress={() => navigation.navigate('Home/ComposeMessage', { tileId })}
+        onPress={() =>
+          navigation.navigate(routeMap.ComposeMessageScreen, { tileId })
+        }
       />
     ),
-    [Edit2, navigation, tileId],
+    [Edit2, navigation, tileId, routeMap.ComposeMessageScreen],
   );
 
   useLayoutEffect(() => {
@@ -60,12 +85,12 @@ export function MessageScreen({
 
   const handlePostTapped = useCallback(
     (tappedUsers: User[], conversationId: string) => () => {
-      navigation.navigate('Home/DirectMessage', {
+      navigation.navigate(routeMap.DirectMessageScreen, {
         users: tappedUsers,
         conversationId,
       });
     },
-    [navigation],
+    [navigation, routeMap.DirectMessageScreen],
   );
 
   const renderLeft = useCallback(
@@ -195,6 +220,14 @@ export function MessageScreen({
     </View>
   );
 }
+
+export const createMessageScreen = <ParamList extends ParamListBase>(
+  routeMap: ScreenParamTypes<ParamList>['RouteMap'],
+) => {
+  return (props: ScreenParamTypes<ParamList>['ScreenProps']) => (
+    <MessageScreen {...props} routeMapIn={routeMap} />
+  );
+};
 
 const defaultStyles = createStyles('MessageScreen', (theme) => {
   return {

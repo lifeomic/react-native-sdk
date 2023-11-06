@@ -19,17 +19,23 @@ import {
   ActivityIndicatorViewStyles,
 } from '../components/ActivityIndicatorView';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
-import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
 import {
   useInfiniteConversations,
   useMarkAsRead,
 } from '../hooks/useConversations';
+import { User } from '../types';
+import { ScreenProps } from './utils/stack-helpers';
 
-export function DirectMessagesScreen({
+export type DirectMessageParams = {
+  users: User[];
+  conversationId: string;
+};
+
+export const DirectMessagesScreen = ({
   navigation,
   route,
-}: HomeStackScreenProps<'Home/DirectMessage'>) {
+}: ScreenProps<DirectMessageParams>) => {
   const { users, conversationId } = route.params;
   const { styles } = useStyles(defaultStyles);
   const { Send: SendIcon } = useIcons();
@@ -162,7 +168,7 @@ export function DirectMessagesScreen({
       }}
     />
   );
-}
+};
 
 const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   activityIndicator: {
