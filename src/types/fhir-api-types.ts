@@ -43,28 +43,30 @@ type SearchParamsForResourceType<Name extends keyof FhirResourcesByName> =
     ? AdditionalSearchParamsByName[Name] & BaseSearchParams
     : BaseSearchParams;
 
+type WithIdDefined<T extends { id?: string }> = T & { id: string };
+
 export type FhirAPIEndpoints = {
   // POST /<resource>
   [Name in keyof FhirResourcesByName as `POST /v1/fhir/dstu3/${Name}`]: {
     Request: FhirResourcesByName[Name];
-    Response: FhirResourcesByName[Name];
+    Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
 } & {
   // PUT /<resource>/:id
   [Name in keyof FhirResourcesByName as `PUT /v1/fhir/dstu3/${Name}/:id`]: {
-    Request: FhirResourcesByName[Name] & { id: string };
-    Response: FhirResourcesByName[Name];
+    Request: WithIdDefined<FhirResourcesByName[Name]>;
+    Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
 } & {
   // GET /<resource>/:id
   [Name in keyof FhirResourcesByName as `GET /v1/fhir/dstu3/${Name}/:id`]: {
     Request: {};
-    Response: FhirResourcesByName[Name];
+    Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
 } & {
   // GET /<resource>
   [Name in keyof FhirResourcesByName as `GET /v1/fhir/dstu3/${Name}`]: {
     Request: SearchParamsForResourceType<Name>;
-    Response: Bundle<FhirResourcesByName[Name]>;
+    Response: Bundle<WithIdDefined<FhirResourcesByName[Name]>>;
   };
 };
