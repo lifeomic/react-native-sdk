@@ -99,7 +99,6 @@ export type SettingsStackScreenProps<T extends keyof SettingsStackParamList> =
 export type SettingsStackParamList = {
   Settings: undefined;
   'Settings/Profile': undefined;
-  'Settings/AccountSelection': undefined;
   'Settings/Wearables': undefined;
 };
 
