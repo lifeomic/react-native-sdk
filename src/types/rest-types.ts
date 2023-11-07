@@ -28,6 +28,11 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
     };
   };
 
+  'GET /v1/user': {
+    Request: {};
+    Response: User;
+  };
+
   'GET /v1/features': {
     Request: {
       project?: string;

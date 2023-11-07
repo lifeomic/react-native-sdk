@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react-native';
-import { useUser } from './useUser';
+import { useUpdateUser, useUser } from './useUser';
 import { useActiveProject } from './useActiveProject';
 import { useSetUserProfileEffect } from './useSetUserProfileEffect';
 
@@ -8,9 +8,11 @@ jest.mock('./useActiveProject', () => ({
 }));
 jest.mock('./useUser', () => ({
   useUser: jest.fn(),
+  useUpdateUser: jest.fn(),
 }));
 
 const useUserMock = useUser as jest.Mock;
+const useUpdateUserMock = useUpdateUser as jest.Mock;
 const useActiveProjectMock = useActiveProject as jest.Mock;
 const updateUser = jest.fn();
 
@@ -19,6 +21,9 @@ beforeEach(() => {
   useUserMock.mockReturnValue({
     isLoading: true,
     updateUser,
+  });
+  useUpdateUserMock.mockReturnValue({
+    mutate: updateUser,
   });
   useActiveProjectMock.mockReturnValue({});
 });
@@ -32,7 +37,6 @@ test('should update the user once all hooks load and the user does not have data
     isLoading: false,
     isFetched: true,
     data: { profile: {} },
-    updateUser,
   });
 
   result.rerender({});
@@ -65,7 +69,6 @@ test('should use the first official name', () => {
     isLoading: false,
     isFetched: true,
     data: { profile: {} },
-    updateUser,
   });
   useActiveProjectMock.mockReturnValue({
     activeSubject: {
@@ -103,7 +106,6 @@ test('not set the username if it is already set', () => {
         familyName: 'AlreadySet',
       },
     },
-    updateUser,
   });
   useActiveProjectMock.mockReturnValue({
     activeSubject: {
