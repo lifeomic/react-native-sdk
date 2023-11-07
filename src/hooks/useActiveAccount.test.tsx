@@ -77,7 +77,6 @@ beforeEach(() => {
 
 test('without provider, methods fail', async () => {
   const { result } = renderHook(() => useActiveAccount());
-  await expect(result.current.refetch()).rejects.toBeUndefined();
   await expect(
     result.current.setActiveAccountId('bogus'),
   ).rejects.toBeUndefined();
@@ -106,18 +105,6 @@ test('exposes some props from useAccounts', async () => {
   expect(result.current).toMatchObject({
     isLoading: true,
   });
-});
-
-test('refetch forwards to useAccounts', async () => {
-  const { result } = await renderHookInContext();
-
-  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(1));
-
-  await act(async () => {
-    result.current.refetch();
-  });
-
-  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(2));
 });
 
 test('setActiveAccountId saves accountId', async () => {
