@@ -1,18 +1,10 @@
-import React, {
-  createContext,
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { createContext, useEffect, useContext } from 'react';
 import { Account } from '../types/rest-types';
-import { useAsyncStorage } from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
-import { useUser } from './useUser';
 import { useRestCache, useRestQuery } from './rest-api';
 import { useAuth } from './useAuth';
+import { useStoredValue } from './useStoredValue';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -33,14 +25,7 @@ export const ActiveAccountContext = createContext({
   isFetched: false,
 } as ActiveAccountContextProps);
 
-const selectedAccountIdKey = 'selectedAccountId';
-
-const filterNonLRAccounts = (accounts?: Account[]) =>
-  accounts?.filter((a) => a.products?.indexOf('LR') > -1) || [];
-
-const getValidAccount = (validAccounts?: Account[], accountId?: string) => {
-  return validAccounts?.find((a) => a.id === accountId);
-};
+export const PREFERRED_ACCOUNT_ID_KEY = 'preferred-account-id';
 
 export const ActiveAccountContextProvider = ({
   children,
@@ -57,83 +42,60 @@ export const ActiveAccountContextProvider = ({
   const accountsResult = useRestQuery(
     'GET /v1/accounts',
     {},
-    { select: (data) => data.accounts, enabled: isLoggedIn },
+    {
+      select: (data) => data.accounts.filter((a) => a.products.includes('LR')),
+      enabled: isLoggedIn,
+    },
   );
 
-  const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
-  const { data: userData } = useUser();
-  const userId = userData?.id;
-  const [selectedId, setSelectedId] = useState(accountIdToSelect);
-  const [storedAccountIdResult, setStoredAccountId, isStorageLoaded] =
-    useAsyncStorage(
-      `${selectedAccountIdKey}:${userId}`,
-      !!selectedAccountIdKey && !!userId,
-    );
+  const accountsWithProduct = accountsResult.data ?? [];
+  const [preferredId, setPreferredId] = useStoredValue(
+    PREFERRED_ACCOUNT_ID_KEY,
+  );
   const cache = useRestCache();
 
-  /**
-   * Initial setting of activeAccount
-   */
-  const activeAccount = useMemo<ActiveAccountProps>(() => {
-    if (
-      !userId || // require user id before reading/writing to storage
-      !isStorageLoaded ||
-      accountsWithProduct.length < 1 // no valid accounts found server side
-    ) {
-      return {};
-    }
+  const selectedAccount = accountsWithProduct.length
+    ? accountsWithProduct?.find(
+        // Prefer the prop override first. Otherwise, use the stored preference.
+        (a) => a.id === (accountIdToSelect || preferredId),
+      ) ??
+      // Otherwise, use the first account in the list.
+      accountsWithProduct[0]
+    : undefined;
 
-    const accountToSelect = selectedId ?? storedAccountIdResult ?? undefined;
-
-    const selectedAccount =
-      getValidAccount(accountsWithProduct, accountToSelect) ??
-      accountsWithProduct[0];
-
-    return {
-      account: selectedAccount,
-      accountHeaders: {
-        'LifeOmic-Account': selectedAccount.id,
-      },
-    };
-  }, [
-    accountsWithProduct,
-    isStorageLoaded,
-    selectedId,
-    storedAccountIdResult,
-    userId,
-  ]);
-
+  // Whenever the user's account changes, use the new account as
+  // the preferred account.
   useEffect(() => {
-    if (activeAccount?.account?.id) {
-      setStoredAccountId(activeAccount.account.id);
+    if (selectedAccount?.id) {
+      setPreferredId(selectedAccount.id);
     }
-  }, [activeAccount?.account?.id, setStoredAccountId]);
+  }, [selectedAccount, setPreferredId]);
 
-  const setActiveAccountId = useCallback(async (accountId: string) => {
-    setSelectedId(accountId);
-  }, []);
-
-  // Handle invite accept
+  // When the user accepts an invite to a new account, reset the cache,
+  // and also use _that_ account as the preferred account.
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
       cache.resetQueries({ 'GET /v1/accounts': 'all' });
-      setSelectedId(acceptedInvite.account);
+      setPreferredId(acceptedInvite.account);
       inviteNotifier.emit('inviteAccountSettled');
     };
     inviteNotifier.addListener('inviteAccepted', listener);
     return () => {
       inviteNotifier.removeListener('inviteAccepted', listener);
     };
-  }, [cache]);
+  }, [cache, setPreferredId]);
 
   return (
     <ActiveAccountContext.Provider
       value={{
-        ...activeAccount,
+        account: selectedAccount,
+        accountHeaders: selectedAccount
+          ? { 'LifeOmic-Account': selectedAccount.id }
+          : undefined,
         accountsWithProduct,
-        setActiveAccountId,
-        isLoading: accountsResult.isLoading || !isStorageLoaded,
-        isFetched: accountsResult.isFetched && isStorageLoaded,
+        setActiveAccountId: setPreferredId,
+        isLoading: accountsResult.isLoading,
+        isFetched: accountsResult.isFetched,
         error: accountsResult.error,
       }}
     >
