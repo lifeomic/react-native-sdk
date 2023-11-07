@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { useActiveProject } from './useActiveProject';
-import { useUser } from './useUser';
+import { useUpdateUser, useUser } from './useUser';
 
 export const useSetUserProfileEffect = () => {
-  const { isLoading, isFetched, data: user, updateUser } = useUser();
+  const { isLoading, isFetched, data: user } = useUser();
+  const { mutate: updateUser } = useUpdateUser();
   const { activeSubject } = useActiveProject();
 
   useEffect(() => {

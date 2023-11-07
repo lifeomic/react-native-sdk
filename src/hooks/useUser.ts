@@ -1,30 +1,20 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useHttpClient } from './useHttpClient';
 import { useAuth } from './useAuth';
-import { useRestMutation } from './rest-api';
-import { User } from '../types';
+import { useRestCache, useRestMutation, useRestQuery } from './rest-api';
 
 export function useUser() {
   const { authResult } = useAuth();
-  const client = useQueryClient();
-  const { httpClient } = useHttpClient();
-
-  const result = useQuery(
-    ['user'],
-    () => httpClient.get<User>('/v1/user').then((res) => res.data),
-    {
-      enabled: !!authResult?.accessToken,
-    },
+  return useRestQuery(
+    'GET /v1/user',
+    {},
+    { enabled: !!authResult?.accessToken },
   );
+}
 
-  const { mutateAsync: updateUser } = useRestMutation('PATCH /v1/user', {
-    onSuccess: (updatedUser) => {
-      client.setQueryData(['user'], () => updatedUser);
+export const useUpdateUser = () => {
+  const cache = useRestCache();
+  return useRestMutation('PATCH /v1/user', {
+    onSuccess: (user) => {
+      cache.updateCache('GET /v1/user', {}, user);
     },
   });
-
-  return {
-    ...result,
-    updateUser,
-  };
-}
+};
