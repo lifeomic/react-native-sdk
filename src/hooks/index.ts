@@ -6,7 +6,6 @@ export * from './useAuth';
 export * from './useConsent';
 export * from './useCurrentAppState';
 export * from './useDeveloperConfig';
-export * from './useEnvironmentSelection';
 export * from './useExchangeToken';
 export * from './useFhirClient';
 export * from './useGraphQLClient';
