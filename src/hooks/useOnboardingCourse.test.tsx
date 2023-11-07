@@ -4,8 +4,6 @@ import {
   OnboardingCourseContextProvider,
   useOnboardingCourse,
 } from './useOnboardingCourse';
-import * as useAsyncStorage from './useAsyncStorage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 jest.mock('./useAppConfig', () => ({
   useAppConfig: () => ({
@@ -21,16 +19,6 @@ jest.mock('./useAppConfig', () => ({
 jest.mock('./useActiveProject', () => ({
   useActiveProject: () => ({ activeProject: { id: 'project-123' } }),
 }));
-
-let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
-
-beforeEach(() => {
-  useAsyncStorageSpy.mockReturnValue([
-    '',
-    (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
-    true,
-  ]);
-});
 
 const renderHookInContext = async () => {
   return renderHook(() => useOnboardingCourse(), {

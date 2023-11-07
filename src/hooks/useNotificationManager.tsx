@@ -8,8 +8,8 @@ import React, {
 } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import { useNotifications } from './useNotifications';
-import { useAsyncStorage } from './useAsyncStorage';
 import { onNotificationReceived } from '../common/Notifications';
+import { useStoredValue } from './useStoredValue';
 
 export interface NotificationsManagerContextType {
   unreadCount: number | undefined;
@@ -29,16 +29,15 @@ export const NotificationsManagerContext =
     lastReadAt: undefined,
   });
 
+export const LAST_NOTIFICATION_READ_TIME_KEY = 'last-notification-read-time';
+
 export const NotificationsManagerProvider = ({
   children,
 }: {
   children?: React.ReactNode;
 }) => {
-  const [
-    lastNotificationReadTime,
-    setLastNotificationReadTime,
-    isStorageLoaded,
-  ] = useAsyncStorage('lastNotificationReadTime');
+  const [lastNotificationReadTime, setLastNotificationReadTime] =
+    useStoredValue(LAST_NOTIFICATION_READ_TIME_KEY);
   const { data, refetch } = useNotifications();
 
   /**
@@ -58,12 +57,10 @@ export const NotificationsManagerProvider = ({
    * Load persisted lastReadAt from async storage
    */
   useEffect(() => {
-    if (isStorageLoaded) {
-      updateLastReadAt(
-        lastNotificationReadTime ? new Date(lastNotificationReadTime) : null,
-      );
-    }
-  }, [lastNotificationReadTime, updateLastReadAt, isStorageLoaded]);
+    updateLastReadAt(
+      lastNotificationReadTime ? new Date(lastNotificationReadTime) : null,
+    );
+  }, [lastNotificationReadTime, updateLastReadAt]);
 
   /**
    * Persist lastReadAt to async storage on background/close

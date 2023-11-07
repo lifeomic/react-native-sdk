@@ -23,3 +23,4 @@ export * from './useSubjectProjects';
 export * from './useTheme';
 export * from './useUser';
 export * from './useWearables';
+export * from './useStoredValue';

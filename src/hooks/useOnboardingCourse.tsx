@@ -1,7 +1,7 @@
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import React, { createContext, useCallback } from 'react';
 import { useAppConfig } from './useAppConfig';
 import { useActiveProject } from './useActiveProject';
-import { useAsyncStorage } from './useAsyncStorage';
+import { useStoredValue } from './useStoredValue';
 
 export type OnboardingCourseContextProps = {
   shouldLaunchOnboardingCourse: boolean;
@@ -19,6 +19,9 @@ export const OnboardingCourseContext = createContext({
   onOnboardingCourseOpen: () => {},
 } as OnboardingCourseContextProps);
 
+export const didLaunchOnboardingCourseKey = (project: string) =>
+  `did-launch-onboarding-${project}`;
+
 export const OnboardingCourseContextProvider = ({
   children,
 }: {
@@ -33,23 +36,13 @@ export const OnboardingCourseContextProvider = ({
   const onboardingCourseUrl = data?.onboardingCourse?.url;
   const onboardingCourseTitle = data?.onboardingCourse?.title;
   const { activeProject } = useActiveProject();
-  const [storedDidLaunchResult, storeDidLaunch, isStorageLoaded] =
-    useAsyncStorage(
-      `${activeProject?.id}-didLaunchOnboardingCourse`,
-      !!activeProject?.id,
-    );
-  const [didLaunchCourse, setDidLaunchCourse] = useState<boolean | undefined>(
-    undefined,
+  const [didLaunchCourse, setDidLaunchCourse] = useStoredValue(
+    didLaunchOnboardingCourseKey(activeProject?.id || ''),
   );
+  const isStorageLoaded = !!activeProject?.id;
 
   const isLoading = isAppConfigLoading || !isStorageLoaded;
   const isFetched = isAppConfigFetched && isStorageLoaded;
-
-  useEffect(() => {
-    if (activeProject?.id) {
-      setDidLaunchCourse(storedDidLaunchResult === 'true');
-    }
-  }, [storedDidLaunchResult, activeProject?.id]);
 
   /* Render the onboarding course if the following conditions are met:
     1. The app config and the async storage value have been fetched
@@ -57,12 +50,11 @@ export const OnboardingCourseContextProvider = ({
     3. The onboarding course has not been launched
   */
   const shouldLaunchOnboardingCourse =
-    !!isFetched && !!onboardingCourseUrl && !didLaunchCourse;
+    !!isFetched && !!onboardingCourseUrl && didLaunchCourse !== 'true';
 
   const onOnboardingCourseOpen = useCallback(() => {
-    setDidLaunchCourse(true);
-    storeDidLaunch('true');
-  }, [storeDidLaunch]);
+    setDidLaunchCourse('true');
+  }, [setDidLaunchCourse]);
 
   return (
     <OnboardingCourseContext.Provider
