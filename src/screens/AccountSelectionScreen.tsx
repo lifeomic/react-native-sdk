@@ -14,7 +14,7 @@ export const AccountSelectionScreen = ({
   const { accountsWithProduct, setActiveAccountId } = useActiveAccount();
   const selectAccount = useCallback(
     (selectedAccount: Account) => async () => {
-      await setActiveAccountId(selectedAccount.id);
+      setActiveAccountId(selectedAccount.id);
       if (navigation.canGoBack()) {
         navigation.goBack();
       }
