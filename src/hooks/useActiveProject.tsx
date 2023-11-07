@@ -8,9 +8,10 @@ import React, {
 } from 'react';
 import { Subject, useMe } from './useMe';
 import { Project, useSubjectProjects } from './useSubjectProjects';
-import { useAsyncStorage } from './useAsyncStorage';
 import { useUser } from './useUser';
-const selectedProjectIdKey = 'selectedProjectIdKey';
+import { useStoredValue } from './useStoredValue';
+
+export const SELECTED_PROJECT_ID_KEY = 'selected-project-id';
 
 export type ActiveProjectProps = {
   activeProject?: Project;
@@ -71,13 +72,8 @@ export const ActiveProjectContextProvider = ({
   const useMeLoading = useMeResult.isLoading || !useMeResult.isFetched;
   const { data: userData } = useUser();
   const userId = userData?.id;
-  const [selectedId, setSelectedId] = useState<string>();
+  const [selectedId, setSelectedId] = useStoredValue(SELECTED_PROJECT_ID_KEY);
   const [previousUserId, setPreviousUserId] = useState(userId);
-  const [storedProjectIdResult, setStoredProjectId, isStorageLoaded] =
-    useAsyncStorage(
-      `${selectedProjectIdKey}:${userId}`,
-      !!selectedProjectIdKey && !!userId,
-    );
 
   /**
    * Initial setting of activeProject
@@ -86,14 +82,13 @@ export const ActiveProjectContextProvider = ({
     if (
       !userId || // wait for user id before reading and writing to storage
       projectLoading || // wait for projects endpoint
-      useMeLoading ||
-      !isStorageLoaded
+      useMeLoading
     ) {
       return {};
     }
 
     const { selectedProject, selectedSubject } = findProjectAndSubjectById(
-      selectedId ?? storedProjectIdResult,
+      selectedId,
       projectsResult.data,
       useMeResult.data,
     );
@@ -111,18 +106,16 @@ export const ActiveProjectContextProvider = ({
     userId,
     projectLoading,
     useMeLoading,
-    isStorageLoaded,
     selectedId,
-    storedProjectIdResult,
     projectsResult.data,
     useMeResult.data,
   ]);
 
   useEffect(() => {
     if (hookReturnValue?.activeProject?.id) {
-      setStoredProjectId(hookReturnValue?.activeProject?.id);
+      setSelectedId(hookReturnValue?.activeProject?.id);
     }
-  }, [hookReturnValue?.activeProject?.id, setStoredProjectId]);
+  }, [hookReturnValue?.activeProject?.id, setSelectedId]);
 
   // Clear selected project when
   // we've detected that the userId has changed
@@ -145,7 +138,7 @@ export const ActiveProjectContextProvider = ({
         setSelectedId(selectedProject.id);
       }
     },
-    [projectsResult.data, useMeResult.data],
+    [projectsResult.data, useMeResult.data, setSelectedId],
   );
 
   return (
@@ -153,16 +146,8 @@ export const ActiveProjectContextProvider = ({
       value={{
         ...hookReturnValue,
         setActiveProjectId,
-        isLoading: !!(
-          projectsResult.isLoading ||
-          useMeResult.isLoading ||
-          !isStorageLoaded
-        ),
-        isFetched: !!(
-          projectsResult.isFetched &&
-          useMeResult.isFetched &&
-          isStorageLoaded
-        ),
+        isLoading: !!(projectsResult.isLoading || useMeResult.isLoading),
+        isFetched: !!(projectsResult.isFetched && useMeResult.isFetched),
         error: projectsResult.error || useMeResult.error,
       }}
     >

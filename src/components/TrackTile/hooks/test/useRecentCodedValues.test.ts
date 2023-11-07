@@ -1,67 +1,43 @@
-import { renderHook, act } from '@testing-library/react-hooks';
-import AsyncStorage, {
-  AsyncStorageStatic,
-} from '@react-native-async-storage/async-storage';
-import { useRecentCodedValues } from '../useRecentCodedValues';
+import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { notifier } from '../../services/EmitterService';
+import { _store } from '../../../../hooks/useStoredValue';
+import { useRecentCodedValues } from '../useRecentCodedValues';
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-}));
-
-const getItem = AsyncStorage.getItem as any as jest.Mock<
-  AsyncStorageStatic['getItem']
->;
-const setItem = AsyncStorage.setItem as any as jest.Mock<
-  AsyncStorageStatic['setItem']
->;
+const key = '@lifeomic/track-tile/recent-values/metricId';
 
 describe('useTrackerValues', () => {
   it('should get the recent values by id', async () => {
-    getItem.mockReturnValue(
-      JSON.stringify([
-        { value: 5, code: { code: 'value-code', system: 'value-system' } },
-      ]) as never,
-    );
+    const data = [
+      { value: 5, code: { code: 'value-code', system: 'value-system' } },
+    ];
+    _store.set(key, JSON.stringify(data));
 
-    const { result, waitFor } = renderHook(() =>
-      useRecentCodedValues('metricId'),
-    );
+    const { result } = renderHook(() => useRecentCodedValues('metricId'));
 
-    await waitFor(() =>
-      expect(result.current).toEqual([
-        { value: 5, code: { code: 'value-code', system: 'value-system' } },
-      ]),
-    );
-
-    expect(getItem).toHaveBeenCalledWith(
-      '@lifeomic/track-tile/recent-values/metricId',
-    );
+    await waitFor(() => expect(result.current).toStrictEqual(data));
   });
 
   it('should handle no saved data', async () => {
-    getItem.mockReturnValue(undefined as never);
+    _store.clearAll();
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result, rerender } = renderHook(() =>
       useRecentCodedValues('metricId'),
     );
 
-    await waitForNextUpdate();
+    rerender({});
 
     expect(result.current).toEqual([]);
   });
 
   it('can add a new value to the recent items', async () => {
-    getItem.mockReturnValue(
+    _store.set(
+      key,
       JSON.stringify([
         { value: 5, code: { code: 'value-code', system: 'value-system' } },
-      ]) as never,
+      ]),
     );
 
-    const { result, waitFor } = renderHook(() =>
-      useRecentCodedValues('metricId'),
-    );
+    const { result } = renderHook(() => useRecentCodedValues('metricId'));
 
     await waitFor(() =>
       expect(result.current).toEqual([
@@ -91,8 +67,7 @@ describe('useTrackerValues', () => {
       ]),
     );
 
-    expect(setItem).toHaveBeenLastCalledWith(
-      '@lifeomic/track-tile/recent-values/metricId',
+    expect(_store.getString(key)).toStrictEqual(
       JSON.stringify([
         { value: 3, code: { code: 'new', system: 'newSys', display: 'NEW' } },
         { value: 5, code: { code: 'value-code', system: 'value-system' } },
@@ -101,15 +76,14 @@ describe('useTrackerValues', () => {
   });
 
   it('only saves 5 most recent values', async () => {
-    getItem.mockReturnValue(
+    _store.set(
+      key,
       JSON.stringify([
         { value: 0, code: { code: 'code-0', system: 'system' } },
-      ]) as never,
+      ]),
     );
 
-    const { result, waitFor } = renderHook(() =>
-      useRecentCodedValues('metricId'),
-    );
+    const { result } = renderHook(() => useRecentCodedValues('metricId'));
 
     await waitFor(() => {
       expect(result.current).toEqual([
@@ -168,11 +142,9 @@ describe('useTrackerValues', () => {
 
   it('should evict values with the same code and use latest value', async () => {
     const code = { code: 'code', system: 'system', display: 'display' };
-    getItem.mockReturnValue(JSON.stringify([{ value: 0, code }]) as never);
+    _store.set(key, JSON.stringify([{ value: 0, code }]));
 
-    const { result, waitFor } = renderHook(() =>
-      useRecentCodedValues('metricId'),
-    );
+    const { result } = renderHook(() => useRecentCodedValues('metricId'));
 
     await waitFor(() => expect(result.current).toEqual([{ value: 0, code }]));
 

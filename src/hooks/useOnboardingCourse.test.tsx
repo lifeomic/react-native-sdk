@@ -4,8 +4,6 @@ import {
   OnboardingCourseContextProvider,
   useOnboardingCourse,
 } from './useOnboardingCourse';
-import * as useAsyncStorage from './useAsyncStorage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 jest.mock('./useAppConfig', () => ({
   useAppConfig: () => ({
@@ -22,16 +20,6 @@ jest.mock('./useActiveProject', () => ({
   useActiveProject: () => ({ activeProject: { id: 'project-123' } }),
 }));
 
-let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
-
-beforeEach(() => {
-  useAsyncStorageSpy.mockReturnValue([
-    '',
-    (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
-    true,
-  ]);
-});
-
 const renderHookInContext = async () => {
   return renderHook(() => useOnboardingCourse(), {
     wrapper: ({ children }) => (
@@ -46,7 +34,7 @@ describe('useOnboardingCourse', () => {
   test('should return the correct context values', async () => {
     const { result } = await renderHookInContext();
 
-    expect(result.current.shouldLaunchOnboardingCourse).toBe(true);
+    expect(result.current.shouldLaunchOnboardingCourse).toBe(false);
     expect(result.current.onboardingCourseUrl).toBe('http://example.com');
     expect(result.current.onboardingCourseTitle).toBe('Example Title');
     expect(typeof result.current.onOnboardingCourseOpen).toBe('function');

@@ -5,12 +5,11 @@ import { useMe } from './useMe';
 import { useUser } from './useUser';
 import {
   ActiveProjectContextProvider,
+  SELECTED_PROJECT_ID_KEY,
   useActiveProject,
 } from './useActiveProject';
-import * as useAsyncStorage from './useAsyncStorage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
+import { _store } from './useStoredValue';
 
 jest.mock('./useSubjectProjects', () => ({
   useSubjectProjects: jest.fn(),
@@ -25,7 +24,6 @@ jest.mock('./useUser', () => ({
 const useSubjectProjectsMock = useSubjectProjects as jest.Mock;
 const useMeMock = useMe as jest.Mock;
 const useUserMock = useUser as jest.Mock;
-let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 
 const mockSubjectProjects = [
   {
@@ -73,11 +71,7 @@ beforeEach(() => {
     data: { id: 'mockUser' },
   });
 
-  useAsyncStorageSpy.mockReturnValue([
-    '',
-    (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
-    true,
-  ]);
+  _store.clearAll();
 });
 
 test('without provider, methods fail', async () => {
@@ -176,23 +170,17 @@ test('setActiveProjectId ignores invalid projectId', async () => {
 });
 
 test('uses projectId from async storage', async () => {
-  useAsyncStorageSpy.mockRestore();
+  _store.set(SELECTED_PROJECT_ID_KEY, mockSubjectProjects[0].id);
 
-  AsyncStorageMock.getItem = jest
-    .fn()
-    .mockResolvedValueOnce(mockSubjectProjects[0].id);
   const { result, rerender } = await renderHookInContext();
   await waitFor(() => result.current.isLoading === false);
   rerender({});
-  expect(AsyncStorage.getItem).toBeCalledWith('selectedProjectIdKey:mockUser');
   expect(result.current).toMatchObject({
     activeProject: mockSubjectProjects[0],
     activeSubjectId: mockMe[0].subjectId,
   });
 
-  AsyncStorageMock.getItem = jest
-    .fn()
-    .mockResolvedValueOnce(mockSubjectProjects[1].id);
+  _store.set(SELECTED_PROJECT_ID_KEY, mockSubjectProjects[1].id);
   const { result: nextResult, rerender: nextRerender } =
     await renderHookInContext();
   await waitFor(() => nextResult.current.isLoading === false);
@@ -201,29 +189,30 @@ test('uses projectId from async storage', async () => {
     activeProject: mockSubjectProjects[1],
     activeSubjectId: mockMe[1].subjectId,
   });
-
-  useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 });
 
 test('initial render writes selected projectId to async storage', async () => {
   await renderHookInContext();
-  expect(AsyncStorageMock.setItem).toBeCalledWith(
-    'selectedProjectIdKey',
-    mockSubjectProjects[0].id,
-  );
+  await waitFor(() => {
+    expect(_store.getString(SELECTED_PROJECT_ID_KEY)).toStrictEqual(
+      mockSubjectProjects[0].id,
+    );
+  });
 });
 
 test('setActiveProjectId writes selected projectId to async storage', async () => {
   const { result } = await renderHookInContext();
-  expect(AsyncStorageMock.setItem).toBeCalledWith(
-    'selectedProjectIdKey',
-    mockSubjectProjects[0].id,
-  );
+  await waitFor(() => {
+    expect(_store.getString(SELECTED_PROJECT_ID_KEY)).toStrictEqual(
+      mockSubjectProjects[0].id,
+    );
+  });
   await act(async () => {
     result.current.setActiveProjectId(mockSubjectProjects[1].id);
   });
-  expect(AsyncStorageMock.setItem).toBeCalledWith(
-    'selectedProjectIdKey',
-    mockSubjectProjects[1].id,
-  );
+  await waitFor(() => {
+    expect(_store.getString(SELECTED_PROJECT_ID_KEY)).toStrictEqual(
+      mockSubjectProjects[1].id,
+    );
+  });
 });
