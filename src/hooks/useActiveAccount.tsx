@@ -54,11 +54,14 @@ export const ActiveAccountContextProvider = ({
   );
   const cache = useRestCache();
 
-  const selectedAccount =
-    accountsWithProduct?.find(
-      // Prefer the prop override first. Otherwise, use the stored preference.
-      (a) => a.id === (accountIdToSelect || preferredId),
-    ) ?? accountsWithProduct.at(0);
+  const selectedAccount = accountsWithProduct.length
+    ? accountsWithProduct?.find(
+        // Prefer the prop override first. Otherwise, use the stored preference.
+        (a) => a.id === (accountIdToSelect || preferredId),
+      ) ??
+      // Otherwise, use the first account in the list.
+      accountsWithProduct[0]
+    : undefined;
 
   // Whenever the user's account changes, use the new account as
   // the preferred account.
