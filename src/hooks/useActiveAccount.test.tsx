@@ -146,7 +146,6 @@ test('indicates expired trial', async () => {
   await waitFor(() => {
     expect(result.current).toMatchObject({
       account: expiredTrialAccount,
-      trialExpired: true,
     });
   });
 });

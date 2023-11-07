@@ -18,7 +18,6 @@ export type ActiveAccountProps = {
   account?: Account;
   accountsWithProduct?: Account[];
   accountHeaders?: Record<string, string>;
-  trialExpired?: boolean;
 };
 
 export type ActiveAccountContextProps = ActiveAccountProps & {
@@ -42,11 +41,6 @@ const filterNonLRAccounts = (accounts?: Account[]) =>
 const getValidAccount = (validAccounts?: Account[], accountId?: string) => {
   return validAccounts?.find((a) => a.id === accountId);
 };
-
-const getTrialExpired = (account: Account) =>
-  account.type === 'FREE'
-    ? !account.trialActive || new Date(account.trialEndDate) < new Date()
-    : undefined;
 
 export const ActiveAccountContextProvider = ({
   children,
@@ -100,7 +94,6 @@ export const ActiveAccountContextProvider = ({
       accountHeaders: {
         'LifeOmic-Account': selectedAccount.id,
       },
-      trialExpired: getTrialExpired(selectedAccount),
     };
   }, [
     accountsWithProduct,
