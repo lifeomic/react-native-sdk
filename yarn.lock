@@ -9703,6 +9703,11 @@ react-native-markdown-display@^6.1.6:
     prop-types "^15.7.2"
     react-native-fit-image "^1.5.5"
 
+react-native-mmkv@2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.5.1.tgz#29fc462077fab16a5e1b79570fbf8acaac9d87b4"
+  integrity sha512-5eQu25z3H6zf6w0NkJoTuFEFrbOu6luZxZ6+rK1W+XwY/rjPSFZFQPVtMaz3im90RbILFXXM/KrFGZrpaJJRoQ==
+
 react-native-notifications@^4.3.3:
   version "4.3.3"
   resolved "https://registry.yarnpkg.com/react-native-notifications/-/react-native-notifications-4.3.3.tgz#5be05cb144127f4db518079dd202415af497dfcb"
