@@ -5,10 +5,14 @@ import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 import { ComposeMessageScreen } from './ComposeMessageScreen';
 import { useUser } from '../hooks/useUser';
 import { useNavigation } from '@react-navigation/native';
+import { useAppConfig } from '../hooks/useAppConfig';
 
 jest.mock('../hooks/useMessagingProfiles');
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
+}));
+jest.mock('../hooks/useAppConfig', () => ({
+  useAppConfig: jest.fn(),
 }));
 
 jest.mock('../hooks/Circles/usePrivatePosts', () => ({
@@ -32,6 +36,7 @@ jest.mock('@react-navigation/native', () => ({
 
 const useProfilesForTileMock = useProfilesForTile as jest.Mock;
 const useUserMock = useUser as jest.Mock;
+const useAppConfigMock = useAppConfig as jest.Mock;
 
 const baseURL = 'https://some-domain/unit-test';
 
@@ -45,11 +50,23 @@ beforeEach(() => {
     profile: { displayName: `User ${i}` },
   }));
   useProfilesForTileMock.mockReturnValue({
-    others: otherProfiles,
+    data: otherProfiles,
   });
   useUserMock.mockReturnValue({
     data: {
       id: 'me',
+    },
+  });
+  useAppConfigMock.mockReturnValue({
+    data: {
+      homeTab: {
+        messageTiles: [
+          {
+            id: 'mockTileId',
+            providerUserIds: ['user-1', 'user-2'],
+          },
+        ],
+      },
     },
   });
 });
@@ -219,4 +236,64 @@ test('compose button enabled when user selected and message entered', async () =
   await waitFor(() => {
     expect(replaceMock).toHaveBeenCalledTimes(1);
   });
+});
+
+test('cannot select more than one non-provider', async () => {
+  const { getByTestId, queryAllByTestId } = render(
+    <GraphQLClientContextProvider baseURL={baseURL}>
+      <ComposeMessageScreen
+        navigation={useNavigation() as any}
+        routeMapIn={routeMap}
+        route={
+          {
+            params: {
+              tileId: 'mockTileId',
+            },
+          } as any
+        }
+      />
+    </GraphQLClientContextProvider>,
+  );
+
+  expect(queryAllByTestId('chip').length).toBe(0);
+  const searchBar = await getByTestId('search-bar');
+  fireEvent.changeText(searchBar, 'User 3');
+  const item = await getByTestId('user-list-item');
+  fireEvent.press(item);
+  expect(queryAllByTestId('chip').length).toBe(1);
+
+  fireEvent.changeText(searchBar, 'User 4');
+  const item2 = await getByTestId('user-list-item');
+  fireEvent.press(item2);
+  expect(queryAllByTestId('chip').length).toBe(1);
+});
+
+test('can select more than one provider', async () => {
+  const { getByTestId, queryAllByTestId } = render(
+    <GraphQLClientContextProvider baseURL={baseURL}>
+      <ComposeMessageScreen
+        routeMapIn={routeMap}
+        navigation={useNavigation() as any}
+        route={
+          {
+            params: {
+              tileId: 'mockTileId',
+            },
+          } as any
+        }
+      />
+    </GraphQLClientContextProvider>,
+  );
+
+  expect(queryAllByTestId('chip').length).toBe(0);
+  const searchBar = await getByTestId('search-bar');
+  fireEvent.changeText(searchBar, 'User 1');
+  const item = await getByTestId('user-list-item');
+  fireEvent.press(item);
+  expect(queryAllByTestId('chip').length).toBe(1);
+
+  fireEvent.changeText(searchBar, 'User 2');
+  const item2 = await getByTestId('user-list-item');
+  fireEvent.press(item2);
+  expect(queryAllByTestId('chip').length).toBe(2);
 });

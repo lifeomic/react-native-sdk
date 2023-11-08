@@ -79,8 +79,7 @@ beforeEach(() => {
     },
   });
   useProfilesForTileMock.mockReturnValue({
-    others: [mockYouProfile],
-    all: [mockMeProfile, mockYouProfile],
+    data: [mockMeProfile, mockYouProfile],
   });
 });
 

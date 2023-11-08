@@ -32,6 +32,7 @@ import {
   ScreenParamTypes as BaseScreenParamTypes,
   toRouteMap,
 } from './utils/stack-helpers';
+import compact from 'lodash/compact';
 
 export type MessageTileParams = {
   tileId: string;
@@ -55,8 +56,10 @@ export function MessageScreen<ParamList extends ParamListBase>({
 }: ScreenParamTypes<ParamList>['ComponentProps']) {
   const { tileId } = route.params;
   const routeMap = toRouteMap(routeMapIn);
-  const { all, others } = useProfilesForTile(tileId);
+  const { data: profiles } = useProfilesForTile(tileId);
   const { data: userData } = useUser();
+  const all = compact(profiles);
+  const others = all.filter((profile) => profile.id !== userData?.id);
 
   const { Edit2 } = useIcons();
   const { data, fetchNextPage, hasNextPage, isLoading } =
@@ -151,7 +154,12 @@ export function MessageScreen<ParamList extends ParamListBase>({
   );
 
   const conversations = data?.pages?.flatMap((page) =>
-    page.conversations.edges.flatMap((edge) => edge.node),
+    page.conversations.edges
+      .flatMap((edge) => edge.node)
+      // Conversations that contain users not part of this message tile should be hidden
+      .filter((node) =>
+        node.userIds.every((id) => profiles?.find((p) => p.id === id)),
+      ),
   );
 
   return (
@@ -164,7 +172,9 @@ export function MessageScreen<ParamList extends ParamListBase>({
           <TouchableOpacity
             key={`message-${node.conversationId}`}
             onPress={handlePostTapped(
-              all.filter((profile) => node.userIds.includes(profile.id)),
+              (profiles ?? []).filter((profile) =>
+                node.userIds.includes(profile.id),
+              ),
               node.conversationId,
             )}
             activeOpacity={0.6}
