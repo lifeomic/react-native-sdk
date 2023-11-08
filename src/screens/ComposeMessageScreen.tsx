@@ -1,16 +1,26 @@
-import React, { useLayoutEffect, useState } from 'react';
-import { Searchbar, Chip, Text, Divider } from 'react-native-paper';
-import { ComposeMessageSearch } from '../components/Messaging/ComposeMessageSearch';
+import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import {
+  Chip,
+  Text,
+  Divider,
+  IconButton,
+  Modal,
+  Provider,
+  Portal,
+} from 'react-native-paper';
 import { View } from 'react-native';
 import { t } from 'i18next';
 import { createStyles, useIcons } from '../components';
 import { ComposeInputBar } from '../components/Messaging/ComposeInputBar';
 import { useStyles } from '../components/BrandConfigProvider/styles/StylesProvider';
 import { tID } from '../components/TrackTile/common/testID';
-import { User } from '../types';
 import { ScreenParamTypes as BaseScreenParamTypes } from './utils/stack-helpers';
 import { DirectMessageParams } from './DirectMessagesScreen';
 import { ParamListBase } from '@react-navigation/native';
+import { useAppConfig } from '../hooks/useAppConfig';
+import { UserProfile } from '../hooks/useMessagingProfiles';
+import { SearchRecipientsModal } from '../components/Messaging/SearchRecipientsModal';
+import { useUser } from '../hooks/useUser';
 
 export type ComposeMessageParams = {
   tileId: string;
@@ -29,9 +39,36 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
   routeMapIn,
 }: ComposeScreenParamTypes<ParamList>['ComponentProps']) {
   const { tileId } = route.params;
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const onChangeSearch = (query: string) => setSearchQuery(query);
-  const [selectedProfiles, setSelectedProfiles] = useState<User[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const { PlusCircle } = useIcons();
+  const [searchUserIds, setSearchUserIds] = useState<string[]>([]);
+  const [selectedProfiles, setSelectedProfiles] = useState<UserProfile[]>([]);
+  const { data: appConfig } = useAppConfig();
+  const { data: userData } = useUser();
+  const messageTile = appConfig?.homeTab?.messageTiles?.find(
+    (tile) => tile.id === tileId,
+  );
+  const { patientUserIds, providerUserIds, isProvider } = useMemo(() => {
+    const providers = messageTile?.providerUserIds ?? [];
+    const patients =
+      messageTile?.userIds?.filter((id) => !providers?.includes(id)) ?? [];
+    return {
+      patientUserIds: patients,
+      providerUserIds: providers,
+      isProvider: !!(userData?.id && providers.includes(userData?.id)),
+    };
+  }, [messageTile?.providerUserIds, messageTile?.userIds, userData?.id]);
+
+  const selectedProviders = selectedProfiles.filter((profile) =>
+    providerUserIds.includes(profile.id),
+  );
+  const selectedPatients = selectedProfiles.filter(
+    (profile) => !providerUserIds.includes(profile.id),
+  );
+  const addSelectedProfile = (profile: UserProfile) => {
+    setSelectedProfiles((currentProfiles) => [...currentProfiles, profile]);
+  };
+
   const { styles } = useStyles(defaultStyles);
 
   useLayoutEffect(() => {
@@ -40,43 +77,105 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
     });
   }, [navigation]);
 
-  const { Search, ClearList } = useIcons();
+  useEffect(() => {
+    if (
+      selectedPatients.length > 0 &&
+      searchUserIds === patientUserIds &&
+      isOpen
+    ) {
+      setIsOpen(false);
+    }
+  }, [isOpen, patientUserIds, searchUserIds, selectedPatients]);
 
   return (
-    <View style={styles.rootContainer}>
-      <Divider style={styles.dividerView} />
-      <View style={styles.toUsersView}>
-        <Text>{t('recipients-list', { defaultValue: 'To: ' })} </Text>
-        {selectedProfiles.map((userProfile) => (
-          <Chip
-            key={userProfile.id}
-            style={styles.chipView}
-            testID={tID('chip')}
-          >
-            {userProfile.profile.displayName}
-          </Chip>
-        ))}
+    <Provider>
+      <Portal>
+        <Modal visible={isOpen} onDismiss={() => setIsOpen(false)}>
+          <SearchRecipientsModal
+            userIds={searchUserIds}
+            onProfileSelected={addSelectedProfile}
+            selectedProfiles={selectedProfiles}
+          />
+        </Modal>
+      </Portal>
+      <View style={styles.rootContainer}>
+        <Divider style={styles.dividerView} />
+        <View style={styles.descriptionView}>
+          <Text style={styles.toProvidersLabel}>
+            {t('provider-list-label', {
+              defaultValue: 'Select Providers',
+            })}
+          </Text>
+        </View>
+        <View style={styles.toUsersView}>
+          <IconButton
+            icon={PlusCircle}
+            onPress={() => {
+              setSearchUserIds(providerUserIds);
+              setIsOpen(true);
+            }}
+            iconColor={styles.plusIcon?.color}
+            testID={tID('add-provider-button')}
+          />
+          {selectedProviders?.map((userProfile) => (
+            <Chip
+              key={userProfile.id}
+              style={styles.chipView}
+              testID={tID('chip')}
+              textStyle={styles.chipText}
+            >
+              {userProfile.profile.displayName}
+            </Chip>
+          ))}
+        </View>
+        <Divider style={styles.dividerView} />
+        {isProvider && (
+          <>
+            <View style={styles.descriptionView}>
+              <Text style={styles.toProvidersLabel}>
+                {t('patient-list-label', {
+                  defaultValue: 'Select Patient',
+                })}
+              </Text>
+            </View>
+            <View style={styles.toUsersView}>
+              <IconButton
+                icon={PlusCircle}
+                testID={tID('add-patient-button')}
+                disabled={
+                  selectedPatients.length > 0 &&
+                  searchUserIds === patientUserIds
+                }
+                onPress={() => {
+                  setSearchUserIds(patientUserIds);
+                  setIsOpen(true);
+                }}
+                iconColor={styles.plusIcon?.color}
+              />
+              {selectedPatients?.map((userProfile) => (
+                <Chip
+                  key={userProfile.id}
+                  style={styles.chipView}
+                  testID={tID('chip')}
+                  textStyle={styles.chipText}
+                >
+                  {userProfile.profile.displayName}
+                </Chip>
+              ))}
+            </View>
+          </>
+        )}
+        <Divider style={styles.dividerView} />
+        <View style={styles.descriptionView}>
+          <Text style={styles.toProvidersLabel}>
+            {t('compose-message-label', {
+              defaultValue: 'Write Your Message',
+            })}
+          </Text>
+        </View>
+        <ComposeInputBar users={selectedProfiles} routeMapIn={routeMapIn} />
       </View>
-      <Divider style={styles.dividerView} />
-      <Searchbar
-        style={styles.searchbarView}
-        onChangeText={onChangeSearch}
-        value={searchQuery}
-        placeholder={t('search-patient', 'Search by Name')}
-        icon={Search}
-        clearIcon={ClearList}
-        testID={tID('search-bar')}
-      />
-      <ComposeMessageSearch
-        searchTerm={searchQuery}
-        tileId={tileId}
-        onUserClicked={(userProfile) =>
-          setSelectedProfiles((currentVal) => [...currentVal, userProfile])
-        }
-        selectedUserIds={selectedProfiles.map((userProfile) => userProfile.id)}
-      />
-      <ComposeInputBar users={selectedProfiles} routeMapIn={routeMapIn} />
-    </View>
+    </Provider>
   );
 }
 
@@ -88,18 +187,36 @@ export const createComposeMessageScreen = <ParamList extends ParamListBase>(
   );
 };
 
-const defaultStyles = createStyles('ComposeMessageScreen', () => ({
+const defaultStyles = createStyles('ComposeMessageScreen', (theme) => ({
   rootContainer: { flex: 1 },
+  descriptionView: {
+    marginLeft: theme.spacing.medium,
+  },
   toUsersView: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    paddingBottom: 16,
-    paddingLeft: 16,
+    margin: 16,
+    backgroundColor: theme.colors.elevation.level3,
   },
-  chipView: { marginRight: 4, marginBottom: 4 },
+  chipView: {
+    marginRight: 4,
+    marginBottom: 4,
+    backgroundColor: theme.colors.primary,
+  },
+  chipText: {
+    color: theme.colors.surface,
+  },
   dividerView: { marginBottom: 16 },
-  searchbarView: { marginBottom: 16, marginHorizontal: 16 },
+  toPatientsLabel: {
+    fontWeight: '700',
+  },
+  toProvidersLabel: {
+    fontWeight: '700',
+  },
+  plusIcon: {
+    color: theme.colors.secondary,
+  },
 }));
 
 declare module '@styles' {

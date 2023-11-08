@@ -11,12 +11,12 @@ import { Composer } from 'react-native-gifted-chat/lib/Composer';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { useUser } from '../../hooks/useUser';
 import { uniq } from 'lodash';
-import { User } from '../../types';
 import type { ComposeScreenParamTypes } from '../../screens/ComposeMessageScreen';
 import { toRouteMap } from '../../screens/utils/stack-helpers';
+import { UserProfile } from '../../hooks/useMessagingProfiles';
 
 type Props<ParamList extends ParamListBase> = {
-  users: User[];
+  users: UserProfile[];
   routeMapIn: ComposeScreenParamTypes<ParamList>['RouteMap'];
 };
 
@@ -95,6 +95,7 @@ export function ComposeInputBar<ParamList extends ParamListBase>({
             onTextChanged={(text) => setMessageText(text)}
             text={messageText}
             textInputStyle={styles.inputText}
+            composerHeight={300}
             placeholderTextColor={styles.placeholderText?.color?.toString()}
           />
         );
@@ -111,8 +112,7 @@ const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
     },
   } as ActivityIndicatorViewStyles,
   inputToolbarContainer: {
-    position: 'absolute',
-    bottom: 10,
+    bottom: 20,
     marginHorizontal: 16,
   },
   inputText: {},
