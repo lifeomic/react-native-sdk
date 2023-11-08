@@ -147,7 +147,7 @@
   },
   "dependencies": {
     "@lifeomic/chromicons-native": "^2.16.1",
-    "@lifeomic/one-query": "^2.3.1",
+    "@lifeomic/one-query": "^3.1.0",
     "@types/fhir": "^0.0.36",
     "color": "^4.2.3",
     "d3-scale": "3.2.1",
