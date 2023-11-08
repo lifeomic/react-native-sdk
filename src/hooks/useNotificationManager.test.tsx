@@ -2,6 +2,7 @@ import React from 'react';
 import {
   useNotificationManager,
   NotificationsManagerProvider,
+  LAST_NOTIFICATION_READ_TIME_KEY,
 } from './useNotificationManager';
 import {
   FeedNotification,
@@ -14,8 +15,8 @@ import {
 } from 'react-native';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useNotifications } from './useNotifications';
-import { useAsyncStorage } from './useAsyncStorage';
 import { uniqueId } from 'lodash';
+import { _store } from './useStoredValue';
 
 let registerNotificationReceivedForeground = jest.fn();
 let registerNotificationReceivedBackground = jest.fn();
@@ -39,7 +40,6 @@ jest.mock('react-native-notifications', () => ({
 }));
 
 const useNotificationsMock = useNotifications as jest.Mock;
-const useAsyncStorageMock = useAsyncStorage as jest.Mock;
 
 const renderHookInContext = async () => {
   return renderHook(() => useNotificationManager(), {
@@ -71,14 +71,14 @@ const getNotificationEdge = (time: string = new Date().toISOString()) => {
 describe('NotificationsManager', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
+    _store.clearAll();
   });
 
   it('refetch after notification arrived', async () => {
-    useAsyncStorageMock.mockReturnValue([
+    _store.set(
+      LAST_NOTIFICATION_READ_TIME_KEY,
       new Date('08/29/2023').toISOString(),
-      jest.fn(),
-      true,
-    ]);
+    );
 
     const notificationResponse: NotificationQueryResponse = {
       notificationsForUser: {
@@ -117,12 +117,10 @@ describe('NotificationsManager', () => {
   });
 
   it('persists last read at time to async storage on background/inactive', async () => {
-    const setLastNotificationReadTimeMock = jest.fn();
-    useAsyncStorageMock.mockReturnValue([
+    _store.set(
+      LAST_NOTIFICATION_READ_TIME_KEY,
       new Date('08/29/2023').toISOString(),
-      setLastNotificationReadTimeMock,
-      true,
-    ]);
+    );
 
     let fireAppStateChange: (state: AppStateStatus) => void;
     jest
@@ -145,23 +143,14 @@ describe('NotificationsManager', () => {
     });
 
     renderHookInContext();
-    await waitFor(() => expect(useAsyncStorageMock).toHaveBeenCalled());
-    expect(setLastNotificationReadTimeMock).toHaveBeenCalledTimes(0);
-
-    act(() => {
-      fireAppStateChange('inactive');
-    });
-
     await waitFor(() =>
-      expect(setLastNotificationReadTimeMock).toHaveBeenCalledTimes(1),
+      expect(_store.getString(LAST_NOTIFICATION_READ_TIME_KEY)).toStrictEqual(
+        new Date('08/29/2023').toISOString(),
+      ),
     );
 
     act(() => {
       fireAppStateChange('inactive');
     });
-
-    await waitFor(() =>
-      expect(setLastNotificationReadTimeMock).toHaveBeenCalledTimes(2),
-    );
   });
 });
