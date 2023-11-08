@@ -9,6 +9,8 @@ import {
   LogoHeader,
   BrandConfigProvider,
   getDefaultTabs,
+  useTheme,
+  Theme,
 } from '../../../../src';
 import { withKnobs, color, boolean, number } from '@storybook/addon-knobs';
 import Color from 'color';
@@ -76,70 +78,80 @@ storiesOf('Example App', module)
     const defaultTabs = getDefaultTabs();
 
     return (
-      <DeveloperConfigProvider
-        developerConfig={{
-          componentProps: {
-            TabNavigator: {
-              useTabBar: true,
-            },
-            TabBar: {
-              showLabels: boolean('Show Labels', false),
-              tabs: [
-                {
-                  ...defaultTabs[0],
-                  icon: Home,
-                  svgProps: () => ({
-                    width: 42,
-                    height: 42,
-                    strokeWidth: 3,
-                  }),
-                  svgPropsActive: (theme) => ({
-                    stroke: theme.colors.onPrimaryContainer,
-                  }),
-                  svgPropsInactive: (theme) => ({
-                    stroke: theme.colors.onSurfaceDisabled,
-                  }),
+      <ThemeProvider>
+        {(theme) => (
+          <DeveloperConfigProvider
+            developerConfig={{
+              componentProps: {
+                TabNavigator: {
+                  useTabBar: true,
                 },
-                {
-                  ...defaultTabs[1],
-                  icon: Bell,
-                  svgProps: () => ({
-                    width: 42,
-                    height: 42,
-                    strokeWidth: 3,
-                  }),
-                  svgPropsActive: (theme) => ({
-                    stroke: theme.colors.onSecondaryContainer,
-                  }),
-                  svgPropsInactive: (theme) => ({
-                    stroke: theme.colors.onSurfaceDisabled,
-                  }),
+                TabBar: {
+                  showLabels: boolean('Show Labels', false),
+                  tabs: [
+                    {
+                      ...defaultTabs[0],
+                      icon: Home,
+                      styles: {
+                        svgProps: {
+                          width: 42,
+                          height: 42,
+                          strokeWidth: 3,
+                        },
+                        svgPropsActive: {
+                          stroke: theme.colors.onPrimaryContainer,
+                        },
+                        svgPropsInactive: {
+                          stroke: theme.colors.onSurfaceDisabled,
+                        },
+                      },
+                    },
+                    {
+                      ...defaultTabs[1],
+                      icon: Bell,
+                      styles: {
+                        svgProps: {
+                          width: 42,
+                          height: 42,
+                          strokeWidth: 3,
+                        },
+                        svgPropsActive: {
+                          stroke: theme.colors.onSecondaryContainer,
+                        },
+                        svgPropsInactive: {
+                          stroke: theme.colors.onSurfaceDisabled,
+                        },
+                      },
+                    },
+                    {
+                      ...defaultTabs[2],
+                      icon: Settings,
+                      styles: {
+                        svgProps: {
+                          width: 42,
+                          height: 42,
+                          strokeWidth: 3,
+                        },
+                        svgPropsActive: {
+                          stroke: theme.colors.onTertiaryContainer,
+                        },
+                        svgPropsInactive: {
+                          stroke: theme.colors.onSurfaceDisabled,
+                        },
+                      },
+                    },
+                  ],
                 },
-                {
-                  ...defaultTabs[2],
-                  icon: Settings,
-                  svgProps: () => ({
-                    width: 42,
-                    height: 42,
-                    strokeWidth: 3,
-                  }),
-                  svgPropsActive: (theme) => ({
-                    stroke: theme.colors.onTertiaryContainer,
-                  }),
-                  svgPropsInactive: (theme) => ({
-                    stroke: theme.colors.onSurfaceDisabled,
-                  }),
-                },
-              ],
-            },
-          },
-          apiBaseURL: baseURL,
-        }}
-      >
-        <RootProviders authConfig={authConfig}>
-          <RootStack />
-        </RootProviders>
-      </DeveloperConfigProvider>
+              },
+              apiBaseURL: baseURL,
+            }}
+          >
+            <RootProviders authConfig={authConfig}>
+              <RootStack />
+            </RootProviders>
+          </DeveloperConfigProvider>
+        )}
+      </ThemeProvider>
     );
   })
   .add('Customized AppNavHeader with LogoHeader', () => {
@@ -338,3 +350,13 @@ storiesOf('Example App', module)
       </RootProviders>
     </DeveloperConfigProvider>
   ));
+
+function ThemeProvider({
+  children,
+}: {
+  children: (theme: Theme) => React.ReactElement;
+}) {
+  const theme = useTheme();
+
+  return children(theme);
+}
