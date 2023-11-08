@@ -28,6 +28,21 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
     };
   };
 
+  'GET /v1/user': {
+    Request: {};
+    Response: User;
+  };
+
+  'GET /v1/features': {
+    Request: {
+      project?: string;
+      tag?: string;
+    };
+    Response: {
+      [feature: string]: boolean;
+    };
+  };
+
   'PATCH /v1/invitations/:inviteId': {
     Request: { status: 'ACCEPTED' };
     Response: ProjectInvite;
@@ -41,6 +56,15 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
   'GET /v1/account/users/:userId': {
     Request: {};
     Response: User;
+  };
+
+  'POST /v1/client-tokens': {
+    Request: {
+      targetClientId: string;
+    };
+    Response: {
+      code: string;
+    };
   };
 
   'GET /v1/survey/projects/:projectId/responses': {

@@ -9,7 +9,6 @@ import {
   LogoHeader,
   BrandConfigProvider,
   getDefaultTabs,
-  AppConfigContext,
   useTheme,
   Theme,
 } from '../../../../src';
@@ -20,6 +19,7 @@ import { Home, Bell, Settings, Menu } from '@lifeomic/chromicons-native';
 import { HelloWorldScreen } from '../../../src/screens/HelloWorldScreen';
 import { IconButton } from 'react-native-paper';
 import { navigationRef } from '../../../../src/common/ThemedNavigationContainer';
+import { DataOverrideProvider } from 'example/storybook/helpers/DataProviderDecorator';
 
 storiesOf('Example App', module)
   .addDecorator(withKnobs)
@@ -270,9 +270,9 @@ storiesOf('Example App', module)
       }}
     >
       <RootProviders authConfig={authConfig}>
-        <AppConfigContext.Provider
-          value={{
-            data: {
+        <DataOverrideProvider
+          builder={(mock) => {
+            mock.onGet().reply(200, {
               homeTab: {
                 tiles: ['myDataTile'],
                 myDataSettings: {
@@ -342,14 +342,11 @@ storiesOf('Example App', module)
                   },
                 ],
               },
-            },
-            isLoading: false,
-            isFetched: true,
-            error: undefined,
+            });
           }}
         >
           <RootStack />
-        </AppConfigContext.Provider>
+        </DataOverrideProvider>
       </RootProviders>
     </DeveloperConfigProvider>
   ));

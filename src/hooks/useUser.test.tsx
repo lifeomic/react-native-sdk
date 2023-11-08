@@ -1,11 +1,9 @@
 import React from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { useAuth } from './useAuth';
-import { useUser } from './useUser';
+import { useUpdateUser, useUser } from './useUser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios';
-import { useHttpClient } from './useHttpClient';
+import { createRestAPIMock } from '../test-utils/rest-api-mocking';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,41 +16,37 @@ const queryClient = new QueryClient({
 jest.mock('./useAuth', () => ({
   useAuth: jest.fn(),
 }));
-jest.mock('./useHttpClient', () => ({
-  useHttpClient: jest.fn(),
-}));
 
 const useAuthMock = useAuth as jest.Mock;
-const useHttpClientMock = useHttpClient as jest.Mock;
 
-const renderHookInContext = async () => {
-  return renderHook(() => useUser(), {
+// This second generic is required to tell the parser that it isn't
+// JSX syntax
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const renderInContext = async <T, _ = never>(hook: () => T) => {
+  return renderHook(() => hook(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     ),
   });
 };
 
-const axiosInstance = axios.create();
-const axiosMock = new MockAdapter(axiosInstance);
+const api = createRestAPIMock();
 
 beforeEach(() => {
   useAuthMock.mockReturnValue({
     authResult: { accessToken: 'accessToken' },
   });
-  useHttpClientMock.mockReturnValue({ httpClient: axiosInstance });
 });
 
 test('fetches and parses user', async () => {
   const userProfile = { id: 'id', profile: {} };
-  axiosMock.onGet('/v1/user').reply(200, userProfile);
-  const { result } = await renderHookInContext();
+  api.mock('GET /v1/user', { status: 200, data: userProfile });
+  const { result } = await renderInContext(() => useUser());
   await waitFor(() => result.current.isSuccess);
-  expect(axiosMock.history.get[0].url).toBe('/v1/user');
   await waitFor(() => expect(result.current.data).toEqual(userProfile));
 });
 
-test('can update a user', async () => {
+test('useUpdateUser can update a user', async () => {
   const userProfile = { id: 'id', profile: { email: 'email' } };
   const updatedProfile = {
     ...userProfile,
@@ -61,15 +55,25 @@ test('can update a user', async () => {
       familyName: 'test',
     },
   };
-  axiosMock.onGet('/v1/user').reply(200, userProfile);
-  axiosMock.onPatch('/v1/user').reply(200, updatedProfile);
+  api.mock('GET /v1/user', { status: 200, data: userProfile });
+  api.mock('PATCH /v1/user', { status: 200, data: updatedProfile });
 
-  const { result } = await renderHookInContext();
+  const { result } = await renderInContext(() => {
+    const query = useUser();
+    const mutation = useUpdateUser();
 
-  await waitFor(() => result.current.isSuccess);
+    return {
+      data: query.data,
+      mutate: mutation.mutate,
+    };
+  });
 
-  await act(async () => {
-    await result.current.updateUser({
+  await waitFor(() => {
+    expect(result.current.data).toStrictEqual(userProfile);
+  });
+
+  act(() => {
+    result.current.mutate({
       profile: {
         familyName: 'test',
       },

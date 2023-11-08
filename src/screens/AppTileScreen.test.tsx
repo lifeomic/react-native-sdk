@@ -3,6 +3,7 @@ import { render } from '@testing-library/react-native';
 import { useNavigation } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 import { AppTileScreen } from './AppTileScreen';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 jest.mock('react-native-webview', () => ({
   WebView: jest.fn().mockReturnValue(<></>),
@@ -36,7 +37,11 @@ beforeEach(() => {
 });
 
 test('renders webview with source prop', () => {
-  render(<AppTileScreen navigation={navigation} route={route} />);
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <AppTileScreen navigation={navigation} route={route} />
+    </QueryClientProvider>,
+  );
   expect(webviewMock.mock.calls[0][0]).toMatchObject({
     source: { uri: exampleAppTile.source.url },
   });
