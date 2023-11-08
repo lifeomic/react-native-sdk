@@ -7,7 +7,6 @@ import React, {
   useMemo,
 } from 'react';
 import { Account } from '../types/rest-types';
-import { QueryObserverResult } from '@tanstack/react-query';
 import { useAsyncStorage } from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
@@ -19,19 +18,16 @@ export type ActiveAccountProps = {
   account?: Account;
   accountsWithProduct?: Account[];
   accountHeaders?: Record<string, string>;
-  trialExpired?: boolean;
 };
 
 export type ActiveAccountContextProps = ActiveAccountProps & {
-  refetch: () => Promise<QueryObserverResult<Account[], unknown>>;
-  setActiveAccountId: (accountId: string) => Promise<void>;
+  setActiveAccountId: (accountId: string) => void;
   isLoading: boolean;
   isFetched: boolean;
   error?: any;
 };
 
 export const ActiveAccountContext = createContext({
-  refetch: () => Promise.reject(),
   setActiveAccountId: () => Promise.reject(),
   isLoading: true,
   isFetched: false,
@@ -45,11 +41,6 @@ const filterNonLRAccounts = (accounts?: Account[]) =>
 const getValidAccount = (validAccounts?: Account[], accountId?: string) => {
   return validAccounts?.find((a) => a.id === accountId);
 };
-
-const getTrialExpired = (account: Account) =>
-  account.type === 'FREE'
-    ? !account.trialActive || new Date(account.trialEndDate) < new Date()
-    : undefined;
 
 export const ActiveAccountContextProvider = ({
   children,
@@ -73,7 +64,6 @@ export const ActiveAccountContextProvider = ({
   const { data: userData } = useUser();
   const userId = userData?.id;
   const [selectedId, setSelectedId] = useState(accountIdToSelect);
-  const [previousUserId, setPreviousUserId] = useState(userId);
   const [storedAccountIdResult, setStoredAccountId, isStorageLoaded] =
     useAsyncStorage(
       `${selectedAccountIdKey}:${userId}`,
@@ -104,7 +94,6 @@ export const ActiveAccountContextProvider = ({
       accountHeaders: {
         'LifeOmic-Account': selectedAccount.id,
       },
-      trialExpired: getTrialExpired(selectedAccount),
     };
   }, [
     accountsWithProduct,
@@ -120,43 +109,28 @@ export const ActiveAccountContextProvider = ({
     }
   }, [activeAccount?.account?.id, setStoredAccountId]);
 
-  // Clear selected account when
-  // we've detected that the userId has changed
-  useEffect(() => {
-    if (userId !== previousUserId) {
-      accountsResult.refetch();
-      setPreviousUserId(userId);
-    }
-  }, [previousUserId, userId, accountsResult]);
-
   const setActiveAccountId = useCallback(async (accountId: string) => {
     setSelectedId(accountId);
   }, []);
 
-  const refetch = useCallback(async () => {
-    return accountsResult.refetch();
-  }, [accountsResult]);
-
   // Handle invite accept
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
-      cache.invalidateQueries({ 'GET /v1/accounts': 'all' });
-      await refetch();
-      await setActiveAccountId(acceptedInvite.account);
+      cache.resetQueries({ 'GET /v1/accounts': 'all' });
+      setSelectedId(acceptedInvite.account);
       inviteNotifier.emit('inviteAccountSettled');
     };
     inviteNotifier.addListener('inviteAccepted', listener);
     return () => {
       inviteNotifier.removeListener('inviteAccepted', listener);
     };
-  }, [refetch, setActiveAccountId, cache]);
+  }, [cache]);
 
   return (
     <ActiveAccountContext.Provider
       value={{
         ...activeAccount,
         accountsWithProduct,
-        refetch,
         setActiveAccountId,
         isLoading: accountsResult.isLoading || !isStorageLoaded,
         isFetched: accountsResult.isFetched && isStorageLoaded,

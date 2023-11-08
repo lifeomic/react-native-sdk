@@ -1,42 +1,29 @@
 import { useQuery } from '@tanstack/react-query';
 import { useActiveAccount } from './useActiveAccount';
-import { useAuth } from './useAuth';
 import { useHttpClient } from './useHttpClient';
 
-export type ExchangeResult = {
-  code: string;
-};
-
 export function useExchangeToken(appTileId: string, clientId?: string) {
-  const { httpClient } = useHttpClient();
-  const { authResult } = useAuth();
+  const { apiClient } = useHttpClient();
   const { accountHeaders } = useActiveAccount();
 
   return useQuery(
     [
       'client-tokens',
       {
-        accessToken: authResult?.accessToken,
         targetClientId: clientId,
         appTileId,
       },
     ],
-    () => {
-      return httpClient
-        .post<ExchangeResult>(
-          '/v1/client-tokens',
-          {
-            accessToken: authResult?.accessToken,
-            targetClientId: clientId,
-          },
-          {
-            headers: { ...accountHeaders },
-          },
+    () =>
+      apiClient
+        .request(
+          'POST /v1/client-tokens',
+          { targetClientId: clientId! },
+          { headers: accountHeaders },
         )
-        .then((res) => res.data);
-    },
+        .then((res) => res.data),
     {
-      enabled: !!accountHeaders && !!authResult?.accessToken && !!clientId,
+      enabled: !!accountHeaders && !!clientId,
     },
   );
 }

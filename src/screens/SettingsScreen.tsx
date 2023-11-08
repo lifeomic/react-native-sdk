@@ -5,7 +5,6 @@ import DeviceInfo from 'react-native-device-info';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { OAuthLogoutButton } from '../components/OAuthLogoutButton';
 import { tID } from '../common/testID';
-import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useStyles } from '../hooks/useStyles';
 import { Theme, createStyles } from '../components/BrandConfigProvider';
 import { Text, Divider } from 'react-native-paper';
@@ -24,7 +23,6 @@ const fullVersion = versionNumber + ' (' + buildNumber + ')';
 export const SettingsScreen = ({
   navigation,
 }: SettingsStackScreenProps<'Settings'>) => {
-  const { account } = useActiveAccount();
   const { styles } = useStyles(defaultStyles);
   const { useWearableIntegrationsQuery } = useWearables();
   const { data: wearablesData } = useWearableIntegrationsQuery();
@@ -41,11 +39,6 @@ export const SettingsScreen = ({
             title: t('settings-profile-row-title', 'Profile'),
             action: () => navigation.navigate('Settings/Profile'),
           },
-          {
-            id: 'account',
-            title: account?.name || t('settings-account-selection', 'Accounts'),
-            action: () => navigation.navigate('Settings/AccountSelection'),
-          },
           !!wearablesData?.items?.length && {
             id: 'sync-data',
             title: t('settings-sync-data', 'Sync Data'),
@@ -58,7 +51,7 @@ export const SettingsScreen = ({
           },
         ]),
       ),
-    [modifySettingScreenMenuItems, wearablesData, support, account, navigation],
+    [modifySettingScreenMenuItems, wearablesData, support, navigation],
   );
 
   return (
