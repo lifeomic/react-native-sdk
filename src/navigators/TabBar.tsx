@@ -94,6 +94,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
               // @ts-ignore
               icon={<Icon {...svgProps} {...altSvgProps} />}
               label={options.tabBarLabel}
+              tabStyles={tabConfig.styles}
               accessibilityLabel={t(
                 '{routeName}, tab, {tabCount} of {totalTabCount}',
                 {
