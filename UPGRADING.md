@@ -16,6 +16,10 @@ versions of this library.
 
 ### 3.x -> 4.x
 
+- `react-native-mmkv` is now a peer dependency.
+
+### 4.x -> 5.x
+
 - `TabBar` default styles have changed. Run the app post upgrade if you use the
   `TabBar` to examine updated styles and apply overrides as needed (note,
   default tabs do not use `TabBar`).
