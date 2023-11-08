@@ -183,10 +183,10 @@ export function MessageScreen<ParamList extends ParamListBase>({
       >
         {conversations?.map((node) => (
           <Swipeable
+            key={`message-${node.conversationId}`}
             renderRightActions={() => rightSwipeActions(node.conversationId)}
           >
             <TouchableOpacity
-              key={`message-${node.conversationId}`}
               onPress={handlePostTapped(
                 all.filter((profile) => node.userIds.includes(profile.id)),
                 node.conversationId,
