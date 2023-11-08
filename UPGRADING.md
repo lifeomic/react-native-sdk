@@ -13,3 +13,7 @@ versions of this library.
 
 - The `useAcceptInviteMutation` hooks was removed. Use
   `useRestMutation('PATCH /v1/invitations/:inviteId', ...)` instead.
+
+### 3.x -> 4.x
+
+- `react-native-mmkv` is now a peer dependency.
