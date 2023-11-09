@@ -416,6 +416,7 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
       alignItems: 'flex-end',
     },
     deleteButtonLabel: {
+      color: theme.colors.onError,
       paddingHorizontal: 10,
       fontWeight: '500',
       paddingVertical: 20,
