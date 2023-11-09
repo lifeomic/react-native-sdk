@@ -21,7 +21,10 @@ import {
   differenceInDays,
   differenceInSeconds,
 } from 'date-fns';
-import { useInfiniteConversations } from '../hooks/useConversations';
+import {
+  useInfiniteConversations,
+  useLeaveConversation,
+} from '../hooks/useConversations';
 import { useUser } from '../hooks';
 import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 import { User } from '../types';
@@ -33,6 +36,8 @@ import {
   toRouteMap,
 } from './utils/stack-helpers';
 import compact from 'lodash/compact';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export type MessageTileParams = {
   tileId: string;
@@ -60,6 +65,7 @@ export function MessageScreen<ParamList extends ParamListBase>({
   const { data: userData } = useUser();
   const all = compact(profiles);
   const others = all.filter((profile) => profile.id !== userData?.id);
+  const { mutateAsync } = useLeaveConversation();
 
   const { Edit2 } = useIcons();
   const { data, fetchNextPage, hasNextPage, isLoading } =
@@ -94,6 +100,13 @@ export function MessageScreen<ParamList extends ParamListBase>({
       });
     },
     [navigation, routeMap.DirectMessageScreen],
+  );
+
+  const handleDeleteTapped = useCallback(
+    (conversationId: string) => () => {
+      mutateAsync({ conversationId });
+    },
+    [mutateAsync],
   );
 
   const renderLeft = useCallback(
@@ -140,6 +153,19 @@ export function MessageScreen<ParamList extends ParamListBase>({
     [styles.listItemTimeText],
   );
 
+  const rightSwipeActions = (conversationId: string) => {
+    return (
+      <TouchableOpacity
+        style={styles.deleteButtonView}
+        onPress={handleDeleteTapped(conversationId)}
+      >
+        <Text style={styles.deleteButtonLabel}>
+          {t('delete-button', 'Delete')}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
   const conversations = data?.pages?.flatMap((page) =>
     page.conversations.edges
       .flatMap((edge) => edge.node)
@@ -150,54 +176,58 @@ export function MessageScreen<ParamList extends ParamListBase>({
   );
 
   return (
-    <View style={styles.rootView}>
+    <GestureHandlerRootView style={styles.rootView}>
       <ScrollView
         scrollEventThrottle={400}
         contentContainerStyle={styles.scrollView}
       >
         {conversations?.map((node) => (
-          <TouchableOpacity
+          <Swipeable
             key={`message-${node.conversationId}`}
-            onPress={handlePostTapped(
-              (profiles ?? []).filter((profile) =>
-                node.userIds.includes(profile.id),
-              ),
-              node.conversationId,
-            )}
-            activeOpacity={0.6}
+            renderRightActions={() => rightSwipeActions(node.conversationId)}
           >
-            <List.Item
-              testID={tID('user-list-item')}
-              titleStyle={styles.listItemText}
-              style={styles.listItemView}
-              descriptionNumberOfLines={1}
-              descriptionStyle={
-                node
-                  ? [styles.listItemSubtitleText, styles.newMessageText]
-                  : styles.listItemSubtitleText
-              }
-              left={() =>
-                renderLeft(
-                  others.filter((profile) => node.userIds.includes(profile.id)),
-                  node.hasUnread,
-                )
-              }
-              title={others
-                .filter((profile) => node.userIds.includes(profile.id))
-                .map((profile) => profile.profile.displayName)
-                .join(', ')}
-              description={
-                node.latestMessageUserId === userData?.id
-                  ? t('message-preview-prefixed', {
-                      defaultValue: 'You: {{messageText}}',
-                      messageText: node.latestMessageText,
-                    })
-                  : node.latestMessageText
-              }
-              right={() => renderRight(node.latestMessageTime)}
-            />
-            <Divider style={styles.listItemDividerView} />
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handlePostTapped(
+                all.filter((profile) => node.userIds.includes(profile.id)),
+                node.conversationId,
+              )}
+              activeOpacity={0.6}
+            >
+              <List.Item
+                testID={tID('user-list-item')}
+                titleStyle={styles.listItemText}
+                style={styles.listItemView}
+                descriptionNumberOfLines={1}
+                descriptionStyle={
+                  node
+                    ? [styles.listItemSubtitleText, styles.newMessageText]
+                    : styles.listItemSubtitleText
+                }
+                left={() =>
+                  renderLeft(
+                    others.filter((profile) =>
+                      node.userIds.includes(profile.id),
+                    ),
+                    node.hasUnread,
+                  )
+                }
+                title={others
+                  .filter((profile) => node.userIds.includes(profile.id))
+                  .map((profile) => profile.profile.displayName)
+                  .join(', ')}
+                description={
+                  node.latestMessageUserId === userData?.id
+                    ? t('message-preview-prefixed', {
+                        defaultValue: 'You: {{messageText}}',
+                        messageText: node.latestMessageText,
+                      })
+                    : node.latestMessageText
+                }
+                right={() => renderRight(node.latestMessageTime)}
+              />
+              <Divider style={styles.listItemDividerView} />
+            </TouchableOpacity>
+          </Swipeable>
         ))}
         {isLoading ? (
           <ActivityIndicatorView />
@@ -214,7 +244,7 @@ export function MessageScreen<ParamList extends ParamListBase>({
           )
         )}
       </ScrollView>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
@@ -380,6 +410,17 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     initialsTextSize: {
       getFontSize: (index: number, count: number) =>
         getDiameter(index, count) / 2,
+    },
+    deleteButtonView: {
+      backgroundColor: theme.colors.error,
+      justifyContent: 'center',
+      alignItems: 'flex-end',
+    },
+    deleteButtonLabel: {
+      color: theme.colors.onError,
+      paddingHorizontal: 10,
+      fontWeight: '500',
+      paddingVertical: 20,
     },
   };
 });

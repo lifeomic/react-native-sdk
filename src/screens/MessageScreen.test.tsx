@@ -2,7 +2,10 @@ import React from 'react';
 import { fireEvent, render, within } from '@testing-library/react-native';
 import { MessageScreen } from './MessageScreen';
 import { useUser } from '../hooks/useUser';
-import { useInfiniteConversations } from '../hooks/useConversations';
+import {
+  useInfiniteConversations,
+  useLeaveConversation,
+} from '../hooks/useConversations';
 import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 
 jest.mock('../hooks/useUser', () => ({
@@ -27,6 +30,7 @@ const mockYouProfile = {
 const useInfiniteConversationsMock = useInfiniteConversations as jest.Mock;
 const useUserMock = useUser as jest.Mock;
 const useProfilesForTileMock = useProfilesForTile as jest.Mock;
+const useLeaveConversationMock = useLeaveConversation as jest.Mock;
 
 const navigateMock = {
   navigate: jest.fn(),
@@ -80,6 +84,9 @@ beforeEach(() => {
   });
   useProfilesForTileMock.mockReturnValue({
     data: [mockMeProfile, mockYouProfile],
+  });
+  useLeaveConversationMock.mockRejectedValue({
+    mutateAsync: jest.fn(),
   });
 });
 

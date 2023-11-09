@@ -2,10 +2,12 @@ import {
   InfiniteData,
   useInfiniteQuery,
   useMutation,
+  useQueryClient,
 } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useActiveAccount } from './useActiveAccount';
+import cloneDeep from 'lodash/cloneDeep';
 
 const conversationsQueryDocument = gql`
   query Conversations($after: String, $first: Int) {
@@ -28,12 +30,11 @@ const conversationsQueryDocument = gql`
   }
 `;
 
-// TODO: Implement feature
-// const LEAVE_CONVERSATION = gql`
-//   mutation ($input: LeaveConversationInput!) {
-//     leaveConversation(input: $input)
-//   }
-// `;
+const leaveConversationMutationDocument = gql`
+  mutation ($input: LeaveConversationInput!) {
+    leaveConversation(input: $input)
+  }
+`;
 
 const markAsReadMutationDocument = gql`
   mutation ($input: MarkAsReadInput!) {
@@ -53,6 +54,10 @@ type Conversation = {
 };
 
 type MarkAsReadInput = {
+  conversationId: string;
+};
+
+type LeaveConversationInput = {
   conversationId: string;
 };
 
@@ -124,4 +129,50 @@ export function useMarkAsRead() {
   };
 
   return useMutation({ mutationFn: markAsReadMutation });
+}
+
+export function useLeaveConversation() {
+  const { graphQLClient } = useGraphQLClient();
+  const { accountHeaders } = useActiveAccount();
+  const queryClient = useQueryClient();
+
+  const leaveConversationMutation = async (input: LeaveConversationInput) => {
+    const variables = {
+      input,
+    };
+
+    return graphQLClient.request(
+      leaveConversationMutationDocument,
+      variables,
+      accountHeaders,
+    );
+  };
+
+  return useMutation({
+    mutationFn: leaveConversationMutation,
+    onMutate: async ({ conversationId }) => {
+      await queryClient.cancelQueries({ queryKey: ['conversations'] });
+      const previousPosts = queryClient.getQueryData(['conversations']);
+
+      queryClient.setQueryData<InfiniteConversationsData>(
+        ['conversations'],
+        (currentData) => {
+          if (!currentData) {
+            return currentData!;
+          }
+          const newData = cloneDeep(currentData);
+          for (const page of newData?.pages) {
+            const edges = page.conversations.edges.filter(
+              ({ node }) => node.conversationId !== conversationId,
+            );
+            page.conversations.edges = edges;
+          }
+
+          return newData!;
+        },
+      );
+
+      return { previousPosts };
+    },
+  });
 }
