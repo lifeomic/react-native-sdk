@@ -103,8 +103,8 @@ export function MessageScreen<ParamList extends ParamListBase>({
           <View
             style={{
               flexDirection: 'row',
-              justifyContent: 'center',
-              marginLeft: 8,
+              flex: 1,
+              maxWidth: 75,
             }}
           >
             {
@@ -232,9 +232,7 @@ type MultiGiftedAvatarProps = {
 
 const MultiGiftedAvatar = ({ profiles }: MultiGiftedAvatarProps) => {
   const { styles } = useStyles(defaultStyles);
-  const diameter = profiles.length < 2 ? 40 : 20;
-  const fontSize = diameter / 2;
-  const adjustments = profiles.length === 2 ? -8 : 0;
+  const userCount = profiles.length;
   const paddedProfiles =
     profiles.length === 2
       ? [
@@ -243,31 +241,54 @@ const MultiGiftedAvatar = ({ profiles }: MultiGiftedAvatarProps) => {
           { id: '#pad2', profile: {} },
           profiles[1],
         ]
-      : profiles.splice(0, 4); // Max of 4 icons
+      : profiles.splice(0, 3); // Max of 3 icons
 
   return (
-    <View style={styles.multiGiftedAvatarView}>
+    <View
+      style={{
+        ...styles.multiGiftedAvatarView,
+        backgroundColor:
+          styles.multiGiftedAvatarColor?.getBackgroundColor?.(userCount),
+      }}
+    >
       {paddedProfiles.map((profile, i) => (
-        <View key={profile.id} style={styles.profileView}>
-          <GiftedAvatar
-            user={{
-              name: profile.profile.displayName,
-              avatar: profile.profile.picture,
-              _id: profile.id,
-            }}
-            avatarStyle={{
-              height: diameter,
-              width: diameter,
-              borderRadius: 64,
-              marginLeft: i === 3 ? adjustments : 0,
-            }}
-            textStyle={{ fontWeight: '500', fontSize: fontSize }}
-          />
-        </View>
+        <GiftedAvatar
+          user={{
+            name: profile.profile.displayName,
+            avatar: profile.profile.picture,
+            _id: profile.id,
+          }}
+          avatarStyle={{
+            ...styles.avatarStyle,
+            height: styles.avatarStyle?.getHeight?.(i, userCount),
+            width: styles.avatarStyle?.getWidth?.(i, userCount),
+            marginHorizontal:
+              styles.avatarStyle?.getMarginHorizontal?.(userCount),
+            marginVertical: styles.avatarStyle?.getMarginVertical?.(i),
+            marginTop: styles.avatarStyle?.getMarginTop?.(i),
+            marginLeft: styles.avatarStyle?.getMarginLeft?.(i, userCount),
+          }}
+          textStyle={{
+            ...styles.initialsText,
+            fontSize: styles.initialsTextSize?.getFontSize?.(i, userCount),
+          }}
+        />
       ))}
     </View>
   );
 };
+
+const getDiameter = (avatarIndex: number, userCount: number) => {
+  if (userCount === 3) {
+    return [20, 15, 17][avatarIndex];
+  }
+  if (userCount === 1) {
+    return 40;
+  }
+
+  return 20;
+};
+
 const defaultStyles = createStyles('MessageScreen', (theme) => {
   return {
     rootView: {
@@ -277,7 +298,7 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     },
     scrollView: { minHeight: '100%' },
     listItemView: {
-      backgroundColor: theme.colors.elevation.level3,
+      backgroundColor: theme.colors.elevation.level0,
     },
     listItemText: {
       ...theme.fonts.titleMedium,
@@ -293,6 +314,7 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
       alignSelf: 'center',
       paddingRight: 0,
       marginRight: 10,
+      marginLeft: 4,
     },
     badgeColor: {
       enabled: {
@@ -317,12 +339,47 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     },
     multiGiftedAvatarView: {
       flex: 1,
+      flexDirection: 'column',
       flexWrap: 'wrap',
-      maxHeight: 40,
-      marginRight: 50,
+      alignContent: 'center',
+      maxHeight: 50,
+      maxWidth: 50,
+      borderRadius: 64,
+      justifyContent: 'center',
+    },
+    multiGiftedAvatarColor: {
+      getBackgroundColor: (userCount: number) =>
+        userCount > 1 ? theme.colors.primaryContainer : undefined,
     },
     profileView: {
-      height: 20,
+      flex: 1,
+    },
+    avatarStyle: {
+      borderRadius: 64,
+      getHeight: getDiameter,
+      getWidth: getDiameter,
+      getMarginHorizontal: (userCount: number) => {
+        if (userCount === 2) {
+          return -2;
+        }
+        if (userCount === 3) {
+          return 0;
+        }
+      },
+      getMarginLeft: (index: number, userCount: number) => {
+        if (userCount === 3 && index === 1) {
+          return 6;
+        }
+      },
+      getMarginVertical: (index: number) => (index === 0 ? 3 : 0),
+      getMarginTop: (index: number) => (index === 0 || index === 2 ? 2 : 0),
+    },
+    initialsText: {
+      fontWeight: '500',
+    },
+    initialsTextSize: {
+      getFontSize: (index: number, count: number) =>
+        getDiameter(index, count) / 2,
     },
   };
 });
