@@ -64,9 +64,21 @@ export type FhirAPIEndpoints = {
     Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
 } & {
+  // DELETE /<resource>/:id
+  [Name in keyof FhirResourcesByName as `DELETE /v1/fhir/dstu3/${Name}/:id`]: {
+    Request: {};
+    Response: {};
+  };
+} & {
   // GET /<resource>
   [Name in keyof FhirResourcesByName as `GET /v1/fhir/dstu3/${Name}`]: {
     Request: SearchParamsForResourceType<Name>;
     Response: Bundle<WithIdDefined<FhirResourcesByName[Name]>>;
+  };
+} & {
+  // "Custom" endpoints
+  'GET /v1/fhir/dstu3/$me': {
+    Request: {};
+    Response: Bundle<WithIdDefined<Patient>>;
   };
 };

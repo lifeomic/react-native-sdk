@@ -27,7 +27,7 @@ type DeleteParams = {
 };
 
 export function useFhirClient() {
-  const { httpClient } = useHttpClient();
+  const { apiClient, httpClient } = useHttpClient();
   const { accountHeaders, account } = useActiveAccount();
   const { activeProject, activeSubjectId } = useActiveProject();
 
@@ -177,14 +177,10 @@ export function useFhirClient() {
 
         const resource = toResource(resourceToUpsert);
 
-        return httpClient
-          .post<ResourceType>(
-            `/v1/fhir/dstu3/${resource.resourceType}`,
-            resource,
-            {
-              headers: accountHeaders,
-            },
-          )
+        return apiClient
+          .request(`POST /v1/fhir/dstu3/${resource.resourceType}`, resource, {
+            headers: accountHeaders,
+          })
           .then((res) => res.data);
       },
     });
@@ -232,10 +228,12 @@ export function useFhirClient() {
           throw new Error('Cannot delete resource in current state');
         }
 
-        return httpClient
-          .delete(`/v1/fhir/dstu3/${params.resourceType}/${params.id}`, {
-            headers: accountHeaders,
-          })
+        return apiClient
+          .request(
+            `DELETE /v1/fhir/dstu3/${params.resourceType}/:id`,
+            { id: params.id },
+            { headers: accountHeaders },
+          )
           .then((res) => res.data);
       },
     });
