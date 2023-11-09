@@ -1,52 +1,51 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ScrollView, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
-import { Divider, List } from 'react-native-paper';
+import { Divider, List, Searchbar } from 'react-native-paper';
 import { tID } from '../TrackTile/common/testID';
-import { useAppConfig, useStyles, useUser } from '../../hooks';
-import { createStyles } from '../../components/BrandConfigProvider';
-import { useProfilesForTile } from '../../hooks/useMessagingProfiles';
-import { User as UserDetails } from '../../types';
+import { useStyles, useUser } from '../../hooks';
+import { createStyles, useIcons } from '../BrandConfigProvider';
+import {
+  UserProfile,
+  useMessagingProfiles,
+} from '../../hooks/useMessagingProfiles';
 import compact from 'lodash/compact';
+import { t } from 'i18next';
 
 type User = GiftedUser & { id: string; name: string; isUnread: boolean };
 
 type Props = {
-  tileId: string;
-  onUserClicked: (userProfile: UserDetails) => void;
-  searchTerm: string;
-  selectedUserIds: string[];
+  userIds: string[];
+  onProfileSelected: (profile: UserProfile) => void;
+  selectedProfiles: UserProfile[];
 };
 
-export const ComposeMessageSearch = ({
-  tileId,
-  onUserClicked,
-  searchTerm,
-  selectedUserIds,
+export const SearchRecipientsModal = ({
+  userIds,
+  onProfileSelected,
+  selectedProfiles,
 }: Props) => {
-  const { styles } = useStyles(defaultStyles);
-  const { data: appConfig } = useAppConfig();
-  const messageTiles = appConfig?.homeTab?.messageTiles;
-  const providerUserIds = messageTiles?.find(
-    (messageTile) => messageTile.id === tileId,
-  )?.providerUserIds;
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const onChangeSearch = (query: string) => setSearchQuery(query);
+  const selectedUserIds = selectedProfiles.map((p) => p.id);
 
-  const { data: profiles } = useProfilesForTile(tileId);
+  const { Search, ClearList } = useIcons();
+  const { styles } = useStyles(defaultStyles);
+  const { data: profiles } = useMessagingProfiles(userIds);
   const { data: userData } = useUser();
-  const selectedPatients = selectedUserIds.filter(
-    (id) => !providerUserIds?.includes(id),
-  );
   const others = compact(profiles).filter(
     (profile) => profile.id !== userData?.id,
   );
-  const filteredList = searchTerm
-    ? others?.filter(
+
+  const filteredOthers = others.filter((p) => !selectedUserIds.includes(p.id));
+
+  const filteredList = searchQuery
+    ? filteredOthers?.filter(
         (profile) =>
-          (!selectedUserIds.includes(profile.id) &&
-            profile?.profile.displayName?.includes(searchTerm)) ||
-          profile.id.includes(searchTerm),
+          profile?.profile.displayName?.includes(searchQuery) ||
+          profile.id.includes(searchQuery),
       )
-    : [];
+    : filteredOthers;
 
   const renderLeft = useCallback(
     (props: { style: ViewStyle }, user: User) => (
@@ -61,6 +60,15 @@ export const ComposeMessageSearch = ({
 
   return (
     <View style={styles.rootView}>
+      <Searchbar
+        style={styles.searchbarView}
+        onChangeText={onChangeSearch}
+        value={searchQuery}
+        placeholder={t('search-patient', 'Search by Name')}
+        icon={Search}
+        clearIcon={ClearList}
+        testID={tID('search-bar')}
+      />
       <ScrollView
         scrollEventThrottle={400}
         contentContainerStyle={styles.scrollView}
@@ -68,26 +76,14 @@ export const ComposeMessageSearch = ({
         {filteredList?.map((user) => (
           <TouchableOpacity
             key={`message-${user.id}`}
-            onPress={() => onUserClicked(user)}
+            onPress={() => {
+              onProfileSelected(user);
+            }}
             activeOpacity={0.6}
-            // Group messaging can only be between one patient and multiple providers
-            disabled={
-              selectedPatients.length > 0 && !providerUserIds?.includes(user.id)
-            }
           >
             <List.Item
               testID={tID('user-list-item')}
               titleStyle={styles.listItemText}
-              style={
-                selectedPatients.length > 0 &&
-                !providerUserIds?.includes(user.id)
-                  ? styles.listItem?.disabledStyle
-                  : styles.listItem?.enabledStyle
-              }
-              disabled={
-                selectedPatients.length > 0 &&
-                !providerUserIds?.includes(user.id)
-              }
               left={(props) =>
                 renderLeft(props, {
                   _id: user.id,
@@ -107,11 +103,10 @@ export const ComposeMessageSearch = ({
   );
 };
 
-const defaultStyles = createStyles('ComposeMessageSearch', (theme) => {
+const defaultStyles = createStyles('SearchRecipientsModal', (theme) => {
   return {
     rootView: {
       backgroundColor: theme.colors.elevation.level1,
-      flexShrink: 1,
     },
     scrollView: { minHeight: '80%' },
     listItem: {
@@ -131,6 +126,7 @@ const defaultStyles = createStyles('ComposeMessageSearch', (theme) => {
       justifyContent: 'center',
       marginLeft: 8,
     },
+    searchbarView: { margin: 16 },
   };
 });
 

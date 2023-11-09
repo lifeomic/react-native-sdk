@@ -5,18 +5,19 @@ import React from 'react';
 import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 import { createStyles } from '../../components/BrandConfigProvider';
 import { ActivityIndicatorViewStyles } from '../ActivityIndicatorView';
-import { IconButton } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 import { InputToolbar } from 'react-native-gifted-chat/lib/InputToolbar';
 import { Composer } from 'react-native-gifted-chat/lib/Composer';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { useUser } from '../../hooks/useUser';
 import { uniq } from 'lodash';
-import { User } from '../../types';
 import type { ComposeScreenParamTypes } from '../../screens/ComposeMessageScreen';
 import { toRouteMap } from '../../screens/utils/stack-helpers';
+import { UserProfile } from '../../hooks/useMessagingProfiles';
+import { View } from 'react-native';
 
 type Props<ParamList extends ParamListBase> = {
-  users: User[];
+  users: UserProfile[];
   routeMapIn: ComposeScreenParamTypes<ParamList>['RouteMap'];
 };
 
@@ -67,12 +68,14 @@ export function ComposeInputBar<ParamList extends ParamListBase>({
       : styles.sendIconColor?.enabled;
 
     return (
-      <IconButton
+      <FAB
         icon={SendIcon}
-        iconColor={iconColor}
+        size="small"
+        color={iconColor}
         onPress={onSend}
         disabled={disabled}
         testID={'send-button'}
+        style={styles.sendButton}
       />
     );
   }, [
@@ -80,27 +83,32 @@ export function ComposeInputBar<ParamList extends ParamListBase>({
     data?.id,
     messageText.length,
     onSend,
+    styles.sendButton,
     styles.sendIconColor?.disabled,
     styles.sendIconColor?.enabled,
     users.length,
   ]);
 
   return (
-    <InputToolbar
-      containerStyle={styles.inputToolbarContainer}
-      renderComposer={(props) => {
-        return (
-          <Composer
-            {...props}
-            onTextChanged={(text) => setMessageText(text)}
-            text={messageText}
-            textInputStyle={styles.inputText}
-            placeholderTextColor={styles.placeholderText?.color?.toString()}
-          />
-        );
-      }}
-      renderSend={() => <SendButton />}
-    />
+    <View style={{ flex: 1 }}>
+      <InputToolbar
+        containerStyle={styles.inputToolbarContainer}
+        primaryStyle={styles.inputToolbarPrimaryView}
+        renderComposer={(props) => {
+          return (
+            <Composer
+              {...props}
+              onTextChanged={(text) => setMessageText(text)}
+              text={messageText}
+              textInputStyle={styles.inputText}
+              multiline={true}
+              placeholderTextColor={styles.placeholderText?.color?.toString()}
+            />
+          );
+        }}
+      />
+      <SendButton />
+    </View>
   );
 }
 
@@ -111,9 +119,14 @@ const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
     },
   } as ActivityIndicatorViewStyles,
   inputToolbarContainer: {
-    position: 'absolute',
-    bottom: 10,
     marginHorizontal: 16,
+    flex: 1,
+    position: 'relative',
+  },
+  inputToolbarPrimaryView: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
   },
   inputText: {},
   sendIconColor: {
@@ -122,6 +135,12 @@ const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
   },
   placeholderText: {
     color: theme.colors.surfaceDisabled,
+  },
+  sendButton: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
   },
 }));
 

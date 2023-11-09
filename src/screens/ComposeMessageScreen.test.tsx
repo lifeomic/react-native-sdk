@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
-import { useProfilesForTile } from '../hooks/useMessagingProfiles';
+import { useMessagingProfiles } from '../hooks/useMessagingProfiles';
 import { ComposeMessageScreen } from './ComposeMessageScreen';
 import { useUser } from '../hooks/useUser';
 import { useNavigation } from '@react-navigation/native';
@@ -34,7 +34,7 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
-const useProfilesForTileMock = useProfilesForTile as jest.Mock;
+const useMessagingProfilesMock = useMessagingProfiles as jest.Mock;
 const useUserMock = useUser as jest.Mock;
 const useAppConfigMock = useAppConfig as jest.Mock;
 
@@ -49,7 +49,7 @@ beforeEach(() => {
     id: `user-${i}`,
     profile: { displayName: `User ${i}` },
   }));
-  useProfilesForTileMock.mockReturnValue({
+  useMessagingProfilesMock.mockReturnValue({
     data: otherProfiles,
   });
   useUserMock.mockReturnValue({
@@ -63,7 +63,7 @@ beforeEach(() => {
         messageTiles: [
           {
             id: 'mockTileId',
-            providerUserIds: ['user-1', 'user-2'],
+            providerUserIds: ['me', 'user-1', 'user-2'],
           },
         ],
       },
@@ -106,6 +106,9 @@ test('all items returned when matched', () => {
       />
     </GraphQLClientContextProvider>,
   );
+
+  const addButton = getByTestId('add-provider-button');
+  fireEvent.press(addButton);
   const searchBar = getByTestId('search-bar');
   fireEvent.changeText(searchBar, 'User');
   expect(queryAllByTestId('user-list-item').length).toBe(10);
@@ -127,6 +130,9 @@ test('single item returned when searched', () => {
       />
     </GraphQLClientContextProvider>,
   );
+
+  const addButton = getByTestId('add-provider-button');
+  fireEvent.press(addButton);
   const searchBar = getByTestId('search-bar');
   fireEvent.changeText(searchBar, 'User 1');
   expect(queryAllByTestId('user-list-item').length).toBe(1);
@@ -148,6 +154,9 @@ test('item added as chip but removed from search when selected', () => {
       />
     </GraphQLClientContextProvider>,
   );
+
+  const addButton = getByTestId('add-provider-button');
+  fireEvent.press(addButton);
   const searchBar = getByTestId('search-bar');
   fireEvent.changeText(searchBar, 'User 1');
 
@@ -219,6 +228,9 @@ test('compose button enabled when user selected and message entered', async () =
       />
     </GraphQLClientContextProvider>,
   );
+  const addButton = await getByTestId('add-provider-button');
+  fireEvent.press(addButton);
+
   const searchBar = await getByTestId('search-bar');
   fireEvent.changeText(searchBar, 'User 1');
 
@@ -256,8 +268,12 @@ test('cannot select more than one non-provider', async () => {
   );
 
   expect(queryAllByTestId('chip').length).toBe(0);
+
+  const addButton = await getByTestId('add-patient-button');
+  fireEvent.press(addButton);
   const searchBar = await getByTestId('search-bar');
   fireEvent.changeText(searchBar, 'User 3');
+
   const item = await getByTestId('user-list-item');
   fireEvent.press(item);
   expect(queryAllByTestId('chip').length).toBe(1);
@@ -286,6 +302,9 @@ test('can select more than one provider', async () => {
   );
 
   expect(queryAllByTestId('chip').length).toBe(0);
+
+  const addButton = await getByTestId('add-provider-button');
+  fireEvent.press(addButton);
   const searchBar = await getByTestId('search-bar');
   fireEvent.changeText(searchBar, 'User 1');
   const item = await getByTestId('user-list-item');
