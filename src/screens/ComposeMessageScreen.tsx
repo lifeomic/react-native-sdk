@@ -128,9 +128,9 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
             </Chip>
           ))}
         </View>
-        <Divider style={styles.dividerView} />
         {isProvider && (
           <>
+            <Divider style={styles.dividerView} />
             <View style={styles.descriptionView}>
               <Text style={styles.toProvidersLabel}>
                 {t('patient-list-label', {
@@ -166,13 +166,11 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
           </>
         )}
         <Divider style={styles.dividerView} />
-        <View style={styles.descriptionView}>
-          <Text style={styles.toProvidersLabel}>
-            {t('compose-message-label', {
-              defaultValue: 'Write Your Message',
-            })}
-          </Text>
-        </View>
+        <Text style={styles.writeMessageLabel}>
+          {t('compose-message-label', {
+            defaultValue: 'Write Your Message',
+          })}
+        </Text>
         <ComposeInputBar users={selectedProfiles} routeMapIn={routeMapIn} />
       </View>
     </Provider>
@@ -196,23 +194,28 @@ const defaultStyles = createStyles('ComposeMessageScreen', (theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    margin: 16,
+    margin: theme.spacing.medium,
     backgroundColor: theme.colors.elevation.level3,
   },
   chipView: {
-    marginRight: 4,
-    marginBottom: 4,
+    marginRight: theme.spacing.tiny,
+    marginBottom: theme.spacing.tiny,
     backgroundColor: theme.colors.primary,
   },
   chipText: {
     color: theme.colors.surface,
   },
-  dividerView: { marginBottom: 16 },
+  dividerView: { marginBottom: theme.spacing.medium },
   toPatientsLabel: {
     fontWeight: '700',
   },
   toProvidersLabel: {
     fontWeight: '700',
+  },
+  writeMessageLabel: {
+    fontWeight: '700',
+    marginLeft: theme.spacing.medium,
+    marginBottom: theme.spacing.medium,
   },
   plusIcon: {
     color: theme.colors.secondary,
