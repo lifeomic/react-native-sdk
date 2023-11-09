@@ -105,6 +105,7 @@ export const DirectMessagesScreen = ({
           fetchNextPage();
         }
       }}
+      renderUsernameOnMessage={otherProfiles.length > 1}
       placeholder={t('message-placeholder', 'Write Your Message')}
       isLoadingEarlier={isFetchingNextPage}
       onSend={(m) => onSend(m)}
