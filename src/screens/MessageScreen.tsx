@@ -123,7 +123,7 @@ export function MessageScreen<ParamList extends ParamListBase>({
             style={{
               flexDirection: 'row',
               flex: 1,
-              maxWidth: 75,
+              maxWidth: 60,
             }}
           >
             {
@@ -316,13 +316,13 @@ const MultiGiftedAvatar = ({ profiles }: MultiGiftedAvatarProps) => {
 
 const getDiameter = (avatarIndex: number, userCount: number) => {
   if (userCount === 3) {
-    return [20, 15, 17][avatarIndex];
+    return [18, 13, 12][avatarIndex];
   }
   if (userCount === 1) {
     return 40;
   }
 
-  return 20;
+  return 17;
 };
 
 const defaultStyles = createStyles('MessageScreen', (theme) => {
@@ -343,13 +343,9 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
       ...theme.fonts.titleSmall,
     },
     listItemDividerView: {},
-    userIconView: {
-      marginLeft: theme.spacing.extraSmall,
-    },
     badgeView: {
       alignSelf: 'center',
-      paddingRight: 0,
-      marginRight: 10,
+      marginRight: 4,
       marginLeft: 4,
     },
     badgeColor: {
@@ -363,12 +359,6 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     loadMoreButton: {},
     loadMoreText: {},
     listItemTimeText: { paddingLeft: 15 },
-    newMessageIconView: {
-      marginRight: -1,
-      borderWidth: 2,
-      borderColor: theme.colors.text,
-      borderRadius: 32,
-    },
     newMessageText: {
       color: theme.colors.text,
       fontWeight: '600',
@@ -378,8 +368,8 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
       flexDirection: 'column',
       flexWrap: 'wrap',
       alignContent: 'center',
-      maxHeight: 50,
-      maxWidth: 50,
+      maxHeight: 40,
+      maxWidth: 40,
       borderRadius: 64,
       justifyContent: 'center',
     },
