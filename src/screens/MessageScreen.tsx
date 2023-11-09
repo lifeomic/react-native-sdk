@@ -410,6 +410,7 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     initialsTextSize: {
       getFontSize: (index: number, count: number) =>
         getDiameter(index, count) / 2,
+    },
     deleteButtonView: {
       backgroundColor: theme.colors.error,
       justifyContent: 'center',
