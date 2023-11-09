@@ -122,13 +122,16 @@ const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
     marginHorizontal: 16,
     flex: 1,
     position: 'relative',
+    alignContent: 'flex-start',
   },
   inputToolbarPrimaryView: {
     flex: 1,
     flexDirection: 'column',
     alignItems: 'flex-start',
   },
-  inputText: {},
+  inputText: {
+    textAlignVertical: 'top',
+  },
   sendIconColor: {
     enabled: theme.colors.primary,
     disabled: theme.colors.primaryContainer,

@@ -95,6 +95,7 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
             userIds={searchUserIds}
             onProfileSelected={addSelectedProfile}
             selectedProfiles={selectedProfiles}
+            hideSelf={() => setIsOpen(false)}
           />
         </Modal>
       </Portal>
@@ -114,6 +115,7 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
               setSearchUserIds(providerUserIds);
               setIsOpen(true);
             }}
+            size={12}
             iconColor={styles.plusIcon?.color}
             testID={tID('add-provider-button')}
           />
@@ -150,6 +152,7 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
                   setSearchUserIds(patientUserIds);
                   setIsOpen(true);
                 }}
+                size={12}
                 iconColor={styles.plusIcon?.color}
               />
               {selectedPatients?.map((userProfile) => (
@@ -198,9 +201,10 @@ const defaultStyles = createStyles('ComposeMessageScreen', (theme) => ({
     backgroundColor: theme.colors.elevation.level3,
   },
   chipView: {
-    marginRight: theme.spacing.tiny,
-    marginBottom: theme.spacing.tiny,
+    marginLeft: theme.spacing.tiny,
+    marginVertical: 2,
     backgroundColor: theme.colors.primary,
+    maxHeight: 30,
   },
   chipText: {
     color: theme.colors.surface,

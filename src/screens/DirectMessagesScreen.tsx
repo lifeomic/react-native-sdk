@@ -125,6 +125,7 @@ export const DirectMessagesScreen = ({
               left: styles.leftText,
               right: styles.rightText,
             }}
+            usernameStyle={styles.signatureText}
           />
         );
       }}
@@ -221,6 +222,7 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   placeholderText: {
     color: theme.colors.surfaceDisabled,
   },
+  signatureText: {},
 }));
 
 declare module '@styles' {
