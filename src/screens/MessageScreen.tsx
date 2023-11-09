@@ -66,6 +66,7 @@ export function MessageScreen<ParamList extends ParamListBase>({
   const all = compact(profiles);
   const others = all.filter((profile) => profile.id !== userData?.id);
   const { mutateAsync } = useLeaveConversation();
+  const { styles } = useStyles(defaultStyles);
 
   const { Edit2 } = useIcons();
   const { data, fetchNextPage, hasNextPage, isLoading } =
@@ -75,12 +76,19 @@ export function MessageScreen<ParamList extends ParamListBase>({
     () => (
       <IconButton
         icon={Edit2}
+        iconColor={styles.createMessageIcon?.color}
         onPress={() =>
           navigation.navigate(routeMap.ComposeMessageScreen, { tileId })
         }
       />
     ),
-    [Edit2, navigation, tileId, routeMap.ComposeMessageScreen],
+    [
+      Edit2,
+      navigation,
+      tileId,
+      routeMap.ComposeMessageScreen,
+      styles.createMessageIcon?.color,
+    ],
   );
 
   useLayoutEffect(() => {
@@ -89,8 +97,6 @@ export function MessageScreen<ParamList extends ParamListBase>({
       headerRight: iconButton,
     });
   }, [iconButton, navigation]);
-
-  const { styles } = useStyles(defaultStyles);
 
   const handlePostTapped = useCallback(
     (tappedUsers: User[], conversationId: string) => () => {
@@ -422,6 +428,7 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
       fontWeight: '500',
       paddingVertical: 20,
     },
+    createMessageIcon: {} as { color: string | undefined },
   };
 });
 
