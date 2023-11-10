@@ -6,6 +6,7 @@ import {
   IMessage,
   InputToolbar,
   Send,
+  Time,
 } from 'react-native-gifted-chat';
 import {
   useInfinitePrivatePosts,
@@ -126,6 +127,19 @@ export const DirectMessagesScreen = ({
               right: styles.rightText,
             }}
             usernameStyle={styles.signatureText}
+            renderTime={(timeProps) => (
+              <Time
+                {...timeProps}
+                timeTextStyle={{
+                  left: styles.leftTimeText,
+                  right: styles.rightTimeText,
+                }}
+                containerStyle={{
+                  left: styles.leftTimeContainer,
+                  right: styles.rightTimeContainer,
+                }}
+              />
+            )}
           />
         );
       }}
@@ -223,6 +237,10 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
     color: theme.colors.surfaceDisabled,
   },
   signatureText: {},
+  leftTimeContainer: {},
+  leftTimeText: {},
+  rightTimeContainer: {},
+  rightTimeText: {},
 }));
 
 declare module '@styles' {
