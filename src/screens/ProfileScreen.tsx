@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text } from 'react-native-paper';
+import { Divider, Text } from 'react-native-paper';
 import { useUser } from '../hooks/useUser';
 import { tID } from '../common/testID';
 import { t } from 'i18next';
@@ -11,6 +11,7 @@ import { useStyles } from '../hooks/useStyles';
 import { useActiveProject, useMe } from '../hooks';
 
 export const FhirProfileView = () => {
+  const { styles } = useStyles(defaultStyles);
   const { isLoading, data } = useMe();
 
   const subject = data?.[0].subject;
@@ -35,7 +36,7 @@ export const FhirProfileView = () => {
   const address = subject.address?.[0];
 
   return (
-    <>
+    <View style={styles.fieldsContainer}>
       <Field
         label={t('fhir-profile-first-name', 'First Name')}
         value={name?.given?.[0]}
@@ -66,7 +67,7 @@ export const FhirProfileView = () => {
         label={t('fhir-profile-email', 'Email Address')}
         value={subject.telecom?.find((t) => t.system === 'email')?.value}
       />
-    </>
+    </View>
   );
 };
 export const ProfileScreen = () => {
@@ -127,12 +128,12 @@ const Field = ({ label, value }: FieldProps) => {
 
   return (
     <View style={styles.fieldView} testID={tID(label)}>
-      <Text variant="labelMedium" style={styles.fieldLabelText}>
-        {label}
-      </Text>
-      <Text variant="bodyLarge" style={styles.fieldValueText}>
-        {value}
-      </Text>
+      <Text style={styles.fieldLabelText}>{label}</Text>
+      <Text style={styles.fieldValueText}>{value}</Text>
+      <Divider
+        style={styles.divider}
+        theme={{ colors: { outlineVariant: '#727983' } }}
+      />
     </View>
   );
 };
@@ -141,15 +142,27 @@ const defaultStyles = createStyles('ProfileScreen', (theme) => ({
   container: {
     marginHorizontal: 24,
   },
+  fieldsContainer: {
+    marginHorizontal: 8,
+    marginVertical: 12,
+  },
   fieldView: {
-    margin: 12,
     backgroundColor: theme.colors.surface,
+    gap: 4,
+    marginHorizontal: 12,
+    marginTop: 12,
+    marginBottom: 4,
   },
   fieldLabelText: {
     color: theme.colors.tertiary,
+    fontSize: 16,
   },
   fieldValueText: {
     color: theme.colors.onBackground,
+    fontSize: 18,
+  },
+  divider: {
+    marginTop: 10,
   },
 }));
 
