@@ -130,10 +130,7 @@ const Field = ({ label, value }: FieldProps) => {
     <View style={styles.fieldView} testID={tID(label)}>
       <Text style={styles.fieldLabelText}>{label}</Text>
       <Text style={styles.fieldValueText}>{value}</Text>
-      <Divider
-        style={styles.divider}
-        theme={{ colors: { outlineVariant: '#727983' } }}
-      />
+      <Divider style={styles.dividerView} />
     </View>
   );
 };
@@ -161,7 +158,8 @@ const defaultStyles = createStyles('ProfileScreen', (theme) => ({
     color: theme.colors.onBackground,
     fontSize: 18,
   },
-  divider: {
+  dividerView: {
+    color: theme.colors.tertiary,
     marginTop: 10,
   },
 }));
