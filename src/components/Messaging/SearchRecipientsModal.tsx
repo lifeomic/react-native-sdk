@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ScrollView, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
-import { Divider, List, Searchbar } from 'react-native-paper';
+import { Button, Divider, List, Searchbar } from 'react-native-paper';
 import { tID } from '../TrackTile/common/testID';
 import { useStyles, useUser } from '../../hooks';
 import { createStyles, useIcons } from '../BrandConfigProvider';
@@ -18,12 +18,14 @@ type Props = {
   userIds: string[];
   onProfileSelected: (profile: UserProfile) => void;
   selectedProfiles: UserProfile[];
+  hideSelf: () => void;
 };
 
 export const SearchRecipientsModal = ({
   userIds,
   onProfileSelected,
   selectedProfiles,
+  hideSelf,
 }: Props) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const onChangeSearch = (query: string) => setSearchQuery(query);
@@ -99,6 +101,15 @@ export const SearchRecipientsModal = ({
           </TouchableOpacity>
         ))}
       </ScrollView>
+      <Button
+        mode="contained"
+        style={styles.doneButton}
+        labelStyle={styles.doneButtonLabel}
+        compact={true}
+        onPress={() => hideSelf()}
+      >
+        {t('next-button', 'Done')}
+      </Button>
     </View>
   );
 };
@@ -127,6 +138,19 @@ const defaultStyles = createStyles('SearchRecipientsModal', (theme) => {
       marginLeft: 8,
     },
     searchbarView: { margin: 16 },
+    doneButton: {
+      marginVertical: 16,
+      marginRight: 16,
+      height: 35,
+      width: 55,
+      alignSelf: 'center',
+    },
+    doneButtonLabel: {
+      color: theme.colors.text,
+      fontSize: 14,
+      lineHeight: 16,
+      textAlignVertical: 'center',
+    },
   };
 });
 
