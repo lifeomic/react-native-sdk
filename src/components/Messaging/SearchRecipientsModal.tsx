@@ -1,5 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { ScrollView, TouchableOpacity, View, ViewStyle } from 'react-native';
+import {
+  Platform,
+  ScrollView,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
 import { Button, Divider, List, Searchbar } from 'react-native-paper';
 import { tID } from '../TrackTile/common/testID';
@@ -118,6 +124,9 @@ const defaultStyles = createStyles('SearchRecipientsModal', (theme) => {
   return {
     rootView: {
       backgroundColor: theme.colors.elevation.level1,
+      height: Platform.select({ android: '90%', default: '100%' }),
+      width: '90%',
+      marginHorizontal: '5%',
     },
     scrollView: { minHeight: '80%' },
     listItem: {
@@ -139,6 +148,7 @@ const defaultStyles = createStyles('SearchRecipientsModal', (theme) => {
     },
     searchbarView: { margin: 16 },
     doneButton: {
+      backgroundColor: theme.colors.primary,
       marginVertical: 16,
       marginRight: 16,
       height: 35,
@@ -146,7 +156,7 @@ const defaultStyles = createStyles('SearchRecipientsModal', (theme) => {
       alignSelf: 'center',
     },
     doneButtonLabel: {
-      color: theme.colors.text,
+      color: theme.colors.onPrimary,
       fontSize: 14,
       lineHeight: 16,
       textAlignVertical: 'center',

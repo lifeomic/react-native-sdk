@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Chip,
   Text,
@@ -8,7 +14,14 @@ import {
   Provider,
   Portal,
 } from 'react-native-paper';
-import { View } from 'react-native';
+import {
+  View,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { t } from 'i18next';
 import { createStyles, useIcons } from '../components';
 import { ComposeInputBar } from '../components/Messaging/ComposeInputBar';
@@ -30,6 +43,8 @@ type SubRoutesParamList = {
   DirectMessageScreen: DirectMessageParams;
 };
 
+const Container = Platform.OS === 'ios' ? KeyboardAvoidingView : View;
+
 export type ComposeScreenParamTypes<ParamList extends ParamListBase> =
   BaseScreenParamTypes<ComposeMessageParams, ParamList, SubRoutesParamList>;
 
@@ -40,7 +55,7 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
 }: ComposeScreenParamTypes<ParamList>['ComponentProps']) {
   const { tileId } = route.params;
   const [isOpen, setIsOpen] = useState(false);
-  const { PlusCircle } = useIcons();
+  const { PlusCircle, X: XIcon } = useIcons();
   const [searchUserIds, setSearchUserIds] = useState<string[]>([]);
   const [selectedProfiles, setSelectedProfiles] = useState<UserProfile[]>([]);
   const { data: appConfig } = useAppConfig();
@@ -87,6 +102,20 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
     }
   }, [isOpen, patientUserIds, searchUserIds, selectedPatients]);
 
+  const openModal = useCallback((userIds: string[]) => {
+    setSearchUserIds(userIds);
+    setIsOpen(true);
+  }, []);
+
+  const openPatientModal = useCallback(
+    () => openModal(patientUserIds),
+    [openModal, patientUserIds],
+  );
+  const openProviderModal = useCallback(
+    () => openModal(providerUserIds),
+    [openModal, providerUserIds],
+  );
+
   return (
     <Provider>
       <Portal>
@@ -99,83 +128,106 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
           />
         </Modal>
       </Portal>
-      <View style={styles.rootContainer}>
-        <Divider style={styles.dividerView} />
-        <View style={styles.descriptionView}>
-          <Text style={styles.toProvidersLabel}>
-            {t('provider-list-label', {
-              defaultValue: 'Select Providers',
-            })}
-          </Text>
-        </View>
-        <View style={styles.toUsersView}>
-          <IconButton
-            icon={PlusCircle}
-            onPress={() => {
-              setSearchUserIds(providerUserIds);
-              setIsOpen(true);
-            }}
-            size={12}
-            iconColor={styles.plusIcon?.color}
-            testID={tID('add-provider-button')}
-          />
-          {selectedProviders?.map((userProfile) => (
-            <Chip
-              key={userProfile.id}
-              style={styles.chipView}
-              testID={tID('chip')}
-              textStyle={styles.chipText}
-            >
-              {userProfile.profile.displayName}
-            </Chip>
-          ))}
-        </View>
-        {isProvider && (
-          <>
-            <Divider style={styles.dividerView} />
-            <View style={styles.descriptionView}>
-              <Text style={styles.toProvidersLabel}>
-                {t('patient-list-label', {
-                  defaultValue: 'Select Patient',
+      <Container behavior="padding" style={styles.rootContainer}>
+        <ScrollView
+          style={styles.scrollContainer}
+          contentContainerStyle={styles.scrollContentContainer}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.contentContainer}>
+              <Divider style={styles.dividerView} />
+              <View style={styles.descriptionView}>
+                <Text style={styles.toProvidersLabel}>
+                  {t('provider-list-label', {
+                    defaultValue: 'Select Providers',
+                  })}
+                </Text>
+              </View>
+              <TouchableWithoutFeedback onPress={openProviderModal}>
+                <View style={styles.toUsersView}>
+                  <IconButton
+                    icon={PlusCircle}
+                    onPress={openProviderModal}
+                    size={12}
+                    iconColor={styles.plusIcon?.color}
+                    testID={tID('add-provider-button')}
+                  />
+                  {selectedProviders?.map((userProfile) => (
+                    <Chip
+                      key={userProfile.id}
+                      style={styles.chipView}
+                      testID={tID('chip')}
+                      textStyle={styles.chipText}
+                      onPress={() =>
+                        setSelectedProfiles((current) =>
+                          current.filter((c) => c.id !== userProfile.id),
+                        )
+                      }
+                    >
+                      {userProfile.profile.displayName}
+                      <View style={styles.removeChipContainer}>
+                        <XIcon {...styles.removeChipIcon} />
+                      </View>
+                    </Chip>
+                  ))}
+                </View>
+              </TouchableWithoutFeedback>
+              {isProvider && (
+                <>
+                  <Divider style={styles.dividerView} />
+                  <View style={styles.descriptionView}>
+                    <Text style={styles.toProvidersLabel}>
+                      {t('patient-list-label', {
+                        defaultValue: 'Select Patient',
+                      })}
+                    </Text>
+                  </View>
+                  <TouchableWithoutFeedback onPress={openPatientModal}>
+                    <View style={styles.toUsersView}>
+                      <IconButton
+                        icon={PlusCircle}
+                        testID={tID('add-patient-button')}
+                        disabled={selectedPatients.length > 0}
+                        onPress={openPatientModal}
+                        size={12}
+                        iconColor={styles.plusIcon?.color}
+                      />
+                      {selectedPatients?.map((userProfile) => (
+                        <Chip
+                          key={userProfile.id}
+                          style={styles.chipView}
+                          testID={tID('chip')}
+                          textStyle={styles.chipText}
+                          onPress={() =>
+                            setSelectedProfiles((current) =>
+                              current.filter((c) => c.id !== userProfile.id),
+                            )
+                          }
+                        >
+                          {userProfile.profile.displayName}
+                          <View style={styles.removeChipContainer}>
+                            <XIcon {...styles.removeChipIcon} />
+                          </View>
+                        </Chip>
+                      ))}
+                    </View>
+                  </TouchableWithoutFeedback>
+                </>
+              )}
+              <Divider style={styles.dividerView} />
+              <Text style={styles.writeMessageLabel}>
+                {t('compose-message-label', {
+                  defaultValue: 'Write Your Message',
                 })}
               </Text>
-            </View>
-            <View style={styles.toUsersView}>
-              <IconButton
-                icon={PlusCircle}
-                testID={tID('add-patient-button')}
-                disabled={
-                  selectedPatients.length > 0 &&
-                  searchUserIds === patientUserIds
-                }
-                onPress={() => {
-                  setSearchUserIds(patientUserIds);
-                  setIsOpen(true);
-                }}
-                size={12}
-                iconColor={styles.plusIcon?.color}
+              <ComposeInputBar
+                users={selectedProfiles}
+                routeMapIn={routeMapIn}
               />
-              {selectedPatients?.map((userProfile) => (
-                <Chip
-                  key={userProfile.id}
-                  style={styles.chipView}
-                  testID={tID('chip')}
-                  textStyle={styles.chipText}
-                >
-                  {userProfile.profile.displayName}
-                </Chip>
-              ))}
             </View>
-          </>
-        )}
-        <Divider style={styles.dividerView} />
-        <Text style={styles.writeMessageLabel}>
-          {t('compose-message-label', {
-            defaultValue: 'Write Your Message',
-          })}
-        </Text>
-        <ComposeInputBar users={selectedProfiles} routeMapIn={routeMapIn} />
-      </View>
+          </TouchableWithoutFeedback>
+        </ScrollView>
+      </Container>
     </Provider>
   );
 }
@@ -190,6 +242,9 @@ export const createComposeMessageScreen = <ParamList extends ParamListBase>(
 
 const defaultStyles = createStyles('ComposeMessageScreen', (theme) => ({
   rootContainer: { flex: 1 },
+  scrollContainer: { flex: 1 },
+  scrollContentContainer: { flexGrow: 1 },
+  contentContainer: { flex: 1 },
   descriptionView: {
     marginLeft: theme.spacing.medium,
   },
@@ -208,6 +263,19 @@ const defaultStyles = createStyles('ComposeMessageScreen', (theme) => ({
   },
   chipText: {
     color: theme.colors.surface,
+  },
+  removeChipContainer: {
+    color: theme.colors.surface,
+    justifyContent: 'center',
+    paddingLeft: 6,
+    marginTop: -2,
+    marginRight: -4,
+    height: '100%',
+  },
+  removeChipIcon: {
+    color: theme.colors.surface,
+    width: 12,
+    height: 12,
   },
   dividerView: { marginBottom: theme.spacing.medium },
   toPatientsLabel: {
