@@ -34,6 +34,12 @@ export const defaultChartStyles = createStyles('ChartStyles', (theme) => ({
       strokeWidth: 2,
     },
   } as VictoryStyleProp<'line'>,
+  trendline: {
+    data: {
+      strokeDasharray: 5,
+      strokeDashoffset: 2,
+    },
+  } as VictoryStyleProp<'line'>,
   scatter: {} as VictoryStyleProp<'scatter'>,
   dataSelectionTooltip: {
     line: {
