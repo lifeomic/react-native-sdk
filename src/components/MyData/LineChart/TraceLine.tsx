@@ -52,7 +52,7 @@ export const TraceLine = (props: Props) => {
     }
 
     return false;
-  }, [showTrend]);
+  }, [showTrend, data, xDomain]);
 
   return (
     <>

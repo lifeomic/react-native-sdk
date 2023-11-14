@@ -53,6 +53,7 @@ storiesOf('LineChart', module)
       <CenterView>
         <LineChart
           title="Example Chart"
+          padding={34}
           dateRange={{
             start: addDays(
               new Date(),
