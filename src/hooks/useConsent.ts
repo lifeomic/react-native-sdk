@@ -15,18 +15,18 @@ export const useConsent = () => {
         '/v1/consent/directives/me',
         {
           account,
-          projectId: activeProject?.id,
+          projectId: activeProject.id,
           accountHeaders,
         },
       ],
       () =>
         httpClient
           .get<{ items: ConsentAndForm[] }>('/v1/consent/directives/me', {
-            params: { projectId: activeProject?.id, includeForm: true },
+            params: { projectId: activeProject.id, includeForm: true },
             headers: { ...accountHeaders },
           })
           .then((res) => res.data),
-      { enabled: !!accountHeaders && !!activeProject?.id },
+      { enabled: !!accountHeaders },
     );
   };
 

@@ -54,7 +54,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
   const { ontology: devConfigOntology } = useDeveloperConfig();
 
   const accountId = account?.id || '';
-  const projectId = activeProject?.id || '';
+  const projectId = activeProject.id;
   const { includePublic = false } = appConfig?.homeTab?.trackTileSettings ?? {};
 
   const { current: cache } = useRef<{

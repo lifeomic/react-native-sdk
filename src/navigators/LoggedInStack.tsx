@@ -41,7 +41,6 @@ export function LoggedInStack() {
 
   const loadingOnboardingCourse =
     !onboardingCourseIsFetched || onboardingCourseIsLoading;
-  const hasAccountAndProject = !!(activeProject?.id && account?.id);
 
   const resumeAppSession = useCallback(async () => {
     setShouldWaitForOnAppStart(false);
@@ -83,7 +82,7 @@ export function LoggedInStack() {
 
   useEffect(() => {
     const executeOnAppStartIfNeeded = async () => {
-      if (shouldWaitForOnAppStart && hasAccountAndProject && activeSubjectId) {
+      if (shouldWaitForOnAppStart) {
         await onAppSessionStart?.({
           resumeAppSession,
           activeSubjectId,
@@ -97,7 +96,6 @@ export function LoggedInStack() {
     account,
     activeProject,
     activeSubjectId,
-    hasAccountAndProject,
     onAppSessionStart,
     resumeAppSession,
     shouldWaitForOnAppStart,

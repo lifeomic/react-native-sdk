@@ -43,7 +43,7 @@ const useConsentTasks = () => {
       includeForm: true,
     },
     {
-      enabled: !!accountHeaders && !!activeProject,
+      enabled: !!accountHeaders,
       axios: { headers: accountHeaders },
       select: (data) => data.items,
     },
@@ -65,15 +65,15 @@ export const useGetSurveyResponsesForProject = (
   return useRestQuery(
     'GET /v1/survey/projects/:projectId/responses',
     {
-      projectId: activeProject!.id,
-      author: activeSubjectId!,
-      patientId: activeSubjectId!,
+      projectId: activeProject.id,
+      author: activeSubjectId,
+      patientId: activeSubjectId,
       includeSurveyName: input?.includeSurveyName ?? false,
       status: input?.status ?? 'in-progress',
       pageSize: input?.pageSize ?? 100,
     },
     {
-      enabled: !!accountHeaders && !!activeProject && !!activeSubjectId,
+      enabled: !!accountHeaders,
       axios: { headers: accountHeaders },
       select: (data) => data.items,
     },
