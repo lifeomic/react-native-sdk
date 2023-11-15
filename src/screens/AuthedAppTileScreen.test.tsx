@@ -22,10 +22,6 @@ jest.mock('../hooks/useHandleAppTileEvents', () => ({
 jest.mock('../hooks/useAppConfig', () => ({
   useAppConfig: jest.fn(),
 }));
-jest.mock('@react-navigation/native', () => ({
-  useFocusEffect: jest.fn(),
-  createNavigationContainerRef: jest.fn(),
-}));
 
 const useExchangeTokenMock = useExchangeToken as jest.Mock;
 const useActiveProjectMock = useActiveProject as jest.Mock;
