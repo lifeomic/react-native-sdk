@@ -60,16 +60,19 @@ const renderHookInContext = async () => {
 
 beforeEach(() => {
   useSubjectProjectsMock.mockReturnValue({
+    status: 'success',
     data: mockSubjectProjects,
     isLoading: false,
     isFetched: true,
   });
   useMeMock.mockReturnValue({
+    status: 'success',
     data: mockMe,
     isLoading: false,
     isFetched: true,
   });
   useUserMock.mockReturnValue({
+    status: 'success',
     data: { id: 'mockUser' },
   });
 
@@ -80,11 +83,10 @@ beforeEach(() => {
   ]);
 });
 
-test('without provider, methods fail', async () => {
-  const { result } = renderHook(() => useActiveProject());
-  await expect(
-    result.current.setActiveProjectId('bogus'),
-  ).rejects.toBeUndefined();
+test('without provider, hook throws', () => {
+  expect(() => renderHook(() => useActiveProject())).toThrowError(
+    'useActiveProject must be used within an ActiveProjectContextProvider',
+  );
 });
 
 test('converts useSubjectProjects and useMe data into helpful state', async () => {
@@ -98,38 +100,38 @@ test('converts useSubjectProjects and useMe data into helpful state', async () =
 test('exposes some props from useSubjectProjects and useMe', async () => {
   const error = new Error('uh oh');
   useSubjectProjectsMock.mockReturnValue({
-    isLoading: true,
-    isFetched: true,
-    error,
+    status: 'loading',
   });
   useMeMock.mockReturnValue({
-    isLoading: false,
-    isFetched: false,
+    status: 'error',
     error,
   });
   const { result, rerender } = await renderHookInContext();
-  expect(result.current).toMatchObject({
-    isLoading: true,
-    isFetched: false,
-    error,
-  });
+  // returns nothing in loading / error
+  expect(result.current).toStrictEqual(null);
 
   useSubjectProjectsMock.mockReturnValue({
-    isLoading: false,
-    isFetched: true,
+    status: 'success',
+    data: mockSubjectProjects,
   });
   useMeMock.mockReturnValue({
-    isLoading: false,
-    isFetched: true,
-    error,
+    status: 'success',
+    data: mockMe,
   });
 
-  await rerender({});
+  rerender({});
 
-  expect(result.current).toMatchObject({
-    isLoading: false,
-    isFetched: true,
-    error,
+  expect(result.current).toStrictEqual({
+    activeProject: {
+      id: 'proj1',
+      name: 'Project 1',
+    },
+    activeSubject: {
+      projectId: 'proj1',
+      subjectId: 'subject1',
+    },
+    activeSubjectId: 'subject1',
+    setActiveProjectId: expect.any(Function),
   });
 });
 
@@ -182,12 +184,13 @@ test('uses projectId from async storage', async () => {
     .fn()
     .mockResolvedValueOnce(mockSubjectProjects[0].id);
   const { result, rerender } = await renderHookInContext();
-  await waitFor(() => result.current.isLoading === false);
   rerender({});
   expect(AsyncStorage.getItem).toBeCalledWith('selectedProjectIdKey:mockUser');
-  expect(result.current).toMatchObject({
-    activeProject: mockSubjectProjects[0],
-    activeSubjectId: mockMe[0].subjectId,
+  await waitFor(() => {
+    expect(result.current).toMatchObject({
+      activeProject: mockSubjectProjects[0],
+      activeSubjectId: mockMe[0].subjectId,
+    });
   });
 
   AsyncStorageMock.getItem = jest
@@ -195,11 +198,12 @@ test('uses projectId from async storage', async () => {
     .mockResolvedValueOnce(mockSubjectProjects[1].id);
   const { result: nextResult, rerender: nextRerender } =
     await renderHookInContext();
-  await waitFor(() => nextResult.current.isLoading === false);
   nextRerender({});
-  expect(nextResult.current).toMatchObject({
-    activeProject: mockSubjectProjects[1],
-    activeSubjectId: mockMe[1].subjectId,
+  await waitFor(() => {
+    expect(nextResult.current).toMatchObject({
+      activeProject: mockSubjectProjects[1],
+      activeSubjectId: mockMe[1].subjectId,
+    });
   });
 
   useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
@@ -207,10 +211,12 @@ test('uses projectId from async storage', async () => {
 
 test('initial render writes selected projectId to async storage', async () => {
   await renderHookInContext();
-  expect(AsyncStorageMock.setItem).toBeCalledWith(
-    'selectedProjectIdKey',
-    mockSubjectProjects[0].id,
-  );
+  await waitFor(() => {
+    expect(AsyncStorageMock.setItem).toBeCalledWith(
+      'selectedProjectIdKey',
+      mockSubjectProjects[0].id,
+    );
+  });
 });
 
 test('setActiveProjectId writes selected projectId to async storage', async () => {
