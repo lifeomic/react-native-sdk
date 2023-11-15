@@ -3,6 +3,7 @@ import {
   Bundle,
   Observation,
   Patient,
+  Practitioner,
   Questionnaire,
   QuestionnaireResponse,
 } from 'fhir/r3';
@@ -16,6 +17,7 @@ type FhirResourcesByName = {
   Questionnaire: Questionnaire;
   QuestionnaireResponse: QuestionnaireResponse;
   Appointment: Appointment;
+  Practitioner: Practitioner;
 };
 
 /**
