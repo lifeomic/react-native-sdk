@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 
 export type AnalyticsEventTypeHandlers = {
   track: (eventName: string, event: unknown) => void;
+  identifyUser: (id: string) => void;
   userPropertyUpdate: (
     key: string,
     value: string | number | boolean | undefined,
@@ -13,7 +14,7 @@ export type AnalyticsEventTypes = keyof AnalyticsEventTypeHandlers;
 export type AnalyticsEventTypeHandler<T extends AnalyticsEventTypes> =
   AnalyticsEventTypeHandlers[T];
 
-export class AnalyticsEvents {
+class AnalyticsEvents {
   private emitter = new EventEmitter();
 
   public addListener<EventType extends AnalyticsEventTypes>(
@@ -38,13 +39,14 @@ export class AnalyticsEvents {
   }
 }
 
-export const analyticsEvents = new AnalyticsEvents();
+const analyticsEvents = new AnalyticsEvents();
 
 export type Tracker<CustomEventMap extends Record<string, unknown>> = {
   track<Key extends keyof CustomEventMap>(
     name: Key,
     event: CustomEventMap[Key],
   ): void;
+  identifyUser: AnalyticsEventTypeHandlers['identifyUser'];
   userPropertyUpdate: AnalyticsEventTypeHandlers['userPropertyUpdate'];
   reset: AnalyticsEventTypeHandlers['reset'];
 };
@@ -52,9 +54,10 @@ export type Tracker<CustomEventMap extends Record<string, unknown>> = {
 /**
  * Create a type safe way to emit analytics events. Can do the following actions:
  *
- * track: tracks an event with a given name and payload with values relevant to that event
- * userPropertyUpdate: set a relevant value for the current logged in user
- * reset: reset the current user tracking session, usually when the user logs out
+ * track: Tracks an event with a given name and payload with values relevant to that event.
+ * identifyUser: Allows you to start tracking a logged in users session by their ID.
+ * userPropertyUpdate: Set a value for the current logged in user.
+ * reset: Reset the current user tracking session, for when the user logs out.
  */
 export const createAnalyticsEmitter = <
   EventMap extends Record<string, unknown>,
@@ -62,6 +65,7 @@ export const createAnalyticsEmitter = <
   return {
     track: (name, payload) =>
       analyticsEvents.emit('track', name as string, payload),
+    identifyUser: (id) => analyticsEvents.emit('identifyUser', id),
     userPropertyUpdate: (key, value) =>
       analyticsEvents.emit('userPropertyUpdate', key as string, value),
     reset: () => analyticsEvents.emit('reset'),
@@ -69,8 +73,19 @@ export const createAnalyticsEmitter = <
 };
 
 export type SDKTrackEvents = {
-  LoginWithInvite: Record<string, any>;
+  Login: { usedInvite: boolean };
+  PostCreated: { messageLength: number };
+  PostEdited: { messageLength: number };
 };
 
 // class for internal tracking use only
-export const sdkTracker = createAnalyticsEmitter<SDKTrackEvents>();
+export const _sdkTracker = createAnalyticsEmitter<SDKTrackEvents>();
+
+/**
+ * Clients can add/remove listeners with these functions. There is not as much
+ * type safety here but it will mostly be used to just pass along to an analytics SDK.
+ */
+export const analyticsListener = {
+  addListener: analyticsEvents.addListener.bind(analyticsEvents),
+  removeListener: analyticsEvents.removeListener.bind(analyticsEvents),
+};

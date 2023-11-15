@@ -10,6 +10,8 @@ import { Subject, useMe } from './useMe';
 import { Project, useSubjectProjects } from './useSubjectProjects';
 import { useAsyncStorage } from './useAsyncStorage';
 import { useUser } from './useUser';
+import { _sdkTracker } from '../common';
+
 const selectedProjectIdKey = 'selectedProjectIdKey';
 
 export type ActiveProjectProps = {
@@ -41,6 +43,9 @@ const findProjectAndSubjectById = (
     const defaultSubject = subjects?.find(
       (s) => s.projectId === defaultProject?.id,
     );
+    defaultSubject?.subjectId &&
+      _sdkTracker.identifyUser(defaultSubject?.subjectId);
+    _sdkTracker.userPropertyUpdate('project', defaultProject?.id);
     return { selectedProject: defaultProject, selectedSubject: defaultSubject };
   };
 
@@ -56,6 +61,9 @@ const findProjectAndSubjectById = (
     }
     return getDefault();
   }
+  selectedSubject?.subjectId &&
+    _sdkTracker.identifyUser(selectedSubject?.subjectId);
+  _sdkTracker.userPropertyUpdate('project', selectedProject?.id);
   return { selectedProject, selectedSubject };
 };
 
