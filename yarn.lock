@@ -1925,10 +1925,10 @@
   resolved "https://registry.yarnpkg.com/@lifeomic/eslint-plugin-i18next/-/eslint-plugin-i18next-2.0.1.tgz#a42dc7a810c83214b284963dcae4dffe217f8e16"
   integrity sha512-GU8m6m8w+BfSKPcuNl5eh+OVkaJeJqA1DqmnXZl05VqFYNInUcEVS3VwiCR6iwRHRvmyDu35TMZ29TR7iMX30A==
 
-"@lifeomic/one-query@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@lifeomic/one-query/-/one-query-2.3.1.tgz#0d34138c50f031f11aa1212710319a0118beb4a7"
-  integrity sha512-ELbMPxb0bYyYKIe1oWSX+4uEP33VOcdV1HrRVHHfLcIzsZXh3Stpn7ooKw0oHDU5cuOcuq0ni7hubgAoeVRagg==
+"@lifeomic/one-query@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@lifeomic/one-query/-/one-query-3.2.0.tgz#bde54ad0421bc8b6865811cabb94740fd28fdd14"
+  integrity sha512-pzah8aVPt0XWUV1qbu2l6PgUIQ8LCJ2I5HRL+/4Gex/llSGSgyaE8ZqAJ/fUSOHY3kTuKU0a1CK19QviII3ocA==
   dependencies:
     immer "^9.0.15"
     lodash "^4.17.21"
@@ -9702,6 +9702,11 @@ react-native-markdown-display@^6.1.6:
     markdown-it "^10.0.0"
     prop-types "^15.7.2"
     react-native-fit-image "^1.5.5"
+
+react-native-mmkv@2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-mmkv/-/react-native-mmkv-2.5.1.tgz#29fc462077fab16a5e1b79570fbf8acaac9d87b4"
+  integrity sha512-5eQu25z3H6zf6w0NkJoTuFEFrbOu6luZxZ6+rK1W+XwY/rjPSFZFQPVtMaz3im90RbILFXXM/KrFGZrpaJJRoQ==
 
 react-native-notifications@^4.3.3:
   version "4.3.3"

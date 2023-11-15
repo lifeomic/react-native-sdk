@@ -1,54 +1,31 @@
-import React, {
-  createContext,
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { createContext, useEffect, useContext } from 'react';
 import { Account } from '../types/rest-types';
-import { QueryObserverResult } from '@tanstack/react-query';
-import { useAsyncStorage } from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
-import { useUser } from './useUser';
 import { useRestCache, useRestQuery } from './rest-api';
+import { useAuth } from './useAuth';
+import { useStoredValue } from './useStoredValue';
 
 export type ActiveAccountProps = {
   account?: Account;
   accountsWithProduct?: Account[];
   accountHeaders?: Record<string, string>;
-  trialExpired?: boolean;
 };
 
 export type ActiveAccountContextProps = ActiveAccountProps & {
-  refetch: () => Promise<QueryObserverResult<Account[], unknown>>;
-  setActiveAccountId: (accountId: string) => Promise<void>;
+  setActiveAccountId: (accountId: string) => void;
   isLoading: boolean;
   isFetched: boolean;
   error?: any;
 };
 
 export const ActiveAccountContext = createContext({
-  refetch: () => Promise.reject(),
   setActiveAccountId: () => Promise.reject(),
   isLoading: true,
   isFetched: false,
 } as ActiveAccountContextProps);
 
-const selectedAccountIdKey = 'selectedAccountId';
-
-const filterNonLRAccounts = (accounts?: Account[]) =>
-  accounts?.filter((a) => a.products?.indexOf('LR') > -1) || [];
-
-const getValidAccount = (validAccounts?: Account[], accountId?: string) => {
-  return validAccounts?.find((a) => a.id === accountId);
-};
-
-const getTrialExpired = (account: Account) =>
-  account.type === 'FREE'
-    ? !account.trialActive || new Date(account.trialEndDate) < new Date()
-    : undefined;
+export const PREFERRED_ACCOUNT_ID_KEY = 'preferred-account-id';
 
 export const ActiveAccountContextProvider = ({
   children,
@@ -61,103 +38,64 @@ export const ActiveAccountContextProvider = ({
    */
   accountIdToSelect?: string;
 }) => {
+  const { isLoggedIn } = useAuth();
   const accountsResult = useRestQuery(
     'GET /v1/accounts',
     {},
-    { select: (data) => data.accounts },
+    {
+      select: (data) => data.accounts.filter((a) => a.products.includes('LR')),
+      enabled: isLoggedIn,
+    },
   );
 
-  const accountsWithProduct = filterNonLRAccounts(accountsResult.data);
-  const { data: userData } = useUser();
-  const userId = userData?.id;
-  const [selectedId, setSelectedId] = useState(accountIdToSelect);
-  const [previousUserId, setPreviousUserId] = useState(userId);
-  const [storedAccountIdResult, setStoredAccountId, isStorageLoaded] =
-    useAsyncStorage(
-      `${selectedAccountIdKey}:${userId}`,
-      !!selectedAccountIdKey && !!userId,
-    );
+  const accountsWithProduct = accountsResult.data ?? [];
+  const [preferredId, setPreferredId] = useStoredValue(
+    PREFERRED_ACCOUNT_ID_KEY,
+  );
   const cache = useRestCache();
 
-  /**
-   * Initial setting of activeAccount
-   */
-  const activeAccount = useMemo<ActiveAccountProps>(() => {
-    if (
-      !userId || // require user id before reading/writing to storage
-      !isStorageLoaded ||
-      accountsWithProduct.length < 1 // no valid accounts found server side
-    ) {
-      return {};
-    }
+  const selectedAccount = accountsWithProduct.length
+    ? accountsWithProduct?.find(
+        // Prefer the prop override first. Otherwise, use the stored preference.
+        (a) => a.id === (accountIdToSelect || preferredId),
+      ) ??
+      // Otherwise, use the first account in the list.
+      accountsWithProduct[0]
+    : undefined;
 
-    const accountToSelect = selectedId ?? storedAccountIdResult ?? undefined;
-
-    const selectedAccount =
-      getValidAccount(accountsWithProduct, accountToSelect) ??
-      accountsWithProduct[0];
-
-    return {
-      account: selectedAccount,
-      accountHeaders: {
-        'LifeOmic-Account': selectedAccount.id,
-      },
-      trialExpired: getTrialExpired(selectedAccount),
-    };
-  }, [
-    accountsWithProduct,
-    isStorageLoaded,
-    selectedId,
-    storedAccountIdResult,
-    userId,
-  ]);
-
+  // Whenever the user's account changes, use the new account as
+  // the preferred account.
   useEffect(() => {
-    if (activeAccount?.account?.id) {
-      setStoredAccountId(activeAccount.account.id);
+    if (selectedAccount?.id) {
+      setPreferredId(selectedAccount.id);
     }
-  }, [activeAccount?.account?.id, setStoredAccountId]);
+  }, [selectedAccount, setPreferredId]);
 
-  // Clear selected account when
-  // we've detected that the userId has changed
-  useEffect(() => {
-    if (userId !== previousUserId) {
-      accountsResult.refetch();
-      setPreviousUserId(userId);
-    }
-  }, [previousUserId, userId, accountsResult]);
-
-  const setActiveAccountId = useCallback(async (accountId: string) => {
-    setSelectedId(accountId);
-  }, []);
-
-  const refetch = useCallback(async () => {
-    return accountsResult.refetch();
-  }, [accountsResult]);
-
-  // Handle invite accept
+  // When the user accepts an invite to a new account, reset the cache,
+  // and also use _that_ account as the preferred account.
   useEffect(() => {
     const listener = async (acceptedInvite: ProjectInvite) => {
-      cache.invalidateQueries({ 'GET /v1/accounts': 'all' });
-      await refetch();
-      await setActiveAccountId(acceptedInvite.account);
+      cache.resetQueries({ 'GET /v1/accounts': 'all' });
+      setPreferredId(acceptedInvite.account);
       inviteNotifier.emit('inviteAccountSettled');
     };
     inviteNotifier.addListener('inviteAccepted', listener);
     return () => {
       inviteNotifier.removeListener('inviteAccepted', listener);
     };
-  }, [refetch, setActiveAccountId, cache]);
+  }, [cache, setPreferredId]);
 
   return (
     <ActiveAccountContext.Provider
       value={{
-        ...activeAccount,
+        account: selectedAccount,
+        accountHeaders: selectedAccount
+          ? { 'LifeOmic-Account': selectedAccount.id }
+          : undefined,
         accountsWithProduct,
-        refetch,
-        setActiveAccountId,
-        isLoading: accountsResult.isLoading || !isStorageLoaded,
-        isFetched: accountsResult.isFetched && isStorageLoaded,
+        setActiveAccountId: setPreferredId,
+        isLoading: accountsResult.isLoading,
+        isFetched: accountsResult.isFetched,
         error: accountsResult.error,
       }}
     >

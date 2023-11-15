@@ -2,37 +2,28 @@ import React from 'react';
 
 import { storiesOf } from '@storybook/react-native';
 import { action } from '@storybook/addon-actions';
-import {
-  AppConfigContext,
-  DeveloperConfigProvider,
-  SettingsScreen,
-} from '../../../../src';
+import { DeveloperConfigProvider, SettingsScreen } from '../../../../src';
 import { SafeView } from '../../helpers/SafeView';
 import { openURL } from '../../../../src/common/urls';
 import { DataProviderDecorator } from '../../helpers/DataProviderDecorator';
 
 const appConfig = {
-  data: {
-    support: {
-      url: 'https://lifeomic.com',
-    },
+  support: {
+    url: 'https://lifeomic.com',
   },
-  isLoading: false,
-  isFetched: true,
-  error: undefined,
 };
 
 storiesOf('SettingsScreen', module)
-  .addDecorator(DataProviderDecorator())
+  .addDecorator(
+    DataProviderDecorator((mock) => mock.onGet().reply(200, appConfig)),
+  )
   .add('default', () => (
-    <AppConfigContext.Provider value={appConfig}>
-      <SafeView>
-        <SettingsScreen
-          navigation={{ navigate: action('navigate') } as any}
-          route={{} as any}
-        />
-      </SafeView>
-    </AppConfigContext.Provider>
+    <SafeView>
+      <SettingsScreen
+        navigation={{ navigate: action('navigate') } as any}
+        route={{} as any}
+      />
+    </SafeView>
   ))
   .add('modify menu items', () => (
     <DeveloperConfigProvider
@@ -52,13 +43,11 @@ storiesOf('SettingsScreen', module)
         },
       }}
     >
-      <AppConfigContext.Provider value={appConfig}>
-        <SafeView>
-          <SettingsScreen
-            navigation={{ navigate: action('navigate') } as any}
-            route={{} as any}
-          />
-        </SafeView>
-      </AppConfigContext.Provider>
+      <SafeView>
+        <SettingsScreen
+          navigation={{ navigate: action('navigate') } as any}
+          route={{} as any}
+        />
+      </SafeView>
     </DeveloperConfigProvider>
   ));

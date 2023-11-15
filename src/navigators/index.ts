@@ -4,4 +4,5 @@ export * from './RootStack';
 export * from './SettingsStack';
 export * from './TabNavigator';
 export * from './types';
-export * from './configurable-tabs';
+export * from './ConfigurableTabStacks';
+export * from './getDefaultTabs';

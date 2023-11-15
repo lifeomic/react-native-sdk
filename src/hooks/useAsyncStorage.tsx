@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+/**
+ * @deprecated Prefer useStoredValue instead.
+ */
 export function useAsyncStorage(key: string, enabled: boolean = true) {
   const [value, setValue] = useState<string | null | undefined>(undefined);
 

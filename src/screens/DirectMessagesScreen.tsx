@@ -6,6 +6,7 @@ import {
   IMessage,
   InputToolbar,
   Send,
+  Time,
 } from 'react-native-gifted-chat';
 import {
   useInfinitePrivatePosts,
@@ -19,50 +20,64 @@ import {
   ActivityIndicatorViewStyles,
 } from '../components/ActivityIndicatorView';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
-import { HomeStackScreenProps } from '../navigators/types';
 import { t } from 'i18next';
-import { useUnreadMessages } from '../hooks/useUnreadMessages';
+import {
+  useInfiniteConversations,
+  useMarkAsRead,
+} from '../hooks/useConversations';
+import { User } from '../types';
+import { ScreenProps } from './utils/stack-helpers';
 
-export function DirectMessagesScreen({
+export type DirectMessageParams = {
+  users: User[];
+  conversationId: string;
+};
+
+export const DirectMessagesScreen = ({
   navigation,
   route,
-}: HomeStackScreenProps<'Home/DirectMessage'>) {
-  const { recipientUserId, displayName } = route.params;
+}: ScreenProps<DirectMessageParams>) => {
+  const { users, conversationId } = route.params;
   const { styles } = useStyles(defaultStyles);
-  const { markMessageRead } = useUnreadMessages();
-  const userId = useRef<string>();
   const { Send: SendIcon } = useIcons();
   const textLength = useRef<number>(0);
+  const { mutateAsync: markAsRead } = useMarkAsRead();
+  const { data: conversations } = useInfiniteConversations();
+  const { data: userData, isLoading: userLoading } = useUser();
+  const otherProfiles = users.filter((user) => user.id !== userData?.id);
 
   useEffect(() => {
-    if (userId.current !== recipientUserId) {
-      userId.current = recipientUserId;
-      markMessageRead?.(recipientUserId);
+    const conversation = conversations?.pages
+      .flat()
+      .flatMap((data) => data.conversations.edges)
+      .find(({ node }) => node.conversationId === conversationId)?.node;
+
+    if (conversation?.hasUnread) {
+      markAsRead({ conversationId });
     }
-  });
+  }, [conversationId, conversations?.pages, markAsRead]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: displayName,
+      title: otherProfiles.map((user) => user.profile.displayName).join(', '),
     });
-  }, [navigation, displayName]);
+  }, [navigation, otherProfiles]);
 
-  const { data: userData, isLoading: userLoading } = useUser();
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useInfinitePrivatePosts(recipientUserId);
+    useInfinitePrivatePosts(users.map((user) => user.id));
 
   const { mutateAsync } = useCreatePrivatePostMutation();
 
   const onSend = useCallback(
-    (newMessages: IMessage[] = [], userId: string) => {
+    (newMessages: IMessage[] = []) => {
       newMessages.map((m) => {
         mutateAsync({
-          userIds: { currentUserId: userId, recipientUserId },
+          userIds: users.map((user) => user.id),
           post: { message: m.text },
         });
       });
     },
-    [mutateAsync, recipientUserId],
+    [mutateAsync, users],
   );
 
   const loadingIndicator = (
@@ -91,9 +106,10 @@ export function DirectMessagesScreen({
           fetchNextPage();
         }
       }}
+      renderUsernameOnMessage={otherProfiles.length > 1}
       placeholder={t('message-placeholder', 'Write Your Message')}
       isLoadingEarlier={isFetchingNextPage}
-      onSend={(m) => onSend(m, userData.id)}
+      onSend={(m) => onSend(m)}
       user={{
         _id: userData.id,
       }}
@@ -110,6 +126,20 @@ export function DirectMessagesScreen({
               left: styles.leftText,
               right: styles.rightText,
             }}
+            usernameStyle={styles.signatureText}
+            renderTime={(timeProps) => (
+              <Time
+                {...timeProps}
+                timeTextStyle={{
+                  left: styles.leftTimeText,
+                  right: styles.rightTimeText,
+                }}
+                containerStyle={{
+                  left: styles.leftTimeContainer,
+                  right: styles.rightTimeContainer,
+                }}
+              />
+            )}
           />
         );
       }}
@@ -154,7 +184,7 @@ export function DirectMessagesScreen({
       }}
     />
   );
-}
+};
 
 const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   activityIndicator: {
@@ -206,6 +236,11 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   placeholderText: {
     color: theme.colors.surfaceDisabled,
   },
+  signatureText: {},
+  leftTimeContainer: {},
+  leftTimeText: {},
+  rightTimeContainer: {},
+  rightTimeText: {},
 }));
 
 declare module '@styles' {

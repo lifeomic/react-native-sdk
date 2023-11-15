@@ -1,14 +1,19 @@
 import React, { useCallback, useLayoutEffect } from 'react';
 import { useStyles } from '../hooks/useStyles';
-import { Divider, List, Button, Text, Badge } from 'react-native-paper';
-import { TouchableOpacity, ScrollView, View, ViewStyle } from 'react-native';
-import { createStyles } from '../components/BrandConfigProvider';
-import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
-import { HomeStackScreenProps } from '../navigators/types';
+import {
+  Divider,
+  List,
+  Button,
+  Text,
+  Badge,
+  IconButton,
+} from 'react-native-paper';
+import { TouchableOpacity, ScrollView, View } from 'react-native';
+import { createStyles, useIcons } from '../components/BrandConfigProvider';
+import { GiftedAvatar } from 'react-native-gifted-chat';
 import { t } from 'i18next';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { tID } from '../common/testID';
-import { useMyMessages } from '../hooks/useMyMessages';
 import {
   format,
   differenceInMinutes,
@@ -16,75 +21,131 @@ import {
   differenceInDays,
   differenceInSeconds,
 } from 'date-fns';
+import {
+  useInfiniteConversations,
+  useLeaveConversation,
+} from '../hooks/useConversations';
+import { useUser } from '../hooks';
+import { useProfilesForTile } from '../hooks/useMessagingProfiles';
+import { User } from '../types';
+import { ParamListBase } from '@react-navigation/native';
+import { DirectMessageParams } from './DirectMessagesScreen';
+import { ComposeMessageParams } from './ComposeMessageScreen';
+import {
+  ScreenParamTypes as BaseScreenParamTypes,
+  toRouteMap,
+} from './utils/stack-helpers';
+import compact from 'lodash/compact';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-type User = GiftedUser & { id: string; name: string; isUnread: boolean };
+export type MessageTileParams = {
+  tileId: string;
+};
 
-export function MessageScreen({
+type SubRoutesParamList = {
+  DirectMessageScreen: DirectMessageParams;
+  ComposeMessageScreen: ComposeMessageParams;
+};
+
+type ScreenParamTypes<ParamList extends ParamListBase> = BaseScreenParamTypes<
+  MessageTileParams,
+  ParamList,
+  SubRoutesParamList
+>;
+
+export function MessageScreen<ParamList extends ParamListBase>({
   navigation,
   route,
-}: HomeStackScreenProps<'Home/Messages'>) {
+  routeMapIn,
+}: ScreenParamTypes<ParamList>['ComponentProps']) {
   const { tileId } = route.params;
+  const routeMap = toRouteMap(routeMapIn);
+  const { data: profiles } = useProfilesForTile(tileId);
+  const { data: userData } = useUser();
+  const all = compact(profiles);
+  const others = all.filter((profile) => profile.id !== userData?.id);
+  const { mutateAsync } = useLeaveConversation();
+  const { styles } = useStyles(defaultStyles);
+
+  const { Edit2 } = useIcons();
+  const { data, fetchNextPage, hasNextPage, isLoading } =
+    useInfiniteConversations();
+
+  const iconButton = useCallback(
+    () => (
+      <IconButton
+        icon={Edit2}
+        iconColor={styles.createMessageIcon?.color}
+        onPress={() =>
+          navigation.navigate(routeMap.ComposeMessageScreen, { tileId })
+        }
+      />
+    ),
+    [
+      Edit2,
+      navigation,
+      tileId,
+      routeMap.ComposeMessageScreen,
+      styles.createMessageIcon?.color,
+    ],
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: t('messages-title', 'My Messages'),
+      title: t('messages-title', 'Messages'),
+      headerRight: iconButton,
     });
-  }, [navigation]);
-
-  const { styles } = useStyles(defaultStyles);
-  const { userDetailsList, fetchNextPage, hasNextPage, isLoading } =
-    useMyMessages(tileId);
+  }, [iconButton, navigation]);
 
   const handlePostTapped = useCallback(
-    (userId: string | undefined, displayName?: string) => () => {
-      if (userId) {
-        navigation.navigate('Home/DirectMessage', {
-          recipientUserId: userId,
-          displayName,
-        });
-      }
+    (tappedUsers: User[], conversationId: string) => () => {
+      navigation.navigate(routeMap.DirectMessageScreen, {
+        users: tappedUsers,
+        conversationId,
+      });
     },
-    [navigation],
+    [navigation, routeMap.DirectMessageScreen],
+  );
+
+  const handleDeleteTapped = useCallback(
+    (conversationId: string) => () => {
+      mutateAsync({ conversationId });
+    },
+    [mutateAsync],
   );
 
   const renderLeft = useCallback(
-    (props: { style: ViewStyle }, user: User) => (
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          marginLeft: 8,
-        }}
-      >
-        {
-          <Badge
-            size={10}
-            style={[
-              styles.badgeView,
-              user.isUnread
-                ? styles.badgeColor?.enabled
-                : styles.badgeColor?.disabled,
-            ]}
-            testID={tID('unread-badge')}
-          />
-        }
-        <View
-          style={
-            user.isUnread
-              ? [props.style, styles.newMessageIconView]
-              : props.style
-          }
-        >
-          <GiftedAvatar user={user} textStyle={{ fontWeight: '500' }} />
-        </View>
-      </View>
-    ),
-    [
-      styles.badgeColor?.disabled,
-      styles.badgeColor?.enabled,
-      styles.badgeView,
-      styles.newMessageIconView,
-    ],
+    (selectedProfiles: User[], hasUnread: boolean) => {
+      if (selectedProfiles && selectedProfiles.length > 0) {
+        return (
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              maxWidth: 60,
+            }}
+          >
+            {
+              <Badge
+                size={10}
+                style={[
+                  styles.badgeView,
+                  hasUnread
+                    ? styles.badgeColor?.enabled
+                    : styles.badgeColor?.disabled,
+                ]}
+                testID={
+                  hasUnread ? tID('unread-badge') : tID('unread-badge-hidden')
+                }
+              />
+            }
+            <MultiGiftedAvatar profiles={selectedProfiles} />
+          </View>
+        );
+      }
+    },
+    [styles.badgeColor?.disabled, styles.badgeColor?.enabled, styles.badgeView],
   );
 
   const renderRight = useCallback(
@@ -98,45 +159,83 @@ export function MessageScreen({
     [styles.listItemTimeText],
   );
 
+  const rightSwipeActions = (conversationId: string) => {
+    return (
+      <TouchableOpacity
+        style={styles.deleteButtonView}
+        onPress={handleDeleteTapped(conversationId)}
+      >
+        <Text style={styles.deleteButtonLabel}>
+          {t('delete-button', 'Delete')}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const conversations = data?.pages?.flatMap((page) =>
+    page.conversations.edges
+      .flatMap((edge) => edge.node)
+      // Conversations that contain users not part of this message tile should be hidden
+      .filter((node) =>
+        node.userIds.every(
+          (id) => id === userData?.id || profiles?.find((p) => p.id === id),
+        ),
+      ),
+  );
+
   return (
-    <View style={styles.rootView}>
+    <GestureHandlerRootView style={styles.rootView}>
       <ScrollView
         scrollEventThrottle={400}
         contentContainerStyle={styles.scrollView}
       >
-        {userDetailsList?.map((user) => (
-          <TouchableOpacity
-            key={`message-${user.userId}`}
-            onPress={handlePostTapped(user.userId, user.displayName)}
-            activeOpacity={0.6}
+        {conversations?.map((node) => (
+          <Swipeable
+            key={`message-${node.conversationId}`}
+            renderRightActions={() => rightSwipeActions(node.conversationId)}
           >
-            <List.Item
-              testID={tID('user-list-item')}
-              titleStyle={styles.listItemText}
-              style={styles.listItemView}
-              descriptionNumberOfLines={1}
-              descriptionStyle={
-                user.hasUnread
-                  ? [styles.listItemSubtitleText, styles.newMessageText]
-                  : styles.listItemSubtitleText
-              }
-              left={(props) =>
-                renderLeft(props, {
-                  _id: user.userId,
-                  id: user.userId,
-                  name: user.displayName,
-                  avatar: user.picture,
-                  isUnread: user.hasUnread,
-                })
-              }
-              title={user.displayName}
-              description={`${user.isCreatedBySelf ? styles.selfPrefix : ''} ${
-                user.lastMessage
-              }`}
-              right={() => renderRight(user.lastMessageTime)}
-            />
-            <Divider style={styles.listItemDividerView} />
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handlePostTapped(
+                all.filter((profile) => node.userIds.includes(profile.id)),
+                node.conversationId,
+              )}
+              activeOpacity={0.6}
+            >
+              <List.Item
+                testID={tID('user-list-item')}
+                titleStyle={styles.listItemText}
+                style={styles.listItemView}
+                descriptionNumberOfLines={1}
+                descriptionStyle={
+                  node
+                    ? [styles.listItemSubtitleText, styles.newMessageText]
+                    : styles.listItemSubtitleText
+                }
+                left={() =>
+                  renderLeft(
+                    others.filter((profile) =>
+                      node.userIds.includes(profile.id),
+                    ),
+                    node.hasUnread,
+                  )
+                }
+                title={others
+                  .filter((profile) => node.userIds.includes(profile.id))
+                  .map((profile) => profile.profile.displayName)
+                  .join(', ')}
+                description={
+                  node.latestMessageUserId === userData?.id
+                    ? t('message-preview-prefixed', {
+                        defaultValue: 'You: {{messageText}}',
+                        messageText: node.latestMessageText,
+                      })
+                    : node.latestMessageText
+                }
+                right={() => renderRight(node.latestMessageTime)}
+              />
+              <Divider style={styles.listItemDividerView} />
+            </TouchableOpacity>
+          </Swipeable>
         ))}
         {isLoading ? (
           <ActivityIndicatorView />
@@ -153,9 +252,80 @@ export function MessageScreen({
           )
         )}
       </ScrollView>
-    </View>
+    </GestureHandlerRootView>
   );
 }
+
+export const createMessageScreen = <ParamList extends ParamListBase>(
+  routeMap: ScreenParamTypes<ParamList>['RouteMap'],
+) => {
+  return (props: ScreenParamTypes<ParamList>['ScreenProps']) => (
+    <MessageScreen {...props} routeMapIn={routeMap} />
+  );
+};
+
+type MultiGiftedAvatarProps = {
+  profiles: User[];
+};
+
+const MultiGiftedAvatar = ({ profiles }: MultiGiftedAvatarProps) => {
+  const { styles } = useStyles(defaultStyles);
+  const userCount = profiles.length;
+  const paddedProfiles =
+    profiles.length === 2
+      ? [
+          profiles[0],
+          { id: '#pad1', profile: {} },
+          { id: '#pad2', profile: {} },
+          profiles[1],
+        ]
+      : profiles.splice(0, 3); // Max of 3 icons
+
+  return (
+    <View
+      style={{
+        ...styles.multiGiftedAvatarView,
+        backgroundColor:
+          styles.multiGiftedAvatarColor?.getBackgroundColor?.(userCount),
+      }}
+    >
+      {paddedProfiles.map((profile, i) => (
+        <GiftedAvatar
+          user={{
+            name: profile.profile.displayName,
+            avatar: profile.profile.picture,
+            _id: profile.id,
+          }}
+          avatarStyle={{
+            ...styles.avatarStyle,
+            height: styles.avatarStyle?.getHeight?.(i, userCount),
+            width: styles.avatarStyle?.getWidth?.(i, userCount),
+            marginHorizontal:
+              styles.avatarStyle?.getMarginHorizontal?.(userCount),
+            marginVertical: styles.avatarStyle?.getMarginVertical?.(i),
+            marginTop: styles.avatarStyle?.getMarginTop?.(i),
+            marginLeft: styles.avatarStyle?.getMarginLeft?.(i, userCount),
+          }}
+          textStyle={{
+            ...styles.initialsText,
+            fontSize: styles.initialsTextSize?.getFontSize?.(i, userCount),
+          }}
+        />
+      ))}
+    </View>
+  );
+};
+
+const getDiameter = (avatarIndex: number, userCount: number) => {
+  if (userCount === 3) {
+    return [18, 13, 12][avatarIndex];
+  }
+  if (userCount === 1) {
+    return 40;
+  }
+
+  return 17;
+};
 
 const defaultStyles = createStyles('MessageScreen', (theme) => {
   return {
@@ -166,7 +336,7 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     },
     scrollView: { minHeight: '100%' },
     listItemView: {
-      backgroundColor: theme.colors.elevation.level3,
+      backgroundColor: theme.colors.elevation.level0,
     },
     listItemText: {
       ...theme.fonts.titleMedium,
@@ -175,13 +345,10 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
       ...theme.fonts.titleSmall,
     },
     listItemDividerView: {},
-    userIconView: {
-      marginLeft: theme.spacing.extraSmall,
-    },
     badgeView: {
       alignSelf: 'center',
-      paddingRight: 0,
-      marginRight: -10,
+      marginRight: 4,
+      marginLeft: 4,
     },
     badgeColor: {
       enabled: {
@@ -194,17 +361,66 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     loadMoreButton: {},
     loadMoreText: {},
     listItemTimeText: { paddingLeft: 15 },
-    newMessageIconView: {
-      marginRight: -1,
-      borderWidth: 2,
-      borderColor: theme.colors.text,
-      borderRadius: 32,
-    },
     newMessageText: {
       color: theme.colors.text,
       fontWeight: '600',
     },
-    selfPrefix: t('messages-self-prefix', 'You: '),
+    multiGiftedAvatarView: {
+      flex: 1,
+      flexDirection: 'column',
+      flexWrap: 'wrap',
+      alignContent: 'center',
+      maxHeight: 40,
+      maxWidth: 40,
+      borderRadius: 64,
+      justifyContent: 'center',
+    },
+    multiGiftedAvatarColor: {
+      getBackgroundColor: (userCount: number) =>
+        userCount > 1 ? theme.colors.primaryContainer : undefined,
+    },
+    profileView: {
+      flex: 1,
+    },
+    avatarStyle: {
+      borderRadius: 64,
+      getHeight: getDiameter,
+      getWidth: getDiameter,
+      getMarginHorizontal: (userCount: number) => {
+        if (userCount === 2) {
+          return -2;
+        }
+        if (userCount === 3) {
+          return 0;
+        }
+      },
+      getMarginLeft: (index: number, userCount: number) => {
+        if (userCount === 3 && index === 1) {
+          return 6;
+        }
+      },
+      getMarginVertical: (index: number) => (index === 0 ? 3 : 0),
+      getMarginTop: (index: number) => (index === 0 || index === 2 ? 2 : 0),
+    },
+    initialsText: {
+      fontWeight: '500',
+    },
+    initialsTextSize: {
+      getFontSize: (index: number, count: number) =>
+        getDiameter(index, count) / 2,
+    },
+    deleteButtonView: {
+      backgroundColor: theme.colors.error,
+      justifyContent: 'center',
+      alignItems: 'flex-end',
+    },
+    deleteButtonLabel: {
+      color: theme.colors.onError,
+      paddingHorizontal: 10,
+      fontWeight: '500',
+      paddingVertical: 20,
+    },
+    createMessageIcon: {} as { color: string | undefined },
   };
 });
 

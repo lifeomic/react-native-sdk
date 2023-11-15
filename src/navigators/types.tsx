@@ -12,6 +12,9 @@ import {
 import { Post } from '../hooks';
 import { AppTileParams } from '../screens';
 import { AuthedAppTileParams } from '../screens/AuthedAppTileScreen';
+import { MessageTileParams } from '../screens/MessageScreen';
+import { DirectMessageParams } from '../screens/DirectMessagesScreen';
+import { ComposeMessageParams } from '../screens/ComposeMessageScreen';
 
 export type RootStackParamList = LoggedInRootParamList;
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
@@ -78,13 +81,9 @@ export type HomeStackParamList = {
   };
   'Home/MyData': undefined;
   'Home/YoutubePlayer': { youtubeVideoId: string; videoName?: string };
-  'Home/Messages': {
-    tileId: string;
-  };
-  'Home/DirectMessage': {
-    recipientUserId: string;
-    displayName?: string;
-  };
+  'Home/Messages': MessageTileParams;
+  'Home/DirectMessage': DirectMessageParams;
+  'Home/ComposeMessage': ComposeMessageParams;
 };
 
 export type NotificationsStackParamList = {
@@ -100,7 +99,6 @@ export type SettingsStackScreenProps<T extends keyof SettingsStackParamList> =
 export type SettingsStackParamList = {
   Settings: undefined;
   'Settings/Profile': undefined;
-  'Settings/AccountSelection': undefined;
   'Settings/Wearables': undefined;
 };
 

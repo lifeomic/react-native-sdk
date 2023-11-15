@@ -32,7 +32,7 @@ test('returns default tabs when there are no other configs', () => {
   const defaultTabs: any[] = ['default-tab'];
   const { result } = renderHook(() => useTabsConfig(defaultTabs));
 
-  expect(result.current).toStrictEqual(defaultTabs);
+  expect(result.current.tabs).toStrictEqual(defaultTabs);
 });
 
 test('returns tabs in TabBar.tabs config', () => {
@@ -53,11 +53,10 @@ test('returns tabs in TabBar.tabs config', () => {
 
   const { result } = renderHook(useTabsConfig);
 
-  expect(result.current).toStrictEqual(tabs);
+  expect(result.current.tabs).toStrictEqual(tabs);
 });
 
 test('returns tabs in app config', () => {
-  const theme = {} as any;
   const PlanetIconMock = jest.fn();
   useAppConfigMock.mockReturnValue({
     data: {
@@ -65,11 +64,14 @@ test('returns tabs in app config', () => {
         tabs: [
           {
             icon: 'Planet',
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: 'home',
-            svgProps: { color: 'red' },
-            svgPropsActive: { color: 'yellow' },
-            svgPropsInactive: { color: 'blue' },
+            styles: {
+              svgProps: { color: 'red' },
+              svgPropsActive: { color: 'yellow' },
+              svgPropsInactive: { color: 'blue' },
+            },
           },
         ],
       },
@@ -78,19 +80,22 @@ test('returns tabs in app config', () => {
 
   const { result } = renderHook(useTabsConfig);
 
-  expect(result.current).toEqual([
+  expect(result.current.tabs).toEqual([
     {
       component: Stacks.HomeStack,
       icon: expect.any(Function),
-      name: 'Test Tab',
-      svgProps: expect.any(Function),
-      svgPropsActive: expect.any(Function),
-      svgPropsInactive: expect.any(Function),
+      name: 'test-tab',
+      label: 'Test Tab',
+      styles: {
+        svgProps: { color: 'red' },
+        svgPropsActive: { color: 'yellow' },
+        svgPropsInactive: { color: 'blue' },
+      },
       type: 'home',
     },
   ]);
 
-  const Icon = result.current[0].icon;
+  const Icon = result.current.tabs[0].icon;
   render(<Icon />, {
     wrapper: ({ children }) => (
       <IconProvider icons={{ Planet: PlanetIconMock }}>{children}</IconProvider>
@@ -98,11 +103,11 @@ test('returns tabs in app config', () => {
   });
 
   expect(PlanetIconMock).toHaveBeenCalled();
-  expect(result.current[0].svgProps?.(theme)).toEqual({ color: 'red' });
-  expect(result.current[0].svgPropsActive?.(theme)).toEqual({
+  expect(result.current.tabs[0].styles?.svgProps).toEqual({ color: 'red' });
+  expect(result.current.tabs[0].styles?.svgPropsActive).toEqual({
     color: 'yellow',
   });
-  expect(result.current[0].svgPropsInactive?.(theme)).toEqual({
+  expect(result.current.tabs[0].styles?.svgPropsInactive).toEqual({
     color: 'blue',
   });
 });
@@ -118,7 +123,8 @@ test.each([
       tabsConfig: {
         tabs: [
           {
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: type as any,
           },
         ],
@@ -128,7 +134,7 @@ test.each([
 
   const { result } = renderHook(useTabsConfig);
 
-  expect(result.current).toEqual([
+  expect(result.current.tabs).toEqual([
     expect.objectContaining({
       component: (Stacks as any)[stackName],
       type,
@@ -148,7 +154,8 @@ test('can specify a customTab stack', () => {
       tabsConfig: {
         tabs: [
           {
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: 'customTab',
             initialParams: {
               name: 'CustomStack',
@@ -161,7 +168,7 @@ test('can specify a customTab stack', () => {
 
   const { result } = renderHook(useTabsConfig);
 
-  expect(result.current).toEqual([
+  expect(result.current.tabs).toEqual([
     expect.objectContaining({
       component: CustomStack,
       type: 'customTab',
@@ -175,7 +182,8 @@ test('handles missing customTab stack', () => {
       tabsConfig: {
         tabs: [
           {
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: 'customTab',
             initialParams: {
               name: 'MissingStack', // This stack does not exist in Dev config
@@ -188,12 +196,12 @@ test('handles missing customTab stack', () => {
 
   const { result } = renderHook(useTabsConfig);
 
-  expect(result.current).toEqual([
+  expect(result.current.tabs).toEqual([
     expect.objectContaining({
       type: 'customTab',
     }),
   ]);
-  expect(result.current[0].component()).toBeNull();
+  expect(result.current.tabs[0].component()).toBeNull();
 });
 
 test('handles unknown tab type', () => {
@@ -202,7 +210,8 @@ test('handles unknown tab type', () => {
       tabsConfig: {
         tabs: [
           {
-            name: 'Test Tab',
+            name: 'test-tab',
+            label: 'Test Tab',
             type: 'unknownTabType' as any,
           },
         ],
@@ -212,12 +221,12 @@ test('handles unknown tab type', () => {
 
   const { result } = renderHook(useTabsConfig);
 
-  expect(result.current).toEqual([
+  expect(result.current.tabs).toEqual([
     expect.objectContaining({
       type: 'unknownTabType',
     }),
   ]);
-  expect(result.current[0].component()).toBeNull();
+  expect(result.current.tabs[0].component()).toBeNull();
 });
 
 test('defaults to Menu icon for unknown/missing icon', () => {
@@ -230,11 +239,13 @@ test('defaults to Menu icon for unknown/missing icon', () => {
             name: 'Test Tab',
             type: 'home',
             icon: 'unknownIcon',
+            label: 'Home',
           },
           {
             name: 'Test Tab 2',
             type: 'home',
             icon: undefined,
+            label: 'Home2',
           },
         ],
       },
@@ -243,8 +254,8 @@ test('defaults to Menu icon for unknown/missing icon', () => {
 
   const { result } = renderHook(useTabsConfig);
 
-  const Icon = result.current[0].icon;
-  const Icon2 = result.current[1].icon;
+  const Icon = result.current.tabs[0].icon;
+  const Icon2 = result.current.tabs[1].icon;
   const wrapper = ({ children }: { children: React.ReactNode }) => (
     <IconProvider icons={{ Menu: MenuItemMock }}>{children}</IconProvider>
   );

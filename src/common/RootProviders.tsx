@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { AuthConfiguration } from 'react-native-app-auth';
 import { AuthContextProvider } from '../hooks/useAuth';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HttpClientContextProvider } from '../hooks/useHttpClient';
 import { OAuthContextProvider } from '../hooks/useOAuthFlow';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
@@ -13,6 +12,8 @@ import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemedNavigationContainer } from './ThemedNavigationContainer';
 import { LoggedInProviders } from './LoggedInProviders';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+
 const queryClient = new QueryClient();
 
 export function RootProviders({

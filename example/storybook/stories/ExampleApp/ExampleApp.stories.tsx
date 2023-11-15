@@ -9,7 +9,8 @@ import {
   LogoHeader,
   BrandConfigProvider,
   getDefaultTabs,
-  AppConfigContext,
+  useTheme,
+  Theme,
 } from '../../../../src';
 import { withKnobs, color, boolean, number } from '@storybook/addon-knobs';
 import Color from 'color';
@@ -18,6 +19,7 @@ import { Home, Bell, Settings, Menu } from '@lifeomic/chromicons-native';
 import { HelloWorldScreen } from '../../../src/screens/HelloWorldScreen';
 import { IconButton } from 'react-native-paper';
 import { navigationRef } from '../../../../src/common/ThemedNavigationContainer';
+import { DataOverrideProvider } from 'example/storybook/helpers/DataProviderDecorator';
 
 storiesOf('Example App', module)
   .addDecorator(withKnobs)
@@ -76,70 +78,80 @@ storiesOf('Example App', module)
     const defaultTabs = getDefaultTabs();
 
     return (
-      <DeveloperConfigProvider
-        developerConfig={{
-          componentProps: {
-            TabNavigator: {
-              useTabBar: true,
-            },
-            TabBar: {
-              showLabels: boolean('Show Labels', false),
-              tabs: [
-                {
-                  ...defaultTabs[0],
-                  icon: Home,
-                  svgProps: () => ({
-                    width: 42,
-                    height: 42,
-                    strokeWidth: 3,
-                  }),
-                  svgPropsActive: (theme) => ({
-                    stroke: theme.colors.onPrimaryContainer,
-                  }),
-                  svgPropsInactive: (theme) => ({
-                    stroke: theme.colors.onSurfaceDisabled,
-                  }),
+      <ThemeProvider>
+        {(theme) => (
+          <DeveloperConfigProvider
+            developerConfig={{
+              componentProps: {
+                TabNavigator: {
+                  useTabBar: true,
                 },
-                {
-                  ...defaultTabs[1],
-                  icon: Bell,
-                  svgProps: () => ({
-                    width: 42,
-                    height: 42,
-                    strokeWidth: 3,
-                  }),
-                  svgPropsActive: (theme) => ({
-                    stroke: theme.colors.onSecondaryContainer,
-                  }),
-                  svgPropsInactive: (theme) => ({
-                    stroke: theme.colors.onSurfaceDisabled,
-                  }),
+                TabBar: {
+                  showLabels: boolean('Show Labels', false),
+                  tabs: [
+                    {
+                      ...defaultTabs[0],
+                      icon: Home,
+                      styles: {
+                        svgProps: {
+                          width: 42,
+                          height: 42,
+                          strokeWidth: 3,
+                        },
+                        svgPropsActive: {
+                          stroke: theme.colors.onPrimaryContainer,
+                        },
+                        svgPropsInactive: {
+                          stroke: theme.colors.onSurfaceDisabled,
+                        },
+                      },
+                    },
+                    {
+                      ...defaultTabs[1],
+                      icon: Bell,
+                      styles: {
+                        svgProps: {
+                          width: 42,
+                          height: 42,
+                          strokeWidth: 3,
+                        },
+                        svgPropsActive: {
+                          stroke: theme.colors.onSecondaryContainer,
+                        },
+                        svgPropsInactive: {
+                          stroke: theme.colors.onSurfaceDisabled,
+                        },
+                      },
+                    },
+                    {
+                      ...defaultTabs[2],
+                      icon: Settings,
+                      styles: {
+                        svgProps: {
+                          width: 42,
+                          height: 42,
+                          strokeWidth: 3,
+                        },
+                        svgPropsActive: {
+                          stroke: theme.colors.onTertiaryContainer,
+                        },
+                        svgPropsInactive: {
+                          stroke: theme.colors.onSurfaceDisabled,
+                        },
+                      },
+                    },
+                  ],
                 },
-                {
-                  ...defaultTabs[2],
-                  icon: Settings,
-                  svgProps: () => ({
-                    width: 42,
-                    height: 42,
-                    strokeWidth: 3,
-                  }),
-                  svgPropsActive: (theme) => ({
-                    stroke: theme.colors.onTertiaryContainer,
-                  }),
-                  svgPropsInactive: (theme) => ({
-                    stroke: theme.colors.onSurfaceDisabled,
-                  }),
-                },
-              ],
-            },
-          },
-          apiBaseURL: baseURL,
-        }}
-      >
-        <RootProviders authConfig={authConfig}>
-          <RootStack />
-        </RootProviders>
-      </DeveloperConfigProvider>
+              },
+              apiBaseURL: baseURL,
+            }}
+          >
+            <RootProviders authConfig={authConfig}>
+              <RootStack />
+            </RootProviders>
+          </DeveloperConfigProvider>
+        )}
+      </ThemeProvider>
     );
   })
   .add('Customized AppNavHeader with LogoHeader', () => {
@@ -258,9 +270,9 @@ storiesOf('Example App', module)
       }}
     >
       <RootProviders authConfig={authConfig}>
-        <AppConfigContext.Provider
-          value={{
-            data: {
+        <DataOverrideProvider
+          builder={(mock) => {
+            mock.onGet().reply(200, {
               homeTab: {
                 tiles: ['myDataTile'],
                 myDataSettings: {
@@ -270,22 +282,26 @@ storiesOf('Example App', module)
               tabsConfig: {
                 tabs: [
                   {
-                    name: 'Home',
+                    name: 'af5242b5-2cc6-4189-8859-f92552aea14b',
+                    label: 'Home',
                     type: 'home',
                     icon: 'home',
                   },
                   {
-                    name: 'Notifications',
+                    name: 'a70e806d-f108-4c45-ab70-d40fc5f757fb',
+                    label: 'Notifications',
                     type: 'notifications',
                     icon: 'bell',
                   },
                   {
-                    name: 'Settings',
+                    name: 'ca21f64d-4ea8-46ac-ab9a-f47055e8225f',
+                    label: 'Settings',
                     type: 'settings',
                     icon: 'settings',
                   },
                   {
-                    name: 'Custom',
+                    name: '5e3228b9-7e12-4fb8-bb04-c180ebd139db',
+                    label: 'Custom',
                     type: 'customTab',
                     icon: 'zap',
                     initialParams: {
@@ -293,7 +309,8 @@ storiesOf('Example App', module)
                     },
                   },
                   {
-                    name: 'Authed App Tile',
+                    name: 'ff49b800-5940-4bad-a55d-790ad1d0661a',
+                    label: 'Authed App Tile',
                     type: 'appTile',
                     icon: 'user-key',
                     initialParams: {
@@ -310,7 +327,8 @@ storiesOf('Example App', module)
                     },
                   },
                   {
-                    name: 'App tile',
+                    name: '2fd1c6ce-946d-4499-a24d-8c048569ed32',
+                    label: 'App Tile',
                     type: 'appTile',
                     icon: 'user',
                     initialParams: {
@@ -324,14 +342,21 @@ storiesOf('Example App', module)
                   },
                 ],
               },
-            },
-            isLoading: false,
-            isFetched: true,
-            error: undefined,
+            });
           }}
         >
           <RootStack />
-        </AppConfigContext.Provider>
+        </DataOverrideProvider>
       </RootProviders>
     </DeveloperConfigProvider>
   ));
+
+function ThemeProvider({
+  children,
+}: {
+  children: (theme: Theme) => React.ReactElement;
+}) {
+  const theme = useTheme();
+
+  return children(theme);
+}

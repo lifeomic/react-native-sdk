@@ -339,6 +339,22 @@ export type Activity = {
       value: string;
     };
   };
+  deepLink?: {
+    value: {
+      type:
+        | 'applet'
+        | 'fasting'
+        | 'nutrition'
+        | 'sleep'
+        | 'meditation'
+        | 'exercise'
+        | 'profile'
+        | 'url'
+        | 'trackTile';
+      url?: string;
+      id?: string;
+    };
+  };
 };
 
 type ActivitiesQueryResponse = {

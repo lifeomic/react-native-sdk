@@ -16,11 +16,14 @@ import { usePendingInvite } from '../hooks/usePendingInvite';
 import { useSetUserProfileEffect } from '../hooks/useSetUserProfileEffect';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { useJoinCircles } from '../hooks/Circles/useJoinCircles';
+import { useProfilesForAllTiles } from '../hooks/useMessagingProfiles';
 
 export function LoggedInStack() {
   const Stack = createNativeStackNavigator<LoggedInRootParamList>();
   const { inviteParams } = usePendingInvite();
   useSetUserProfileEffect();
+  // Fetch profiles early but don't wait for them
+  useProfilesForAllTiles();
   const {
     account,
     isLoading: isLoadingAccount,

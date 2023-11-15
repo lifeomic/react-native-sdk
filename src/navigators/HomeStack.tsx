@@ -17,11 +17,20 @@ import { MyDataScreen } from '../screens/MyDataScreen';
 import { YoutubePlayerScreen } from '../screens/YoutubePlayerScreen';
 import { navigationScreenListeners } from '../hooks/useLogoHeaderOptions';
 import { DirectMessagesScreen } from '../screens/DirectMessagesScreen';
-import { MessageScreen } from '../screens/MessageScreen';
+import { createMessageScreen } from '../screens/MessageScreen';
 import { useInvalidateTodayCountCache } from '../hooks/todayTile/useTodayTasks';
 import { useQueryClient } from '@tanstack/react-query';
+import { createComposeMessageScreen } from '../screens/ComposeMessageScreen';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
+
+const MessageScreen = createMessageScreen<HomeStackParamList>({
+  DirectMessageScreen: 'Home/DirectMessage',
+  ComposeMessageScreen: 'Home/ComposeMessage',
+});
+const ComposeMessageScreen = createComposeMessageScreen<HomeStackParamList>({
+  DirectMessageScreen: 'Home/DirectMessage',
+});
 
 export function HomeStack() {
   const { getAdditionalHomeScreens, logoHeaderConfig, CustomHomeScreen } =
@@ -78,11 +87,16 @@ export function HomeStack() {
       />
       <Stack.Screen name="Home/Messages" component={MessageScreen} />
       <Stack.Screen
+        name="Home/ComposeMessage"
+        component={ComposeMessageScreen}
+        options={{ presentation: 'containedModal' }}
+      />
+      <Stack.Screen
         name="Home/DirectMessage"
         component={DirectMessagesScreen}
         listeners={() => ({
           beforeRemove: () => {
-            queryClient.invalidateQueries({ queryKey: ['privatePost'] });
+            queryClient.invalidateQueries({ queryKey: ['conversations'] });
           },
         })}
       />

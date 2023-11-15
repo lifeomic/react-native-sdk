@@ -2,25 +2,21 @@ import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import {
   ActiveAccountContextProvider,
+  PREFERRED_ACCOUNT_ID_KEY,
   useActiveAccount,
 } from './useActiveAccount';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import * as useAsyncStorage from './useAsyncStorage';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
-import { useUser } from './useUser';
 import { createRestAPIMock } from '../test-utils/rest-api-mocking';
+import { _store } from './useStoredValue';
 
 const api = createRestAPIMock();
 
-jest.mock('./useUser', () => ({
-  useUser: jest.fn(),
+jest.mock('./useAuth', () => ({
+  useAuth: () => ({
+    isLoggedIn: true,
+  }),
 }));
-
-const useUserMock = useUser as jest.Mock;
-
-let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 
 const accountId1 = 'acct1';
 const accountId2 = 'acct2';
@@ -58,20 +54,12 @@ beforeEach(() => {
       data: { accounts: mockAccounts },
     }),
   );
-  useAsyncStorageSpy.mockReturnValue([
-    '',
-    (value: string) =>
-      AsyncStorage.setItem('selectedAccountId:mockUser', value),
-    true,
-  ]);
-  useUserMock.mockReturnValue({
-    data: { id: 'mockUser' },
-  });
+
+  _store.clearAll();
 });
 
 test('without provider, methods fail', async () => {
   const { result } = renderHook(() => useActiveAccount());
-  await expect(result.current.refetch()).rejects.toBeUndefined();
   await expect(
     result.current.setActiveAccountId('bogus'),
   ).rejects.toBeUndefined();
@@ -100,18 +88,6 @@ test('exposes some props from useAccounts', async () => {
   expect(result.current).toMatchObject({
     isLoading: true,
   });
-});
-
-test('refetch forwards to useAccounts', async () => {
-  const { result } = await renderHookInContext();
-
-  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(1));
-
-  await act(async () => {
-    result.current.refetch();
-  });
-
-  await waitFor(() => expect(queryMock).toHaveBeenCalledTimes(2));
 });
 
 test('setActiveAccountId saves accountId', async () => {
@@ -153,7 +129,6 @@ test('indicates expired trial', async () => {
   await waitFor(() => {
     expect(result.current).toMatchObject({
       account: expiredTrialAccount,
-      trialExpired: true,
     });
   });
 });
@@ -167,14 +142,12 @@ test('provider allows for account override by id', async () => {
   );
 });
 
-test('uses account from async storage', async () => {
-  useAsyncStorageSpy.mockRestore();
-
-  AsyncStorageMock.getItem = jest.fn().mockResolvedValueOnce(accountId1);
-  const { result, rerender } = await renderHookInContext();
+test('uses account from mmkv', async () => {
+  _store.set(PREFERRED_ACCOUNT_ID_KEY, accountId1);
+  const { result, rerender, unmount } = await renderHookInContext();
   await waitFor(() => result.current.isLoading === false);
   rerender({});
-  expect(AsyncStorage.getItem).toBeCalledWith('selectedAccountId:mockUser');
+
   await waitFor(() =>
     expect(result.current).toMatchObject({
       account: mockAccounts[0],
@@ -182,8 +155,9 @@ test('uses account from async storage', async () => {
       accountsWithProduct: mockAccounts,
     }),
   );
+  unmount();
 
-  AsyncStorageMock.getItem = jest.fn().mockResolvedValueOnce(accountId2);
+  _store.set(PREFERRED_ACCOUNT_ID_KEY, accountId2);
   const { result: nextResult, rerender: nextRerender } =
     await renderHookInContext();
   await waitFor(() => nextResult.current.isLoading === false);
@@ -195,15 +169,12 @@ test('uses account from async storage', async () => {
       accountsWithProduct: mockAccounts,
     }),
   );
-
-  useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 });
 
 test('initial render writes selected account to async storage', async () => {
   await renderHookInContext(accountId2);
   await waitFor(() =>
-    expect(AsyncStorageMock.setItem).toBeCalledWith(
-      'selectedAccountId:mockUser',
+    expect(_store.getString(PREFERRED_ACCOUNT_ID_KEY)).toStrictEqual(
       accountId2,
     ),
   );
@@ -212,8 +183,7 @@ test('initial render writes selected account to async storage', async () => {
 test('setAccountAccountId writes selected account to async storage', async () => {
   const { result } = await renderHookInContext();
   await waitFor(() =>
-    expect(AsyncStorageMock.setItem).toBeCalledWith(
-      'selectedAccountId:mockUser',
+    expect(_store.getString(PREFERRED_ACCOUNT_ID_KEY)).toStrictEqual(
       accountId1,
     ),
   );
@@ -221,8 +191,7 @@ test('setAccountAccountId writes selected account to async storage', async () =>
     result.current.setActiveAccountId(accountId2);
   });
   await waitFor(() =>
-    expect(AsyncStorageMock.setItem).toBeCalledWith(
-      'selectedAccountId:mockUser',
+    expect(_store.getString(PREFERRED_ACCOUNT_ID_KEY)).toStrictEqual(
       accountId2,
     ),
   );
@@ -250,8 +219,7 @@ test('handles accepted invites by refetching and setting account', async () => {
   });
 
   await waitFor(() =>
-    expect(AsyncStorageMock.setItem).toBeCalledWith(
-      'selectedAccountId:mockUser',
+    expect(_store.getString(PREFERRED_ACCOUNT_ID_KEY)).toStrictEqual(
       invitedAccountId,
     ),
   );
