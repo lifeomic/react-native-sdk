@@ -1,6 +1,6 @@
 export * from './HomeStack';
 export * from './NotificationsStack';
-export * from './RootStack';
+export * from './LoggedInStack';
 export * from './SettingsStack';
 export * from './TabNavigator';
 export * from './types';
