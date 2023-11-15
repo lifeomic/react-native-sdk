@@ -49,7 +49,13 @@ export type Tracker<CustomEventMap extends Record<string, unknown>> = {
   reset: AnalyticsEventTypeHandlers['reset'];
 };
 
-// Wrapper around analyticsEvents to allow users to set types
+/**
+ * Create a type safe way to emit analytics events. Can do the following actions:
+ *
+ * track: tracks an event with a given name and payload with values relevant to that event
+ * userPropertyUpdate: set a relevant value for the current logged in user
+ * reset: reset the current user tracking session, usually when the user logs out
+ */
 export const createAnalyticsEmitter = <
   EventMap extends Record<string, unknown>,
 >(): Tracker<EventMap> => {
