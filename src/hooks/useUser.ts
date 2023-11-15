@@ -1,13 +1,7 @@
-import { useAuth } from './useAuth';
 import { useRestCache, useRestMutation, useRestQuery } from './rest-api';
 
 export function useUser() {
-  const { authResult } = useAuth();
-  return useRestQuery(
-    'GET /v1/user',
-    {},
-    { enabled: !!authResult?.accessToken },
-  );
+  return useRestQuery('GET /v1/user', {});
 }
 
 export const useUpdateUser = () => {
