@@ -284,6 +284,39 @@ test('cannot select more than one non-provider', async () => {
   expect(queryAllByTestId('chip').length).toBe(1);
 });
 
+test('can remove non-provider', async () => {
+  const { getByTestId, queryAllByTestId } = render(
+    <GraphQLClientContextProvider baseURL={baseURL}>
+      <ComposeMessageScreen
+        navigation={useNavigation() as any}
+        routeMapIn={routeMap}
+        route={
+          {
+            params: {
+              tileId: 'mockTileId',
+            },
+          } as any
+        }
+      />
+    </GraphQLClientContextProvider>,
+  );
+
+  expect(queryAllByTestId('chip').length).toBe(0);
+
+  const addButton = await getByTestId('add-patient-button');
+  fireEvent.press(addButton);
+  const searchBar = await getByTestId('search-bar');
+  fireEvent.changeText(searchBar, 'User 3');
+
+  const item = await getByTestId('user-list-item');
+  fireEvent.press(item);
+  expect(queryAllByTestId('chip').length).toBe(1);
+
+  fireEvent.press(await getByTestId('chip'));
+
+  expect(queryAllByTestId('chip').length).toBe(0);
+});
+
 test('can select more than one provider', async () => {
   const { getByTestId, queryAllByTestId } = render(
     <GraphQLClientContextProvider baseURL={baseURL}>
@@ -315,4 +348,36 @@ test('can select more than one provider', async () => {
   const item2 = await getByTestId('user-list-item');
   fireEvent.press(item2);
   expect(queryAllByTestId('chip').length).toBe(2);
+});
+
+test('can remove provider', async () => {
+  const { getByTestId, queryAllByTestId } = render(
+    <GraphQLClientContextProvider baseURL={baseURL}>
+      <ComposeMessageScreen
+        routeMapIn={routeMap}
+        navigation={useNavigation() as any}
+        route={
+          {
+            params: {
+              tileId: 'mockTileId',
+            },
+          } as any
+        }
+      />
+    </GraphQLClientContextProvider>,
+  );
+
+  expect(queryAllByTestId('chip').length).toBe(0);
+
+  const addButton = await getByTestId('add-provider-button');
+  fireEvent.press(addButton);
+  const searchBar = await getByTestId('search-bar');
+  fireEvent.changeText(searchBar, 'User 1');
+  const item = await getByTestId('user-list-item');
+  fireEvent.press(item);
+  expect(queryAllByTestId('chip').length).toBe(1);
+
+  fireEvent.press(await getByTestId('chip'));
+
+  expect(queryAllByTestId('chip').length).toBe(0);
 });

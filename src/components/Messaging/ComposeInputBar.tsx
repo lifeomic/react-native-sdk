@@ -14,7 +14,7 @@ import { uniq } from 'lodash';
 import type { ComposeScreenParamTypes } from '../../screens/ComposeMessageScreen';
 import { toRouteMap } from '../../screens/utils/stack-helpers';
 import { UserProfile } from '../../hooks/useMessagingProfiles';
-import { View } from 'react-native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 
 type Props<ParamList extends ParamListBase> = {
   users: UserProfile[];
@@ -90,10 +90,14 @@ export function ComposeInputBar<ParamList extends ParamListBase>({
   ]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <InputToolbar
         containerStyle={styles.inputToolbarContainer}
         primaryStyle={styles.inputToolbarPrimaryView}
+        renderSend={SendButton}
         renderComposer={(props) => {
           return (
             <Composer
@@ -107,8 +111,7 @@ export function ComposeInputBar<ParamList extends ParamListBase>({
           );
         }}
       />
-      <SendButton />
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -127,10 +130,12 @@ const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
   inputToolbarPrimaryView: {
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'flex-start',
+    alignItems: 'stretch',
   },
   inputText: {
     textAlignVertical: 'top',
+    flex: 1,
+    minHeight: 300,
   },
   sendIconColor: {
     enabled: theme.colors.primary,

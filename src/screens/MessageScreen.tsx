@@ -177,7 +177,9 @@ export function MessageScreen<ParamList extends ParamListBase>({
       .flatMap((edge) => edge.node)
       // Conversations that contain users not part of this message tile should be hidden
       .filter((node) =>
-        node.userIds.every((id) => profiles?.find((p) => p.id === id)),
+        node.userIds.every(
+          (id) => id === userData?.id || profiles?.find((p) => p.id === id),
+        ),
       ),
   );
 
