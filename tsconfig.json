@@ -20,5 +20,11 @@
       "@styles": ["./src/components/BrandConfigProvider/styles/types"]
     }
   },
-  "include": ["index.ts", "src/**/*", "lib/**/*", "__mocks__/**/*"]
+  "include": [
+    "index.ts",
+    "src/**/*",
+    "lib/**/*",
+    "example/**/*",
+    "__mocks__/**/*"
+  ]
 }
