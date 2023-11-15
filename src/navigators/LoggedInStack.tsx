@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { TabNavigator } from './TabNavigator';
 import { ConsentScreen } from '../screens/ConsentScreen';
 import { CircleThreadScreen } from '../screens/CircleThreadScreen';
-import { InviteRequiredScreen } from '../screens/InviteRequiredScreen';
 import { OnboardingCourseScreen } from '../screens/OnboardingCourseScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoggedInRootParamList } from './types';
@@ -24,17 +23,8 @@ export function LoggedInStack() {
   useSetUserProfileEffect();
   // Fetch profiles early but don't wait for them
   useProfilesForAllTiles();
-  const {
-    account,
-    isLoading: isLoadingAccount,
-    isFetched: isFetchedAccount,
-  } = useActiveAccount();
-  const {
-    activeProject,
-    activeSubjectId,
-    isLoading: isLoadingProject,
-    isFetched: isFetchedProject,
-  } = useActiveProject();
+  const { account } = useActiveAccount();
+  const { activeProject, activeSubjectId } = useActiveProject();
   const { useShouldRenderConsentScreen } = useConsent();
   const { shouldRenderConsentScreen, isLoading: loadingConsents } =
     useShouldRenderConsentScreen();
@@ -49,11 +39,6 @@ export function LoggedInStack() {
     !!onAppSessionStart,
   );
 
-  const loadingProject = !isFetchedProject || isLoadingProject;
-  const loadingAccount = !isFetchedAccount || isLoadingAccount;
-  const hasAccount = !loadingAccount && !!account?.id;
-  const loadingAccountOrProject =
-    loadingAccount || (hasAccount && loadingProject);
   const loadingOnboardingCourse =
     !onboardingCourseIsFetched || onboardingCourseIsLoading;
   const hasAccountAndProject = !!(activeProject?.id && account?.id);
@@ -62,20 +47,16 @@ export function LoggedInStack() {
     setShouldWaitForOnAppStart(false);
   }, [setShouldWaitForOnAppStart]);
 
-  const initialRoute = !hasAccountAndProject
-    ? 'InviteRequired'
-    : shouldRenderConsentScreen
+  const initialRoute = shouldRenderConsentScreen
     ? 'screens/ConsentScreen'
     : shouldLaunchOnboardingCourse
     ? 'screens/OnboardingCourseScreen'
     : 'app';
 
   const getLoadingMessage = useCallback(() => {
-    if (loadingAccountOrProject) {
-      return t('waiting-for-account-and-project', 'Loading account');
-    } else if (hasAccountAndProject && loadingConsents) {
+    if (loadingConsents) {
       return t('root-stack-waiting-for-consents', 'Loading consents');
-    } else if (hasAccountAndProject && loadingOnboardingCourse) {
+    } else if (loadingOnboardingCourse) {
       return t(
         'root-stack-waiting-for-app-config',
         'Loading onboarding course data',
@@ -91,9 +72,7 @@ export function LoggedInStack() {
       );
     }
   }, [
-    hasAccountAndProject,
     inviteParams?.inviteId,
-    loadingAccountOrProject,
     loadingConsents,
     loadingJoinCircles,
     loadingOnboardingCourse,
@@ -130,14 +109,6 @@ export function LoggedInStack() {
 
   return (
     <Stack.Navigator initialRouteName={initialRoute}>
-      <Stack.Screen
-        name="InviteRequired"
-        component={InviteRequiredScreen}
-        options={{
-          presentation: 'fullScreenModal',
-          title: t('invite-required', 'Invitation Required'),
-        }}
-      />
       <Stack.Screen
         name="app"
         component={TabNavigator}
