@@ -150,3 +150,10 @@ After:
   }}
 />
 ```
+
+### 5.x -> 6.x
+
+- `RootStack` has been removed. Use `LoggedInStack` in it's place instead.
+
+- `LoggedInProviders` will now render the login screen if the user is not logged
+  in.
