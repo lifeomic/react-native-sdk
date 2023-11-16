@@ -8,6 +8,15 @@ import { useNavigation } from '@react-navigation/native';
 import { useAppConfig } from '../hooks/useAppConfig';
 
 jest.mock('../hooks/useMessagingProfiles');
+jest.mock('@react-navigation/elements', () => ({
+  useHeaderHeight: jest.fn(() => 0),
+}));
+jest.mock('@react-navigation/bottom-tabs', () => ({
+  useBottomTabBarHeight: jest.fn(() => 0),
+}));
+jest.mock('../hooks/useLogoHeaderDimensions', () => ({
+  useLogoHeaderDimensions: () => [{ height: 0 }],
+}));
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));

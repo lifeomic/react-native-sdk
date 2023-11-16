@@ -1,39 +1,29 @@
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { useStyles } from '../hooks/useStyles';
-import { createStyles, useIcons } from '../components/BrandConfigProvider';
-import { useTheme } from '../hooks/useTheme';
-import { shadow } from 'react-native-paper';
-import { ViewStyle } from 'react-native';
+import React, { useCallback } from 'react';
+import {
+  BottomTabBarProps,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
+import { useIcons } from '../components/BrandConfigProvider';
 import { TabParamList } from './types';
 import { useTabsConfig } from '../hooks/useTabsConfig';
 import { TabBar } from './TabBar';
 import { getDefaultTabs } from './getDefaultTabs';
+import { BottomNavigationBar } from './BottomNavigationBar';
+
+const Tab = createBottomTabNavigator<TabParamList>();
 
 export function TabNavigator() {
-  const { styles } = useStyles(defaultStyles);
-  const theme = useTheme();
   const icons = useIcons();
   const { tabs, useTabBar } = useTabsConfig(getDefaultTabs(icons));
 
-  const Tab = useTabBar
-    ? createBottomTabNavigator<TabParamList>()
-    : createMaterialBottomTabNavigator<TabParamList>();
-
-  const tabBar = (props: any) => {
-    return useTabBar ? <TabBar {...props} /> : null;
-  };
+  const tabBar = useCallback(
+    (props: BottomTabBarProps) =>
+      useTabBar ? <TabBar {...props} /> : <BottomNavigationBar {...props} />,
+    [useTabBar],
+  );
 
   return (
-    <Tab.Navigator
-      tabBar={tabBar}
-      shifting={true}
-      barStyle={styles.barStyle}
-      activeColor={theme.colors.onSurface}
-      inactiveColor={theme.colors.onSurfaceDisabled}
-      labeled
-    >
+    <Tab.Navigator tabBar={tabBar}>
       {tabs?.map((tab) => (
         <Tab.Screen
           name={tab.name}
@@ -51,18 +41,3 @@ export function TabNavigator() {
     </Tab.Navigator>
   );
 }
-
-const defaultStyles = createStyles('TabNavigator', (theme) => ({
-  barStyle: {
-    backgroundColor: theme.colors.background,
-    zIndex: 1,
-    ...shadow(4),
-  } as ViewStyle,
-}));
-
-declare module '@styles' {
-  interface ComponentStyles
-    extends ComponentNamedStyles<typeof defaultStyles> {}
-}
-
-export type TabNavigatorStyles = NamedStylesProp<typeof defaultStyles>;

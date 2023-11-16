@@ -14,6 +14,7 @@ import { ThemedNavigationContainer } from './ThemedNavigationContainer';
 import { LoggedInProviders } from './LoggedInProviders';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
+import { LogoHeaderDimensionsContextProvider } from '../hooks/useLogoHeaderDimensions';
 
 const queryClient = new QueryClient();
 
@@ -38,7 +39,11 @@ export function RootProviders({ authConfig, children }: RootProvidersProps) {
                       <SafeAreaProvider>
                         <ThemedNavigationContainer>
                           <Toast />
-                          <LoggedInProviders>{children}</LoggedInProviders>
+                          <LoggedInProviders>
+                            <LogoHeaderDimensionsContextProvider>
+                              {children}
+                            </LogoHeaderDimensionsContextProvider>
+                          </LoggedInProviders>
                         </ThemedNavigationContainer>
                       </SafeAreaProvider>
                     </ActionSheetProvider>
