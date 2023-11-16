@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { VictoryLine, VictoryAxis, VictoryScatter } from 'victory-native';
 import { useVictoryTheme } from '../useVictoryTheme';
 import { useCommonChartProps } from '../useCommonChartProps';
 import { PointData } from './useChartData';
-import { round } from 'lodash';
+import { round, sumBy } from 'lodash';
 
 export type Trace = {
   type: 'Observation';
   label: string;
   coding: Pick<fhir3.Coding, 'code' | 'system'>[];
   color?: string;
+  showTrend?: boolean;
 };
 
 type Props = {
@@ -21,12 +22,37 @@ type Props = {
 
 export const TraceLine = (props: Props) => {
   const { trace, data, xDomain, variant = 'trace1' } = props;
+  const { showTrend } = trace;
   const isTrace1 = variant === 'trace1';
   const common = useCommonChartProps();
   const theme = useVictoryTheme(trace, variant);
 
   const domainMax = Math.max(...data.map((v) => v.y));
   const domainMin = Math.min(...data.map((v) => v.y));
+  const yDomain = [domainMin, domainMax] as [number, number];
+
+  const trend = useMemo(() => {
+    if (showTrend) {
+      const xAvg = sumBy(data, 'x') / data.length;
+      const yAvg = sumBy(data, 'y') / data.length;
+      const sumOfProducts = sumBy(data, (d) => (d.x - xAvg) * (d.y - yAvg));
+      const sumOfSquares = sumBy(data, (d) => Math.pow(d.x - xAvg, 2));
+      const m = sumOfProducts / sumOfSquares;
+      const b = yAvg - m * xAvg;
+      return [
+        {
+          x: xDomain[0],
+          y: m * xDomain[0] + b,
+        },
+        {
+          x: xDomain[1],
+          y: m * xDomain[1] + b,
+        },
+      ];
+    }
+
+    return false;
+  }, [showTrend, data, xDomain]);
 
   return (
     <>
@@ -49,6 +75,15 @@ export const TraceLine = (props: Props) => {
       />
       {!!data?.length && (
         <>
+          {trend && (
+            <VictoryLine
+              {...common}
+              domain={{ x: xDomain, y: yDomain }}
+              standalone={false}
+              data={trend}
+              theme={theme.trendlineTheme}
+            />
+          )}
           <VictoryLine
             {...common}
             domain={{ x: xDomain }}
