@@ -23,7 +23,7 @@ export type RootProvidersProps = {
 };
 
 export function RootProviders({ authConfig, children }: RootProvidersProps) {
-  const { apiBaseURL, theme } = useDeveloperConfig();
+  const { apiBaseURL, theme, brand } = useDeveloperConfig();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -32,7 +32,7 @@ export function RootProviders({ authConfig, children }: RootProvidersProps) {
           <GraphQLClientContextProvider baseURL={apiBaseURL}>
             <InviteProvider>
               <OAuthContextProvider authConfig={authConfig}>
-                <BrandConfigProvider theme={theme}>
+                <BrandConfigProvider theme={theme} {...brand}>
                   <NoInternetToastProvider>
                     <ActionSheetProvider>
                       <SafeAreaProvider>

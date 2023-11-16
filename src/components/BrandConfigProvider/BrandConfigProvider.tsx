@@ -16,6 +16,8 @@ interface Props {
   children: React.ReactNode;
 }
 
+export type Brand = Pick<Props, 'theme' | 'styles' | 'icons'>;
+
 export function BrandConfigProvider({ theme, styles, icons, children }: Props) {
   const [brand, setBrand] = useState({
     theme: theme || {},
