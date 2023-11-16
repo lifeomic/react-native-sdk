@@ -25,7 +25,7 @@ import { Project } from '../hooks/useSubjectProjects';
  * DeveloperConfig provides a single interface to configure the app at build-time.
  * Unlike useAppConfig, which is populated at runtime via API, properties in this
  * type are provided at dev/build time.  Another way to think about it is this is a
- * high-level development interface for devs using RootProviders and RootStack.
+ * high-level development interface for devs using RootProviders and LoggedInStack.
  *
  * NOTE: All props are optional, and DeveloperConfigProvider is not required in
  * your app.

@@ -13,16 +13,16 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemedNavigationContainer } from './ThemedNavigationContainer';
 import { LoggedInProviders } from './LoggedInProviders';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import Toast from 'react-native-toast-message';
 
 const queryClient = new QueryClient();
 
-export function RootProviders({
-  authConfig,
-  children,
-}: {
+export type RootProvidersProps = {
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
-}) {
+};
+
+export function RootProviders({ authConfig, children }: RootProvidersProps) {
   const { apiBaseURL, theme } = useDeveloperConfig();
 
   return (
@@ -37,6 +37,7 @@ export function RootProviders({
                     <ActionSheetProvider>
                       <SafeAreaProvider>
                         <ThemedNavigationContainer>
+                          <Toast />
                           <LoggedInProviders>{children}</LoggedInProviders>
                         </ThemedNavigationContainer>
                       </SafeAreaProvider>

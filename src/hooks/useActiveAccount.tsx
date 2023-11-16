@@ -3,7 +3,6 @@ import { Account } from '../types/rest-types';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
 import { useRestCache, useRestQuery } from './rest-api';
-import { useAuth } from './useAuth';
 import { useStoredValue } from './useStoredValue';
 
 export type ActiveAccountProps = {
@@ -38,13 +37,11 @@ export const ActiveAccountContextProvider = ({
    */
   accountIdToSelect?: string;
 }) => {
-  const { isLoggedIn } = useAuth();
   const accountsResult = useRestQuery(
     'GET /v1/accounts',
     {},
     {
       select: (data) => data.accounts.filter((a) => a.products.includes('LR')),
-      enabled: isLoggedIn,
     },
   );
 
