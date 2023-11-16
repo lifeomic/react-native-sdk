@@ -32,6 +32,7 @@ const directMessageScreen = (
   <QueryClientProvider client={queryClient}>
     <GraphQLClientContextProvider baseURL={baseURL}>
       <MessagesTile
+        Icon={() => null}
         navigation={navigateMock as any}
         id="some-messages-tile"
         title="Message your doctor"
