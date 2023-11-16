@@ -141,6 +141,7 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             navigation={navigation}
             title={displayName}
             id={id}
+            key={id}
           />
         ))}
         {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
