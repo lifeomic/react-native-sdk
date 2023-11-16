@@ -203,3 +203,10 @@ const App = () => {
   );
 };
 ```
+
+### 6.x -> 7.x
+
+- `ActiveAccountContextProvider` and `ActiveProjectContextProvider` will now
+  _not_ render their children until the active account + project have been
+  resolved. If there is no active account or project, the `InviteRequired`
+  screen will be rendered in the place of children.

@@ -1,35 +1,25 @@
-import React, {
-  createContext,
-  useEffect,
-  useState,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { createContext, useContext } from 'react';
 import { Subject, useMe } from './useMe';
 import { Project, useSubjectProjects } from './useSubjectProjects';
 import { useAsyncStorage } from './useAsyncStorage';
 import { useUser } from './useUser';
+import { combineQueries } from '@lifeomic/one-query';
+import { ActivityIndicatorView } from '../components';
+import { t } from 'i18next';
+import { InviteRequiredScreen } from '../screens/InviteRequiredScreen';
+
 const selectedProjectIdKey = 'selectedProjectIdKey';
 
-export type ActiveProjectProps = {
-  activeProject?: Project;
-  activeSubjectId?: string;
-  activeSubject?: Subject;
-};
-
-export type ActiveProjectContextProps = ActiveProjectProps & {
+export type ActiveProjectContextValue = {
+  activeProject: Project;
+  activeSubjectId: string;
+  activeSubject: Subject;
   setActiveProjectId: (projectId: string) => void;
-  isLoading: boolean;
-  isFetched: boolean;
-  error?: any;
 };
 
-export const ActiveProjectContext = createContext({
-  setActiveProjectId: () => Promise.reject(),
-  isLoading: true,
-  isFetched: false,
-} as ActiveProjectContextProps);
+export const ActiveProjectContext = createContext<
+  ActiveProjectContextValue | undefined
+>(undefined);
 
 const findProjectAndSubjectById = (
   projectId?: string | null,
@@ -64,111 +54,60 @@ export const ActiveProjectContextProvider = ({
 }: {
   children?: React.ReactNode;
 }) => {
-  const projectsResult = useSubjectProjects();
-  const projectLoading = projectsResult.isLoading || !projectsResult.isFetched;
-
-  const useMeResult = useMe();
-  const useMeLoading = useMeResult.isLoading || !useMeResult.isFetched;
-  const { data: userData } = useUser();
-  const userId = userData?.id;
-  const [selectedId, setSelectedId] = useState<string>();
-  const [previousUserId, setPreviousUserId] = useState(userId);
+  const query = combineQueries([useSubjectProjects(), useMe(), useUser()]);
+  const userId = query.data?.[2].id;
   const [storedProjectIdResult, setStoredProjectId, isStorageLoaded] =
     useAsyncStorage(
       `${selectedProjectIdKey}:${userId}`,
       !!selectedProjectIdKey && !!userId,
     );
 
-  /**
-   * Initial setting of activeProject
-   */
-  const hookReturnValue = useMemo<ActiveProjectProps>(() => {
-    if (
-      !userId || // wait for user id before reading and writing to storage
-      projectLoading || // wait for projects endpoint
-      useMeLoading ||
-      !isStorageLoaded
-    ) {
-      return {};
-    }
-
-    const { selectedProject, selectedSubject } = findProjectAndSubjectById(
-      selectedId ?? storedProjectIdResult,
-      projectsResult.data,
-      useMeResult.data,
+  if (query.status !== 'success' || !isStorageLoaded) {
+    return (
+      <ActivityIndicatorView
+        message={t('waiting-for-account-and-project', 'Loading account')}
+      />
     );
+  }
 
-    if (selectedProject && selectedSubject) {
-      return {
-        activeProject: selectedProject,
-        activeSubjectId: selectedSubject.subjectId,
-        activeSubject: selectedSubject,
-      };
-    }
+  const [projects, me] = query.data;
 
-    return {};
-  }, [
-    userId,
-    projectLoading,
-    useMeLoading,
-    isStorageLoaded,
-    selectedId,
+  const { selectedProject, selectedSubject } = findProjectAndSubjectById(
     storedProjectIdResult,
-    projectsResult.data,
-    useMeResult.data,
-  ]);
-
-  useEffect(() => {
-    if (hookReturnValue?.activeProject?.id) {
-      setStoredProjectId(hookReturnValue?.activeProject?.id);
-    }
-  }, [hookReturnValue?.activeProject?.id, setStoredProjectId]);
-
-  // Clear selected project when
-  // we've detected that the userId has changed
-  useEffect(() => {
-    if (userId !== previousUserId) {
-      projectsResult.refetch();
-      setPreviousUserId(userId);
-    }
-  }, [previousUserId, userId, projectsResult]);
-
-  const setActiveProjectId = useCallback(
-    (projectId: string) => {
-      const { selectedProject } = findProjectAndSubjectById(
-        projectId,
-        projectsResult.data,
-        useMeResult.data,
-      );
-
-      if (selectedProject) {
-        setSelectedId(selectedProject.id);
-      }
-    },
-    [projectsResult.data, useMeResult.data],
+    projects,
+    me,
   );
 
+  // TODO: handle error state.
+  if (!selectedProject || !selectedSubject) {
+    return <InviteRequiredScreen />;
+  }
+
+  const value: ActiveProjectContextValue = {
+    activeProject: selectedProject,
+    activeSubjectId: selectedSubject.subjectId,
+    activeSubject: selectedSubject,
+    setActiveProjectId: (projectId: string) => {
+      const result = findProjectAndSubjectById(projectId, projects, me);
+      if (result.selectedProject) {
+        setStoredProjectId(result.selectedProject.id);
+      }
+    },
+  };
+
   return (
-    <ActiveProjectContext.Provider
-      value={{
-        ...hookReturnValue,
-        setActiveProjectId,
-        isLoading: !!(
-          projectsResult.isLoading ||
-          useMeResult.isLoading ||
-          !isStorageLoaded
-        ),
-        isFetched: !!(
-          projectsResult.isFetched &&
-          useMeResult.isFetched &&
-          isStorageLoaded
-        ),
-        error: projectsResult.error || useMeResult.error,
-      }}
-    >
+    <ActiveProjectContext.Provider value={value}>
       {children}
     </ActiveProjectContext.Provider>
   );
 };
 
-export const useActiveProject = () => useContext(ActiveProjectContext);
+export const useActiveProject = () => {
+  const value = useContext(ActiveProjectContext);
+  if (!value) {
+    throw new Error(
+      'useActiveProject must be used within an ActiveProjectContextProvider',
+    );
+  }
+  return value;
+};
