@@ -157,3 +157,49 @@ After:
 
 - `LoggedInProviders` will now render the login screen if the user is not logged
   in.
+
+- If you are using a custom `BrandConfigProvider` as a child of `RootProviders`,
+  you should move your locally-specific brand to the `DeveloperConfigProvider`
+  instead. Example:
+
+```tsx
+// INSTEAD OF THIS:
+const myBrand = {
+  /* ... */
+};
+const App = () => {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={
+        {
+          /* ... */
+        }
+      }
+    >
+      <RootProviders authConfig={authConfig}>
+        <BrandConfigProvider {...brand}>
+          <RootStack />
+        </BrandConfigProvider>
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+};
+
+// DO THIS:
+const myBrand = {
+  /* ... */
+};
+const App = () => {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={{
+        brand: myBrand,
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <LoggedInStack />
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+};
+```
