@@ -14,7 +14,6 @@ import { uniq } from 'lodash';
 import type { ComposeScreenParamTypes } from '../../screens/ComposeMessageScreen';
 import { toRouteMap } from '../../screens/utils/stack-helpers';
 import { UserProfile } from '../../hooks/useMessagingProfiles';
-import { KeyboardAvoidingView, Platform } from 'react-native';
 
 type Props<ParamList extends ParamListBase> = {
   users: UserProfile[];
@@ -90,28 +89,23 @@ export function ComposeInputBar<ParamList extends ParamListBase>({
   ]);
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <InputToolbar
-        containerStyle={styles.inputToolbarContainer}
-        primaryStyle={styles.inputToolbarPrimaryView}
-        renderSend={SendButton}
-        renderComposer={(props) => {
-          return (
-            <Composer
-              {...props}
-              onTextChanged={(text) => setMessageText(text)}
-              text={messageText}
-              textInputStyle={styles.inputText}
-              multiline={true}
-              placeholderTextColor={styles.placeholderText?.color?.toString()}
-            />
-          );
-        }}
-      />
-    </KeyboardAvoidingView>
+    <InputToolbar
+      containerStyle={styles.inputToolbarContainer}
+      primaryStyle={styles.inputToolbarPrimaryView}
+      renderSend={SendButton}
+      renderComposer={(props) => {
+        return (
+          <Composer
+            {...props}
+            onTextChanged={(text) => setMessageText(text)}
+            text={messageText}
+            textInputStyle={styles.inputText}
+            multiline={true}
+            placeholderTextColor={styles.placeholderText?.color?.toString()}
+          />
+        );
+      }}
+    />
   );
 }
 
@@ -126,6 +120,7 @@ const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
     flex: 1,
     position: 'relative',
     alignContent: 'flex-start',
+    minHeight: 150,
   },
   inputToolbarPrimaryView: {
     flex: 1,
@@ -135,7 +130,6 @@ const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
   inputText: {
     textAlignVertical: 'top',
     flex: 1,
-    minHeight: 300,
   },
   sendIconColor: {
     enabled: theme.colors.primary,

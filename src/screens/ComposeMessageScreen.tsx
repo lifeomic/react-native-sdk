@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -19,8 +20,9 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
+  Platform,
+  StatusBar,
 } from 'react-native';
 import { t } from 'i18next';
 import { createStyles, useIcons } from '../components';
@@ -30,10 +32,13 @@ import { tID } from '../components/TrackTile/common/testID';
 import { ScreenParamTypes as BaseScreenParamTypes } from './utils/stack-helpers';
 import { DirectMessageParams } from './DirectMessagesScreen';
 import { ParamListBase } from '@react-navigation/native';
+import { useHeaderHeight } from '@react-navigation/elements';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useAppConfig } from '../hooks/useAppConfig';
 import { UserProfile } from '../hooks/useMessagingProfiles';
 import { SearchRecipientsModal } from '../components/Messaging/SearchRecipientsModal';
 import { useUser } from '../hooks/useUser';
+import { useLogoHeaderDimensions } from '../hooks/useLogoHeaderDimensions';
 
 export type ComposeMessageParams = {
   tileId: string;
@@ -42,8 +47,6 @@ export type ComposeMessageParams = {
 type SubRoutesParamList = {
   DirectMessageScreen: DirectMessageParams;
 };
-
-const Container = Platform.OS === 'ios' ? KeyboardAvoidingView : View;
 
 export type ComposeScreenParamTypes<ParamList extends ParamListBase> =
   BaseScreenParamTypes<ComposeMessageParams, ParamList, SubRoutesParamList>;
@@ -60,6 +63,10 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
   const [selectedProfiles, setSelectedProfiles] = useState<UserProfile[]>([]);
   const { data: appConfig } = useAppConfig();
   const { data: userData } = useUser();
+  const scrollRef = useRef<ScrollView>(null);
+  const appBarHeight = useHeaderHeight();
+  const tabBarHeight = useBottomTabBarHeight();
+  const [{ height: logoHeaderHeight }] = useLogoHeaderDimensions();
   const messageTile = appConfig?.homeTab?.messageTiles?.find(
     (tile) => tile.id === tileId,
   );
@@ -128,8 +135,20 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
           />
         </Modal>
       </Portal>
-      <Container behavior="padding" style={styles.rootContainer}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.rootContainer}
+        keyboardVerticalOffset={
+          appBarHeight +
+          (logoHeaderHeight || (StatusBar.currentHeight ?? 0)) + // LogoHeader accounts for statusBar height. If it is not set, we should factor in the statusBar height.
+          Platform.select({ android: tabBarHeight, default: 0 }) // Android changes the height of the app when the keyboard is open so tabs are always visible.
+        }
+      >
         <ScrollView
+          ref={scrollRef}
+          onContentSizeChange={() => {
+            scrollRef.current?.scrollToEnd({ animated: true });
+          }}
           style={styles.scrollContainer}
           contentContainerStyle={styles.scrollContentContainer}
         >
@@ -227,7 +246,7 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
             </View>
           </TouchableWithoutFeedback>
         </ScrollView>
-      </Container>
+      </KeyboardAvoidingView>
     </Provider>
   );
 }
