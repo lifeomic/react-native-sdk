@@ -210,3 +210,6 @@ const App = () => {
   _not_ render their children until the active account + project have been
   resolved. If there is no active account or project, the `InviteRequired`
   screen will be rendered in the place of children.
+
+- The `useActiveProject` hook now returns non-optional data. You can simplify
+  any conditional logic around those returned values.
