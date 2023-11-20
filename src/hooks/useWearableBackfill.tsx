@@ -51,11 +51,7 @@ export const useWearableBackfill = (
     ['backfill-sync-status', ...ehrTypes],
     queryEHRSyncStatus,
     {
-      enabled:
-        !!activeSubjectId &&
-        isFetched &&
-        ehrTypes.length > 0 &&
-        !!isBackfillEnabled,
+      enabled: isFetched && ehrTypes.length > 0 && !!isBackfillEnabled,
       select(data) {
         const statuses: Record<string, boolean> = {};
 

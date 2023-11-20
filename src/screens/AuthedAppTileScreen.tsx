@@ -70,12 +70,7 @@ export const AuthedAppTileScreen = ({
     styles.backActionIcon?.color,
   ]);
 
-  const {
-    activeProject,
-    activeSubjectId,
-    isLoading: loadingProject,
-    isFetched: projectedFetched,
-  } = useActiveProject();
+  const { activeProject, activeSubjectId } = useActiveProject();
   const {
     account,
     isLoading: loadingAccounts,
@@ -89,9 +84,9 @@ export const AuthedAppTileScreen = ({
   const [isPageLoaded, setIsPageLoaded] = useState(false);
 
   // Conditions to be met before building the applet uri
-  const isLoading = loadingCode || loadingAccounts || loadingProject;
-  const isFetched = codeFetched && accountFetched && projectedFetched;
-  const hasData = data?.code && account?.id && activeProject?.id;
+  const isLoading = loadingCode || loadingAccounts;
+  const isFetched = codeFetched && accountFetched;
+  const hasData = data?.code && account?.id;
 
   const readyToBuildUri = isFetched && !isLoading && hasData;
   const oauthCallbackUrl = appTile.callbackUrls?.[0]!;
@@ -106,13 +101,8 @@ export const AuthedAppTileScreen = ({
       parsed.accountId = account.id;
     }
 
-    if (activeProject?.id) {
-      parsed.projectId = activeProject.id;
-    }
-
-    if (activeSubjectId) {
-      parsed.patientId = activeSubjectId;
-    }
+    parsed.projectId = activeProject.id;
+    parsed.patientId = activeSubjectId;
 
     for (const [key, value] of Object.entries(searchParams)) {
       parsed[key] = value;

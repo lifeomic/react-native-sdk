@@ -34,10 +34,7 @@ export const OnboardingCourseContextProvider = ({
   const onboardingCourseTitle = data?.onboardingCourse?.title;
   const { activeProject } = useActiveProject();
   const [storedDidLaunchResult, storeDidLaunch, isStorageLoaded] =
-    useAsyncStorage(
-      `${activeProject?.id}-didLaunchOnboardingCourse`,
-      !!activeProject?.id,
-    );
+    useAsyncStorage(`${activeProject.id}-didLaunchOnboardingCourse`);
   const [didLaunchCourse, setDidLaunchCourse] = useState<boolean | undefined>(
     undefined,
   );
@@ -46,10 +43,8 @@ export const OnboardingCourseContextProvider = ({
   const isFetched = isAppConfigFetched && isStorageLoaded;
 
   useEffect(() => {
-    if (activeProject?.id) {
-      setDidLaunchCourse(storedDidLaunchResult === 'true');
-    }
-  }, [storedDidLaunchResult, activeProject?.id]);
+    setDidLaunchCourse(storedDidLaunchResult === 'true');
+  }, [storedDidLaunchResult]);
 
   /* Render the onboarding course if the following conditions are met:
     1. The app config and the async storage value have been fetched
