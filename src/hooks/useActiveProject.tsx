@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { Subject, useMe } from './useMe';
 import { Project, useSubjectProjects } from './useSubjectProjects';
 import { useAsyncStorage } from './useAsyncStorage';
@@ -49,6 +49,17 @@ const findProjectAndSubjectById = (
   return { selectedProject, selectedSubject };
 };
 
+type SelectionState =
+  | {
+      status: 'success';
+      activeProject: Project;
+      activeSubject: Subject;
+      projects: Project[];
+      me: Subject[];
+    }
+  | { status: 'not-a-patient' }
+  | { status: 'loading' };
+
 export const ActiveProjectContextProvider = ({
   children,
 }: {
@@ -62,33 +73,66 @@ export const ActiveProjectContextProvider = ({
       !!selectedProjectIdKey && !!userId,
     );
 
-  if (query.status !== 'success' || !isStorageLoaded) {
+  const calculateState = (): SelectionState => {
+    if (!query.data || !isStorageLoaded) {
+      return { status: 'loading' };
+    }
+
+    const [projects, me] = query.data;
+
+    const { selectedProject, selectedSubject } = findProjectAndSubjectById(
+      storedProjectIdResult,
+      projects,
+      me,
+    );
+
+    if (!selectedProject || !selectedSubject) {
+      return { status: 'not-a-patient' };
+    }
+
+    return {
+      status: 'success',
+      activeProject: selectedProject,
+      activeSubject: selectedSubject,
+      projects,
+      me,
+    };
+  };
+
+  const state = calculateState();
+
+  // This effect handles setting the initial value in async storage.
+  const activeProjectId =
+    state.status === 'success' ? state.activeProject.id : undefined;
+  useEffect(() => {
+    if (activeProjectId && activeProjectId !== storedProjectIdResult) {
+      setStoredProjectId(activeProjectId);
+    }
+  }, [activeProjectId, storedProjectIdResult, setStoredProjectId]);
+
+  if (state.status === 'loading') {
     return (
       <ActivityIndicatorView
         message={t('waiting-for-account-and-project', 'Loading account')}
       />
     );
   }
-
-  const [projects, me] = query.data;
-
-  const { selectedProject, selectedSubject } = findProjectAndSubjectById(
-    storedProjectIdResult,
-    projects,
-    me,
-  );
-
   // TODO: handle error state.
-  if (!selectedProject || !selectedSubject) {
+  if (state.status === 'not-a-patient') {
     return <InviteRequiredScreen />;
   }
 
   const value: ActiveProjectContextValue = {
-    activeProject: selectedProject,
-    activeSubjectId: selectedSubject.subjectId,
-    activeSubject: selectedSubject,
+    activeProject: state.activeProject,
+    activeSubjectId: state.activeSubject.subjectId,
+    activeSubject: state.activeSubject,
     setActiveProjectId: (projectId: string) => {
-      const result = findProjectAndSubjectById(projectId, projects, me);
+      const result = findProjectAndSubjectById(
+        projectId,
+        state.projects,
+        state.me,
+      );
+
       if (result.selectedProject) {
         setStoredProjectId(result.selectedProject.id);
       }

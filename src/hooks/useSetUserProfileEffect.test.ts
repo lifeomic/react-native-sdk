@@ -25,7 +25,7 @@ beforeEach(() => {
   useUpdateUserMock.mockReturnValue({
     mutate: updateUser,
   });
-  useActiveProjectMock.mockReturnValue({});
+  useActiveProjectMock.mockReturnValue({ activeSubject: {} });
 });
 
 test('should update the user once all hooks load and the user does not have data', () => {
