@@ -27,6 +27,8 @@ import {
 } from '../hooks/useConversations';
 import { User } from '../types';
 import { ScreenProps } from './utils/stack-helpers';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { Platform } from 'react-native';
 
 export type DirectMessageParams = {
   users: User[];
@@ -44,6 +46,7 @@ export const DirectMessagesScreen = ({
   const { mutateAsync: markAsRead } = useMarkAsRead();
   const { data: conversations } = useInfiniteConversations();
   const { data: userData, isLoading: userLoading } = useUser();
+  const tabsHeight = useBottomTabBarHeight();
   const otherProfiles = users.filter((user) => user.id !== userData?.id);
 
   useEffect(() => {
@@ -113,6 +116,7 @@ export const DirectMessagesScreen = ({
       user={{
         _id: userData.id,
       }}
+      bottomOffset={Platform.select({ ios: tabsHeight })}
       messagesContainerStyle={styles.messagesContainerStyle}
       renderBubble={(props) => {
         return (
