@@ -90,7 +90,7 @@ export const OAuthContextProvider = ({
       // Clear cached query results on logout
       // to support switching user accounts
       queryClient.clear();
-      _sdkTracker.reset();
+      _sdkTracker.resetUser();
       if (!isLoggedIn || !authResult?.refreshToken) {
         await clearAuthResult();
         onSuccess?.();

@@ -11,11 +11,16 @@ describe('AnalyticsEvents', () => {
       usedInvite: true,
     };
     const listener = jest.fn();
+    console.log('1', listener.mock.calls);
     analyticsListener.addListener('track', listener);
+    console.log('2', listener.mock.calls);
     _sdkTracker.track(eventKey, event);
+    console.log('3', listener.mock.calls);
     analyticsListener.removeListener('track', listener);
+    console.log('4', listener.mock.calls);
     _sdkTracker.track(eventKey, event);
 
+    console.log('listen', listener.mock.calls);
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith(eventKey, event);
   });
@@ -50,14 +55,14 @@ describe('AnalyticsEvents', () => {
       'userPropertyUpdate',
       userPropertyUpdateListener,
     );
-    analyticsListener.addListener('reset', resetListener);
+    analyticsListener.addListener('resetUser', resetListener);
 
     const userId = 'analytics-user-id';
     _sdkTracker.identifyUser(userId);
     const userPropertyKey = 'analytics-user-property-key';
     const userPropertyValue = 'analytics-user-property-value';
     _sdkTracker.userPropertyUpdate(userPropertyKey, userPropertyValue);
-    _sdkTracker.reset();
+    _sdkTracker.resetUser();
 
     expect(identifyUserListener).toHaveBeenCalledTimes(1);
     expect(identifyUserListener).toHaveBeenCalledWith(userId);
