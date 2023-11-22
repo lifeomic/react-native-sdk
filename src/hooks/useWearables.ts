@@ -92,28 +92,18 @@ export const useWearables = () => {
     });
 
   const useWearableIntegrationQuery = (ehrId: string) =>
-    useQuery(
-      ['get-wearable'],
-      () =>
-        httpClient.get(`/v1/wearables/${ehrId}`, { headers: accountHeaders }),
-      {
-        enabled: !!accountHeaders,
-      },
+    useQuery(['get-wearable'], () =>
+      httpClient.get(`/v1/wearables/${ehrId}`, { headers: accountHeaders }),
     );
 
   const useWearableIntegrationsQuery = () =>
-    useQuery(
-      ['get-wearables'],
-      () =>
-        httpClient
-          .get<WearablesSyncState>('/v1/wearables', {
-            params: { appId: getBundleId().toLowerCase() },
-            headers: accountHeaders,
-          })
-          .then((res) => res.data),
-      {
-        enabled: !!accountHeaders,
-      },
+    useQuery(['get-wearables'], () =>
+      httpClient
+        .get<WearablesSyncState>('/v1/wearables', {
+          params: { appId: getBundleId().toLowerCase() },
+          headers: accountHeaders,
+        })
+        .then((res) => res.data),
     );
 
   return {

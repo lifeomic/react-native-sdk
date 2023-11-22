@@ -5,7 +5,12 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 import { Thread } from '../Thread';
-import { usePost, Post, useLoadReplies } from '../../../hooks';
+import {
+  usePost,
+  Post,
+  useLoadReplies,
+  ActiveAccountProvider,
+} from '../../../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 jest.unmock('@react-navigation/native');
@@ -89,7 +94,9 @@ const mockPost: Post = {
 const render = (children: React.ReactNode) => {
   return renderComponent(
     <QueryClientProvider client={new QueryClient()}>
-      {children}
+      <ActiveAccountProvider account="mockaccount">
+        {children}
+      </ActiveAccountProvider>
     </QueryClientProvider>,
   );
 };

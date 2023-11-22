@@ -25,27 +25,22 @@ export function useMe() {
   const { httpClient } = useHttpClient();
   const { lastAcceptedId } = usePendingInvite();
 
-  const useMeQuery = useQuery(
-    ['fhir/dstu3/$me', lastAcceptedId],
-    () =>
-      httpClient
-        .get<MeResponse>('/v1/fhir/dstu3/$me', { headers: accountHeaders })
-        .then((res) =>
-          res.data.entry?.map(
-            (entry) =>
-              ({
-                subjectId: entry.resource.id,
-                projectId: entry.resource.meta?.tag?.find(
-                  (t) => t.system === 'http://lifeomic.com/fhir/dataset',
-                )?.code,
-                name: entry.resource.name,
-                subject: entry.resource,
-              } as Subject),
-          ),
+  const useMeQuery = useQuery(['fhir/dstu3/$me', lastAcceptedId], () =>
+    httpClient
+      .get<MeResponse>('/v1/fhir/dstu3/$me', { headers: accountHeaders })
+      .then((res) =>
+        res.data.entry?.map(
+          (entry) =>
+            ({
+              subjectId: entry.resource.id,
+              projectId: entry.resource.meta?.tag?.find(
+                (t) => t.system === 'http://lifeomic.com/fhir/dataset',
+              )?.code,
+              name: entry.resource.name,
+              subject: entry.resource,
+            } as Subject),
         ),
-    {
-      enabled: !!accountHeaders,
-    },
+      ),
   );
 
   return useMeQuery;

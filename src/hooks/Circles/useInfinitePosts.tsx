@@ -60,7 +60,7 @@ export function useInfinitePosts({ circleId }: useInfinitePostsProps) {
     hasNextPage,
     fetchNextPage,
   } = useInfiniteQuery(['posts', circleTile?.circleId], queryPosts, {
-    enabled: !!accountHeaders?.['LifeOmic-Account'] && !!circleId,
+    enabled: !!circleId,
     getNextPageParam: (lastPage) => {
       return lastPage.postsV2.pageInfo.hasNextPage
         ? lastPage.postsV2.pageInfo.endCursor

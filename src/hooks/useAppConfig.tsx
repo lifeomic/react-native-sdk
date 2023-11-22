@@ -117,7 +117,6 @@ export const useAppConfig = () => {
     'GET /v1/life-research/projects/:projectId/app-config',
     { projectId: activeProject.id },
     {
-      enabled: !!accountHeaders,
       axios: {
         headers: accountHeaders,
       },

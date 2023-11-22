@@ -5,7 +5,11 @@ import {
 } from '../../../common/testHelpers/testing-library-wrapper';
 import { PostsList } from '../PostsList';
 import { CircleTile } from '../../../hooks/useAppConfig';
-import { useInfinitePosts, useCreatePost } from '../../../hooks';
+import {
+  useInfinitePosts,
+  useCreatePost,
+  ActiveAccountProvider,
+} from '../../../hooks';
 import { CreateEditPostModal } from '../CreateEditPostModal';
 
 jest.unmock('@react-navigation/native');
@@ -28,6 +32,13 @@ jest.mock('../../../hooks/Circles/useActiveCircleTile', () => ({
 const useInfinitePostsMock = useInfinitePosts as jest.Mock;
 const useCreatePostMock = useCreatePost as jest.Mock;
 
+const renderSafe = (element: React.ReactNode) =>
+  render(
+    <ActiveAccountProvider account="mockaccount">
+      {element}
+    </ActiveAccountProvider>,
+  );
+
 test('renders no post text when no posts are returned', () => {
   useInfinitePostsMock.mockReturnValue({
     data: {
@@ -41,7 +52,7 @@ test('renders no post text when no posts are returned', () => {
     },
   });
 
-  const postsList = render(<PostsList onOpenPost={jest.fn()} />);
+  const postsList = renderSafe(<PostsList onOpenPost={jest.fn()} />);
   expect(postsList.getByText('No posts yet.')).toBeDefined();
 });
 
@@ -71,7 +82,7 @@ test('renders a post', () => {
     },
   });
 
-  const postsList = render(<PostsList onOpenPost={jest.fn()} />);
+  const postsList = renderSafe(<PostsList onOpenPost={jest.fn()} />);
   expect(postsList.getByText('Hello!')).toBeDefined();
   expect(postsList.getByText('Joe Shmoe')).toBeDefined();
 });
@@ -94,7 +105,7 @@ test('FAB shows the new post modal', () => {
     mutate: mutateMock,
   });
 
-  const postsList = render(
+  const postsList = renderSafe(
     <>
       <CreateEditPostModal />
       <PostsList onOpenPost={jest.fn()} />
@@ -136,7 +147,7 @@ test('clicking post or comment calls onOpenPost with correct data', () => {
   });
 
   const onOpenPost = jest.fn();
-  const postsList = render(<PostsList onOpenPost={onOpenPost} />);
+  const postsList = renderSafe(<PostsList onOpenPost={onOpenPost} />);
 
   fireEvent.press(postsList.getByText('Hello!'));
 

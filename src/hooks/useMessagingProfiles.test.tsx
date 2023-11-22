@@ -50,7 +50,6 @@ beforeEach(() => {
     },
   });
   (useActiveAccount as jest.Mock).mockReturnValue({
-    isLoading: false,
     accountHeaders: { 'LifeOmic-Account': 'someAccount' },
   });
 });

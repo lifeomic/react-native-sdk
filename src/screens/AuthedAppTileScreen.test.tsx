@@ -57,11 +57,7 @@ beforeEach(() => {
     isLoading: false,
   });
   useActiveAccountMock.mockReturnValue({
-    account: {
-      id: 'acct1',
-    },
-    isFetched: true,
-    isLoading: false,
+    account: 'acct1',
   });
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },

@@ -367,7 +367,7 @@ type ActivitiesQueryResponse = {
 
 export const useActivities = (input: ActivitiesInput) => {
   const { graphQLClient } = useGraphQLClient();
-  const { isFetched, accountHeaders } = useActiveAccount();
+  const { accountHeaders } = useActiveAccount();
 
   const queryForActivities = useCallback(async () => {
     return graphQLClient.request<ActivitiesQueryResponse>(
@@ -379,7 +379,5 @@ export const useActivities = (input: ActivitiesInput) => {
     );
   }, [accountHeaders, graphQLClient, input]);
 
-  return useQuery(['activities'], queryForActivities, {
-    enabled: isFetched && !!accountHeaders,
-  });
+  return useQuery(['activities'], queryForActivities);
 };
