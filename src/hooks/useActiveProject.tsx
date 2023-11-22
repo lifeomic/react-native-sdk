@@ -41,6 +41,7 @@ const findProjectAndSubjectById = (
   const selectedProject = projects?.find((p) => p.id === projectId);
   const selectedSubject = subjects?.find((s) => s.projectId === projectId);
   if (!selectedProject || !selectedSubject) {
+    /* istanbul ignore next */
     if (process.env.NODE_ENV !== 'test') {
       console.warn('Ignoring attempt to set invalid projectId', projectId);
     }
@@ -49,102 +50,100 @@ const findProjectAndSubjectById = (
   return { selectedProject, selectedSubject };
 };
 
-type SelectionState =
-  | {
-      status: 'success';
-      activeProject: Project;
-      activeSubject: Subject;
-      projects: Project[];
-      me: Subject[];
+/**
+ * Why this file is organized this way:
+ *
+ * Using a higher-order component here allows us to more easily (and type-safely)
+ * model the various network dependencies here. The idea is:
+ *
+ * - We need to fetch the user's active project + subjects. Do this by using the
+ *   `useSubjectProjects` and `useMe` hooks.
+ *
+ *   -> If the user does not have a project or subject, show the invite required screen.
+ *
+ * - Once we have all that, we can be sure that this user is ready to go. Render children.
+ */
+
+const withRequiredData =
+  <Props extends {}>(
+    Component: React.FC<
+      Props & {
+        data: [Project[], Subject[]];
+        storedProjectId: string | null | undefined;
+        setStoredProjectId: (projectId: string) => void;
+      }
+    >,
+  ): React.FC<Props> =>
+  (props) => {
+    const query = combineQueries([useSubjectProjects(), useMe(), useUser()]);
+
+    const userId = query.data?.[2]?.id;
+
+    const [storedProjectId, setStoredProjectId, isStorageLoaded] =
+      useAsyncStorage(`${selectedProjectIdKey}:${userId}`, !!userId);
+
+    // TODO: handle error state.
+    if (query.status !== 'success' || !isStorageLoaded) {
+      return (
+        <ActivityIndicatorView
+          message={t('waiting-for-account-and-project', 'Loading account')}
+        />
+      );
     }
-  | { status: 'not-a-patient' }
-  | { status: 'loading' };
 
-export const ActiveProjectContextProvider = ({
-  children,
-}: {
-  children?: React.ReactNode;
-}) => {
-  const query = combineQueries([useSubjectProjects(), useMe(), useUser()]);
-  const userId = query.data?.[2].id;
-  const [storedProjectIdResult, setStoredProjectId, isStorageLoaded] =
-    useAsyncStorage(
-      `${selectedProjectIdKey}:${userId}`,
-      !!selectedProjectIdKey && !!userId,
-    );
+    const [projects, subjects] = query.data;
 
-  const calculateState = (): SelectionState => {
-    if (!query.data || !isStorageLoaded) {
-      return { status: 'loading' };
-    }
-
-    const [projects, me] = query.data;
-
-    const { selectedProject, selectedSubject } = findProjectAndSubjectById(
-      storedProjectIdResult,
-      projects,
-      me,
-    );
-
-    if (!selectedProject || !selectedSubject) {
-      return { status: 'not-a-patient' };
-    }
-
-    return {
-      status: 'success',
-      activeProject: selectedProject,
-      activeSubject: selectedSubject,
-      projects,
-      me,
-    };
-  };
-
-  const state = calculateState();
-
-  // This effect handles setting the initial value in async storage.
-  const activeProjectId =
-    state.status === 'success' ? state.activeProject.id : undefined;
-  useEffect(() => {
-    if (activeProjectId && activeProjectId !== storedProjectIdResult) {
-      setStoredProjectId(activeProjectId);
-    }
-  }, [activeProjectId, storedProjectIdResult, setStoredProjectId]);
-
-  if (state.status === 'loading') {
     return (
-      <ActivityIndicatorView
-        message={t('waiting-for-account-and-project', 'Loading account')}
+      <Component
+        {...props}
+        data={[projects, subjects]}
+        storedProjectId={storedProjectId}
+        setStoredProjectId={setStoredProjectId}
       />
     );
-  }
-  // TODO: handle error state.
-  if (state.status === 'not-a-patient') {
-    return <InviteRequiredScreen />;
-  }
-
-  const value: ActiveProjectContextValue = {
-    activeProject: state.activeProject,
-    activeSubjectId: state.activeSubject.subjectId,
-    activeSubject: state.activeSubject,
-    setActiveProjectId: (projectId: string) => {
-      const result = findProjectAndSubjectById(
-        projectId,
-        state.projects,
-        state.me,
-      );
-
-      if (result.selectedProject) {
-        setStoredProjectId(result.selectedProject.id);
-      }
-    },
   };
 
-  return (
-    <ActiveProjectContext.Provider value={value}>
-      {children}
-    </ActiveProjectContext.Provider>
-  );
-};
+export const ActiveProjectContextProvider: React.FC<{
+  children?: React.ReactNode;
+}> = withRequiredData(
+  ({ data: [projects, me], storedProjectId, setStoredProjectId, children }) => {
+    const { selectedProject, selectedSubject } = findProjectAndSubjectById(
+      storedProjectId,
+      projects,
+      me,
+    );
+
+    // This effect handles setting the initial value in async storage.
+    useEffect(() => {
+      if (selectedProject?.id && selectedProject?.id !== storedProjectId) {
+        setStoredProjectId(selectedProject.id);
+      }
+    }, [selectedProject?.id, storedProjectId, setStoredProjectId]);
+
+    if (!selectedProject || !selectedSubject) {
+      return <InviteRequiredScreen />;
+    }
+
+    const value: ActiveProjectContextValue = {
+      activeProject: selectedProject,
+      activeSubjectId: selectedSubject.subjectId,
+      activeSubject: selectedSubject,
+      setActiveProjectId: (projectId: string) => {
+        const result = findProjectAndSubjectById(projectId, projects, me);
+
+        if (result.selectedProject) {
+          setStoredProjectId(result.selectedProject.id);
+        }
+      },
+    };
+
+    return (
+      <ActiveProjectContext.Provider value={value}>
+        {children}
+      </ActiveProjectContext.Provider>
+    );
+  },
+);
 
 export const useActiveProject = () => {
   const value = useContext(ActiveProjectContext);
