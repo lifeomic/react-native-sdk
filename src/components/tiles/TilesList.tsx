@@ -136,7 +136,13 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
           />
         ))}
         {data?.homeTab?.messageTiles?.map(({ id, displayName }) => (
-          <MessagesTile navigation={navigation} title={displayName} id={id} />
+          <MessagesTile
+            Icon={tileIcon('MessageCircle', `message-tile-${id}`)}
+            navigation={navigation}
+            title={displayName}
+            id={id}
+            key={id}
+          />
         ))}
         {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
           <Tile

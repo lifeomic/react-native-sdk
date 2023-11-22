@@ -41,20 +41,19 @@ storiesOf('LineChart', module)
           dates = chunk(dates, 12).map((d) => d[0]);
         }
 
-        return [
-          200,
-          buildSampleDate(data.coding.map((c: any) => c.code).join(','), dates),
-        ];
+        return [200, buildSampleDate(data.code, dates)];
       });
     }),
   )
   .add('default', () => {
     const hasSecondTrace = boolean('Enable Trace 2', false);
+    const hasTrendLine = boolean('Enable Trend Line', false);
 
     return (
       <CenterView>
         <LineChart
           title="Example Chart"
+          padding={34}
           dateRange={{
             start: addDays(
               new Date(),
@@ -71,6 +70,7 @@ storiesOf('LineChart', module)
                 system: 'system1',
               },
             ],
+            showTrend: hasTrendLine,
           }}
           trace2={
             hasSecondTrace
@@ -83,6 +83,7 @@ storiesOf('LineChart', module)
                       system: 'system1',
                     },
                   ],
+                  showTrend: hasTrendLine,
                 }
               : undefined
           }

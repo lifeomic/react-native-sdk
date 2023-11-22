@@ -7,11 +7,13 @@ import {
   LogoHeaderOptions,
   useHandleOptionEvents,
 } from '../hooks/useLogoHeaderOptions';
+import { useLogoHeaderDimensions } from '../hooks/useLogoHeaderDimensions';
 
 export function LogoHeader(defaultOptions: LogoHeaderOptions) {
   const { styles } = useStyles(defaultStyles);
   const androidFix = Platform.OS === 'android' ? { marginTop: 12 } : {};
   const [options, setOptions] = useState<LogoHeaderOptions>(defaultOptions);
+  const [_, setLogoHeaderDimensions] = useLogoHeaderDimensions();
 
   // Subscribe to events to receive option updates
   useHandleOptionEvents(setOptions, defaultOptions);
@@ -21,7 +23,10 @@ export function LogoHeader(defaultOptions: LogoHeaderOptions) {
   }
 
   return (
-    <View style={styles.view}>
+    <View
+      style={styles.view}
+      onLayout={(event) => setLogoHeaderDimensions(event.nativeEvent.layout)}
+    >
       <SafeAreaView
         edges={['left', 'right', 'top']}
         style={[androidFix, styles.safeAreaView]}

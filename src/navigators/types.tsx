@@ -16,20 +16,9 @@ import { MessageTileParams } from '../screens/MessageScreen';
 import { DirectMessageParams } from '../screens/DirectMessagesScreen';
 import { ComposeMessageParams } from '../screens/ComposeMessageScreen';
 
-export type RootStackParamList = LoggedInRootParamList;
-export type RootStackScreenProps<T extends keyof RootStackParamList> =
-  StackScreenProps<RootStackParamList, T>;
-
-export type LoggedInScreenProps<T extends keyof LoggedInRootParamList> =
-  CompositeScreenProps<
-    StackScreenProps<LoggedInRootParamList, T>,
-    RootStackScreenProps<keyof RootStackParamList>
-  >;
-
 export type LoggedInRootParamList = {
   app: NavigatorScreenParams<TabParamList> | undefined;
   'screens/ConsentScreen': undefined;
-  InviteRequired: undefined;
   'Circle/Thread': { post: Post; createNewComment?: boolean };
   'screens/OnboardingCourseScreen': undefined;
 };
@@ -52,7 +41,7 @@ export type TabParamList = {
 export type HomeStackScreenProps<T extends keyof HomeStackParamList> =
   CompositeScreenProps<
     StackScreenProps<HomeStackParamList, T>,
-    RootStackScreenProps<keyof RootStackParamList>
+    LoggedInRootScreenProps<keyof LoggedInRootParamList>
   >;
 
 export type HomeStackParamList = {
@@ -93,7 +82,7 @@ export type NotificationsStackParamList = {
 export type SettingsStackScreenProps<T extends keyof SettingsStackParamList> =
   CompositeScreenProps<
     StackScreenProps<SettingsStackParamList, T>,
-    RootStackScreenProps<keyof RootStackParamList>
+    LoggedInRootScreenProps<keyof LoggedInRootParamList>
   >;
 
 export type SettingsStackParamList = {
@@ -110,6 +99,6 @@ export type Route =
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends LoggedInRootParamList {}
   }
 }

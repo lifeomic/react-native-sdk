@@ -11,12 +11,12 @@ export function useJoinCircles() {
   const { httpClient } = useHttpClient();
 
   return useQuery(
-    [`/v1/life-research/projects/${activeProject?.id}/app-config/circles`],
+    [`/v1/life-research/projects/${activeProject.id}/app-config/circles`],
     () => {
       if (data?.homeTab?.circleTiles?.some((c) => !c.isMember)) {
         httpClient
           .patch<CircleTile[]>(
-            `/v1/life-research/projects/${activeProject?.id}/app-config/circles`,
+            `/v1/life-research/projects/${activeProject.id}/app-config/circles`,
             data.homeTab.circleTiles.map((c) => ({ ...c, isMember: true })),
             { headers: accountHeaders },
           )
@@ -26,8 +26,7 @@ export function useJoinCircles() {
       }
     },
     {
-      enabled:
-        !!accountHeaders && !!activeProject?.id && !!data?.homeTab?.circleTiles,
+      enabled: !!accountHeaders && !!data?.homeTab?.circleTiles,
     },
   );
 }

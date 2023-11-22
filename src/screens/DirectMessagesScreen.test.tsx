@@ -12,6 +12,9 @@ import {
 
 jest.unmock('i18next');
 jest.unmock('@react-navigation/native');
+jest.mock('@react-navigation/bottom-tabs', () => ({
+  useBottomTabBarHeight: jest.fn(() => 0),
+}));
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));

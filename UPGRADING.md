@@ -150,3 +150,66 @@ After:
   }}
 />
 ```
+
+### 5.x -> 6.x
+
+- `RootStack` has been removed. Use `LoggedInStack` in it's place instead.
+
+- `LoggedInProviders` will now render the login screen if the user is not logged
+  in.
+
+- If you are using a custom `BrandConfigProvider` as a child of `RootProviders`,
+  you should move your locally-specific brand to the `DeveloperConfigProvider`
+  instead. Example:
+
+```tsx
+// INSTEAD OF THIS:
+const myBrand = {
+  /* ... */
+};
+const App = () => {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={
+        {
+          /* ... */
+        }
+      }
+    >
+      <RootProviders authConfig={authConfig}>
+        <BrandConfigProvider {...brand}>
+          <RootStack />
+        </BrandConfigProvider>
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+};
+
+// DO THIS:
+const myBrand = {
+  /* ... */
+};
+const App = () => {
+  return (
+    <DeveloperConfigProvider
+      developerConfig={{
+        brand: myBrand,
+      }}
+    >
+      <RootProviders authConfig={authConfig}>
+        <LoggedInStack />
+      </RootProviders>
+    </DeveloperConfigProvider>
+  );
+};
+```
+
+### 6.x -> 7.x
+
+- `ActiveAccountContextProvider` and `ActiveProjectContextProvider` will now
+  _not_ render their children until the active account + project have been
+  resolved. If there is no active account or project, the `InviteRequired`
+  screen will be rendered in the place of children.
+
+- The `useActiveProject` hook now returns non-optional data. You can simplify
+  any conditional logic around those returned values.

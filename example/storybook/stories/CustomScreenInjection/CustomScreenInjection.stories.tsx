@@ -4,7 +4,7 @@ import { authConfig } from '../../helpers/oauthConfig';
 import {
   DeveloperConfigProvider,
   RootProviders,
-  RootStack,
+  LoggedInStack,
   getDefaultTabs,
 } from '../../../../src';
 import { withKnobs } from '@storybook/addon-knobs';
@@ -50,7 +50,7 @@ storiesOf('Custom Screen Injection', module)
         }}
       >
         <RootProviders authConfig={authConfig}>
-          <RootStack />
+          <LoggedInStack />
         </RootProviders>
       </DeveloperConfigProvider>
     );

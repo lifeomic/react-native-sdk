@@ -1,5 +1,10 @@
 import React from 'react';
-import { act, renderHook, waitFor } from '@testing-library/react-native';
+import {
+  act,
+  render,
+  renderHook,
+  waitFor,
+} from '@testing-library/react-native';
 import { useSubjectProjects } from './useSubjectProjects';
 import { useMe } from './useMe';
 import { useUser } from './useUser';
@@ -7,10 +12,9 @@ import {
   ActiveProjectContextProvider,
   useActiveProject,
 } from './useActiveProject';
-import * as useAsyncStorage from './useAsyncStorage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AsyncStorageMock from '@react-native-async-storage/async-storage/jest/async-storage-mock';
+import { Text } from 'react-native';
 
 jest.mock('./useSubjectProjects', () => ({
   useSubjectProjects: jest.fn(),
@@ -25,7 +29,6 @@ jest.mock('./useUser', () => ({
 const useSubjectProjectsMock = useSubjectProjects as jest.Mock;
 const useMeMock = useMe as jest.Mock;
 const useUserMock = useUser as jest.Mock;
-let useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
 
 const mockSubjectProjects = [
   {
@@ -34,7 +37,7 @@ const mockSubjectProjects = [
   },
   {
     id: 'proj2',
-    name: 'Project 1',
+    name: 'Project 2',
   },
 ];
 const mockMe = [
@@ -58,87 +61,90 @@ const renderHookInContext = async () => {
   });
 };
 
-beforeEach(() => {
+beforeEach(async () => {
   useSubjectProjectsMock.mockReturnValue({
+    status: 'success',
     data: mockSubjectProjects,
     isLoading: false,
     isFetched: true,
   });
   useMeMock.mockReturnValue({
+    status: 'success',
     data: mockMe,
     isLoading: false,
     isFetched: true,
   });
   useUserMock.mockReturnValue({
+    status: 'success',
     data: { id: 'mockUser' },
   });
-
-  useAsyncStorageSpy.mockReturnValue([
-    '',
-    (value: string) => AsyncStorage.setItem('selectedProjectIdKey', value),
-    true,
-  ]);
+  await AsyncStorage.clear();
 });
 
-test('without provider, methods fail', async () => {
-  const { result } = renderHook(() => useActiveProject());
-  await expect(
-    result.current.setActiveProjectId('bogus'),
-  ).rejects.toBeUndefined();
+test('without provider, hook throws', () => {
+  expect(() => renderHook(() => useActiveProject())).toThrowError(
+    'useActiveProject must be used within an ActiveProjectContextProvider',
+  );
 });
 
 test('converts useSubjectProjects and useMe data into helpful state', async () => {
   const { result } = await renderHookInContext();
-  expect(result.current).toMatchObject({
-    activeProject: mockSubjectProjects[0],
-    activeSubjectId: mockMe[0].subjectId,
+  await waitFor(() => {
+    expect(result.current).toMatchObject({
+      activeProject: mockSubjectProjects[0],
+      activeSubjectId: mockMe[0].subjectId,
+    });
   });
 });
 
 test('exposes some props from useSubjectProjects and useMe', async () => {
   const error = new Error('uh oh');
   useSubjectProjectsMock.mockReturnValue({
-    isLoading: true,
-    isFetched: true,
-    error,
+    status: 'loading',
   });
   useMeMock.mockReturnValue({
-    isLoading: false,
-    isFetched: false,
+    status: 'error',
     error,
   });
   const { result, rerender } = await renderHookInContext();
-  expect(result.current).toMatchObject({
-    isLoading: true,
-    isFetched: false,
-    error,
-  });
+  // returns nothing in loading / error
+  expect(result.current).toStrictEqual(null);
 
   useSubjectProjectsMock.mockReturnValue({
-    isLoading: false,
-    isFetched: true,
+    status: 'success',
+    data: mockSubjectProjects,
   });
   useMeMock.mockReturnValue({
-    isLoading: false,
-    isFetched: true,
-    error,
+    status: 'success',
+    data: mockMe,
   });
 
-  await rerender({});
+  rerender({});
 
-  expect(result.current).toMatchObject({
-    isLoading: false,
-    isFetched: true,
-    error,
+  await waitFor(() => {
+    expect(result.current).toStrictEqual({
+      activeProject: {
+        id: 'proj1',
+        name: 'Project 1',
+      },
+      activeSubject: {
+        projectId: 'proj1',
+        subjectId: 'subject1',
+      },
+      activeSubjectId: 'subject1',
+      setActiveProjectId: expect.any(Function),
+    });
   });
 });
 
 test('setActiveProjectId saves projectId', async () => {
   const { result } = await renderHookInContext();
 
-  expect(result.current).toMatchObject({
-    activeProject: mockSubjectProjects[0],
-    activeSubjectId: mockMe[0].subjectId,
+  await waitFor(() => {
+    expect(result.current).toMatchObject({
+      activeProject: mockSubjectProjects[0],
+      activeSubjectId: mockMe[0].subjectId,
+    });
   });
 
   await act(async () => {
@@ -153,6 +159,9 @@ test('setActiveProjectId saves projectId', async () => {
 
 test('setActiveProjectId ignores invalid projectId', async () => {
   const { result, rerender } = await renderHookInContext();
+  await waitFor(() => {
+    expect(result.current).toBeTruthy();
+  });
   await act(async () => {
     result.current.setActiveProjectId('invalid project');
   });
@@ -176,54 +185,76 @@ test('setActiveProjectId ignores invalid projectId', async () => {
 });
 
 test('uses projectId from async storage', async () => {
-  useAsyncStorageSpy.mockRestore();
+  await AsyncStorage.setItem(
+    'selectedProjectIdKey:mockUser',
+    mockSubjectProjects[0].id,
+  );
+  const { result } = await renderHookInContext();
 
-  AsyncStorageMock.getItem = jest
-    .fn()
-    .mockResolvedValueOnce(mockSubjectProjects[0].id);
-  const { result, rerender } = await renderHookInContext();
-  await waitFor(() => result.current.isLoading === false);
-  rerender({});
-  expect(AsyncStorage.getItem).toBeCalledWith('selectedProjectIdKey:mockUser');
-  expect(result.current).toMatchObject({
-    activeProject: mockSubjectProjects[0],
-    activeSubjectId: mockMe[0].subjectId,
+  await waitFor(() => {
+    expect(result.current).toMatchObject({
+      activeProject: mockSubjectProjects[0],
+      activeSubjectId: mockMe[0].subjectId,
+    });
   });
 
-  AsyncStorageMock.getItem = jest
-    .fn()
-    .mockResolvedValueOnce(mockSubjectProjects[1].id);
-  const { result: nextResult, rerender: nextRerender } =
-    await renderHookInContext();
-  await waitFor(() => nextResult.current.isLoading === false);
-  nextRerender({});
-  expect(nextResult.current).toMatchObject({
-    activeProject: mockSubjectProjects[1],
-    activeSubjectId: mockMe[1].subjectId,
-  });
+  await AsyncStorage.setItem(
+    'selectedProjectIdKey:mockUser',
+    mockSubjectProjects[1].id,
+  );
 
-  useAsyncStorageSpy = jest.spyOn(useAsyncStorage, 'useAsyncStorage');
+  const { result: nextResult } = await renderHookInContext();
+  await waitFor(() => {
+    expect(nextResult.current).toMatchObject({
+      activeProject: mockSubjectProjects[1],
+      activeSubjectId: mockMe[1].subjectId,
+    });
+  });
 });
 
 test('initial render writes selected projectId to async storage', async () => {
   await renderHookInContext();
-  expect(AsyncStorageMock.setItem).toBeCalledWith(
-    'selectedProjectIdKey',
-    mockSubjectProjects[0].id,
-  );
+
+  await waitFor(async () => {
+    const value = await AsyncStorage.getItem('selectedProjectIdKey:mockUser');
+    expect(value).toStrictEqual(mockSubjectProjects[0].id);
+  });
 });
 
 test('setActiveProjectId writes selected projectId to async storage', async () => {
   const { result } = await renderHookInContext();
-  expect(AsyncStorageMock.setItem).toBeCalledWith(
-    'selectedProjectIdKey',
-    mockSubjectProjects[0].id,
-  );
+  await waitFor(async () => {
+    const value = await AsyncStorage.getItem('selectedProjectIdKey:mockUser');
+    expect(value).toStrictEqual(mockSubjectProjects[0].id);
+  });
   await act(async () => {
     result.current.setActiveProjectId(mockSubjectProjects[1].id);
   });
-  expect(AsyncStorageMock.setItem).toBeCalledWith(
-    'selectedProjectIdKey',
-    mockSubjectProjects[1].id,
+  await waitFor(async () => {
+    const value = await AsyncStorage.getItem('selectedProjectIdKey:mockUser');
+    expect(value).toStrictEqual(mockSubjectProjects[1].id);
+  });
+});
+
+test('renders the InviteRequired screen if the user is not a patient', async () => {
+  useSubjectProjectsMock.mockReturnValue({
+    status: 'success',
+    // No projects
+    data: [],
+    isLoading: false,
+    isFetched: true,
+  });
+  const screen = render(
+    <QueryClientProvider client={new QueryClient()}>
+      <ActiveProjectContextProvider>
+        <Text>content</Text>
+      </ActiveProjectContextProvider>
+    </QueryClientProvider>,
   );
+
+  await waitFor(() => {
+    screen.getByText(
+      'This app is only available to use by invitation. Please contact your administrator for access.',
+    );
+  });
 });

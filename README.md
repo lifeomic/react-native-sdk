@@ -21,12 +21,12 @@ See `example/AppDemo.tsx` for simple usage, which could be as simple as:
 ```typescript
 import React, { FC } from 'react';
 import { authConfig } from './authConfig';
-import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+import { RootProviders, LoggedInStack } from '@lifeomic/react-native-sdk';
 
 export default function App() {
   return (
     <RootProviders authConfig={authConfig}>
-      <RootStack />
+      <LoggedInStack />
     </RootProviders>
   );
 }
@@ -42,7 +42,7 @@ export default function App() {
 import React, { FC } from 'react';
 import { authConfig } from './authConfig';
 import { MyCustomScreen } from './src/MyCustomScreen';
-import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+import { RootProviders, LoggedInStack } from '@lifeomic/react-native-sdk';
 
 export default function App() {
   return (
@@ -54,7 +54,7 @@ export default function App() {
       }}
     >
       <RootProviders authConfig={authConfig}>
-        <RootStack />
+        <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
   );
@@ -66,7 +66,7 @@ export default function App() {
 ```typescript
 import React, { FC } from 'react';
 import { authConfig } from './authConfig';
-import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+import { RootProviders, LoggedInStack } from '@lifeomic/react-native-sdk';
 
 export default function App() {
   return (
@@ -78,7 +78,7 @@ export default function App() {
       }}
     >
       <RootProviders authConfig={authConfig}>
-        <RootStack />
+        <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
   );
@@ -135,7 +135,7 @@ export const UsersScreen = () => {
 ```typescript
 import React, { FC } from 'react';
 import { authConfig } from './authConfig';
-import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+import { RootProviders, LoggedInStack } from '@lifeomic/react-native-sdk';
 import { UserDetailsScreen, UsersScreen } from './screens';
 
 export default function App() {
@@ -157,7 +157,7 @@ export default function App() {
       }}
     >
       <RootProviders authConfig={authConfig}>
-        <RootStack />
+        <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
   );
@@ -186,7 +186,7 @@ function App() {
       }}
     >
       <RootProviders authConfig={authConfig}>
-        <RootStack />
+        <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
   );
@@ -231,7 +231,7 @@ const CustomLoginScreen = () => {
 ```typescript
 import React, { FC } from 'react';
 import { authConfig } from './authConfig';
-import { RootProviders, RootStack } from '@lifeomic/react-native-sdk';
+import { RootProviders, LoggedInStack } from '@lifeomic/react-native-sdk';
 
 export default function App() {
   return (
@@ -241,7 +241,7 @@ export default function App() {
       }}
     >
       <RootProviders authConfig={authConfig}>
-        <RootStack />
+        <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
   );
@@ -263,7 +263,7 @@ import React, { FC } from 'react';
 import { authConfig } from './authConfig';
 import {
   RootProviders,
-  RootStack,
+  LoggedInStack,
   OnAppSessionStartParams,
 } from '@lifeomic/react-native-sdk';
 
@@ -285,7 +285,7 @@ export default function App() {
       }}
     >
       <RootProviders authConfig={authConfig}>
-        <RootStack />
+        <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
   );

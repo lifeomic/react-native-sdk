@@ -5,7 +5,7 @@ import { authConfig, baseURL } from '../../helpers/oauthConfig';
 import {
   DeveloperConfigProvider,
   RootProviders,
-  RootStack,
+  LoggedInStack,
   LogoHeader,
   BrandConfigProvider,
   getDefaultTabs,
@@ -37,7 +37,7 @@ storiesOf('Example App', module)
         }}
       >
         <RootProviders authConfig={authConfig}>
-          <RootStack />
+          <LoggedInStack />
         </RootProviders>
       </DeveloperConfigProvider>
     );
@@ -69,7 +69,7 @@ storiesOf('Example App', module)
         }}
       >
         <RootProviders authConfig={authConfig}>
-          <RootStack />
+          <LoggedInStack />
         </RootProviders>
       </DeveloperConfigProvider>
     );
@@ -147,7 +147,7 @@ storiesOf('Example App', module)
             }}
           >
             <RootProviders authConfig={authConfig}>
-              <RootStack />
+              <LoggedInStack />
             </RootProviders>
           </DeveloperConfigProvider>
         )}
@@ -248,7 +248,7 @@ storiesOf('Example App', module)
         <RootProviders authConfig={authConfig}>
           <BrandConfigProvider {...brand}>
             <LogoHeader visible={true} imageSource={logo} />
-            <RootStack />
+            <LoggedInStack />
           </BrandConfigProvider>
         </RootProviders>
       </DeveloperConfigProvider>
@@ -345,7 +345,7 @@ storiesOf('Example App', module)
             });
           }}
         >
-          <RootStack />
+          <LoggedInStack />
         </DataOverrideProvider>
       </RootProviders>
     </DeveloperConfigProvider>

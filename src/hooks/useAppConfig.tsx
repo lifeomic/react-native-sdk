@@ -115,9 +115,9 @@ export const useAppConfig = () => {
 
   const query = useRestQuery(
     'GET /v1/life-research/projects/:projectId/app-config',
-    { projectId: activeProject?.id! },
+    { projectId: activeProject.id },
     {
-      enabled: !!activeProject && !!accountHeaders,
+      enabled: !!accountHeaders,
       axios: {
         headers: accountHeaders,
       },

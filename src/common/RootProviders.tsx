@@ -13,17 +13,18 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemedNavigationContainer } from './ThemedNavigationContainer';
 import { LoggedInProviders } from './LoggedInProviders';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import Toast from 'react-native-toast-message';
+import { LogoHeaderDimensionsContextProvider } from '../hooks/useLogoHeaderDimensions';
 
 const queryClient = new QueryClient();
 
-export function RootProviders({
-  authConfig,
-  children,
-}: {
+export type RootProvidersProps = {
   authConfig: AuthConfiguration;
   children?: React.ReactNode;
-}) {
-  const { apiBaseURL, theme } = useDeveloperConfig();
+};
+
+export function RootProviders({ authConfig, children }: RootProvidersProps) {
+  const { apiBaseURL, theme, brand } = useDeveloperConfig();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -32,12 +33,17 @@ export function RootProviders({
           <GraphQLClientContextProvider baseURL={apiBaseURL}>
             <InviteProvider>
               <OAuthContextProvider authConfig={authConfig}>
-                <BrandConfigProvider theme={theme}>
+                <BrandConfigProvider theme={theme} {...brand}>
                   <NoInternetToastProvider>
                     <ActionSheetProvider>
                       <SafeAreaProvider>
                         <ThemedNavigationContainer>
-                          <LoggedInProviders>{children}</LoggedInProviders>
+                          <Toast />
+                          <LoggedInProviders>
+                            <LogoHeaderDimensionsContextProvider>
+                              {children}
+                            </LogoHeaderDimensionsContextProvider>
+                          </LoggedInProviders>
                         </ThemedNavigationContainer>
                       </SafeAreaProvider>
                     </ActionSheetProvider>
