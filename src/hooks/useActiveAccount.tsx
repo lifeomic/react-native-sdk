@@ -4,6 +4,7 @@ import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { ProjectInvite } from '../types';
 import { useRestCache, useRestQuery } from './rest-api';
 import { useStoredValue } from './useStoredValue';
+import { InviteRequiredScreen } from '../screens/InviteRequiredScreen';
 
 export type ActiveAccountProps = {
   account?: Account;
@@ -81,6 +82,13 @@ export const ActiveAccountContextProvider = ({
       inviteNotifier.removeListener('inviteAccepted', listener);
     };
   }, [cache, setPreferredId]);
+
+  /**
+   * This check is temporary. It will be refactored out in a subsequent PR.
+   */
+  if (accountsResult.status === 'success' && !selectedAccount) {
+    return <InviteRequiredScreen />;
+  }
 
   return (
     <ActiveAccountContext.Provider

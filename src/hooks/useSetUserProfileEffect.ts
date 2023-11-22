@@ -11,8 +11,8 @@ export const useSetUserProfileEffect = () => {
     const hasFetchedUser = !isLoading && isFetched;
     const userHasName = !!user?.profile.givenName || !!user?.profile.familyName;
     const name =
-      activeSubject?.name?.find((v) => v.use === 'official') ??
-      activeSubject?.name?.[0];
+      activeSubject.name?.find((v) => v.use === 'official') ??
+      activeSubject.name?.[0];
     const subjectHasName = !!name?.family || !!name?.given?.length;
 
     if (hasFetchedUser && !userHasName && subjectHasName) {

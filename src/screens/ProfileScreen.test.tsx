@@ -5,6 +5,7 @@ import { useUser } from '../hooks/useUser';
 import { useMe } from '../hooks/useMe';
 import { User } from '../types';
 import { Patient } from 'fhir/r3';
+import { ActiveProjectContext } from '../hooks';
 
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
@@ -34,13 +35,21 @@ const exampleProfile: User = {
   },
 };
 
+const screen = (
+  <ActiveProjectContext.Provider
+    value={{ activeProject: { name: 'Test Project' } } as any}
+  >
+    <ProfileScreen />
+  </ActiveProjectContext.Provider>
+);
+
 test('renders loading indicator initially', async () => {
   useUserMock.mockReturnValue({
     isLoading: true,
     data: undefined,
   });
 
-  const { getByTestId, rerender } = render(<ProfileScreen />);
+  const { getByTestId, rerender } = render(screen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
 
   useUserMock.mockReturnValue({
@@ -48,14 +57,14 @@ test('renders loading indicator initially', async () => {
     data: undefined, // Still waiting for data
   });
 
-  rerender(<ProfileScreen />);
+  rerender(screen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
 });
 
 test('renders profile label/values given user profile', () => {
   mockUser(exampleProfile);
 
-  const { getByText, getByTestId } = render(<ProfileScreen />);
+  const { getByText, getByTestId } = render(screen);
   expect(getByTestId('Username')).toBeDefined();
   expect(getByTestId('First Name')).toBeDefined();
   expect(getByTestId('Last Name')).toBeDefined();
@@ -79,7 +88,7 @@ test('does not render fields which are not populated', () => {
     },
   });
 
-  const { queryByTestId } = render(<ProfileScreen />);
+  const { queryByTestId } = render(screen);
   expect(queryByTestId('First Name')).toBeNull();
   expect(queryByTestId('Last Name')).toBeNull();
   expect(queryByTestId('Username')).not.toBeNull();

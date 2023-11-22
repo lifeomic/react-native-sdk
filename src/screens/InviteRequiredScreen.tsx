@@ -4,10 +4,10 @@ import { Text, View } from 'react-native';
 import {
   OAuthLogoutButton,
   OAuthLogoutButtonStyles,
-  createStyles,
-} from '../components';
+} from '../components/OAuthLogoutButton';
+import { createStyles } from '../components/BrandConfigProvider';
 import { tID } from '../common/testID';
-import { useStyles } from '../hooks';
+import { useStyles } from '../hooks/useStyles';
 
 export const InviteRequiredScreen = () => {
   const { styles } = useStyles(defaultStyles);

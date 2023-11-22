@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { WebView } from 'react-native-webview';
 import { AppTileScreen } from './AppTileScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as UseHandleAppTileEvents from '../hooks/useHandleAppTileEvents';
 
 jest.mock('react-native-webview', () => ({
   WebView: jest.fn().mockReturnValue(<></>),
@@ -34,6 +35,11 @@ const useNavigationMock = useNavigation as any as jest.Mock;
 beforeEach(() => {
   route.params.appTile = exampleAppTile;
   useNavigationMock.mockReturnValue(navigation);
+
+  jest.spyOn(UseHandleAppTileEvents, 'useHandleAppTileEvents').mockReturnValue({
+    handleAppTileMessage: jest.fn(),
+    handleAppTileNavigationStateChange: jest.fn(),
+  });
 });
 
 test('renders webview with source prop', () => {

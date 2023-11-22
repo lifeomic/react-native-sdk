@@ -48,7 +48,7 @@ export function useFhirClient() {
       resource = merge(resource, { meta: { tag: [] } });
       resource.meta!.tag!.push({
         system: 'http://lifeomic.com/fhir/dataset',
-        code: activeProject?.id,
+        code: activeProject.id,
       });
     }
 
@@ -95,7 +95,7 @@ export function useFhirClient() {
     const params = merge(
       {
         // Defaults:
-        _tag: `http://lifeomic.com/fhir/dataset|${activeProject?.id}`,
+        _tag: `http://lifeomic.com/fhir/dataset|${activeProject.id}`,
         patient: activeSubjectId,
         next: next.toString(),
         code: toFhirCodeFilter(),
@@ -141,11 +141,7 @@ export function useFhirClient() {
           });
       },
       {
-        enabled:
-          !!accountHeaders &&
-          !!activeProject?.id &&
-          !!activeSubjectId &&
-          (queryParams.enabled ?? true),
+        enabled: !!accountHeaders && (queryParams.enabled ?? true),
         keepPreviousData: true,
       },
     );
@@ -171,7 +167,7 @@ export function useFhirClient() {
   const useCreateResourceMutation = () => {
     return useMutation({
       mutationFn: async (resourceToUpsert: ResourceType) => {
-        if (!accountHeaders || !activeProject?.id || !activeSubjectId) {
+        if (!accountHeaders) {
           throw new Error('Cannot mutate resource in current state');
         }
 
@@ -193,7 +189,7 @@ export function useFhirClient() {
   const useCreateBundleMutation = () => {
     return useMutation({
       mutationFn: async (resources: ResourceType[]) => {
-        if (!accountHeaders || !activeProject?.id || !activeSubjectId) {
+        if (!accountHeaders) {
           throw new Error('Cannot mutate resource in current state');
         }
 

@@ -106,9 +106,7 @@ export const ProfileScreen = () => {
           value={userProfile.familyName}
         />
         <Field label={t('profile-email', 'Email')} value={userProfile.email} />
-        {__DEV__ && (
-          <Field label="Active Project" value={activeProject?.name} />
-        )}
+        {__DEV__ && <Field label="Active Project" value={activeProject.name} />}
       </ScrollView>
     </SafeAreaView>
   );

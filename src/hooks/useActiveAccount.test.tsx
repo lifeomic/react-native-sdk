@@ -1,5 +1,10 @@
 import React from 'react';
-import { act, renderHook, waitFor } from '@testing-library/react-native';
+import {
+  act,
+  render,
+  renderHook,
+  waitFor,
+} from '@testing-library/react-native';
 import {
   ActiveAccountContextProvider,
   PREFERRED_ACCOUNT_ID_KEY,
@@ -9,6 +14,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 import { createRestAPIMock } from '../test-utils/rest-api-mocking';
 import { _store } from './useStoredValue';
+import { Text } from 'react-native';
 
 const api = createRestAPIMock();
 
@@ -223,4 +229,25 @@ test('handles accepted invites by refetching and setting account', async () => {
       invitedAccountId,
     ),
   );
+});
+
+test('renders the InviteRequired screen when the user has no accounts', async () => {
+  api.mock('GET /v1/accounts', {
+    status: 200,
+    data: { accounts: [] },
+  });
+
+  const screen = render(
+    <QueryClientProvider client={new QueryClient()}>
+      <ActiveAccountContextProvider>
+        <Text>content</Text>
+      </ActiveAccountContextProvider>
+    </QueryClientProvider>,
+  );
+
+  await waitFor(() => {
+    screen.getByText(
+      'This app is only available to use by invitation. Please contact your administrator for access.',
+    );
+  });
 });
