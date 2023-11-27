@@ -88,10 +88,12 @@ export function LoggedInStack() {
     if (hasFetchedUser && user) {
       _sdkAnalyticsEvent.setUser(user.id);
     }
+  }, [isFetched, isLoading, user]);
 
+  useEffect(() => {
     activeSubjectId &&
       _sdkAnalyticsEvent.updateUserProperty('subjectId', activeSubjectId);
-  }, [activeSubjectId, isFetched, isLoading, user]);
+  }, [activeSubjectId]);
 
   useEffect(() => {
     const executeOnAppStartIfNeeded = async () => {
