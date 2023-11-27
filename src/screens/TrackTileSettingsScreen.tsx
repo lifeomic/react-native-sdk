@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { t } from 'i18next';
 import { HomeStackScreenProps } from '../navigators/types';
 import {
@@ -9,6 +8,7 @@ import {
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
 import { HeaderButton } from '../components/HeaderButton';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export const SettingsScreen = ({
   navigation,
@@ -17,6 +17,22 @@ export const SettingsScreen = ({
   const { styles } = useStyles(defaultStyles);
   const [editingState, setEditingState] = useState<EditingState>();
   const { valuesContext } = params;
+
+  const headerRight = useCallback(
+    () => (
+      <HeaderButton
+        title={
+          editingState === 'editing'
+            ? t('track-tile-settings-screen-cancel', 'Done')
+            : t('track-tile-settings-screen-cancel', 'Edit')
+        }
+        onPress={() =>
+          setEditingState(editingState === 'editing' ? 'done' : 'editing')
+        }
+      />
+    ),
+    [editingState],
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -29,23 +45,12 @@ export const SettingsScreen = ({
               />
             )
           : undefined,
-      headerRight: () => (
-        <HeaderButton
-          title={
-            editingState === 'editing'
-              ? t('track-tile-settings-screen-cancel', 'Done')
-              : t('track-tile-settings-screen-cancel', 'Edit')
-          }
-          onPress={() =>
-            setEditingState(editingState === 'editing' ? 'done' : 'editing')
-          }
-        />
-      ),
+      headerRight,
     });
-  }, [editingState, navigation]);
+  }, [editingState, navigation, headerRight]);
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <ManageTrackers
         editingState={editingState}
         onOpenTracker={(tracker) =>
@@ -55,7 +60,7 @@ export const SettingsScreen = ({
           })
         }
       />
-    </View>
+    </GestureHandlerRootView>
   );
 };
 

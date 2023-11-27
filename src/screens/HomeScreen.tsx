@@ -30,18 +30,20 @@ export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
     }
   }, [navigation, customHeaderTitle]);
 
+  const headerLeft = useCallback(
+    () => (
+      <HeaderLeftRefreshButton refreshing={refreshing} onRefresh={refresh} />
+    ),
+    [refreshing, refresh],
+  );
+
   useEffect(() => {
     if (headerRefreshEnabled) {
       navigation.setOptions({
-        headerLeft: () => (
-          <HeaderLeftRefreshButton
-            refreshing={refreshing}
-            onRefresh={refresh}
-          />
-        ),
+        headerLeft,
       });
     }
-  }, [navigation, refreshing, refresh, headerRefreshEnabled]);
+  }, [navigation, headerLeft, headerRefreshEnabled]);
 
   return (
     <ScreenSurface testID="home-screen">
