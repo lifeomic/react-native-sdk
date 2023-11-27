@@ -16,6 +16,7 @@ import { useSetUserProfileEffect } from '../hooks/useSetUserProfileEffect';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { useJoinCircles } from '../hooks/Circles/useJoinCircles';
 import { useProfilesForAllTiles } from '../hooks/useMessagingProfiles';
+import { _sdkAnalyticsEvent } from '../common';
 
 export function LoggedInStack() {
   const Stack = createNativeStackNavigator<LoggedInRootParamList>();
@@ -79,6 +80,10 @@ export function LoggedInStack() {
   ]);
 
   const loadingMessage = getLoadingMessage();
+
+  useEffect(() => {
+    activeSubjectId && _sdkAnalyticsEvent.setUser(activeSubjectId);
+  }, [activeSubjectId]);
 
   useEffect(() => {
     const executeOnAppStartIfNeeded = async () => {
