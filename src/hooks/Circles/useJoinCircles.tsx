@@ -26,7 +26,7 @@ export function useJoinCircles() {
       }
     },
     {
-      enabled: !!accountHeaders && !!data?.homeTab?.circleTiles,
+      enabled: !!data?.homeTab?.circleTiles,
     },
   );
 }

@@ -152,7 +152,7 @@ export function useNotifications() {
   }, [accountHeaders, data?.id, graphQLClient]);
 
   return useQuery(['notifications'], queryForNotifications, {
-    enabled: !!accountHeaders?.['LifeOmic-Account'] && !!data?.id,
+    enabled: !!data?.id,
     select: selectNotifications,
   });
 }

@@ -105,6 +105,7 @@ export const DirectMessagesScreen = ({
       messages={incomingMessages}
       loadEarlier={hasNextPage}
       onLoadEarlier={() => {
+        /* istanbul ignore next */
         if (hasNextPage && !isLoading) {
           fetchNextPage();
         }

@@ -26,7 +26,6 @@ export const useConsent = () => {
             headers: { ...accountHeaders },
           })
           .then((res) => res.data),
-      { enabled: !!accountHeaders },
     );
   };
 

@@ -7,7 +7,7 @@ import { Platform, Text } from 'react-native';
 import { PushNotificationsConfig } from '../common/DeveloperConfig';
 import * as NotificationsUtils from '../common/Notifications';
 import { Notifications } from 'react-native-notifications';
-import { ActiveAccountContext } from '.';
+import { ActiveAccountProvider } from './useActiveAccount';
 
 jest.mock('react-native-notifications', () => ({
   Notifications: {
@@ -19,18 +19,11 @@ const renderProvider = (config?: PushNotificationsConfig) =>
   render(
     <QueryClientProvider client={new QueryClient()}>
       <HttpClientContextProvider>
-        <ActiveAccountContext.Provider
-          value={{
-            isFetched: true,
-            isLoading: false,
-            setActiveAccountId: jest.fn(),
-            account: { id: 'test-account' } as any,
-          }}
-        >
+        <ActiveAccountProvider account="test-account">
           <PushNotificationsProvider config={config}>
             <Text>content</Text>
           </PushNotificationsProvider>
-        </ActiveAccountContext.Provider>
+        </ActiveAccountProvider>
       </HttpClientContextProvider>
     </QueryClientProvider>,
   );

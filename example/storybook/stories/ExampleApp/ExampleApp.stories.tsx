@@ -36,7 +36,7 @@ storiesOf('Example App', module)
           apiBaseURL: baseURL,
         }}
       >
-        <RootProviders authConfig={authConfig}>
+        <RootProviders account="mockaccount" authConfig={authConfig}>
           <LoggedInStack />
         </RootProviders>
       </DeveloperConfigProvider>
@@ -68,7 +68,7 @@ storiesOf('Example App', module)
           apiBaseURL: baseURL,
         }}
       >
-        <RootProviders authConfig={authConfig}>
+        <RootProviders account="mockaccount" authConfig={authConfig}>
           <LoggedInStack />
         </RootProviders>
       </DeveloperConfigProvider>
@@ -146,7 +146,7 @@ storiesOf('Example App', module)
               apiBaseURL: baseURL,
             }}
           >
-            <RootProviders authConfig={authConfig}>
+            <RootProviders account="mockaccount" authConfig={authConfig}>
               <LoggedInStack />
             </RootProviders>
           </DeveloperConfigProvider>
@@ -245,7 +245,7 @@ storiesOf('Example App', module)
           apiBaseURL: baseURL,
         }}
       >
-        <RootProviders authConfig={authConfig}>
+        <RootProviders account={'mockaccount'} authConfig={authConfig}>
           <BrandConfigProvider {...brand}>
             <LogoHeader visible={true} imageSource={logo} />
             <LoggedInStack />
@@ -269,7 +269,7 @@ storiesOf('Example App', module)
         },
       }}
     >
-      <RootProviders authConfig={authConfig}>
+      <RootProviders account={'mockaccount'} authConfig={authConfig}>
         <DataOverrideProvider
           builder={(mock) => {
             mock.onGet().reply(200, {

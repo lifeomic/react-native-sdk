@@ -64,9 +64,7 @@ const homeScreen = (
 );
 
 beforeEach(() => {
-  useActiveAccountMock.mockReturnValue({
-    isLoading: false,
-  });
+  useActiveAccountMock.mockReturnValue({});
   useAppConfigMock.mockReturnValue({
     isLoading: false,
     data: exampleAppConfig,

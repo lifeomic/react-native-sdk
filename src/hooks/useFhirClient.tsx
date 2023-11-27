@@ -141,7 +141,7 @@ export function useFhirClient() {
           });
       },
       {
-        enabled: !!accountHeaders && (queryParams.enabled ?? true),
+        enabled: queryParams.enabled ?? true,
         keepPreviousData: true,
       },
     );
@@ -167,10 +167,6 @@ export function useFhirClient() {
   const useCreateResourceMutation = () => {
     return useMutation({
       mutationFn: async (resourceToUpsert: ResourceType) => {
-        if (!accountHeaders) {
-          throw new Error('Cannot mutate resource in current state');
-        }
-
         const resource = toResource(resourceToUpsert);
 
         return httpClient
@@ -189,10 +185,6 @@ export function useFhirClient() {
   const useCreateBundleMutation = () => {
     return useMutation({
       mutationFn: async (resources: ResourceType[]) => {
-        if (!accountHeaders) {
-          throw new Error('Cannot mutate resource in current state');
-        }
-
         const bundle: Bundle<ResourceType> = {
           resourceType: 'Bundle',
           type: 'collection',
@@ -210,7 +202,7 @@ export function useFhirClient() {
         return httpClient
           .post<Bundle<ResourceType>>(
             // TODO: Update once the bundle endpoint is exposed behind `/v1/fhir`
-            `https://fhir.us.lifeomic.com/${account?.id}/dstu3`,
+            `https://fhir.us.lifeomic.com/${account}/dstu3`,
             bundle,
             {
               headers: accountHeaders,
@@ -224,10 +216,6 @@ export function useFhirClient() {
   const useDeleteResourceMutation = () => {
     return useMutation({
       mutationFn: async (params: DeleteParams) => {
-        if (!accountHeaders) {
-          throw new Error('Cannot delete resource in current state');
-        }
-
         return httpClient
           .delete(`/v1/fhir/dstu3/${params.resourceType}/${params.id}`, {
             headers: accountHeaders,

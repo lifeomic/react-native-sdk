@@ -103,7 +103,6 @@ export function useInfiniteConversations() {
   };
 
   return useInfiniteQuery(['conversations'], queryConversations, {
-    enabled: !!accountHeaders?.['LifeOmic-Account'],
     getNextPageParam: (lastPage) => {
       return lastPage.conversations.pageInfo.hasNextPage
         ? lastPage.conversations.pageInfo.endCursor

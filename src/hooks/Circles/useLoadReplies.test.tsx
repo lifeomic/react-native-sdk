@@ -1,16 +1,12 @@
 import React from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react-native';
-import { useActiveAccount } from '../useActiveAccount';
+import { ActiveAccountProvider } from '../useActiveAccount';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../useGraphQLClient';
 import { mockGraphQLResponse } from '../../common/testHelpers/mockGraphQLResponse';
 import { Post } from './types';
 import { PostRepliesQueryResponse } from './useInfinitePosts';
 import { useLoadReplies } from './useLoadReplies';
-
-jest.mock('../useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,47 +21,17 @@ const renderHookWithInjectedClient = () => {
   return renderHook(() => useLoadReplies(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>
-        <GraphQLClientContextProvider baseURL={baseURL}>
-          {children}
-        </GraphQLClientContextProvider>
+        <ActiveAccountProvider account="unittest">
+          <GraphQLClientContextProvider baseURL={baseURL}>
+            {children}
+          </GraphQLClientContextProvider>
+        </ActiveAccountProvider>
       </QueryClientProvider>
     ),
   });
 };
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
-
 describe('useLoadReplies', () => {
-  beforeEach(() => {
-    useActiveAccountMock.mockReturnValue({
-      accountHeaders: {
-        'LifeOmic-Account': 'unittest',
-      },
-    });
-  });
-
-  test('does not fetch the result if there are no account headers', () => {
-    useActiveAccountMock.mockReturnValue({
-      isFetched: true,
-      accountHeaders: undefined,
-    });
-
-    const { result } = renderHookWithInjectedClient();
-
-    act(() => {
-      result.current.loadReplies({
-        id: 'id',
-        replies: {
-          pageInfo: {
-            endCursor: 'next',
-          },
-        },
-      } as Post);
-    });
-
-    expect(result.current.isFetched).toEqual(false);
-  });
-
   test('returns query result', async () => {
     const response: PostRepliesQueryResponse = {
       post: {

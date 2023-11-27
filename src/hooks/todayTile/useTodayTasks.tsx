@@ -43,7 +43,6 @@ const useConsentTasks = () => {
       includeForm: true,
     },
     {
-      enabled: !!accountHeaders,
       axios: { headers: accountHeaders },
       select: (data) => data.items,
     },
@@ -73,7 +72,6 @@ export const useGetSurveyResponsesForProject = (
       pageSize: input?.pageSize ?? 100,
     },
     {
-      enabled: !!accountHeaders,
       axios: { headers: accountHeaders },
       select: (data) => data.items,
     },
@@ -93,7 +91,7 @@ const GetIncompleteActivitiesCount = gql`
 
 export const useGetIncompleteActivitiesCount = () => {
   const { graphQLClient } = useGraphQLClient();
-  const { isFetched, accountHeaders } = useActiveAccount();
+  const { accountHeaders } = useActiveAccount();
 
   const queryForPostDetails = useCallback(async () => {
     return graphQLClient.request<GetIncompleteActivitiesCountQueryResponse>(
@@ -103,9 +101,7 @@ export const useGetIncompleteActivitiesCount = () => {
     );
   }, [accountHeaders, graphQLClient]);
 
-  return useQuery(['getIncompleteActivitiesCount'], queryForPostDetails, {
-    enabled: isFetched && !!accountHeaders,
-  });
+  return useQuery(['getIncompleteActivitiesCount'], queryForPostDetails);
 };
 
 export const useTodayTasks = () => {

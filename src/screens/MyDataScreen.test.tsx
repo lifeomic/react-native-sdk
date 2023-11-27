@@ -10,7 +10,12 @@ import {
   startOfYear,
   addDays,
 } from 'date-fns';
-import { ActiveProjectContext, AppConfig, useAppConfig } from '../hooks';
+import {
+  ActiveAccountProvider,
+  ActiveProjectContext,
+  AppConfig,
+  useAppConfig,
+} from '../hooks';
 import { MyDataScreen } from './MyDataScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
@@ -62,18 +67,20 @@ const queryClient = new QueryClient({
 const baseURL = 'https://some-domain/unit-test';
 const myDataScreen = (
   <QueryClientProvider client={queryClient}>
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ActiveProjectContext.Provider
-        value={
-          {
-            activeProject: { id: 'mock-project' },
-            activeSubjectId: 'mock-patient',
-          } as any
-        }
-      >
-        <MyDataScreen />
-      </ActiveProjectContext.Provider>
-    </GraphQLClientContextProvider>
+    <ActiveAccountProvider account="mockaccount">
+      <GraphQLClientContextProvider baseURL={baseURL}>
+        <ActiveProjectContext.Provider
+          value={
+            {
+              activeProject: { id: 'mock-project' },
+              activeSubjectId: 'mock-patient',
+            } as any
+          }
+        >
+          <MyDataScreen />
+        </ActiveProjectContext.Provider>
+      </GraphQLClientContextProvider>
+    </ActiveAccountProvider>
   </QueryClientProvider>
 );
 
