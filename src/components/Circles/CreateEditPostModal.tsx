@@ -20,7 +20,7 @@ import { t } from 'i18next';
 import { tID } from '../../common/testID';
 import uuid from 'react-native-uuid';
 import { NativeEventEmitter } from 'react-native';
-import { _sdkTracker } from '../../common';
+import { _sdkAnalyticsEvent } from '../../common';
 
 const eventEmitter = new NativeEventEmitter({
   addListener: () => {},
@@ -141,7 +141,7 @@ export const CreateEditPostModal = () => {
                         id: postToEdit.id,
                         newMessage: postText,
                       });
-                      _sdkTracker.track('PostEdited', {
+                      _sdkAnalyticsEvent.track('PostEdited', {
                         messageLength: postText.length,
                       });
                       hideModal(false);
@@ -154,7 +154,7 @@ export const CreateEditPostModal = () => {
                           parentType: parentType!,
                         },
                       });
-                      _sdkTracker.track('PostCreated', {
+                      _sdkAnalyticsEvent.track('PostCreated', {
                         messageLength: postText.length,
                       });
                       hideModal(true);

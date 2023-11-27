@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 
 export type AnalyticsEventTypeHandlers = {
   track: (eventName: string, event: unknown) => void;
-  identifyUser: (id: string) => void;
-  userPropertyUpdate: (
+  setUser: (id: string) => void;
+  updateUserProperty: (
     key: string,
     value: string | number | boolean | undefined,
   ) => void;
@@ -21,8 +21,8 @@ export type Tracker<CustomEventMap extends Record<string, unknown>> = {
     name: Key,
     event: CustomEventMap[Key],
   ): void;
-  identifyUser: AnalyticsEventTypeHandlers['identifyUser'];
-  userPropertyUpdate: AnalyticsEventTypeHandlers['userPropertyUpdate'];
+  setUser: AnalyticsEventTypeHandlers['setUser'];
+  updateUserProperty: AnalyticsEventTypeHandlers['updateUserProperty'];
   resetUser: AnalyticsEventTypeHandlers['resetUser'];
 };
 
@@ -30,8 +30,8 @@ export type Tracker<CustomEventMap extends Record<string, unknown>> = {
  * Create a type safe way to emit analytics events. Can do the following actions:
  *
  * track: Tracks an event with a given name and payload with values relevant to that event.
- * identifyUser: Allows you to start tracking a logged in users session by their ID.
- * userPropertyUpdate: Set a value for the current logged in user.
+ * setUser: Allows you to start tracking a logged in users session by their ID.
+ * updateUserProperty: Set a value for the current logged in user.
  * resetUser: Reset the current user tracking session, for when the user logs out.
  */
 export const createAnalyticsEmitter = <
@@ -39,9 +39,9 @@ export const createAnalyticsEmitter = <
 >(): Tracker<EventMap> => {
   return {
     track: (name, payload) => emitter.emit('track', name as string, payload),
-    identifyUser: (id) => emitter.emit('identifyUser', id),
-    userPropertyUpdate: (key, value) =>
-      emitter.emit('userPropertyUpdate', key as string, value),
+    setUser: (id) => emitter.emit('setUser', id),
+    updateUserProperty: (key, value) =>
+      emitter.emit('updateUserProperty', key as string, value),
     resetUser: () => emitter.emit('resetUser'),
   };
 };
@@ -56,7 +56,7 @@ export type SDKTrackEvents = {
  * Class for internal SDK event creation only. You will want to create your own
  * `createAnalyticsEmitter`
  */
-export const _sdkTracker = createAnalyticsEmitter<SDKTrackEvents>();
+export const _sdkAnalyticsEvent = createAnalyticsEmitter<SDKTrackEvents>();
 
 type AnalyticsListener = {
   addListener<EventType extends AnalyticsEventTypes>(

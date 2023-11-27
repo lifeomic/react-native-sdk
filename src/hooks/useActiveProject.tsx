@@ -3,7 +3,7 @@ import { Subject, useMe } from './useMe';
 import { Project, useSubjectProjects } from './useSubjectProjects';
 import { useAsyncStorage } from './useAsyncStorage';
 import { useUser } from './useUser';
-import { _sdkTracker } from '../common';
+import { _sdkAnalyticsEvent } from '../common';
 import { combineQueries } from '@lifeomic/one-query';
 import { ActivityIndicatorView } from '../components';
 import { t } from 'i18next';
@@ -33,8 +33,7 @@ const findProjectAndSubjectById = (
       (s) => s.projectId === defaultProject?.id,
     );
     defaultSubject?.subjectId &&
-      _sdkTracker.identifyUser(defaultSubject?.subjectId);
-    _sdkTracker.userPropertyUpdate('project', defaultProject?.id);
+      _sdkAnalyticsEvent.setUser(defaultSubject?.subjectId);
     return { selectedProject: defaultProject, selectedSubject: defaultSubject };
   };
 
@@ -51,8 +50,7 @@ const findProjectAndSubjectById = (
     return getDefault();
   }
   selectedSubject?.subjectId &&
-    _sdkTracker.identifyUser(selectedSubject?.subjectId);
-  _sdkTracker.userPropertyUpdate('project', selectedProject?.id);
+    _sdkAnalyticsEvent.setUser(selectedSubject?.subjectId);
   return { selectedProject, selectedSubject };
 };
 

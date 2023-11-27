@@ -14,16 +14,16 @@ jest.mock('./useUser', () => ({
 const useUserMock = useUser as jest.Mock;
 const useUpdateUserMock = useUpdateUser as jest.Mock;
 const useActiveProjectMock = useActiveProject as jest.Mock;
-const updateUser = jest.fn();
+const setUser = jest.fn();
 
 beforeEach(() => {
-  updateUser.mockReset();
+  setUser.mockReset();
   useUserMock.mockReturnValue({
     isLoading: true,
-    updateUser,
+    setUser,
   });
   useUpdateUserMock.mockReturnValue({
-    mutate: updateUser,
+    mutate: setUser,
   });
   useActiveProjectMock.mockReturnValue({ activeSubject: {} });
 });
@@ -31,7 +31,7 @@ beforeEach(() => {
 test('should update the user once all hooks load and the user does not have data', () => {
   const result = renderHook(() => useSetUserProfileEffect());
 
-  expect(updateUser).not.toHaveBeenCalled();
+  expect(setUser).not.toHaveBeenCalled();
 
   useUserMock.mockReturnValue({
     isLoading: false,
@@ -41,7 +41,7 @@ test('should update the user once all hooks load and the user does not have data
 
   result.rerender({});
 
-  expect(updateUser).not.toHaveBeenCalled();
+  expect(setUser).not.toHaveBeenCalled();
 
   useActiveProjectMock.mockReturnValue({
     activeSubject: {
@@ -56,7 +56,7 @@ test('should update the user once all hooks load and the user does not have data
 
   result.rerender({});
 
-  expect(updateUser).toHaveBeenCalledWith({
+  expect(setUser).toHaveBeenCalledWith({
     profile: {
       givenName: 'FirstName',
       familyName: 'LastName',
@@ -89,7 +89,7 @@ test('should use the first official name', () => {
 
   renderHook(() => useSetUserProfileEffect());
 
-  expect(updateUser).toHaveBeenCalledWith({
+  expect(setUser).toHaveBeenCalledWith({
     profile: {
       givenName: 'FirstName',
       familyName: 'LastName',
@@ -120,5 +120,5 @@ test('not set the username if it is already set', () => {
 
   renderHook(() => useSetUserProfileEffect());
 
-  expect(updateUser).not.toHaveBeenCalled();
+  expect(setUser).not.toHaveBeenCalled();
 });

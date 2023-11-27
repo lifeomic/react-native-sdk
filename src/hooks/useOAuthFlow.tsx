@@ -14,7 +14,7 @@ import {
 import { AuthResult, useAuth } from './useAuth';
 import { usePendingInvite } from './usePendingInvite';
 import { useQueryClient } from '@tanstack/react-query';
-import { _sdkTracker } from '../common';
+import { _sdkAnalyticsEvent } from '../common';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
@@ -90,7 +90,7 @@ export const OAuthContextProvider = ({
       // Clear cached query results on logout
       // to support switching user accounts
       queryClient.clear();
-      _sdkTracker.resetUser();
+      _sdkAnalyticsEvent.resetUser();
       if (!isLoggedIn || !authResult?.refreshToken) {
         await clearAuthResult();
         onSuccess?.();
@@ -125,7 +125,7 @@ export const OAuthContextProvider = ({
       try {
         const result = await authorize(authConfig);
         await storeAuthResult(result);
-        _sdkTracker.track('Login', { usedInvite: !!inviteId && !!evc });
+        _sdkAnalyticsEvent.track('Login', { usedInvite: !!inviteId && !!evc });
         onSuccess?.(result);
       } catch (error) {
         await clearAuthResult();

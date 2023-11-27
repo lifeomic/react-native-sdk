@@ -4,7 +4,7 @@ import { useUpdateUser, useUser } from './useUser';
 
 export const useSetUserProfileEffect = () => {
   const { isLoading, isFetched, data: user } = useUser();
-  const { mutate: updateUser } = useUpdateUser();
+  const { mutate: setUser } = useUpdateUser();
   const { activeSubject } = useActiveProject();
 
   useEffect(() => {
@@ -16,12 +16,12 @@ export const useSetUserProfileEffect = () => {
     const subjectHasName = !!name?.family || !!name?.given?.length;
 
     if (hasFetchedUser && !userHasName && subjectHasName) {
-      updateUser({
+      setUser({
         profile: {
           givenName: name.given?.[0],
           familyName: name.family,
         },
       });
     }
-  }, [isLoading, isFetched, user, activeSubject, updateUser]);
+  }, [isLoading, isFetched, user, activeSubject, setUser]);
 };

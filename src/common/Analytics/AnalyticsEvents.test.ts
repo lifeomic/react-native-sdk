@@ -1,7 +1,7 @@
 import {
   analyticsListener,
   createAnalyticsEmitter,
-  _sdkTracker,
+  _sdkAnalyticsEvent,
 } from './AnalyticsEvents';
 
 describe('AnalyticsEvents', () => {
@@ -11,16 +11,11 @@ describe('AnalyticsEvents', () => {
       usedInvite: true,
     };
     const listener = jest.fn();
-    console.log('1', listener.mock.calls);
     analyticsListener.addListener('track', listener);
-    console.log('2', listener.mock.calls);
-    _sdkTracker.track(eventKey, event);
-    console.log('3', listener.mock.calls);
+    _sdkAnalyticsEvent.track(eventKey, event);
     analyticsListener.removeListener('track', listener);
-    console.log('4', listener.mock.calls);
-    _sdkTracker.track(eventKey, event);
+    _sdkAnalyticsEvent.track(eventKey, event);
 
-    console.log('listen', listener.mock.calls);
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith(eventKey, event);
   });
@@ -50,19 +45,19 @@ describe('AnalyticsEvents', () => {
     const identifyUserListener = jest.fn();
     const userPropertyUpdateListener = jest.fn();
     const resetListener = jest.fn();
-    analyticsListener.addListener('identifyUser', identifyUserListener);
+    analyticsListener.addListener('setUser', identifyUserListener);
     analyticsListener.addListener(
-      'userPropertyUpdate',
+      'updateUserProperty',
       userPropertyUpdateListener,
     );
     analyticsListener.addListener('resetUser', resetListener);
 
     const userId = 'analytics-user-id';
-    _sdkTracker.identifyUser(userId);
+    _sdkAnalyticsEvent.setUser(userId);
     const userPropertyKey = 'analytics-user-property-key';
     const userPropertyValue = 'analytics-user-property-value';
-    _sdkTracker.userPropertyUpdate(userPropertyKey, userPropertyValue);
-    _sdkTracker.resetUser();
+    _sdkAnalyticsEvent.updateUserProperty(userPropertyKey, userPropertyValue);
+    _sdkAnalyticsEvent.resetUser();
 
     expect(identifyUserListener).toHaveBeenCalledTimes(1);
     expect(identifyUserListener).toHaveBeenCalledWith(userId);
