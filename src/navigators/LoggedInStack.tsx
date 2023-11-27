@@ -17,6 +17,7 @@ import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { useJoinCircles } from '../hooks/Circles/useJoinCircles';
 import { useProfilesForAllTiles } from '../hooks/useMessagingProfiles';
 import { _sdkAnalyticsEvent } from '../common';
+import { useUser } from '../hooks';
 
 export function LoggedInStack() {
   const Stack = createNativeStackNavigator<LoggedInRootParamList>();
@@ -24,6 +25,7 @@ export function LoggedInStack() {
   useSetUserProfileEffect();
   // Fetch profiles early but don't wait for them
   useProfilesForAllTiles();
+  const { isLoading, isFetched, data: user } = useUser();
   const { account } = useActiveAccount();
   const { activeProject, activeSubjectId } = useActiveProject();
   const { useShouldRenderConsentScreen } = useConsent();
@@ -82,8 +84,14 @@ export function LoggedInStack() {
   const loadingMessage = getLoadingMessage();
 
   useEffect(() => {
-    activeSubjectId && _sdkAnalyticsEvent.setUser(activeSubjectId);
-  }, [activeSubjectId]);
+    const hasFetchedUser = !isLoading && isFetched;
+    if (hasFetchedUser && user) {
+      _sdkAnalyticsEvent.setUser(user.id);
+    }
+
+    activeSubjectId &&
+      _sdkAnalyticsEvent.updateUserProperty('subjectId', activeSubjectId);
+  }, [activeSubjectId, isFetched, isLoading, user]);
 
   useEffect(() => {
     const executeOnAppStartIfNeeded = async () => {
