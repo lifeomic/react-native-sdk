@@ -1925,10 +1925,10 @@
   resolved "https://registry.yarnpkg.com/@lifeomic/eslint-plugin-i18next/-/eslint-plugin-i18next-2.0.1.tgz#a42dc7a810c83214b284963dcae4dffe217f8e16"
   integrity sha512-GU8m6m8w+BfSKPcuNl5eh+OVkaJeJqA1DqmnXZl05VqFYNInUcEVS3VwiCR6iwRHRvmyDu35TMZ29TR7iMX30A==
 
-"@lifeomic/one-query@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@lifeomic/one-query/-/one-query-3.2.0.tgz#bde54ad0421bc8b6865811cabb94740fd28fdd14"
-  integrity sha512-pzah8aVPt0XWUV1qbu2l6PgUIQ8LCJ2I5HRL+/4Gex/llSGSgyaE8ZqAJ/fUSOHY3kTuKU0a1CK19QviII3ocA==
+"@lifeomic/one-query@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@lifeomic/one-query/-/one-query-3.3.0.tgz#dd3c786ea0f0d1abce056db5bf5caf9cb26260fe"
+  integrity sha512-qEuHapDB1N1/7Xmt76PLcOlLr0IiZsdM81XIZpAcDrrHvXBOQexd5ZwjUt4Wdpp6i6EpZ75VipBgzAWDAln0Dg==
   dependencies:
     immer "^9.0.15"
     lodash "^4.17.21"
