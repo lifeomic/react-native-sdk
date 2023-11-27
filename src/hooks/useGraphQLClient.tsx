@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import { useAuth } from './useAuth';
 import { GraphQLClient as GQLClient } from 'graphql-request';
+import { useActiveAccount } from './useActiveAccount';
 
 const defaultBaseURL = 'https://api.us.lifeomic.com/v1/graphql';
 const defaultHeaders = {
@@ -34,6 +35,7 @@ export const GraphQLClientContextProvider = ({
   children?: React.ReactNode;
 }) => {
   const { authResult } = useAuth();
+  const { account } = useActiveAccount();
   const graphQLInstance =
     injectedGraphQLInstance || defaultGraphQLClientInstance;
 
@@ -51,8 +53,9 @@ export const GraphQLClientContextProvider = ({
       'Authorization',
       `Bearer ${authResult.accessToken}`,
     );
+    graphQLInstance.setHeader('LifeOmic-Account', account);
     return graphQLInstance;
-  }, [authResult?.accessToken, graphQLInstance]);
+  }, [authResult?.accessToken, account, graphQLInstance]);
 
   const context: GraphQLClient = { graphQLClient };
 

@@ -4,6 +4,7 @@ import { act, renderHook } from '@testing-library/react-native';
 import MockAdapter from 'axios-mock-adapter';
 import { AuthResult, useAuth } from './useAuth';
 import { HttpClientContextProvider, useHttpClient } from './useHttpClient';
+import { ActiveAccountProvider } from './useActiveAccount';
 
 jest.mock('./useAuth', () => ({
   useAuth: jest.fn(),
@@ -22,9 +23,11 @@ const authResult: AuthResult = {
 const renderHookInContext = async () => {
   return renderHook(() => useHttpClient(), {
     wrapper: ({ children }) => (
-      <HttpClientContextProvider baseURL="http://localhost/unit-test">
-        {children}
-      </HttpClientContextProvider>
+      <ActiveAccountProvider account="mockaccount">
+        <HttpClientContextProvider baseURL="http://localhost/unit-test">
+          {children}
+        </HttpClientContextProvider>
+      </ActiveAccountProvider>
     ),
   });
 };
@@ -42,9 +45,11 @@ test('provides default baseURL if one is not provided', async () => {
   const axiosInstance = axios.create();
   const { result } = renderHook(() => useHttpClient(), {
     wrapper: ({ children }) => (
-      <HttpClientContextProvider injectedAxiosInstance={axiosInstance}>
-        {children}
-      </HttpClientContextProvider>
+      <ActiveAccountProvider account="mockaccount">
+        <HttpClientContextProvider injectedAxiosInstance={axiosInstance}>
+          {children}
+        </HttpClientContextProvider>
+      </ActiveAccountProvider>
     ),
   });
   expect(result.current.httpClient.defaults.baseURL).toEqual(
@@ -63,7 +68,7 @@ test('if authResult is not present, has no Authorization header', async () => {
   expect(getHeaders?.['Content-Type']).toBe('application/json');
 });
 
-test('once authResult is set, adds bearer token', async () => {
+test('once authResult is set, adds bearer token and account header', async () => {
   const { result, rerender } = await renderHookInContext();
 
   act(() => {
@@ -77,6 +82,7 @@ test('once authResult is set, adds bearer token', async () => {
 
   const getHeaders = axiosMock.history.get[0].headers;
   expect(getHeaders?.Authorization).toBe(`Bearer ${authResult.accessToken}`);
+  expect(getHeaders?.['LifeOmic-Account']).toBe('mockaccount');
   expect(getHeaders?.['Content-Type']).toBe('application/json');
 });
 

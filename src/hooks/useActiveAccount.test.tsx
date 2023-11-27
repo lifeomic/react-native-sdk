@@ -25,7 +25,6 @@ test('converts useAccounts data into helpful state', async () => {
   await waitFor(() =>
     expect(result.current).toMatchObject({
       account: 'test-account',
-      accountHeaders: { 'LifeOmic-Account': 'test-account' },
     }),
   );
 });
