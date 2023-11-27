@@ -13,7 +13,7 @@ import Indicator from '../icons/indicator';
 import { Text } from '../styles/Text';
 import { tID } from '../common/testID';
 import { useIcons, createStyles } from '../../BrandConfigProvider';
-import { useStyles, useTheme } from '../../../hooks';
+import { useStyles } from '../../../hooks';
 import { IconButton } from 'react-native-paper';
 import { Easing } from 'react-native-reanimated';
 
@@ -32,9 +32,8 @@ export const ManageTrackerRow: FC<Props> = (props) => {
   const { isBeingDragged, isEditable, onDrag, onOpen, ...highlightProps } =
     remainingProps;
   const { styles } = useStyles(defaultStyles);
-  const theme = useTheme();
   const id = tracker.metricId || tracker.id;
-  const { Menu, ChevronRight, ChevronLeft, Circle, CheckCircle } = useIcons();
+  const { Menu, ChevronRight, ChevronLeft } = useIcons();
   const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -78,13 +77,7 @@ export const ManageTrackerRow: FC<Props> = (props) => {
           >
             <IconButton
               onPress={onToggleInstall}
-              icon={() =>
-                tracker.installed ? (
-                  <CheckCircle stroke={theme.colors.primary} />
-                ) : (
-                  <Circle stroke={theme.colors.primary} />
-                )
-              }
+              icon={installedStateIcon(tracker.installed)}
             />
           </Animated.View>
           <View
@@ -186,7 +179,19 @@ export const ManageTrackerRow: FC<Props> = (props) => {
   );
 };
 
-const defaultStyles = createStyles('ManageTrackersRow', () => ({
+const installedStateIcon = (isInstalled?: boolean) =>
+  function InstalledStateIcon() {
+    const { styles } = useStyles(defaultStyles);
+    const { Circle, CheckCircle } = useIcons();
+
+    return isInstalled ? (
+      <CheckCircle stroke={styles.checkedIcon?.color} />
+    ) : (
+      <Circle stroke={styles.uncheckedIcon?.color} />
+    );
+  };
+
+const defaultStyles = createStyles('ManageTrackersRow', (theme) => ({
   container: {
     flexDirection: 'row',
     paddingHorizontal: 24,
@@ -245,6 +250,12 @@ const defaultStyles = createStyles('ManageTrackersRow', () => ({
     height: 1,
     backgroundColor: '#242536',
     opacity: 0.15,
+  },
+  checkedIcon: {
+    color: theme.colors.primary,
+  },
+  uncheckedIcon: {
+    color: theme.colors.primary as string,
   },
 }));
 
