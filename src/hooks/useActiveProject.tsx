@@ -70,7 +70,14 @@ const withAccountRequired =
   <Props extends {}>(Component: React.FC<Props>): React.FC<Props> =>
   (props) => {
     const { account: activeAccountId } = useActiveAccount();
-    const query = useRestQuery('GET /v1/accounts', {});
+    const query = useRestQuery(
+      'GET /v1/accounts',
+      {},
+      {
+        // Do not include account header on this request.
+        axios: { headers: { 'LifeOmic-Account': '' } },
+      },
+    );
 
     if (query.status !== 'success') {
       return (

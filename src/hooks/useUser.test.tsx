@@ -4,6 +4,8 @@ import { useAuth } from './useAuth';
 import { useUpdateUser, useUser } from './useUser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createRestAPIMock } from '../test-utils/rest-api-mocking';
+import { ActiveAccountProvider } from './useActiveAccount';
+import { HttpClientContextProvider } from './useHttpClient';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +27,11 @@ const useAuthMock = useAuth as jest.Mock;
 const renderInContext = async <T, _ = never>(hook: () => T) => {
   return renderHook(() => hook(), {
     wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <ActiveAccountProvider account="mockaccount">
+          <HttpClientContextProvider>{children}</HttpClientContextProvider>
+        </ActiveAccountProvider>
+      </QueryClientProvider>
     ),
   });
 };
@@ -40,10 +46,21 @@ beforeEach(() => {
 
 test('fetches and parses user', async () => {
   const userProfile = { id: 'id', profile: {} };
-  api.mock('GET /v1/user', { status: 200, data: userProfile });
+  const mockGet = jest.fn().mockReturnValue({ status: 200, data: userProfile });
+  api.mock('GET /v1/user', mockGet);
   const { result } = await renderInContext(() => useUser());
   await waitFor(() => result.current.isSuccess);
   await waitFor(() => expect(result.current.data).toEqual(userProfile));
+  expect(mockGet).toHaveBeenCalledTimes(1);
+  expect(mockGet).toHaveBeenCalledWith({
+    query: {},
+    params: {},
+    headers: expect.objectContaining({
+      authorization: 'Bearer accessToken',
+    }),
+  });
+
+  expect(mockGet.mock.calls[0][0].headers['LifeOmic-Account']).toBeUndefined();
 });
 
 test('useUpdateUser can update a user', async () => {
@@ -55,8 +72,13 @@ test('useUpdateUser can update a user', async () => {
       familyName: 'test',
     },
   };
+
+  const mockPatch = jest.fn().mockResolvedValue({
+    status: 200,
+    data: updatedProfile,
+  });
   api.mock('GET /v1/user', { status: 200, data: userProfile });
-  api.mock('PATCH /v1/user', { status: 200, data: updatedProfile });
+  api.mock('PATCH /v1/user', mockPatch);
 
   const { result } = await renderInContext(() => {
     const query = useUser();
@@ -81,4 +103,20 @@ test('useUpdateUser can update a user', async () => {
   });
 
   await waitFor(() => expect(result.current.data).toEqual(updatedProfile));
+
+  expect(mockPatch).toHaveBeenCalledTimes(1);
+  expect(mockPatch).toHaveBeenCalledWith({
+    body: {
+      profile: {
+        familyName: 'test',
+      },
+    },
+    params: {},
+    headers: expect.objectContaining({
+      authorization: 'Bearer accessToken',
+    }),
+  });
+  expect(
+    mockPatch.mock.calls[0][0].headers['LifeOmic-Account'],
+  ).toBeUndefined();
 });

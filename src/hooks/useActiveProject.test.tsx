@@ -17,9 +17,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Text } from 'react-native';
 import { ActiveAccountProvider } from './useActiveAccount';
 import { createRestAPIMock } from '../test-utils/rest-api-mocking';
+import { HttpClientContextProvider } from './useHttpClient';
+import { useAuth } from './useAuth';
 
 const api = createRestAPIMock();
 
+jest.mock('./useAuth', () => ({
+  useAuth: jest.fn(),
+}));
 jest.mock('./useSubjectProjects', () => ({
   useSubjectProjects: jest.fn(),
 }));
@@ -30,6 +35,7 @@ jest.mock('./useUser', () => ({
   useUser: jest.fn(),
 }));
 
+const useAuthMock = useAuth as jest.Mock;
 const useSubjectProjectsMock = useSubjectProjects as jest.Mock;
 const useMeMock = useMe as jest.Mock;
 const useUserMock = useUser as jest.Mock;
@@ -60,9 +66,11 @@ const renderHookInContext = async () => {
     wrapper: ({ children }) => (
       <QueryClientProvider client={new QueryClient()}>
         <ActiveAccountProvider account="mockaccount">
-          <ActiveProjectContextProvider>
-            {children}
-          </ActiveProjectContextProvider>
+          <HttpClientContextProvider>
+            <ActiveProjectContextProvider>
+              {children}
+            </ActiveProjectContextProvider>
+          </HttpClientContextProvider>
         </ActiveAccountProvider>
       </QueryClientProvider>
     ),
@@ -73,6 +81,11 @@ beforeEach(async () => {
   api.mock('GET /v1/accounts', {
     status: 200,
     data: { accounts: [{ id: 'mockaccount' } as any] },
+  });
+
+  useAuthMock.mockReturnValue({
+    isLoggedIn: true,
+    authResult: { accessToken: 'dummy-token' },
   });
   useSubjectProjectsMock.mockReturnValue({
     status: 'success',
@@ -245,6 +258,29 @@ test('setActiveProjectId writes selected projectId to async storage', async () =
   await waitFor(async () => {
     const value = await AsyncStorage.getItem('selectedProjectIdKey:mockUser');
     expect(value).toStrictEqual(mockSubjectProjects[1].id);
+  });
+});
+
+test('GET /v1/accounts is not called with an account header', async () => {
+  const mockGet = jest.fn().mockReturnValue({
+    status: 200,
+    data: { accounts: [] },
+  });
+  api.mock('GET /v1/accounts', mockGet);
+  await renderHookInContext();
+
+  await waitFor(() => {
+    expect(mockGet).toHaveBeenCalledTimes(1);
+    expect(mockGet).toHaveBeenCalledWith({
+      query: {},
+      params: {},
+      headers: expect.objectContaining({
+        authorization: 'Bearer dummy-token',
+      }),
+    });
+    expect(
+      mockGet.mock.calls[0][0].headers['LifeOmic-Account'],
+    ).toBeUndefined();
   });
 });
 
