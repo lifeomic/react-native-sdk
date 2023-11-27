@@ -14,6 +14,7 @@ import { Pillar } from './Pillar';
 import { Card } from 'react-native-paper';
 import { useStyles } from '../../../hooks/useStyles';
 import { createStyles } from '../../BrandConfigProvider';
+import { DefaultOnError } from '../common/DefaultOnError';
 
 export type PillarsTileProps = {
   onOpenDetails: (
@@ -70,6 +71,7 @@ export const PillarsTile = ({
                 trackerValues={trackerDayValues}
                 tracker={tracker}
                 valuesContext={valuesContext}
+                onError={DefaultOnError}
                 onOpenDetails={() => onOpenDetails(tracker, valuesContext)}
                 onSaveNewValueOverride={
                   onSaveNewValueOverride

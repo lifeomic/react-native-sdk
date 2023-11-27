@@ -1,12 +1,24 @@
 import {
   TrackerResource,
   TRACKER_CODE_SYSTEM,
+  TrackerDetailsError,
 } from '../services/TrackTileService';
 import { format, addSeconds, startOfDay } from 'date-fns';
 import { Code, ResourceSettings } from './to-fhir-resource';
 import { convertToStoreUnit } from '../util/convert-value';
+import { t } from 'i18next';
 
 export const TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSxxx";
+
+export class OneDayLimitError extends TrackerDetailsError {
+  constructor(message?: string | undefined) {
+    super(message);
+    this.userErrorMessage = t(
+      'duration-lt-24h',
+      'Duration cannot be greater than or equal to 24 hours.',
+    );
+  }
+}
 
 const toFhirProcedureResource = (
   from: ResourceSettings,
@@ -22,6 +34,12 @@ const toFhirProcedureResource = (
 
   // NOTE: All Procedure units MUST use system http://unitsofmeasure.org
   const seconds = convertToStoreUnit(value, tracker);
+
+  // Procedures in the trackers/pillars space should never be >= 24 hours.
+  if (seconds >= 60 * 60 * 24) {
+    throw new OneDayLimitError();
+  }
+
   const endTime = addSeconds(startDate, seconds);
 
   return {
