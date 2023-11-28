@@ -25,7 +25,7 @@ import { RootProviders, LoggedInStack } from '@lifeomic/react-native-sdk';
 
 export default function App() {
   return (
-    <RootProviders authConfig={authConfig}>
+    <RootProviders account="myaccount" authConfig={authConfig}>
       <LoggedInStack />
     </RootProviders>
   );
@@ -53,7 +53,7 @@ export default function App() {
         },
       }}
     >
-      <RootProviders authConfig={authConfig}>
+      <RootProviders account="myaccount" authConfig={authConfig}>
         <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
@@ -77,7 +77,7 @@ export default function App() {
         },
       }}
     >
-      <RootProviders authConfig={authConfig}>
+      <RootProviders account="myaccount" authConfig={authConfig}>
         <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
@@ -156,7 +156,7 @@ export default function App() {
         },
       }}
     >
-      <RootProviders authConfig={authConfig}>
+      <RootProviders account="myaccount" authConfig={authConfig}>
         <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
@@ -185,7 +185,7 @@ function App() {
         CustomHomeScreen,
       }}
     >
-      <RootProviders authConfig={authConfig}>
+      <RootProviders account="myaccount" authConfig={authConfig}>
         <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
@@ -240,7 +240,7 @@ export default function App() {
         renderCustomLoginScreen: () => <CustomLoginScreen />,
       }}
     >
-      <RootProviders authConfig={authConfig}>
+      <RootProviders account="myaccount" authConfig={authConfig}>
         <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
@@ -284,7 +284,7 @@ export default function App() {
         onAppSessionStart,
       }}
     >
-      <RootProviders authConfig={authConfig}>
+      <RootProviders account="myaccount" authConfig={authConfig}>
         <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
