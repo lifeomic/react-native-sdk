@@ -31,14 +31,12 @@ const valuesContext: TrackerValuesContext = {
 const DATASTORE_HEADERS = {
   headers: expect.objectContaining({
     'LifeOmic-TrackTile-Capabilities-Version': 3,
-    'LifeOmic-Account': 'account-id',
   }),
 };
 
 const ACCOUNT_HEADERS = {
   headers: expect.objectContaining({
     'LifeOmic-TrackTile-Capabilities-Version': 3,
-    'LifeOmic-Account': 'account-id',
   }),
 };
 

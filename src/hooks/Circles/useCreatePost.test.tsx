@@ -1,11 +1,11 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useActiveAccount } from '../useActiveAccount';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../useGraphQLClient';
 import nock from 'nock';
 import { Post, ParentType } from './types';
 import { useCreatePost } from './useCreatePost';
+import { ActiveAccountProvider } from '../useActiveAccount';
 
 jest.mock('./useActiveCircleTile', () => ({
   useActiveCircleTile: jest.fn().mockImplementation(() => ({
@@ -13,10 +13,6 @@ jest.mock('./useActiveCircleTile', () => ({
       circleId: 'someCircleId',
     },
   })),
-}));
-
-jest.mock('../useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
 }));
 
 const queryClient = new QueryClient({
@@ -32,15 +28,15 @@ const renderHookWithInjectedClient = async () => {
   return renderHook(() => useCreatePost(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>
-        <GraphQLClientContextProvider baseURL={baseURL}>
-          {children}
-        </GraphQLClientContextProvider>
+        <ActiveAccountProvider account="mockaccount">
+          <GraphQLClientContextProvider baseURL={baseURL}>
+            {children}
+          </GraphQLClientContextProvider>
+        </ActiveAccountProvider>
       </QueryClientProvider>
     ),
   });
 };
-
-const useActiveAccountMock = useActiveAccount as jest.Mock;
 
 const getDataWithPosts = (postEdges: any) => ({
   pages: [
@@ -55,14 +51,6 @@ const getDataWithPosts = (postEdges: any) => ({
 });
 
 describe('useCreatePost', () => {
-  beforeEach(() => {
-    useActiveAccountMock.mockReturnValue({
-      accountHeaders: {
-        'LifeOmic-Account': 'unittest',
-      },
-    });
-  });
-
   test('useCreatePost mutation', async () => {
     const RealDate = Date;
     global.Date = class extends RealDate {

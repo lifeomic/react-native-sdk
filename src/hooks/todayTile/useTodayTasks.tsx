@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { gql } from 'graphql-request';
-import { useActiveAccount } from '../useActiveAccount';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActiveProject } from '../useActiveProject';
 import { useRestQuery, useRestCache } from '../rest-api';
@@ -34,7 +33,6 @@ export const useInvalidateTodayCountCache = () => {
 
 const useConsentTasks = () => {
   const { activeProject } = useActiveProject();
-  const { accountHeaders } = useActiveAccount();
 
   return useRestQuery(
     'GET /v1/consent/directives/me',
@@ -43,7 +41,6 @@ const useConsentTasks = () => {
       includeForm: true,
     },
     {
-      axios: { headers: accountHeaders },
       select: (data) => data.items,
     },
   );
@@ -59,7 +56,6 @@ export const useGetSurveyResponsesForProject = (
   input?: SurveyResponseInput,
 ) => {
   const { activeSubjectId, activeProject } = useActiveProject();
-  const { accountHeaders } = useActiveAccount();
 
   return useRestQuery(
     'GET /v1/survey/projects/:projectId/responses',
@@ -72,7 +68,6 @@ export const useGetSurveyResponsesForProject = (
       pageSize: input?.pageSize ?? 100,
     },
     {
-      axios: { headers: accountHeaders },
       select: (data) => data.items,
     },
   );
@@ -91,15 +86,13 @@ const GetIncompleteActivitiesCount = gql`
 
 export const useGetIncompleteActivitiesCount = () => {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
 
   const queryForPostDetails = useCallback(async () => {
     return graphQLClient.request<GetIncompleteActivitiesCountQueryResponse>(
       GetIncompleteActivitiesCount,
       undefined,
-      accountHeaders,
     );
-  }, [accountHeaders, graphQLClient]);
+  }, [graphQLClient]);
 
   return useQuery(['getIncompleteActivitiesCount'], queryForPostDetails);
 };

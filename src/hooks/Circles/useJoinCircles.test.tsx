@@ -5,7 +5,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { useHttpClient } from '../useHttpClient';
-import { useActiveAccount } from '../useActiveAccount';
 import { useActiveProject } from '../useActiveProject';
 import { CircleTile, useAppConfig } from '../useAppConfig';
 import { useJoinCircles } from './useJoinCircles';
@@ -29,9 +28,6 @@ const renderHookInContext = async () => {
 const axiosInstance = axios.create();
 const axiosMock = new MockAdapter(axiosInstance);
 
-jest.mock('../useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
 jest.mock('../useHttpClient', () => ({
   useHttpClient: jest.fn(),
 }));
@@ -45,16 +41,12 @@ jest.mock('../useAppConfig', () => ({
   useAppConfig: jest.fn(),
 }));
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useActiveProjectMock = useActiveProject as jest.Mock;
 const useHttpClientMock = useHttpClient as jest.Mock;
 const useAuthMock = useAuth as jest.Mock;
 const useAppConfigMock = useAppConfig as jest.Mock;
 
 beforeEach(() => {
-  useActiveAccountMock.mockReturnValue({
-    accountHeaders: { 'LifeOmic-Account': 'acct1' },
-  });
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
     activeSubjectId: 'subjectId',

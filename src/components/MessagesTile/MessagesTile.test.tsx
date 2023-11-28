@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import { useUser } from '../../hooks';
+import { ActiveAccountProvider, useUser } from '../../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../../hooks/useGraphQLClient';
 import { MessagesTile } from '.';
@@ -30,14 +30,16 @@ const queryClient = new QueryClient({
 const baseURL = 'https://some-domain/unit-test';
 const directMessageScreen = (
   <QueryClientProvider client={queryClient}>
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <MessagesTile
-        Icon={() => null}
-        navigation={navigateMock as any}
-        id="some-messages-tile"
-        title="Message your doctor"
-      />
-    </GraphQLClientContextProvider>
+    <ActiveAccountProvider account="mockaccount">
+      <GraphQLClientContextProvider baseURL={baseURL}>
+        <MessagesTile
+          Icon={() => null}
+          navigation={navigateMock as any}
+          id="some-messages-tile"
+          title="Message your doctor"
+        />
+      </GraphQLClientContextProvider>
+    </ActiveAccountProvider>
   </QueryClientProvider>
 );
 

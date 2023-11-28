@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 
 export function useExchangeToken(appTileId: string, clientId?: string) {
   const { apiClient } = useHttpClient();
-  const { accountHeaders } = useActiveAccount();
 
   return useQuery(
     [
@@ -16,11 +14,7 @@ export function useExchangeToken(appTileId: string, clientId?: string) {
     ],
     () =>
       apiClient
-        .request(
-          'POST /v1/client-tokens',
-          { targetClientId: clientId! },
-          { headers: accountHeaders },
-        )
+        .request('POST /v1/client-tokens', { targetClientId: clientId! })
         .then((res) => res.data),
     {
       enabled: !!clientId,

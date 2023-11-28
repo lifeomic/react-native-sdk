@@ -1,6 +1,5 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useActiveAccount } from './useActiveAccount';
 import { useMe } from './useMe';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MockAdapter from 'axios-mock-adapter';
@@ -15,14 +14,10 @@ const queryClient = new QueryClient({
   },
 });
 
-jest.mock('./useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
 jest.mock('./useHttpClient', () => ({
   useHttpClient: jest.fn(),
 }));
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useHttpClientMock = useHttpClient as jest.Mock;
 
 const renderHookInContext = async () => {
@@ -37,9 +32,6 @@ const axiosInstance = axios.create();
 const axiosMock = new MockAdapter(axiosInstance);
 
 beforeEach(() => {
-  useActiveAccountMock.mockReturnValue({
-    accountHeaders: { 'LifeOmic-Account': 'acct1' },
-  });
   useHttpClientMock.mockReturnValue({ httpClient: axiosInstance });
 });
 

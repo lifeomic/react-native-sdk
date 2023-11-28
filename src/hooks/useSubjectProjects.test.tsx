@@ -43,7 +43,6 @@ const axiosMock = new MockAdapter(axiosInstance);
 beforeEach(() => {
   useActiveAccountMock.mockReturnValue({
     account: 'acct1',
-    accountHeaders: { 'LifeOmic-Account': 'acct1' },
   });
   useMeMock.mockReturnValue({
     data: [{ projectId: 'proj1' }, { projectId: 'proj2' }],

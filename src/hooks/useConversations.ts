@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
-import { useActiveAccount } from './useActiveAccount';
 import cloneDeep from 'lodash/cloneDeep';
 
 const conversationsQueryDocument = gql`
@@ -88,7 +87,6 @@ export function useHasUnread() {
 
 export function useInfiniteConversations() {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
 
   const queryConversations = async ({ pageParam }: { pageParam?: string }) => {
     const variables = {
@@ -98,7 +96,6 @@ export function useInfiniteConversations() {
     return graphQLClient.request<ConversationsData>(
       conversationsQueryDocument,
       variables,
-      accountHeaders,
     );
   };
 
@@ -113,18 +110,13 @@ export function useInfiniteConversations() {
 
 export function useMarkAsRead() {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
 
   const markAsReadMutation = async (input: MarkAsReadInput) => {
     const variables = {
       input,
     };
 
-    return graphQLClient.request(
-      markAsReadMutationDocument,
-      variables,
-      accountHeaders,
-    );
+    return graphQLClient.request(markAsReadMutationDocument, variables);
   };
 
   return useMutation({ mutationFn: markAsReadMutation });
@@ -132,7 +124,6 @@ export function useMarkAsRead() {
 
 export function useLeaveConversation() {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
 
   const leaveConversationMutation = async (input: LeaveConversationInput) => {
@@ -140,11 +131,7 @@ export function useLeaveConversation() {
       input,
     };
 
-    return graphQLClient.request(
-      leaveConversationMutationDocument,
-      variables,
-      accountHeaders,
-    );
+    return graphQLClient.request(leaveConversationMutationDocument, variables);
   };
 
   return useMutation({

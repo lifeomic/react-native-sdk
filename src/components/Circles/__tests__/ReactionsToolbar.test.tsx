@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../../../hooks/useGraphQLClient';
 import type { Post } from '../../../hooks';
 import {
+  ActiveAccountProvider,
   useCreateReactionMutation,
   useUndoReactionMutation,
 } from '../../../hooks';
@@ -32,8 +33,10 @@ useUserMock.mockReturnValue({
 const baseURL = 'https://some-domain/unit-test';
 const toolbarComponent = (post: Post) => (
   <QueryClientProvider client={new QueryClient()}>
-    <GraphQLClientContextProvider baseURL={baseURL} />
-    <ReactionsToolbar post={post} />
+    <ActiveAccountProvider account="mockaccount">
+      <GraphQLClientContextProvider baseURL={baseURL} />
+      <ReactionsToolbar post={post} />
+    </ActiveAccountProvider>
   </QueryClientProvider>
 );
 

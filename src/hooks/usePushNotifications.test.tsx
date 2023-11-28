@@ -18,13 +18,13 @@ jest.mock('react-native-notifications', () => ({
 const renderProvider = (config?: PushNotificationsConfig) =>
   render(
     <QueryClientProvider client={new QueryClient()}>
-      <HttpClientContextProvider>
-        <ActiveAccountProvider account="test-account">
+      <ActiveAccountProvider account="test-account">
+        <HttpClientContextProvider>
           <PushNotificationsProvider config={config}>
             <Text>content</Text>
           </PushNotificationsProvider>
-        </ActiveAccountProvider>
-      </HttpClientContextProvider>
+        </HttpClientContextProvider>
+      </ActiveAccountProvider>
     </QueryClientProvider>,
   );
 
@@ -64,7 +64,6 @@ test('requests permissions', async () => {
   expect(NotificationsUtils.registerDeviceToken).toHaveBeenCalledWith({
     deviceToken: 'test-token',
     application: 'test-app',
-    accountId: 'test-account',
     httpClient: expect.anything(),
   });
 });

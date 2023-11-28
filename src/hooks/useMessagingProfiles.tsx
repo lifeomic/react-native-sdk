@@ -1,5 +1,4 @@
 import { useAppConfig } from './useAppConfig';
-import { useActiveAccount } from './useActiveAccount';
 import { useHttpClient } from './useHttpClient';
 import { UseQueryOptions, useQueries } from '@tanstack/react-query';
 import { combineQueries } from '@lifeomic/one-query';
@@ -29,7 +28,6 @@ const placeHolderProfile = (userId: string) => ({
 
 export const useMessagingProfiles = (userIds?: string[]) => {
   const { apiClient } = useHttpClient();
-  const { accountHeaders } = useActiveAccount();
 
   const queries = useQueries({
     queries:
@@ -38,11 +36,7 @@ export const useMessagingProfiles = (userIds?: string[]) => {
           userId,
           () =>
             apiClient
-              .request(
-                'GET /v1/account/users/:userId',
-                { userId },
-                { headers: accountHeaders },
-              )
+              .request('GET /v1/account/users/:userId', { userId })
               .then((res) => res.data),
           {
             placeholderData: placeHolderProfile(userId),

@@ -1,15 +1,12 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
-import { useActiveAccount, useUser } from '../hooks';
+import { ActiveAccountProvider, useUser } from '../hooks';
 import { NotificationQueryResponse } from '../hooks/useNotifications';
 import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
 import { NotificationsScreen } from './NotificationsScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 
-jest.mock('../hooks/useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
 jest.mock('../hooks/useUser', () => ({
   useUser: jest.fn(),
 }));
@@ -30,13 +27,14 @@ const queryClient = new QueryClient({
 const baseURL = 'https://some-domain/unit-test';
 const notificationsScreen = (
   <QueryClientProvider client={queryClient}>
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <NotificationsScreen />
-    </GraphQLClientContextProvider>
+    <ActiveAccountProvider account="mockaccount">
+      <GraphQLClientContextProvider baseURL={baseURL}>
+        <NotificationsScreen />
+      </GraphQLClientContextProvider>
+    </ActiveAccountProvider>
   </QueryClientProvider>
 );
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useUserMock = useUser as jest.Mock;
 
 beforeEach(() => {
@@ -46,11 +44,6 @@ beforeEach(() => {
       profile: {},
     },
     isLoading: false,
-  });
-  useActiveAccountMock.mockReturnValue({
-    accountHeaders: {
-      'LifeOmic-Account': 'unittest',
-    },
   });
 });
 

@@ -1,22 +1,18 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useAppConfig, AppTile } from './useAppConfig';
-import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { HttpClientContextProvider } from './useHttpClient';
 import { createRestAPIMock } from '../test-utils/rest-api-mocking';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ActiveAccountProvider } from './useActiveAccount';
 
 const api = createRestAPIMock();
 
-jest.mock('./useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
 jest.mock('./useActiveProject', () => ({
   useActiveProject: jest.fn(),
 }));
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useActiveProjectMock = useActiveProject as jest.Mock;
 
 const mockAppTile = (id: string): AppTile => ({
@@ -30,18 +26,15 @@ const renderHookInContext = async () => {
   return renderHook(() => useAppConfig(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={new QueryClient()}>
-        <HttpClientContextProvider>{children}</HttpClientContextProvider>
+        <ActiveAccountProvider account="mockaccount">
+          <HttpClientContextProvider>{children}</HttpClientContextProvider>
+        </ActiveAccountProvider>
       </QueryClientProvider>
     ),
   });
 };
 
 beforeEach(() => {
-  useActiveAccountMock.mockReturnValue({
-    accountHeaders: {
-      'LifeOmic-Account': 'acct1',
-    },
-  });
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
   });

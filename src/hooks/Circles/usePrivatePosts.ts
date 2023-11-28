@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
-import { useActiveAccount } from '../useActiveAccount';
 import { Post, postDetailsFragment } from './types';
 import { useUser } from '../useUser';
 import { IMessage } from 'react-native-gifted-chat';
@@ -77,7 +76,6 @@ const uniqSort = (userIds: Array<string | undefined>) => {
 */
 export function useInfinitePrivatePosts(userIds: string[]) {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
   const { data } = useUser();
   const users = uniqSort([data?.id, ...userIds]);
 
@@ -93,7 +91,6 @@ export function useInfinitePrivatePosts(userIds: string[]) {
     return graphQLClient.request<PrivatePostsData>(
       privatePostsQueryDocument,
       variables,
-      accountHeaders,
     );
   };
 
@@ -155,7 +152,6 @@ interface CreatePrivatePostMutationProps {
 
 export function useCreatePrivatePostMutation() {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
   const { data: userData } = useUser();
 
@@ -171,11 +167,7 @@ export function useCreatePrivatePostMutation() {
       },
     };
 
-    return graphQLClient.request(
-      createPrivatePostMutationDocument,
-      variables,
-      accountHeaders,
-    );
+    return graphQLClient.request(createPrivatePostMutationDocument, variables);
   };
 
   return useMutation(['createPrivatePost'], {

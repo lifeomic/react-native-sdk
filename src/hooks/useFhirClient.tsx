@@ -28,7 +28,7 @@ type DeleteParams = {
 
 export function useFhirClient() {
   const { httpClient } = useHttpClient();
-  const { accountHeaders, account } = useActiveAccount();
+  const { account } = useActiveAccount();
   const { activeProject, activeSubjectId } = useActiveProject();
 
   const toResource = (source: ResourceType) => {
@@ -130,9 +130,6 @@ export function useFhirClient() {
           .post<Bundle<ResourceTypes[typeof resourceType]>>(
             `/v1/fhir/dstu3/${resourceType}/_search`,
             params,
-            {
-              headers: accountHeaders,
-            },
           )
           .then((res) => {
             const { data } = res;
@@ -173,9 +170,6 @@ export function useFhirClient() {
           .post<ResourceType>(
             `/v1/fhir/dstu3/${resource.resourceType}`,
             resource,
-            {
-              headers: accountHeaders,
-            },
           )
           .then((res) => res.data);
       },
@@ -204,9 +198,6 @@ export function useFhirClient() {
             // TODO: Update once the bundle endpoint is exposed behind `/v1/fhir`
             `https://fhir.us.lifeomic.com/${account}/dstu3`,
             bundle,
-            {
-              headers: accountHeaders,
-            },
           )
           .then((res) => res.data);
       },
@@ -217,9 +208,7 @@ export function useFhirClient() {
     return useMutation({
       mutationFn: async (params: DeleteParams) => {
         return httpClient
-          .delete(`/v1/fhir/dstu3/${params.resourceType}/${params.id}`, {
-            headers: accountHeaders,
-          })
+          .delete(`/v1/fhir/dstu3/${params.resourceType}/${params.id}`)
           .then((res) => res.data);
       },
     });

@@ -1,6 +1,5 @@
 import { cloneDeep, omit } from 'lodash';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { useUser } from '../useUser';
 import { ParentType, Priority, AttachmentType, Post } from './types';
@@ -26,7 +25,6 @@ type CreatePostInput = {
 
 export function useCreatePost() {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
   const { data } = useUser();
   const queryClient = useQueryClient();
   const { circleTile } = useActiveCircleTile();
@@ -36,11 +34,7 @@ export function useCreatePost() {
       input,
     };
 
-    return graphQLClient.request(
-      createPostMutationDocument,
-      variables,
-      accountHeaders,
-    );
+    return graphQLClient.request(createPostMutationDocument, variables);
   };
 
   return useMutation(['createPost'], createPostMutation, {

@@ -14,7 +14,7 @@ interface ProjectsResponse {
 }
 
 export function useSubjectProjects() {
-  const { account, accountHeaders } = useActiveAccount();
+  const { account } = useActiveAccount();
   const { data: subjects } = useMe();
   const { httpClient } = useHttpClient();
   const { lastAcceptedId } = usePendingInvite();
@@ -25,7 +25,6 @@ export function useSubjectProjects() {
       if (subjects?.length) {
         const res = await httpClient.get<ProjectsResponse>(
           `/v1/projects?${subjects?.map((s) => `id=${s.projectId}`).join('&')}`,
-          { headers: accountHeaders },
         );
         return res.data.items;
       } else {
