@@ -5,6 +5,7 @@ import { WebView } from 'react-native-webview';
 import { AppTileScreen } from './AppTileScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as UseHandleAppTileEvents from '../hooks/useHandleAppTileEvents';
+import { ActiveAccountProvider } from '../hooks';
 
 jest.mock('react-native-webview', () => ({
   WebView: jest.fn().mockReturnValue(<></>),
@@ -45,7 +46,9 @@ beforeEach(() => {
 test('renders webview with source prop', () => {
   render(
     <QueryClientProvider client={new QueryClient()}>
-      <AppTileScreen navigation={navigation} route={route} />
+      <ActiveAccountProvider account="mockaccount">
+        <AppTileScreen navigation={navigation} route={route} />
+      </ActiveAccountProvider>
     </QueryClientProvider>,
   );
   expect(webviewMock.mock.calls[0][0]).toMatchObject({

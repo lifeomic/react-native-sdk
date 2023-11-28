@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useActiveAccount } from '../useActiveAccount';
+import { ActiveAccountProvider } from '../useActiveAccount';
 import { PostDetailsPostQueryResponse } from './useInfinitePosts';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -7,10 +7,6 @@ import { GraphQLClientContextProvider } from '../useGraphQLClient';
 import { mockGraphQLResponse } from '../../common/testHelpers/mockGraphQLResponse';
 import { Post } from './types';
 import { usePost } from './usePost';
-
-jest.mock('../useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,41 +23,18 @@ const renderHookWithInjectedClient = async (post: string | Post) => {
     {
       wrapper: ({ children }) => (
         <QueryClientProvider client={queryClient}>
-          <GraphQLClientContextProvider baseURL={baseURL}>
-            {children}
-          </GraphQLClientContextProvider>
+          <ActiveAccountProvider account="unittest">
+            <GraphQLClientContextProvider baseURL={baseURL}>
+              {children}
+            </GraphQLClientContextProvider>
+          </ActiveAccountProvider>
         </QueryClientProvider>
       ),
     },
   );
 };
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
-
 describe('usePost', () => {
-  beforeEach(() => {
-    useActiveAccountMock.mockReturnValue({
-      accountHeaders: {
-        'LifeOmic-Account': 'unittest',
-      },
-    });
-  });
-
-  test('does not fetch the result if there are no account headers', async () => {
-    useActiveAccountMock.mockReturnValue({
-      isFetched: true,
-      accountHeaders: undefined,
-    });
-
-    const { result } = await renderHookWithInjectedClient('post');
-
-    expect(result.current).toEqual(
-      expect.objectContaining({
-        isLoading: false,
-      }),
-    );
-  });
-
   test('returns query result', async () => {
     const response: PostDetailsPostQueryResponse = {
       post: {

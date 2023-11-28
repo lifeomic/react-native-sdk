@@ -131,6 +131,10 @@ export type TrackerValuesContext = {
   shouldUseOntology?: boolean;
 };
 
+export class TrackerDetailsError extends Error {
+  userErrorMessage?: string;
+}
+
 export const TRACK_TILE_CAPABILITIES_VERSION = 3;
 export const TRACK_TILE_CAPABILITIES_VERSION_HEADER =
   'LifeOmic-TrackTile-Capabilities-Version';

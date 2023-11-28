@@ -50,7 +50,7 @@ export function PushNotificationsProvider({
             deviceToken,
             application: config.applicationName,
             httpClient,
-            accountId: account.id,
+            accountId: account,
           });
         }
       });

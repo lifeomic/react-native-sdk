@@ -20,7 +20,7 @@ export function useSubjectProjects() {
   const { lastAcceptedId } = usePendingInvite();
 
   return useQuery<Project[]>(
-    [`${account?.id}-projects`, subjects, lastAcceptedId],
+    [`${account}-projects`, subjects, lastAcceptedId],
     async () => {
       if (subjects?.length) {
         const res = await httpClient.get<ProjectsResponse>(
@@ -34,9 +34,6 @@ export function useSubjectProjects() {
         // returning a mock response to keep downstream queries moving
         return [];
       }
-    },
-    {
-      enabled: !!accountHeaders,
     },
   );
 }

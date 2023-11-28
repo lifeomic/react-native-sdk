@@ -61,11 +61,11 @@ export const FhirProfileView = () => {
       />
       <Field
         label={t('fhir-profile-mobile-number', 'Mobile Number')}
-        value={subject.telecom?.find((t) => t.system === 'phone')?.value}
+        value={subject.telecom?.find((tel) => tel.system === 'phone')?.value}
       />
       <Field
         label={t('fhir-profile-email', 'Email Address')}
-        value={subject.telecom?.find((t) => t.system === 'email')?.value}
+        value={subject.telecom?.find((tel) => tel.system === 'email')?.value}
       />
     </View>
   );

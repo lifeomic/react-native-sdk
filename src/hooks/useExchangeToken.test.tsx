@@ -43,7 +43,7 @@ test('posts token/clientId to /v1/client-tokens', async () => {
   );
   const { result } = await renderHookInContext();
   await waitFor(() => {
-    expect(result.current.status === 'success');
+    expect(result.current.status).toEqual('success');
     expect(result.current.data?.code).toStrictEqual('some-code');
   });
 

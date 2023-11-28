@@ -49,7 +49,7 @@ storiesOf('Custom Screen Injection', module)
           },
         }}
       >
-        <RootProviders authConfig={authConfig}>
+        <RootProviders account="mockaccount" authConfig={authConfig}>
           <LoggedInStack />
         </RootProviders>
       </DeveloperConfigProvider>

@@ -4,7 +4,7 @@ import {
   render,
 } from '../../../common/testHelpers/testing-library-wrapper';
 import { ThreadComment } from '../ThreadComment';
-import { Post } from '../../../hooks';
+import { ActiveAccountProvider, Post } from '../../../hooks';
 
 jest.unmock('@react-navigation/native');
 jest.mock('date-fns', () => ({
@@ -39,7 +39,9 @@ const mockPost: Post = {
 describe('ThreadComment', () => {
   test('renders the component', () => {
     const { getByText } = render(
-      <ThreadComment post={mockPost} onReply={jest.fn()} />,
+      <ActiveAccountProvider account="mockaccount">
+        <ThreadComment post={mockPost} onReply={jest.fn()} />
+      </ActiveAccountProvider>,
     );
 
     expect(getByText('Shaggy')).toBeDefined();
@@ -51,7 +53,9 @@ describe('ThreadComment', () => {
     const onReply = jest.fn();
 
     const { getByText } = render(
-      <ThreadComment post={mockPost} onReply={onReply} />,
+      <ActiveAccountProvider account="mockaccount">
+        <ThreadComment post={mockPost} onReply={onReply} />
+      </ActiveAccountProvider>,
     );
 
     fireEvent.press(getByText('REPLY'));

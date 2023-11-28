@@ -98,7 +98,7 @@ export function useInfinitePrivatePosts(userIds: string[]) {
   };
 
   return useInfiniteQuery(['privatePosts', ...users], queryPosts, {
-    enabled: !!accountHeaders?.['LifeOmic-Account'] && !!data?.id,
+    enabled: !!data?.id,
     getNextPageParam: (lastPage) => {
       return lastPage.privatePosts.pageInfo.hasNextPage
         ? lastPage.privatePosts.pageInfo.endCursor

@@ -1925,10 +1925,10 @@
   resolved "https://registry.yarnpkg.com/@lifeomic/eslint-plugin-i18next/-/eslint-plugin-i18next-2.0.1.tgz#a42dc7a810c83214b284963dcae4dffe217f8e16"
   integrity sha512-GU8m6m8w+BfSKPcuNl5eh+OVkaJeJqA1DqmnXZl05VqFYNInUcEVS3VwiCR6iwRHRvmyDu35TMZ29TR7iMX30A==
 
-"@lifeomic/one-query@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@lifeomic/one-query/-/one-query-3.2.0.tgz#bde54ad0421bc8b6865811cabb94740fd28fdd14"
-  integrity sha512-pzah8aVPt0XWUV1qbu2l6PgUIQ8LCJ2I5HRL+/4Gex/llSGSgyaE8ZqAJ/fUSOHY3kTuKU0a1CK19QviII3ocA==
+"@lifeomic/one-query@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@lifeomic/one-query/-/one-query-3.3.0.tgz#dd3c786ea0f0d1abce056db5bf5caf9cb26260fe"
+  integrity sha512-qEuHapDB1N1/7Xmt76PLcOlLr0IiZsdM81XIZpAcDrrHvXBOQexd5ZwjUt4Wdpp6i6EpZ75VipBgzAWDAln0Dg==
   dependencies:
     immer "^9.0.15"
     lodash "^4.17.21"
@@ -3466,9 +3466,9 @@ axios-mock-adapter@^1.21.2:
     is-buffer "^2.0.5"
 
 axios@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.3.2.tgz#7ac517f0fa3ec46e0e636223fd973713a09c72b3"
-  integrity sha512-1M3O703bYqYuPhbHeya5bnhpYVsDDRyQSabNja04mZtboLNSuZ4YrltestrLXfHgmzua4TpUqRiVKbiQuo2epw==
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.6.0.tgz#f1e5292f26b2fd5c2e66876adc5b06cdbd7d2102"
+  integrity sha512-EZ1DYihju9pwVB+jg67ogm+Tmqc6JmhamRN6I4Zt8DfZu5lbcQGw3ozH9lFejSJgs/ibaef3A9PMXPLeefFGJg==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"

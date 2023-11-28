@@ -15,6 +15,10 @@ import {
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Text } from 'react-native';
+import { ActiveAccountProvider } from './useActiveAccount';
+import { createRestAPIMock } from '../test-utils/rest-api-mocking';
+
+const api = createRestAPIMock();
 
 jest.mock('./useSubjectProjects', () => ({
   useSubjectProjects: jest.fn(),
@@ -55,13 +59,21 @@ const renderHookInContext = async () => {
   return renderHook(() => useActiveProject(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={new QueryClient()}>
-        <ActiveProjectContextProvider>{children}</ActiveProjectContextProvider>
+        <ActiveAccountProvider account="mockaccount">
+          <ActiveProjectContextProvider>
+            {children}
+          </ActiveProjectContextProvider>
+        </ActiveAccountProvider>
       </QueryClientProvider>
     ),
   });
 };
 
 beforeEach(async () => {
+  api.mock('GET /v1/accounts', {
+    status: 200,
+    data: { accounts: [{ id: 'mockaccount' } as any] },
+  });
   useSubjectProjectsMock.mockReturnValue({
     status: 'success',
     data: mockSubjectProjects,
@@ -236,6 +248,25 @@ test('setActiveProjectId writes selected projectId to async storage', async () =
   });
 });
 
+test('renders the InviteRequired screen if the user is not a member of the active account', async () => {
+  api.mock('GET /v1/accounts', { status: 200, data: { accounts: [] } });
+  const screen = render(
+    <QueryClientProvider client={new QueryClient()}>
+      <ActiveAccountProvider account="mockaccount">
+        <ActiveProjectContextProvider>
+          <Text>content</Text>
+        </ActiveProjectContextProvider>
+      </ActiveAccountProvider>
+    </QueryClientProvider>,
+  );
+
+  await waitFor(() => {
+    screen.getByText(
+      'This app is only available to use by invitation. Please contact your administrator for access.',
+    );
+  });
+});
+
 test('renders the InviteRequired screen if the user is not a patient', async () => {
   useSubjectProjectsMock.mockReturnValue({
     status: 'success',
@@ -246,9 +277,11 @@ test('renders the InviteRequired screen if the user is not a patient', async () 
   });
   const screen = render(
     <QueryClientProvider client={new QueryClient()}>
-      <ActiveProjectContextProvider>
-        <Text>content</Text>
-      </ActiveProjectContextProvider>
+      <ActiveAccountProvider account="mockaccount">
+        <ActiveProjectContextProvider>
+          <Text>content</Text>
+        </ActiveProjectContextProvider>
+      </ActiveAccountProvider>
     </QueryClientProvider>,
   );
 

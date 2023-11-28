@@ -21,7 +21,7 @@ function App() {
         apiBaseURL: baseURL,
       }}
     >
-      <RootProviders authConfig={authConfig}>
+      <RootProviders account="mockaccount" authConfig={authConfig}>
         <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>

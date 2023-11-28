@@ -18,7 +18,7 @@ storiesOf('ActivityIndicatorView', module)
         },
       }}
     >
-      <RootProviders authConfig={authConfig}>
+      <RootProviders account="mockaccount" authConfig={authConfig}>
         <ActivityIndicatorView message="Timed out, is something wrong?" />
       </RootProviders>
     </DeveloperConfigProvider>

@@ -62,7 +62,7 @@ jest.mock('../../../../hooks/useHttpClient', () => ({
 
 jest.mock('../../../../hooks/useActiveAccount', () => ({
   useActiveAccount: () => ({
-    account: { id: 'account-id' },
+    account: 'account-id',
   }),
 }));
 

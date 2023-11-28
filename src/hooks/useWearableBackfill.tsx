@@ -28,7 +28,7 @@ export const useWearableBackfill = (
   const { graphQLClient } = useGraphQLClient();
   const { httpClient } = useHttpClient();
   const { data: isBackfillEnabled } = useFeature('ehrBackfill');
-  const { isFetched, accountHeaders } = useActiveAccount();
+  const { accountHeaders } = useActiveAccount();
 
   const ehrTypes = useMemo(
     () => wearablesState?.items?.map((ehr) => ehr.ehrType as EHRType) ?? [],
@@ -51,7 +51,7 @@ export const useWearableBackfill = (
     ['backfill-sync-status', ...ehrTypes],
     queryEHRSyncStatus,
     {
-      enabled: isFetched && ehrTypes.length > 0 && !!isBackfillEnabled,
+      enabled: ehrTypes.length > 0 && !!isBackfillEnabled,
       select(data) {
         const statuses: Record<string, boolean> = {};
 

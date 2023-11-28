@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { ActiveAccountContextProvider } from '../hooks/useActiveAccount';
 import { NotificationsManagerProvider } from '../hooks/useNotificationManager';
 import { ActiveProjectContextProvider } from '../hooks/useActiveProject';
 import { TrackTileProvider } from '../components/TrackTile/TrackTileProvider';
@@ -50,23 +49,21 @@ export const LoggedInProviders = ({ children }: LoggedInProvidersProps) => {
   }
 
   return (
-    <ActiveAccountContextProvider>
-      <ActiveProjectContextProvider>
-        <TrackTileProvider>
-          <WearableLifecycleProvider>
-            <CircleTileContextProvider>
-              <OnboardingCourseContextProvider>
-                <PushNotificationsProvider config={pushNotificationsConfig}>
-                  <NotificationsManagerProvider>
-                    {children}
-                  </NotificationsManagerProvider>
-                </PushNotificationsProvider>
-                <CreateEditPostModal />
-              </OnboardingCourseContextProvider>
-            </CircleTileContextProvider>
-          </WearableLifecycleProvider>
-        </TrackTileProvider>
-      </ActiveProjectContextProvider>
-    </ActiveAccountContextProvider>
+    <ActiveProjectContextProvider>
+      <TrackTileProvider>
+        <WearableLifecycleProvider>
+          <CircleTileContextProvider>
+            <OnboardingCourseContextProvider>
+              <PushNotificationsProvider config={pushNotificationsConfig}>
+                <NotificationsManagerProvider>
+                  {children}
+                </NotificationsManagerProvider>
+              </PushNotificationsProvider>
+              <CreateEditPostModal />
+            </OnboardingCourseContextProvider>
+          </CircleTileContextProvider>
+        </WearableLifecycleProvider>
+      </TrackTileProvider>
+    </ActiveProjectContextProvider>
   );
 };

@@ -213,3 +213,46 @@ const App = () => {
 
 - The `useActiveProject` hook now returns non-optional data. You can simplify
   any conditional logic around those returned values.
+
+### 7.x -> 8.x
+
+- `RootProviders` now requires an `account` prop. This should be set to the
+  account id of the LifeOmic account you want your app to operate in.
+
+```tsx
+<RootProviders
+  account="myaccount" // <-- add this
+>
+  {/* ... */}
+</RootProviders>
+```
+
+- `useActiveAccount` now returns non-optional data. This can simplify any
+  conditional logic around that data. For example:
+
+```tsx
+const MyComponent = () => {
+  const { accountHeaders } = useActiveAccount();
+  const query = useQuery(
+    ['my-query'],
+    () => client.get('/something', { headers: accountHeaders }),
+    {
+      enabled: !!accountHeaders,
+    },
+  );
+};
+
+// ^This can be simplified to:
+
+const MyComponent = () => {
+  const { accountHeaders } = useActiveAccount();
+  const query = useQuery(['my-query'], () =>
+    client.get('/something', { headers: accountHeaders }),
+  );
+};
+
+// ^ No need to "wait" for the account to be resolved. It is always known.
+```
+
+- `ActiveAccountContextProvider` has been renamed and refactored into
+  `ActiveAccountProvider`.

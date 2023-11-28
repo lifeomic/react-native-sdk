@@ -7,6 +7,7 @@ import {
   useCreateReactionMutation,
   useUndoReactionMutation,
 } from './useReactionMutations';
+import { ActiveAccountProvider } from '../useActiveAccount';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,9 +31,11 @@ const renderCreateReactionHook = async () => {
   return renderHook(() => useCreateReactionMutation(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>
-        <GraphQLClientContextProvider baseURL={baseURL}>
-          {children}
-        </GraphQLClientContextProvider>
+        <ActiveAccountProvider account="mockaccount">
+          <GraphQLClientContextProvider baseURL={baseURL}>
+            {children}
+          </GraphQLClientContextProvider>
+        </ActiveAccountProvider>
       </QueryClientProvider>
     ),
   });
@@ -42,9 +45,11 @@ const renderUndoReactionHook = async () => {
   return renderHook(() => useUndoReactionMutation(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>
-        <GraphQLClientContextProvider baseURL={baseURL}>
-          {children}
-        </GraphQLClientContextProvider>
+        <ActiveAccountProvider account="mockaccount">
+          <GraphQLClientContextProvider baseURL={baseURL}>
+            {children}
+          </GraphQLClientContextProvider>
+        </ActiveAccountProvider>
       </QueryClientProvider>
     ),
   });

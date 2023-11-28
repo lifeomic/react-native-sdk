@@ -6,7 +6,6 @@ import { OnboardingCourseScreen } from '../screens/OnboardingCourseScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LoggedInRootParamList } from './types';
 import { useConsent } from '../hooks/useConsent';
-import { useActiveAccount } from '../hooks/useActiveAccount';
 import { useActiveProject } from '../hooks/useActiveProject';
 import { useOnboardingCourse } from '../hooks/useOnboardingCourse';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
@@ -26,7 +25,6 @@ export function LoggedInStack() {
   // Fetch profiles early but don't wait for them
   useProfilesForAllTiles();
   const { isLoading, isFetched, data: user } = useUser();
-  const { account } = useActiveAccount();
   const { activeProject, activeSubjectId } = useActiveProject();
   const { useShouldRenderConsentScreen } = useConsent();
   const { shouldRenderConsentScreen, isLoading: loadingConsents } =
@@ -108,7 +106,6 @@ export function LoggedInStack() {
 
     executeOnAppStartIfNeeded();
   }, [
-    account,
     activeProject,
     activeSubjectId,
     onAppSessionStart,

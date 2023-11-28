@@ -4,7 +4,11 @@ import {
   render,
 } from '../../../common/testHelpers/testing-library-wrapper';
 import { PostItem } from '../PostItem';
-import { Post as PostType, Priority } from '../../../hooks';
+import {
+  ActiveAccountProvider,
+  Post as PostType,
+  Priority,
+} from '../../../hooks';
 
 jest.unmock('@react-navigation/native');
 jest.mock('../ReactionsToolbar');
@@ -34,7 +38,11 @@ const post: PostType = {
 };
 
 test('renders a post', () => {
-  const postItem = render(<PostItem post={post} onComment={jest.fn()} />);
+  const postItem = render(
+    <ActiveAccountProvider account="mockaccount">
+      <PostItem post={post} onComment={jest.fn()} />
+    </ActiveAccountProvider>,
+  );
   expect(postItem.getByText('Announcement')).toBeDefined();
   expect(postItem.getByText(post.message!)).toBeDefined();
   expect(postItem.getByText(post.author!.profile.displayName)).toBeDefined();
@@ -42,7 +50,11 @@ test('renders a post', () => {
 
 test('clicking comment calls onComment', () => {
   const onComment = jest.fn();
-  const postItem = render(<PostItem post={post} onComment={onComment} />);
+  const postItem = render(
+    <ActiveAccountProvider account="mockaccount">
+      <PostItem post={post} onComment={onComment} />
+    </ActiveAccountProvider>,
+  );
 
   fireEvent.press(postItem.getByText('COMMENT'));
 

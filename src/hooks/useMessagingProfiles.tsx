@@ -45,7 +45,6 @@ export const useMessagingProfiles = (userIds?: string[]) => {
               )
               .then((res) => res.data),
           {
-            enabled: !!accountHeaders,
             placeholderData: placeHolderProfile(userId),
           },
         ),

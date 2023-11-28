@@ -4,7 +4,10 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { HttpClientContextProvider } from '../../../src/hooks/useHttpClient';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ActiveAccountContext, ActiveProjectContext } from '../../../src/hooks';
+import {
+  ActiveAccountProvider,
+  ActiveProjectContext,
+} from '../../../src/hooks';
 
 export type DataOverrideProviderProps = {
   children: React.ReactNode;
@@ -25,13 +28,7 @@ export const DataOverrideProvider: React.FC<DataOverrideProviderProps> = ({
   }
 
   return (
-    <ActiveAccountContext.Provider
-      value={
-        {
-          accountHeaders: {},
-        } as any
-      }
-    >
+    <ActiveAccountProvider account="mockaccount">
       <ActiveProjectContext.Provider
         value={
           {
@@ -49,7 +46,7 @@ export const DataOverrideProvider: React.FC<DataOverrideProviderProps> = ({
           </HttpClientContextProvider>
         </QueryClientProvider>
       </ActiveProjectContext.Provider>
-    </ActiveAccountContext.Provider>
+    </ActiveAccountProvider>
   );
 };
 

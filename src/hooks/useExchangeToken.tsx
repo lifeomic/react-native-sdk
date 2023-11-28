@@ -23,7 +23,7 @@ export function useExchangeToken(appTileId: string, clientId?: string) {
         )
         .then((res) => res.data),
     {
-      enabled: !!accountHeaders && !!clientId,
+      enabled: !!clientId,
     },
   );
 }

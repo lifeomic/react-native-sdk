@@ -15,7 +15,6 @@ export function useFeature<T extends string>(feature: T) {
         headers: accountHeaders,
       }),
     {
-      enabled: !!accountHeaders,
       select(data) {
         return !!data.data[feature];
       },
