@@ -30,7 +30,7 @@ export type Tracker<CustomEventMap extends Record<string, unknown>> = {
  * Create a type safe way to emit analytics events. Can do the following actions:
  *
  * track: Tracks an event with a given name and payload with values relevant to that event.
- * setUser: Allows you to start tracking a logged in users session by their ID.
+ * setUser: Allows you to start tracking a logged in user's session by their ID.
  * updateUserProperty: Set a value for the current logged in user.
  * resetUser: Reset the current user tracking session, for when the user logs out.
  */
