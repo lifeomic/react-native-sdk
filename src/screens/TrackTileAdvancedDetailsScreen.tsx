@@ -1,6 +1,7 @@
 import React from 'react';
 import { AdvancedTrackerDetails } from '../components/TrackTile/TrackerDetails/AdvancedTrackerDetails/AdvancedTrackerDetails';
 import { HomeStackScreenProps } from '../navigators/types';
+import { DefaultOnError } from '../components/TrackTile/common/DefaultOnError';
 
 export const AdvancedTrackerDetailsScreen = ({
   navigation,
@@ -15,6 +16,7 @@ export const AdvancedTrackerDetailsScreen = ({
       tracker={tracker}
       valuesContext={valuesContext}
       referenceDate={referenceDate}
+      onError={DefaultOnError}
       onEditValue={(trackerValue) =>
         navigation.push('Home/AdvancedTrackerEditor', {
           tracker,

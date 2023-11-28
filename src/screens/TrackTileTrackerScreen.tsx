@@ -6,6 +6,7 @@ import { HomeStackParamList } from '../navigators/types';
 import { t } from '../../lib/i18n';
 import { createStyles } from '../components/BrandConfigProvider';
 import { useStyles } from '../hooks';
+import { DefaultOnError } from '../components/TrackTile/common/DefaultOnError';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Home/TrackTile'>;
 
@@ -29,6 +30,7 @@ export const TrackTileTrackerScreen = ({
         valuesContext={valuesContext}
         referenceDate={referenceDate}
         canEditUnit={true}
+        onError={DefaultOnError}
       />
     </View>
   );
