@@ -1,14 +1,12 @@
 import { gql } from 'graphql-request';
 import { useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { Post, postDetailsFragment } from './types';
 import { PostDetailsPostQueryResponse } from './useInfinitePosts';
 
 export const usePost = (post: Partial<Post> & Pick<Post, 'id'>) => {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
 
   const queryForPostDetails = useCallback(async () => {
     return graphQLClient.request<PostDetailsPostQueryResponse, { id: string }>(
@@ -16,9 +14,8 @@ export const usePost = (post: Partial<Post> & Pick<Post, 'id'>) => {
       {
         id: post.id,
       },
-      accountHeaders,
     );
-  }, [accountHeaders, graphQLClient, post.id]);
+  }, [graphQLClient, post.id]);
 
   return useQuery(['postDetails', post.id], queryForPostDetails, {
     placeholderData: {

@@ -1,7 +1,6 @@
 import { InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
-import { useActiveAccount } from '../useActiveAccount';
 import { ParentType, Post, postDetailsFragment } from './types';
 import { useActiveCircleTile } from './useActiveCircleTile';
 
@@ -32,7 +31,6 @@ type useInfinitePostsProps = {
 
 export function useInfinitePosts({ circleId }: useInfinitePostsProps) {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
   const { circleTile } = useActiveCircleTile();
 
   const queryPosts = async ({ pageParam }: { pageParam?: string }) => {
@@ -44,11 +42,7 @@ export function useInfinitePosts({ circleId }: useInfinitePostsProps) {
       after: pageParam,
     };
 
-    return graphQLClient.request<PostsData>(
-      postsV2QueryDocument,
-      variables,
-      accountHeaders,
-    );
+    return graphQLClient.request<PostsData>(postsV2QueryDocument, variables);
   };
 
   const {

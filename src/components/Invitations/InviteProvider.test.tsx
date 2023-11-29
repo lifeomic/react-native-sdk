@@ -98,6 +98,10 @@ describe('accepting invite', () => {
         params: { inviteId: mockInviteParams.inviteId },
       }),
     );
+    // Confirm account header was not sent.
+    expect(
+      mutationMock.mock.calls[0][0].headers['LifeOmic-Account'],
+    ).toBeUndefined();
   });
 
   it('refreshes auth token, emits inviteAccepted, then waits for inviteAccountSettled to resets cache and mutation', async () => {
@@ -118,6 +122,10 @@ describe('accepting invite', () => {
         params: { inviteId: mockInviteParams.inviteId },
       }),
     );
+    // Confirm account header was not sent.
+    expect(
+      mutationMock.mock.calls[0][0].headers['LifeOmic-Account'],
+    ).toBeUndefined();
     expect(result.current.inviteParams).toEqual({});
     expect(refreshForInviteAccept).toHaveBeenCalled();
     expect(acceptListener).toHaveBeenCalled();
@@ -147,6 +155,10 @@ describe('accepting invite', () => {
         params: { inviteId: mockInviteParams.inviteId },
       }),
     );
+    // Confirm account header was not sent.
+    expect(
+      mutationMock.mock.calls[0][0].headers['LifeOmic-Account'],
+    ).toBeUndefined();
     expect(refreshForInviteAccept).not.toHaveBeenCalled();
     expect(result.current.inviteParams).toEqual({});
   });

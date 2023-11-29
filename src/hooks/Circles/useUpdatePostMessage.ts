@@ -1,13 +1,11 @@
 import { gql } from 'graphql-request';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
 import { useActiveCircleTile } from './useActiveCircleTile';
 
 export function useUpdatePostMessage() {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
   const { circleTile } = useActiveCircleTile();
 
@@ -19,11 +17,7 @@ export function useUpdatePostMessage() {
       input,
     };
 
-    return graphQLClient.request(
-      updatePostMessageMutationDocument,
-      variables,
-      accountHeaders,
-    );
+    return graphQLClient.request(updatePostMessageMutationDocument, variables);
   };
 
   return useMutation(['updatePostMessage'], updatePostMessageMutation, {

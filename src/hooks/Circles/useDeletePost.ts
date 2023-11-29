@@ -1,13 +1,11 @@
 import { gql } from 'graphql-request';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { optimisticallyDeletePosts } from './utils/optimisticallyDeletePosts';
 import { useActiveCircleTile } from './useActiveCircleTile';
 
 export function useDeletePost() {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
   const { circleTile } = useActiveCircleTile();
 
@@ -16,11 +14,7 @@ export function useDeletePost() {
       input,
     };
 
-    return graphQLClient.request(
-      deletePostMutationDocument,
-      variables,
-      accountHeaders,
-    );
+    return graphQLClient.request(deletePostMutationDocument, variables);
   };
 
   return useMutation(['deletePost'], deletePostMutation, {

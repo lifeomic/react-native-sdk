@@ -5,7 +5,6 @@ import { useHttpClient } from './useHttpClient';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 
 const queryClient = new QueryClient({
@@ -16,9 +15,6 @@ const queryClient = new QueryClient({
   },
 });
 
-jest.mock('./useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
 jest.mock('./useActiveProject', () => ({
   useActiveProject: jest.fn(),
 }));
@@ -26,7 +22,6 @@ jest.mock('./useHttpClient', () => ({
   useHttpClient: jest.fn(),
 }));
 
-const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useActiveProjectMock = useActiveProject as jest.Mock;
 const useHttpClientMock = useHttpClient as jest.Mock;
 
@@ -44,9 +39,6 @@ const axiosMock = new MockAdapter(axiosInstance);
 const activeProject = { id: 'projectId' };
 
 beforeEach(() => {
-  useActiveAccountMock.mockReturnValue({
-    accountHeaders: { 'LifeOmic-Account': 'acct1' },
-  });
   useActiveProjectMock.mockReturnValue({
     activeProject,
     activeSubjectId: 'subjectId',

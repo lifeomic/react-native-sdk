@@ -7,13 +7,9 @@ import { useMe } from '../useMe';
 import { useUser } from '../useUser';
 import { useActiveProject } from '../useActiveProject';
 import { ConsentDirective, SurveyResponse } from './types';
-import { useActiveAccount } from '../useActiveAccount';
 
 jest.mock('../useActiveProject', () => ({
   useActiveProject: jest.fn(),
-}));
-jest.mock('../useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
 }));
 jest.mock('../useMe', () => ({
   useMe: jest.fn(),
@@ -23,7 +19,6 @@ jest.mock('../useUser', () => ({
 }));
 
 const useActiveProjectMock = useActiveProject as jest.Mock;
-const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useMeMock = useMe as jest.Mock;
 const useUserMock = useUser as jest.Mock;
 
@@ -71,9 +66,6 @@ beforeEach(() => {
   });
   useUserMock.mockReturnValue({
     data: { id: 'mockUser' },
-  });
-  useActiveAccountMock.mockReturnValue({
-    accountHeaders: { 'LifeOmic-Account': 'lifeomic' },
   });
   api.reset();
 });

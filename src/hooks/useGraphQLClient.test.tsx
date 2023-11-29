@@ -6,6 +6,7 @@ import {
   useGraphQLClient,
 } from './useGraphQLClient';
 import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
+import { ActiveAccountProvider } from './useActiveAccount';
 
 jest.mock('./useAuth', () => ({
   useAuth: jest.fn(),
@@ -25,9 +26,11 @@ const baseURL = 'http://localhost:8080/unit-test';
 const renderHookInContext = async () => {
   return renderHook(() => useGraphQLClient(), {
     wrapper: ({ children }) => (
-      <GraphQLClientContextProvider baseURL={baseURL}>
-        {children}
-      </GraphQLClientContextProvider>
+      <ActiveAccountProvider account="mockaccount">
+        <GraphQLClientContextProvider baseURL={baseURL}>
+          {children}
+        </GraphQLClientContextProvider>
+      </ActiveAccountProvider>
     ),
   });
 };
@@ -50,7 +53,7 @@ test('if authResult is not present, has no Authorization header', async () => {
   scope.done();
 });
 
-test('once authResult is set, adds bearer token', async () => {
+test('once authResult is set, adds bearer token and account header', async () => {
   const { result, rerender } = await renderHookInContext();
 
   act(() => {
@@ -61,6 +64,7 @@ test('once authResult is set, adds bearer token', async () => {
   const scope = mockGraphQLResponse(`${baseURL}/v1/graphql`, {
     'content-type': 'application/json',
     authorization: `Bearer ${authResult.accessToken}`,
+    'lifeomic-account': 'mockaccount',
   });
 
   await result.current.graphQLClient.request('');

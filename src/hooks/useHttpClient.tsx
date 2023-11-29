@@ -3,6 +3,7 @@ import axios, { AxiosInstance, RawAxiosRequestHeaders } from 'axios';
 import { useAuth } from './useAuth';
 import { APIClient } from '@lifeomic/one-query';
 import { RestAPIEndpoints } from '../types/rest-types';
+import { useActiveAccount } from './useActiveAccount';
 
 export const defaultBaseURL = 'https://api.us.lifeomic.com';
 export const defaultHeaders: RawAxiosRequestHeaders = {
@@ -45,6 +46,7 @@ export const HttpClientContextProvider = ({
   baseURL?: string;
   children?: React.ReactNode;
 }) => {
+  const { account } = useActiveAccount();
   const { authResult, refreshForAuthFailure } = useAuth();
 
   const axiosInstance = injectedAxiosInstance || defaultAxiosInstance;
@@ -61,8 +63,16 @@ export const HttpClientContextProvider = ({
       return axiosInstance;
     }
 
-    // Add current access token as auth header
     requestInterceptorId = axiosInstance.interceptors.request.use((config) => {
+      // Add active account as LifeOmic-Account header.
+      // Allow for an empty string to be passed to "clear" the header.
+      if (config.headers['LifeOmic-Account'] === '') {
+        delete config.headers['LifeOmic-Account'];
+      } else {
+        config.headers['LifeOmic-Account'] = account;
+      }
+
+      // Add current access token as auth header
       config.headers.Authorization = `Bearer ${authResult.accessToken}`;
       return config;
     });
@@ -86,7 +96,7 @@ export const HttpClientContextProvider = ({
     );
 
     return axiosInstance;
-  }, [authResult?.accessToken, axiosInstance, refreshForAuthFailure]);
+  }, [authResult?.accessToken, axiosInstance, account, refreshForAuthFailure]);
 
   const context: HttpClient = { httpClient, apiClient };
 

@@ -7,7 +7,6 @@ import { PushNotificationsConfig } from '../../src/common/DeveloperConfig';
 import { Platform } from 'react-native';
 import { Notifications } from 'react-native-notifications';
 import { useHttpClient } from './useHttpClient';
-import { useActiveAccount } from './useActiveAccount';
 
 export const PushNotificationsContext = createContext<{}>({});
 
@@ -19,7 +18,6 @@ export function PushNotificationsProvider({
   children: React.ReactNode;
 }) {
   const { httpClient } = useHttpClient();
-  const { account } = useActiveAccount();
 
   const enabled = config?.applicationName && config?.enabled;
 
@@ -44,18 +42,17 @@ export function PushNotificationsProvider({
   useEffect(() => {
     if (enabled) {
       requestNotificationsPermissions(({ deviceToken }) => {
-        if (deviceToken && account) {
+        if (deviceToken) {
           // Register the device with the LifeOmic platform to start receiving push notifications
           registerDeviceToken({
             deviceToken,
             application: config.applicationName,
             httpClient,
-            accountId: account,
           });
         }
       });
     }
-  }, [account, httpClient, config, enabled]);
+  }, [httpClient, config, enabled]);
 
   return (
     <PushNotificationsContext.Provider value={{}}>

@@ -81,7 +81,6 @@ test('isRegisteredForRemoteNotifications: returns if the device is registered fo
 test('registerDeviceToken: registers the device token', () => {
   const deviceToken = 'a-device-token';
   const application = 'test-application';
-  const accountId = 'account-id';
   const axiosInstance = axios.create();
   const axiosMock = new MockAdapter(axiosInstance);
 
@@ -90,7 +89,6 @@ test('registerDeviceToken: registers the device token', () => {
     deviceToken,
     application,
     httpClient: axiosInstance,
-    accountId,
   });
   expect(axiosMock.history.post[0].url).toBe('/v1/device-endpoints');
 });

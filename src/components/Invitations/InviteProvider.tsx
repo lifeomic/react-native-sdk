@@ -31,6 +31,10 @@ export const InviteProvider = ({ children }: ProviderProps) => {
   const [lastAcceptedId, setAcceptedId] = useState<string>('');
   const { isLoading, isSuccess, isError, reset, mutateAsync } = useRestMutation(
     'PATCH /v1/invitations/:inviteId',
+    {
+      // Do not include account header on this request.
+      axios: { headers: { 'LifeOmic-Account': '' } },
+    },
   );
   const { authResult, refreshForInviteAccept } = useAuth();
 

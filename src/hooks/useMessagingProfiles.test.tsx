@@ -2,7 +2,6 @@ import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useProfilesForTile } from './useMessagingProfiles';
 import { useAppConfig } from './useAppConfig';
-import { useActiveAccount } from './useActiveAccount';
 import { useUser } from './useUser';
 import { createRestAPIMock } from '../test-utils/rest-api-mocking';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -11,7 +10,6 @@ import { QueryClient } from '@tanstack/query-core';
 const api = createRestAPIMock();
 
 jest.mock('./useAppConfig');
-jest.mock('./useActiveAccount');
 jest.mock('./useUser');
 jest.mock('./useAuth', () => ({
   useAuth: () => ({
@@ -48,9 +46,6 @@ beforeEach(() => {
         ],
       },
     },
-  });
-  (useActiveAccount as jest.Mock).mockReturnValue({
-    accountHeaders: { 'LifeOmic-Account': 'someAccount' },
   });
 });
 

@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
-import { useActiveAccount } from '../useActiveAccount';
 import { Post } from './types';
 import { optimisticallyUpdatePosts } from './utils/optimisticallyUpdatePosts';
 import { useActiveCircleTile } from './useActiveCircleTile';
@@ -21,7 +20,6 @@ interface UndoReactionMutationProps {
 
 export function useCreateReactionMutation() {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
   const { circleTile } = useActiveCircleTile();
 
@@ -39,7 +37,6 @@ export function useCreateReactionMutation() {
     return graphQLClient.request<Reaction>(
       createReactionMutationDocument,
       variables,
-      accountHeaders,
     );
   };
 
@@ -72,7 +69,6 @@ export function useCreateReactionMutation() {
 
 export function useUndoReactionMutation() {
   const { graphQLClient } = useGraphQLClient();
-  const { accountHeaders } = useActiveAccount();
   const queryClient = useQueryClient();
   const { circleTile } = useActiveCircleTile();
 
@@ -92,7 +88,6 @@ export function useUndoReactionMutation() {
     return graphQLClient.request<Reaction>(
       undoReactionMutationDocument,
       variables,
-      accountHeaders,
     );
   };
 

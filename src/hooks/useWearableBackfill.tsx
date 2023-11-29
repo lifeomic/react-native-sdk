@@ -3,7 +3,6 @@ import { addDays } from 'date-fns';
 import { gql } from 'graphql-request';
 import { useQuery } from '@tanstack/react-query';
 import { EHRType, WearablesSyncState } from '../components';
-import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useHttpClient } from './useHttpClient';
@@ -28,7 +27,6 @@ export const useWearableBackfill = (
   const { graphQLClient } = useGraphQLClient();
   const { httpClient } = useHttpClient();
   const { data: isBackfillEnabled } = useFeature('ehrBackfill');
-  const { accountHeaders } = useActiveAccount();
 
   const ehrTypes = useMemo(
     () => wearablesState?.items?.map((ehr) => ehr.ehrType as EHRType) ?? [],
@@ -37,14 +35,10 @@ export const useWearableBackfill = (
 
   const queryEHRSyncStatus = useCallback(
     () =>
-      graphQLClient.request<Response>(
-        buildEHRRecordsQueryDocument(ehrTypes),
-        {
-          patientId: activeSubjectId,
-        },
-        accountHeaders,
-      ),
-    [graphQLClient, activeSubjectId, ehrTypes, accountHeaders],
+      graphQLClient.request<Response>(buildEHRRecordsQueryDocument(ehrTypes), {
+        patientId: activeSubjectId,
+      }),
+    [graphQLClient, activeSubjectId, ehrTypes],
   );
 
   const { data: syncStatus } = useQuery(

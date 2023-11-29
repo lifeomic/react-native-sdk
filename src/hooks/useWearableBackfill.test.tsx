@@ -8,11 +8,9 @@ import { mockGraphQLResponse } from '../common/testHelpers/mockGraphQLResponse';
 import { useHttpClient } from './useHttpClient';
 import { WearablesSyncState } from '../components';
 import { useFeature } from './useFeature';
+import { ActiveAccountProvider } from './useActiveAccount';
 
 jest.unmock('@react-navigation/native');
-jest.mock('./useActiveAccount', () => ({
-  useActiveAccount: jest.fn(() => ({ isFetched: true, accountHeaders: {} })),
-}));
 jest.mock('./useHttpClient', () => ({ useHttpClient: jest.fn(() => ({})) }));
 jest.mock('./useFeature', () => ({
   useFeature: jest.fn(() => ({ data: true })),
@@ -48,9 +46,11 @@ const renderHookWithInjectedClient = (state?: WearablesSyncState) => {
   return renderHook(useWearableBackfill, {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>
-        <GraphQLClientContextProvider baseURL={baseURL}>
-          {children}
-        </GraphQLClientContextProvider>
+        <ActiveAccountProvider account="mockaccount">
+          <GraphQLClientContextProvider baseURL={baseURL}>
+            {children}
+          </GraphQLClientContextProvider>
+        </ActiveAccountProvider>
       </QueryClientProvider>
     ),
     initialProps: state,

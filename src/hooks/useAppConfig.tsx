@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useActiveAccount } from './useActiveAccount';
 import { useActiveProject } from './useActiveProject';
 import { Trace } from '../components/MyData/LineChart/TraceLine';
 import { SvgProps } from 'react-native-svg';
@@ -110,17 +109,11 @@ export interface AppConfig {
 }
 
 export const useAppConfig = () => {
-  const { accountHeaders } = useActiveAccount();
   const { activeProject } = useActiveProject();
 
   const query = useRestQuery(
     'GET /v1/life-research/projects/:projectId/app-config',
     { projectId: activeProject.id },
-    {
-      axios: {
-        headers: accountHeaders,
-      },
-    },
   );
 
   useEffect(() => {

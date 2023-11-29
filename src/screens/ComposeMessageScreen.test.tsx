@@ -1,11 +1,16 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import {
+  fireEvent,
+  render as baseRender,
+  waitFor,
+} from '@testing-library/react-native';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 import { useMessagingProfiles } from '../hooks/useMessagingProfiles';
 import { ComposeMessageScreen } from './ComposeMessageScreen';
 import { useUser } from '../hooks/useUser';
 import { useNavigation } from '@react-navigation/native';
 import { useAppConfig } from '../hooks/useAppConfig';
+import { ActiveAccountProvider } from '../hooks';
 
 jest.mock('../hooks/useMessagingProfiles');
 jest.mock('@react-navigation/elements', () => ({
@@ -53,6 +58,15 @@ const routeMap = {
   DirectMessageScreen: 'Home/DirectMessages',
 };
 
+const render = (element: React.ReactElement) =>
+  baseRender(
+    <ActiveAccountProvider account="mockaccount">
+      <GraphQLClientContextProvider baseURL={baseURL}>
+        {element}
+      </GraphQLClientContextProvider>
+    </ActiveAccountProvider>,
+  );
+
 beforeEach(() => {
   const otherProfiles = [...Array(10)].map((_, i) => ({
     id: `user-${i}`,
@@ -82,38 +96,34 @@ beforeEach(() => {
 
 test('no items when nothing is searched', () => {
   const { queryAllByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        navigation={useNavigation() as any}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-        routeMapIn={routeMap}
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      navigation={useNavigation() as any}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+      routeMapIn={routeMap}
+    />,
   );
   expect(queryAllByTestId('user-list-item').length).toBe(0);
 });
 
 test('all items returned when matched', () => {
   const { queryAllByTestId, getByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        navigation={useNavigation() as any}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-        routeMapIn={routeMap}
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      navigation={useNavigation() as any}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+      routeMapIn={routeMap}
+    />,
   );
 
   const addButton = getByTestId('add-provider-button');
@@ -125,19 +135,17 @@ test('all items returned when matched', () => {
 
 test('single item returned when searched', () => {
   const { queryAllByTestId, getByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        navigation={useNavigation() as any}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-        routeMapIn={routeMap}
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      navigation={useNavigation() as any}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+      routeMapIn={routeMap}
+    />,
   );
 
   const addButton = getByTestId('add-provider-button');
@@ -149,19 +157,17 @@ test('single item returned when searched', () => {
 
 test('item added as chip but removed from search when selected', () => {
   const { queryAllByTestId, getByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        navigation={useNavigation() as any}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-        routeMapIn={routeMap}
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      navigation={useNavigation() as any}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+      routeMapIn={routeMap}
+    />,
   );
 
   const addButton = getByTestId('add-provider-button');
@@ -178,19 +184,17 @@ test('item added as chip but removed from search when selected', () => {
 
 test('compose button disabled by default', () => {
   const { getByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        navigation={useNavigation() as any}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-        routeMapIn={routeMap}
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      navigation={useNavigation() as any}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+      routeMapIn={routeMap}
+    />,
   );
   const sendButton = getByTestId('send-button');
   fireEvent.press(sendButton);
@@ -199,19 +203,17 @@ test('compose button disabled by default', () => {
 
 test('compose button disabled with user selected but no message text', () => {
   const { getByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        navigation={useNavigation() as any}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-        routeMapIn={routeMap}
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      navigation={useNavigation() as any}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+      routeMapIn={routeMap}
+    />,
   );
   const textInput = getByTestId('Type a message...');
   fireEvent.changeText(textInput, 'some new message');
@@ -223,19 +225,17 @@ test('compose button disabled with user selected but no message text', () => {
 
 test('compose button enabled when user selected and message entered', async () => {
   const { getByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        navigation={useNavigation() as any}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-        routeMapIn={routeMap}
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      navigation={useNavigation() as any}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+      routeMapIn={routeMap}
+    />,
   );
   const addButton = await getByTestId('add-provider-button');
   fireEvent.press(addButton);
@@ -261,19 +261,17 @@ test('compose button enabled when user selected and message entered', async () =
 
 test('cannot select more than one non-provider', async () => {
   const { getByTestId, queryAllByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        navigation={useNavigation() as any}
-        routeMapIn={routeMap}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      navigation={useNavigation() as any}
+      routeMapIn={routeMap}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+    />,
   );
 
   expect(queryAllByTestId('chip').length).toBe(0);
@@ -295,19 +293,17 @@ test('cannot select more than one non-provider', async () => {
 
 test('can remove non-provider', async () => {
   const { getByTestId, queryAllByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        navigation={useNavigation() as any}
-        routeMapIn={routeMap}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      navigation={useNavigation() as any}
+      routeMapIn={routeMap}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+    />,
   );
 
   expect(queryAllByTestId('chip').length).toBe(0);
@@ -328,19 +324,17 @@ test('can remove non-provider', async () => {
 
 test('can select more than one provider', async () => {
   const { getByTestId, queryAllByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        routeMapIn={routeMap}
-        navigation={useNavigation() as any}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      routeMapIn={routeMap}
+      navigation={useNavigation() as any}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+    />,
   );
 
   expect(queryAllByTestId('chip').length).toBe(0);
@@ -361,19 +355,17 @@ test('can select more than one provider', async () => {
 
 test('can remove provider', async () => {
   const { getByTestId, queryAllByTestId } = render(
-    <GraphQLClientContextProvider baseURL={baseURL}>
-      <ComposeMessageScreen
-        routeMapIn={routeMap}
-        navigation={useNavigation() as any}
-        route={
-          {
-            params: {
-              tileId: 'mockTileId',
-            },
-          } as any
-        }
-      />
-    </GraphQLClientContextProvider>,
+    <ComposeMessageScreen
+      routeMapIn={routeMap}
+      navigation={useNavigation() as any}
+      route={
+        {
+          params: {
+            tileId: 'mockTileId',
+          },
+        } as any
+      }
+    />,
   );
 
   expect(queryAllByTestId('chip').length).toBe(0);

@@ -2,7 +2,6 @@ import React from 'react';
 
 export type ActiveAccountContextValue = {
   account: string;
-  accountHeaders: { 'LifeOmic-Account': string };
 };
 
 const ActiveAccountContext = React.createContext<
@@ -18,10 +17,7 @@ export const ActiveAccountProvider = ({
   children,
   account,
 }: ActiveAccountProviderProps) => {
-  const memoized = React.useMemo(
-    () => ({ account, accountHeaders: { 'LifeOmic-Account': account } }),
-    [account],
-  );
+  const memoized = React.useMemo(() => ({ account }), [account]);
 
   return (
     <ActiveAccountContext.Provider value={memoized}>

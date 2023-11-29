@@ -1,4 +1,3 @@
-import { AxiosRequestConfig } from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import {
   InstalledMetric,
@@ -36,12 +35,11 @@ import {
 } from '../../../common/RefreshNotifier';
 import { useAppConfig } from '../../../hooks/useAppConfig';
 
-const axiosConfig = (obj: { account: string }): AxiosRequestConfig => ({
+const axiosConfig = {
   headers: {
-    'LifeOmic-Account': obj.account,
     [TRACK_TILE_CAPABILITIES_VERSION_HEADER]: TRACK_TILE_CAPABILITIES_VERSION,
   },
-});
+};
 
 export const useAxiosTrackTileService = (): TrackTileService => {
   const { httpClient } = useHttpClient();
@@ -227,7 +225,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
 
       const url = `/v1/track-tiles/trackers${params && `?${params}`}`;
 
-      const res = await httpClient.get(url, axiosConfig({ account }));
+      const res = await httpClient.get(url, axiosConfig);
       const fetchedTrackers: Tracker[] = res.data;
 
       cache.trackers = fetchedTrackers;
@@ -239,7 +237,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
       const res = await httpClient.put<InstalledMetric>(
         `/v1/track-tiles/metrics/installs/${metricId}`,
         settings,
-        axiosConfig({ account }),
+        axiosConfig,
       );
 
       return updateSettingsInCache(res.data) || res.data;
@@ -249,7 +247,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
       await httpClient.put(
         '/v1/track-tiles/metrics/installs',
         settings,
-        axiosConfig({ account }),
+        axiosConfig,
       );
 
       settings.forEach(updateSettingsInCache);
@@ -279,7 +277,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
           },
           query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
         },
-        axiosConfig({ account }),
+        axiosConfig,
       );
 
       const trackerValues = extractTrackerValues(res.data);
@@ -298,7 +296,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
           query: DELETE_RESOURCE(resourceType),
           variables: { id },
         },
-        axiosConfig({ account }),
+        axiosConfig,
       );
 
       if (!res.data.data) {
@@ -331,7 +329,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
               : MUTATE_PROCEDURE_RESOURCE(resource.id ? 'Update' : 'Create'),
           variables: { resource },
         },
-        axiosConfig({ account }),
+        axiosConfig,
       );
 
       if (!res.data.data) {
@@ -400,7 +398,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
             code: codeBelow,
           },
         },
-        axiosConfig({ account }),
+        axiosConfig,
       );
 
       if (!res.data.data) {

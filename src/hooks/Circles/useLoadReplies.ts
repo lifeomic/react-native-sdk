@@ -1,7 +1,6 @@
 import { gql } from 'graphql-request';
 import { useState, useCallback } from 'react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
-import { useActiveAccount } from '../useActiveAccount';
 import { useGraphQLClient } from '../useGraphQLClient';
 import { Post, postDetailsFragment } from './types';
 import { PostRepliesQueryResponse } from './useInfinitePosts';
@@ -11,7 +10,6 @@ import { useActiveCircleTile } from './useActiveCircleTile';
 export const useLoadReplies = () => {
   const { graphQLClient } = useGraphQLClient();
   const queryClient = useQueryClient();
-  const { accountHeaders } = useActiveAccount();
   const [queryVariables, setQueryVariables] = useState({
     after: undefined as string | undefined,
     id: '',
@@ -25,8 +23,8 @@ export const useLoadReplies = () => {
     return graphQLClient.request<
       PostRepliesQueryResponse,
       { id: string; after?: string }
-    >(postRepliesQueryDocument, queryVariables, accountHeaders);
-  }, [accountHeaders, graphQLClient, queryVariables]);
+    >(postRepliesQueryDocument, queryVariables);
+  }, [graphQLClient, queryVariables]);
 
   const repliesRes = useQuery(
     [

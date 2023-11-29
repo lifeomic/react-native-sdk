@@ -256,3 +256,30 @@ const MyComponent = () => {
 
 - `ActiveAccountContextProvider` has been renamed and refactored into
   `ActiveAccountProvider`.
+
+### 8.x -> 9.x
+
+- The clients returned from `useHttpClient` and `useGraphQLClient` now
+  automatically include the `LifeOmic-Account` header. You do not need to
+  specify it manually. This also includes the `useRest****` hooks. Example:
+
+```tsx
+const MyComponent = () => {
+  const { httpClient } = useHttpClient();
+  const { accountHeaders } = useActiveAccount();
+  const query = useQuery(['my-query'], () =>
+    httpClient.get('/something', { headers: accountHeaders }),
+  );
+};
+
+// This^ can be simplified to:
+const MyComponent = () => {
+  const { httpClient } = useHttpClient();
+  const query = useQuery(['my-query'], () => httpClient.get('/something'));
+  // the "accountHeaders" are included automatically.
+};
+```
+
+- To _avoid_ including the `LifeOmic-Account` header, you can specify an empty
+  string for the header value, like so: `'LifeOmic-Account': ''`. When that
+  empty string is provided, the header will be removed from the request.

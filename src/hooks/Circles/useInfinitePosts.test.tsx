@@ -1,14 +1,10 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useActiveAccount } from '../useActiveAccount';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GraphQLClientContextProvider } from '../useGraphQLClient';
 import { InfinitePostsData, useInfinitePosts } from './useInfinitePosts';
 import nock from 'nock';
-
-jest.mock('../useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
-}));
+import { ActiveAccountProvider } from '../useActiveAccount';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,23 +19,15 @@ const renderHookWithInjectedClient = async () => {
   return renderHook(() => useInfinitePosts({ circleId: 'circle' }), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>
-        <GraphQLClientContextProvider baseURL={baseURL}>
-          {children}
-        </GraphQLClientContextProvider>
+        <ActiveAccountProvider account="mockaccount">
+          <GraphQLClientContextProvider baseURL={baseURL}>
+            {children}
+          </GraphQLClientContextProvider>
+        </ActiveAccountProvider>
       </QueryClientProvider>
     ),
   });
 };
-
-const useActiveAccountMock = useActiveAccount as jest.Mock;
-
-beforeEach(() => {
-  useActiveAccountMock.mockReturnValue({
-    accountHeaders: {
-      'LifeOmic-Account': 'unittest',
-    },
-  });
-});
 
 test('useInfinitePosts query can page', async () => {
   const data = {
