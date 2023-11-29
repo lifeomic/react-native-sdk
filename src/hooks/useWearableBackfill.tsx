@@ -98,18 +98,11 @@ export const useWearableBackfill = (
 
       const createBackfillResponse = await httpClient.post<{
         ingestionId: string;
-      }>(
-        `/ehrs/${ehrId}/backfill`,
-        {
-          project: activeProject,
-          end: new Date(end).toISOString(),
-          start: start.toISOString(),
-        },
-        {
-          // Do not include account header on this request.
-          headers: { 'LifeOmic-Account': '' },
-        },
-      );
+      }>(`/ehrs/${ehrId}/backfill`, {
+        project: activeProject,
+        end: new Date(end).toISOString(),
+        start: start.toISOString(),
+      });
 
       return !!createBackfillResponse.data.ingestionId;
     },

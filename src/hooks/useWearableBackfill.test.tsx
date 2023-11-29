@@ -184,15 +184,11 @@ describe('useWearableBackfill', () => {
     });
 
     expect(data).toEqual(true);
-    expect(post).toHaveBeenCalledWith(
-      '/ehrs/ehrId/backfill',
-      {
-        project: 'project-id',
-        end: mockDate.toISOString(),
-        start: addDays(mockDate, -30).toISOString(),
-      },
-      { headers: { 'LifeOmic-Account': '' } },
-    );
+    expect(post).toHaveBeenCalledWith('/ehrs/ehrId/backfill', {
+      project: 'project-id',
+      end: mockDate.toISOString(),
+      start: addDays(mockDate, -30).toISOString(),
+    });
   });
 
   it('should NOT invoke a backfill if feature is disabled', async () => {
