@@ -3,7 +3,6 @@ import { View, ScrollView, Text, Alert } from 'react-native';
 import { t } from 'i18next';
 import Markdown from 'react-native-markdown-display';
 import { Button } from 'react-native-paper';
-import { Consent, Questionnaire } from 'fhir/r3';
 import { ActivityIndicatorView, createStyles } from '../components';
 import {
   useStyles,
@@ -11,6 +10,7 @@ import {
   useOAuthFlow,
   useOnboardingCourse,
 } from '../hooks';
+import type { ConsentAndForm } from '../hooks/useConsent';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { LoggedInRootScreenProps } from '../navigators/types';
 
@@ -103,7 +103,7 @@ export const ConsentScreen = ({
   if (CustomConsentScreen) {
     return (
       <CustomConsentScreen
-        consentForm={consentDirectives}
+        consentForm={consentToPresent}
         acceptConsent={acceptConsent}
         declineConsent={declineConsent}
         isLoadingUpdateConsent={updateConsentDirectiveMutation.isLoading}
@@ -177,11 +177,7 @@ export type CustomConsentScreenProps = {
    * The full Consent and Questionnaire FHIR Resources pertaining to the
    * consent form. Terms and acceptance text can be derived from here
    */
-  consentForm:
-    | (Consent & {
-        form: Questionnaire;
-      })[]
-    | undefined;
+  consentForm: ConsentAndForm | undefined;
   /** Mutation to accept consent is in flight */
   isLoadingUpdateConsent: boolean;
   /** Mutation to accept consent */

@@ -117,7 +117,7 @@ test('renders custom consent screen if present in developer config', async () =>
   expect(CustomConsentScreen).toHaveBeenCalled();
   expect(CustomConsentScreen).toHaveBeenCalledWith(
     {
-      consentForm: [defaultConsentDirective],
+      consentForm: defaultConsentDirective,
       acceptConsent: expect.any(Function),
       declineConsent: expect.any(Function),
       isLoadingUpdateConsent: false,
@@ -126,9 +126,8 @@ test('renders custom consent screen if present in developer config', async () =>
   );
 
   // check passed methods are correct
-  const { acceptConsent, declineConsent } = CustomConsentScreen.mock.calls
-    .at(0)
-    .at(0);
+  const { acceptConsent, declineConsent } =
+    CustomConsentScreen.mock.calls[0][0];
 
   acceptConsent();
   await waitFor(() => expect(navigateMock.replace).toHaveBeenCalledWith('app'));
@@ -145,12 +144,7 @@ test('renders custom consent screen if present in developer config', async () =>
 
   declineConsent();
   expect(alertSpy).toHaveBeenCalled();
-  const { onPress } = alertSpy?.mock?.calls
-    ?.at(0)
-    ?.at(2)
-    // @ts-ignore, doesn't know that it exists
-    ?.at(1);
-  onPress();
+  alertSpy.mock.calls[0]?.[2]?.[1].onPress!();
   await waitFor(() => expect(logoutMock).toHaveBeenCalledTimes(1));
   expect(updateConsentDirectiveMutationMock.mutateAsync).toHaveBeenCalledTimes(
     1,
@@ -174,7 +168,7 @@ test('renders custom consent screen if present in developer config', async () =>
   });
   expect(CustomConsentScreen).toHaveBeenCalledWith(
     {
-      consentForm: [defaultConsentDirective],
+      consentForm: defaultConsentDirective,
       acceptConsent: expect.any(Function),
       declineConsent: expect.any(Function),
       isLoadingUpdateConsent: true,

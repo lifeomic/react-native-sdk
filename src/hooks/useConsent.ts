@@ -79,6 +79,6 @@ type ConsentPatch = {
   accept: boolean;
 };
 
-type ConsentAndForm = Consent & {
+export type ConsentAndForm = Consent & {
   form: Questionnaire;
 };
