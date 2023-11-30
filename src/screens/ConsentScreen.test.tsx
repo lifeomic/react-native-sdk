@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { useOAuthFlow, useConsent, useOnboardingCourse } from '../hooks';
 import { ConsentScreen } from './ConsentScreen';
+import { useDeveloperConfig } from '../hooks';
 
 jest.unmock('i18next');
 jest.unmock('@react-navigation/native');
@@ -15,6 +16,9 @@ jest.mock('../hooks/useConsent', () => ({
 jest.mock('../hooks/useOnboardingCourse', () => ({
   useOnboardingCourse: jest.fn(),
 }));
+jest.mock('../hooks/useDeveloperConfig', () => ({
+  useDeveloperConfig: jest.fn(),
+}));
 
 const useOAuthFlowMock = useOAuthFlow as jest.Mock;
 const logoutMock = jest.fn();
@@ -22,6 +26,7 @@ const useConsentMock = useConsent as jest.Mock;
 const useShouldRenderConsentScreenMock = jest.fn();
 const useUpdateProjectConsentDirectiveMock = jest.fn();
 const useOnboardingCourseMock = useOnboardingCourse as jest.Mock;
+const useDeveloperConfigMock = useDeveloperConfig as jest.Mock;
 const updateConsentDirectiveMutationMock = {
   mutateAsync: jest.fn().mockResolvedValue({}),
 };
@@ -71,6 +76,9 @@ const consentScreen = (
 beforeEach(() => {
   useOAuthFlowMock.mockReturnValue({ logout: logoutMock });
 
+  useDeveloperConfigMock.mockReturnValue({
+    CustomConsentScreen: null,
+  });
   useUpdateProjectConsentDirectiveMock.mockReturnValue(
     updateConsentDirectiveMutationMock,
   );
@@ -91,6 +99,88 @@ test('render the activity indicator when loading', () => {
   useShouldRenderConsentScreenMock.mockReturnValue({ isLoading: true });
   const { getByTestId } = render(consentScreen);
   expect(getByTestId('activity-indicator-view')).toBeDefined();
+});
+
+test('renders custom consent screen if present in developer config', async () => {
+  const CustomConsentScreen = jest.fn();
+
+  useUpdateProjectConsentDirectiveMock.mockReturnValue({
+    ...updateConsentDirectiveMutationMock,
+    isLoading: false,
+  });
+  useDeveloperConfigMock.mockReturnValue({
+    CustomConsentScreen,
+  });
+
+  render(consentScreen);
+
+  expect(CustomConsentScreen).toHaveBeenCalled();
+  expect(CustomConsentScreen).toHaveBeenCalledWith(
+    {
+      consentForm: [defaultConsentDirective],
+      acceptConsent: expect.any(Function),
+      declineConsent: expect.any(Function),
+      isLoadingUpdateConsent: false,
+    },
+    {},
+  );
+
+  // check passed methods are correct
+  const { acceptConsent, declineConsent } = CustomConsentScreen.mock.calls
+    .at(0)
+    .at(0);
+
+  acceptConsent();
+  await waitFor(() => expect(navigateMock.replace).toHaveBeenCalledWith('app'));
+  expect(updateConsentDirectiveMutationMock.mutateAsync).toHaveBeenCalledTimes(
+    1,
+  );
+  expect(updateConsentDirectiveMutationMock.mutateAsync).toHaveBeenCalledWith({
+    directiveId: defaultConsentDirective.id,
+    accept: true,
+  });
+
+  // reset for later assertions
+  updateConsentDirectiveMutationMock.mutateAsync.mockClear();
+
+  declineConsent();
+  expect(alertSpy).toHaveBeenCalled();
+  const { onPress } = alertSpy?.mock?.calls
+    ?.at(0)
+    ?.at(2)
+    // @ts-ignore, doesn't know that it exists
+    ?.at(1);
+  onPress();
+  await waitFor(() => expect(logoutMock).toHaveBeenCalledTimes(1));
+  expect(updateConsentDirectiveMutationMock.mutateAsync).toHaveBeenCalledTimes(
+    1,
+  );
+  expect(updateConsentDirectiveMutationMock.mutateAsync).toHaveBeenCalledWith({
+    directiveId: defaultConsentDirective.id,
+    accept: false,
+  });
+
+  // check passed loading state
+  useUpdateProjectConsentDirectiveMock.mockReturnValue({
+    ...updateConsentDirectiveMutationMock,
+    isLoading: true,
+  });
+
+  CustomConsentScreen.mockClear();
+  render(consentScreen);
+
+  await waitFor(() => {
+    expect(CustomConsentScreen).toHaveBeenCalled();
+  });
+  expect(CustomConsentScreen).toHaveBeenCalledWith(
+    {
+      consentForm: [defaultConsentDirective],
+      acceptConsent: expect.any(Function),
+      declineConsent: expect.any(Function),
+      isLoadingUpdateConsent: true,
+    },
+    {},
+  );
 });
 
 test('renders the consent body and acceptance verbiage', () => {
