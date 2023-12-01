@@ -78,9 +78,11 @@ describe('useUpdateProjectConsentDirective', () => {
   test('updates the accepted consent', async () => {
     axiosMock.onPatch('/v1/consent/directives/me/directive-id').reply(200, {});
 
+    const onSuccess = jest.fn();
+
     const useTestHook = () => {
       const { useUpdateProjectConsentDirective } = useConsent();
-      return useUpdateProjectConsentDirective();
+      return useUpdateProjectConsentDirective({ onSuccess });
     };
 
     const { result } = renderHookInContext(useTestHook);
@@ -91,6 +93,7 @@ describe('useUpdateProjectConsentDirective', () => {
       });
     });
 
+    expect(onSuccess).toHaveBeenCalledTimes(1);
     expect(axiosMock.history.patch[0].url).toBe(
       `/v1/consent/directives/me/directive-id`,
     );
