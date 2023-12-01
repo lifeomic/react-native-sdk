@@ -10,12 +10,15 @@ import {
   useOAuthFlow,
   useOnboardingCourse,
 } from '../hooks';
+import type { ConsentAndForm } from '../hooks/useConsent';
+import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { LoggedInRootScreenProps } from '../navigators/types';
 
 export const ConsentScreen = ({
   navigation,
 }: LoggedInRootScreenProps<'screens/ConsentScreen'>) => {
   const { styles } = useStyles(defaultStyles);
+  const { CustomConsentScreen } = useDeveloperConfig();
   const { useShouldRenderConsentScreen, useUpdateProjectConsentDirective } =
     useConsent();
   const { consentDirectives, isLoading: loadingDirectives } =
@@ -97,6 +100,17 @@ export const ConsentScreen = ({
     );
   }
 
+  if (CustomConsentScreen) {
+    return (
+      <CustomConsentScreen
+        consentForm={consentToPresent}
+        acceptConsent={acceptConsent}
+        declineConsent={declineConsent}
+        isLoadingUpdateConsent={updateConsentDirectiveMutation.isLoading}
+      />
+    );
+  }
+
   return (
     <View style={styles.view}>
       <ScrollView style={styles.scrollView}>
@@ -157,3 +171,20 @@ declare module '@styles' {
 }
 
 export type ConsentScreenStyles = NamedStylesProp<typeof defaultStyles>;
+
+export type CustomConsentScreenProps = {
+  /**
+   * The full Consent and Questionnaire FHIR Resources pertaining to the
+   * consent form. Terms and acceptance text can be derived from here
+   */
+  consentForm: ConsentAndForm | undefined;
+  /** Mutation to accept consent is in flight */
+  isLoadingUpdateConsent: boolean;
+  /** Mutation to accept consent */
+  acceptConsent: () => Promise<void>;
+  /**
+   * Warns user with system alert that app can not be used without
+   * accepting consent and continuing will log them out
+   */
+  declineConsent: () => void;
+};

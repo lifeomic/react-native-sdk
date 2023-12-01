@@ -20,6 +20,7 @@ import { Route } from '../navigators/types';
 import { LogoHeaderOptions } from '../hooks/useLogoHeaderOptions';
 import { EducationContent } from '../components/TrackTile/services/TrackTileService';
 import { Project } from '../hooks/useSubjectProjects';
+import type { CustomConsentScreenProps } from '../screens/ConsentScreen';
 
 /**
  * DeveloperConfig provides a single interface to configure the app at build-time.
@@ -122,6 +123,7 @@ export type DeveloperConfig = {
   }>;
   CustomStacks?: Record<string, () => JSX.Element>;
   renderCustomLoginScreen?: () => JSX.Element;
+  CustomConsentScreen?: (props: CustomConsentScreenProps) => JSX.Element;
   sharingRenderers?: {
     pointBreakdown: (props: PointBreakdownProps) => React.JSX.Element;
   };
