@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { useQuery } from '@tanstack/react-query';
@@ -364,15 +363,14 @@ type ActivitiesQueryResponse = {
   };
 };
 
+export const ACTIVITIES_QUERY_KEY = ['activities'];
+
 export const useActivities = (input: ActivitiesInput) => {
   const { graphQLClient } = useGraphQLClient();
 
-  const queryForActivities = useCallback(async () => {
-    return graphQLClient.request<ActivitiesQueryResponse>(
-      getActivitiesQueryDocument,
-      { input },
-    );
-  }, [graphQLClient, input]);
-
-  return useQuery(['activities'], queryForActivities);
+  return useQuery(ACTIVITIES_QUERY_KEY, () =>
+    graphQLClient.request<ActivitiesQueryResponse>(getActivitiesQueryDocument, {
+      input,
+    }),
+  );
 };

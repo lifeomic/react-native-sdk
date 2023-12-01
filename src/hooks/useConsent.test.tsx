@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react-native';
-import { useConsent } from './useConsent';
+import { createConsentPatch, useConsent } from './useConsent';
 import { useHttpClient } from './useHttpClient';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
@@ -25,7 +25,7 @@ jest.mock('./useHttpClient', () => ({
 const useActiveProjectMock = useActiveProject as jest.Mock;
 const useHttpClientMock = useHttpClient as jest.Mock;
 
-const renderHookInContext = (useHook: Function) => {
+const renderHookInContext = <T extends any>(useHook: () => T) => {
   return renderHook(() => useHook(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -87,10 +87,9 @@ describe('useUpdateProjectConsentDirective', () => {
 
     const { result } = renderHookInContext(useTestHook);
     await act(async () => {
-      await result.current.mutateAsync({
-        directiveId: 'directive-id',
-        accept: true,
-      });
+      await result.current.mutateAsync(
+        createConsentPatch('directive-id', true),
+      );
     });
 
     expect(onSuccess).toHaveBeenCalledTimes(1);
@@ -127,10 +126,9 @@ describe('useUpdateProjectConsentDirective', () => {
 
     const { result } = renderHookInContext(useTestHook);
     await act(async () => {
-      await result.current.mutateAsync({
-        directiveId: 'directive-id',
-        accept: false,
-      });
+      await result.current.mutateAsync(
+        createConsentPatch('directive-id', false),
+      );
     });
 
     expect(axiosMock.history.patch[0].url).toBe(

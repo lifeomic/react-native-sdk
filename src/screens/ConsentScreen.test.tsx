@@ -1,7 +1,12 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { Alert } from 'react-native';
-import { useOAuthFlow, useConsent, useOnboardingCourse } from '../hooks';
+import {
+  useOAuthFlow,
+  useConsent,
+  useOnboardingCourse,
+  createConsentPatch,
+} from '../hooks';
 import { ConsentScreen } from './ConsentScreen';
 import { useDeveloperConfig } from '../hooks';
 
@@ -11,6 +16,7 @@ jest.mock('../hooks/useOAuthFlow', () => ({
   useOAuthFlow: jest.fn(),
 }));
 jest.mock('../hooks/useConsent', () => ({
+  ...jest.requireActual('../hooks/useConsent'),
   useConsent: jest.fn(),
 }));
 jest.mock('../hooks/useOnboardingCourse', () => ({
@@ -135,10 +141,9 @@ test('renders custom consent screen if present in developer config', () => {
   });
   expect(navigateMock.replace).toHaveBeenCalledWith('app');
   expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledTimes(1);
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith({
-    directiveId: defaultConsentDirective.id,
-    accept: true,
-  });
+  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+    createConsentPatch(defaultConsentDirective.id, true),
+  );
 
   // reset for later assertions
   updateConsentDirectiveMutationMock.mutate.mockClear();
@@ -151,10 +156,9 @@ test('renders custom consent screen if present in developer config', () => {
   });
   () => expect(logoutMock).toHaveBeenCalledTimes(1);
   expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledTimes(1);
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith({
-    directiveId: defaultConsentDirective.id,
-    accept: false,
-  });
+  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+    createConsentPatch(defaultConsentDirective.id, false),
+  );
 
   // check passed loading state
   useUpdateProjectConsentDirectiveMock.mockReturnValue({
@@ -187,10 +191,9 @@ test('renders the consent body and acceptance verbiage', () => {
 test('should accept the consent and navigate to the home screen', () => {
   const { getByText } = render(consentScreen);
   fireEvent.press(getByText('Agree'));
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith({
-    directiveId: defaultConsentDirective.id,
-    accept: true,
-  });
+  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+    createConsentPatch(defaultConsentDirective.id, true),
+  );
   useUpdateProjectConsentDirectiveMock.mock.calls[0][0].onSuccess(undefined, {
     status: 'active',
   });
@@ -203,10 +206,9 @@ test('should accept the consent and navigate to the onboarding course screen', (
   });
   const { getByText } = render(consentScreen);
   fireEvent.press(getByText('Agree'));
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith({
-    directiveId: defaultConsentDirective.id,
-    accept: true,
-  });
+  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+    createConsentPatch(defaultConsentDirective.id, true),
+  );
   useUpdateProjectConsentDirectiveMock.mock.calls[0][0].onSuccess(undefined, {
     status: 'active',
   });
@@ -225,10 +227,9 @@ test('Pressing logout declines the consent and logs the the user out', async () 
   const { getByText } = render(consentScreen);
   fireEvent.press(getByText('Decline'));
   alertSpy.mock.calls[0]?.[2]?.[1].onPress!();
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith({
-    directiveId: defaultConsentDirective.id,
-    accept: false,
-  });
+  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+    createConsentPatch(defaultConsentDirective.id, false),
+  );
   useUpdateProjectConsentDirectiveMock.mock.calls[0][0].onSuccess(undefined, {
     status: 'rejected',
   });

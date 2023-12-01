@@ -9,6 +9,7 @@ import {
   useConsent,
   useOAuthFlow,
   useOnboardingCourse,
+  createConsentPatch,
 } from '../hooks';
 import type { ConsentAndForm } from '../hooks/useConsent';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
@@ -49,10 +50,9 @@ export const ConsentScreen = ({
       if (!consentToPresent?.id) {
         return;
       }
-      updateConsentDirectiveMutation.mutate({
-        directiveId: consentToPresent.id,
-        accept,
-      });
+      updateConsentDirectiveMutation.mutate(
+        createConsentPatch(consentToPresent.id, accept),
+      );
     },
     [updateConsentDirectiveMutation, consentToPresent],
   );
