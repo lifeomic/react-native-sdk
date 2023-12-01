@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import { t } from '../../../lib/i18n';
 import { inviteNotifier } from './InviteNotifier';
 import { useAuth } from '../../hooks/useAuth';
-import { useRestMutation } from '../../hooks/rest-api';
+import { useRestCache, useRestMutation } from '../../hooks/rest-api';
 
 type InviteParams = {
   inviteId?: string;
@@ -29,11 +29,33 @@ type ProviderProps = {
 export const InviteProvider = ({ children }: ProviderProps) => {
   const [inviteParams, setInviteParams] = useState<InviteParams>({});
   const [lastAcceptedId, setAcceptedId] = useState<string>('');
+  const cache = useRestCache();
   const { isLoading, isSuccess, isError, reset, mutateAsync } = useRestMutation(
     'PATCH /v1/invitations/:inviteId',
     {
       // Do not include account header on this request.
       axios: { headers: { 'LifeOmic-Account': '' } },
+      onSuccess: (data) => {
+        // Add the new account to the account list.
+        cache.updateCache(
+          'GET /v1/accounts',
+          {},
+          {
+            accounts: [
+              {
+                id: data.account,
+                name: data.accountName,
+                type: 'PAID',
+                logo: undefined,
+                features: [],
+                products: [],
+                trialActive: false,
+                trialEndDate: undefined,
+              },
+            ],
+          },
+        );
+      },
     },
   );
   const { authResult, refreshForInviteAccept } = useAuth();
