@@ -2,7 +2,6 @@ import { useActiveProject } from './useActiveProject';
 import { Consent, Questionnaire } from 'fhir/r3';
 import { useRestQuery, useRestMutation } from './rest-api';
 import { RestAPIEndpoints } from '../types/rest-types';
-import { UseMutationOptions } from '@tanstack/react-query';
 
 type PatchConsentDirectives =
   RestAPIEndpoints['PATCH /v1/consent/directives/me/:directiveId'];
@@ -17,15 +16,14 @@ export const useConsent = () => {
     });
   };
 
-  const useUpdateProjectConsentDirective = (
-    options: UseMutationOptions<
-      PatchConsentDirectives['Response'],
-      unknown,
-      PatchConsentDirectives['Request'] & {
+  const useUpdateProjectConsentDirective = (options?: {
+    onSuccess?: (
+      data: PatchConsentDirectives['Response'],
+      variables: PatchConsentDirectives['Request'] & {
         directiveId: string;
-      }
-    > = {},
-  ) => {
+      },
+    ) => Promise<void> | void;
+  }) => {
     const mutation = useRestMutation(
       'PATCH /v1/consent/directives/me/:directiveId',
       options,
