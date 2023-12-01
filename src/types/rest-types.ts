@@ -1,4 +1,5 @@
-import { ConsentDirective, SurveyResponse } from '../hooks/todayTile/types';
+import { SurveyResponse } from '../hooks/todayTile/types';
+import type { ConsentAndForm } from '../hooks/useConsent';
 import { AppConfig } from '../hooks/useAppConfig';
 import { ProjectInvite, User } from '../types';
 import { FhirAPIEndpoints } from './fhir-api-types';
@@ -85,11 +86,33 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
   'GET /v1/consent/directives/me': {
     Request: {
       projectId: string;
-      includeForm: boolean;
+      includeForm: true;
     };
     Response: {
-      items: ConsentDirective[];
+      items: ConsentAndForm[];
     };
+  };
+
+  'PATCH /v1/consent/directives/me/:directiveId': {
+    Request: {
+      status: 'active' | 'rejected';
+      response: {
+        item: [
+          {
+            linkId: 'terms';
+          },
+          {
+            linkId: 'acceptance';
+            answer: [
+              {
+                valueBoolean: boolean;
+              },
+            ];
+          },
+        ];
+      };
+    };
+    Response: {};
   };
 
   'GET /v1/life-research/projects/:projectId/app-config': {
