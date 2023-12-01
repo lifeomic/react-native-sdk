@@ -23,7 +23,18 @@ export const ConsentScreen = ({
     useConsent();
   const { consentDirectives, isLoading: loadingDirectives } =
     useShouldRenderConsentScreen();
-  const updateConsentDirectiveMutation = useUpdateProjectConsentDirective();
+  const updateConsentDirectiveMutation = useUpdateProjectConsentDirective({
+    onSuccess: (_, { status }) => {
+      if (status === 'rejected') {
+        return logout({});
+      }
+
+      const route = shouldLaunchOnboardingCourse
+        ? 'screens/OnboardingCourseScreen'
+        : 'app';
+      navigation.replace(route);
+    },
+  });
   const { logout } = useOAuthFlow();
   const { shouldLaunchOnboardingCourse } = useOnboardingCourse();
 
@@ -38,7 +49,7 @@ export const ConsentScreen = ({
       if (!consentToPresent?.id) {
         return;
       }
-      updateConsentDirectiveMutation.mutateAsync({
+      updateConsentDirectiveMutation.mutate({
         directiveId: consentToPresent.id,
         accept,
       });
@@ -46,13 +57,9 @@ export const ConsentScreen = ({
     [updateConsentDirectiveMutation, consentToPresent],
   );
 
-  const acceptConsent = useCallback(async () => {
-    await updateConsentDirective(true);
-    const route = shouldLaunchOnboardingCourse
-      ? 'screens/OnboardingCourseScreen'
-      : 'app';
-    navigation.replace(route);
-  }, [updateConsentDirective, navigation, shouldLaunchOnboardingCourse]);
+  const acceptConsent = useCallback(() => {
+    updateConsentDirective(true);
+  }, [updateConsentDirective]);
 
   const declineConsent = useCallback(() => {
     Alert.alert(
@@ -70,14 +77,13 @@ export const ConsentScreen = ({
         {
           text: t('logout', 'Logout'),
           style: 'destructive',
-          onPress: async () => {
-            await updateConsentDirective(false);
-            await logout({});
+          onPress: () => {
+            updateConsentDirective(false);
           },
         },
       ],
     );
-  }, [logout, updateConsentDirective]);
+  }, [updateConsentDirective]);
 
   const consentText = consentToPresent?.form?.item?.find(
     (f) => f.linkId === 'terms',
@@ -181,7 +187,7 @@ export type CustomConsentScreenProps = {
   /** Mutation to accept consent is in flight */
   isLoadingUpdateConsent: boolean;
   /** Mutation to accept consent */
-  acceptConsent: () => Promise<void>;
+  acceptConsent: () => void;
   /**
    * Warns user with system alert that app can not be used without
    * accepting consent and continuing will log them out
