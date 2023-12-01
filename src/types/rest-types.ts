@@ -8,12 +8,12 @@ export interface Account {
   id: string;
   name: string;
   type: string;
-  description: string;
-  logo: string;
+  description?: string;
+  logo?: string;
   products: string[];
   features: string[];
   trialActive: boolean;
-  trialEndDate: string;
+  trialEndDate?: string;
 }
 
 /**
