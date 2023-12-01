@@ -123,7 +123,7 @@ export type DeveloperConfig = {
   }>;
   CustomStacks?: Record<string, () => JSX.Element>;
   renderCustomLoginScreen?: () => JSX.Element;
-  CustomConsentScreen?: (props: CustomConsentScreenProps) => JSX.Element;
+  CustomConsentScreen?: ComponentType<CustomConsentScreenProps>;
   sharingRenderers?: {
     pointBreakdown: (props: PointBreakdownProps) => React.JSX.Element;
   };
