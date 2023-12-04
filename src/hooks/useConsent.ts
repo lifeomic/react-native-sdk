@@ -2,11 +2,32 @@ import { useActiveProject } from './useActiveProject';
 import { Consent, Questionnaire } from 'fhir/r3';
 import { useRestQuery, useRestMutation } from './rest-api';
 import { RestAPIEndpoints } from '../types/rest-types';
+import { RequestPayloadOf } from '@lifeomic/one-query';
+import { useQueryClient } from '@tanstack/react-query';
+import { ACTIVITIES_QUERY_KEY } from './useActivities';
 
 type PatchConsentDirectives =
   RestAPIEndpoints['PATCH /v1/consent/directives/me/:directiveId'];
 
+export const createConsentPatch = (
+  directiveId: string,
+  accept: boolean,
+): RequestPayloadOf<
+  RestAPIEndpoints,
+  'PATCH /v1/consent/directives/me/:directiveId'
+> => ({
+  directiveId,
+  status: accept ? 'active' : 'rejected',
+  response: {
+    item: [
+      { linkId: 'terms' },
+      { linkId: 'acceptance', answer: [{ valueBoolean: accept }] },
+    ],
+  },
+});
+
 export const useConsent = () => {
+  const queryClient = useQueryClient();
   const { activeProject } = useActiveProject();
 
   const useConsentDirectives = () => {
@@ -24,42 +45,12 @@ export const useConsent = () => {
       },
     ) => Promise<void> | void;
   }) => {
-    const mutation = useRestMutation(
-      'PATCH /v1/consent/directives/me/:directiveId',
-      options,
-    );
-
-    const getInput = ({ directiveId, accept }: ConsentPatch) => {
-      const status: 'active' | 'rejected' = accept ? 'active' : 'rejected';
-      return {
-        directiveId,
-        status,
-        response: {
-          item: [
-            {
-              linkId: 'terms',
-            },
-            {
-              linkId: 'acceptance',
-              answer: [
-                {
-                  valueBoolean: accept,
-                },
-              ],
-            },
-          ],
-        },
-      } as PatchConsentDirectives['Request'] & {
-        directiveId: string;
-      };
-    };
-
-    return {
-      ...mutation,
-      mutate: (values: ConsentPatch) => mutation.mutate(getInput(values)),
-      mutateAsync: (values: ConsentPatch) =>
-        mutation.mutateAsync(getInput(values)),
-    };
+    return useRestMutation('PATCH /v1/consent/directives/me/:directiveId', {
+      onSuccess: async (data, variables) => {
+        queryClient.resetQueries({ queryKey: ACTIVITIES_QUERY_KEY });
+        await options?.onSuccess?.(data, variables);
+      },
+    });
   };
 
   const useShouldRenderConsentScreen = () => {
@@ -86,11 +77,6 @@ export const useConsent = () => {
     useUpdateProjectConsentDirective,
     useShouldRenderConsentScreen,
   };
-};
-
-type ConsentPatch = {
-  directiveId: string;
-  accept: boolean;
 };
 
 export type ConsentAndForm = Consent & {
