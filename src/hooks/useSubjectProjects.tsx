@@ -19,20 +19,21 @@ export function useSubjectProjects() {
   const { httpClient } = useHttpClient();
   const { lastAcceptedId } = usePendingInvite();
 
+  const projectIds = subjects?.map((s) => s.projectId) ?? [];
+
   return useQuery<Project[]>(
-    [`${account}-projects`, subjects, lastAcceptedId],
+    [`${account}-projects`, projectIds, lastAcceptedId],
     async () => {
-      if (subjects?.length) {
-        const res = await httpClient.get<ProjectsResponse>(
-          `/v1/projects?${subjects?.map((s) => `id=${s.projectId}`).join('&')}`,
-        );
-        return res.data.items;
-      } else {
-        // Having no subjects is a supported state.
-        // Instead of disabling the query to wait for subjects we are
-        // returning a mock response to keep downstream queries moving
+      // Having no subjects is a supported state.
+      // Instead of disabling the query to wait for subjects we are
+      // returning a mock response to keep downstream queries moving
+      if (projectIds.length === 0) {
         return [];
       }
+      const res = await httpClient.get<ProjectsResponse>(
+        `/v1/projects?${projectIds.map((id) => `id=${id}`).join('&')}`,
+      );
+      return res.data.items;
     },
   );
 }
