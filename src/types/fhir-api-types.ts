@@ -54,14 +54,14 @@ export type FhirAPIEndpoints = {
     Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
 } & {
-  // PUT /<resource>/:id
-  [Name in keyof FhirResourcesByName as `PUT /v1/fhir/dstu3/${Name}/:id`]: {
+  // PUT /<resource>/:resourceId
+  [Name in keyof FhirResourcesByName as `PUT /v1/fhir/dstu3/${Name}/:resourceId`]: {
     Request: WithIdDefined<FhirResourcesByName[Name]>;
     Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
 } & {
-  // GET /<resource>/:id
-  [Name in keyof FhirResourcesByName as `GET /v1/fhir/dstu3/${Name}/:id`]: {
+  // GET /<resource>/:resourceId
+  [Name in keyof FhirResourcesByName as `GET /v1/fhir/dstu3/${Name}/:resourceId`]: {
     Request: {};
     Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
