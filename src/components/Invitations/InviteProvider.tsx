@@ -79,7 +79,6 @@ export const InviteProvider = ({ children }: ProviderProps) => {
         await refreshForInviteAccept();
         clearPendingInvite();
         reset();
-        inviteNotifier.emit('inviteAccepted', acceptedInvite);
       } catch (error) {
         if (
           (error as any)?.response?.data?.code === 'INVITATION_ALREADY_ACCEPTED'
@@ -130,18 +129,6 @@ export const InviteProvider = ({ children }: ProviderProps) => {
       inviteNotifier.removeListener('inviteDetected', listener);
     };
   }, []);
-
-  // Listen to inviteAccountSettled event to clear state
-  useEffect(() => {
-    const listener = async () => {
-      clearPendingInvite();
-      reset();
-    };
-    inviteNotifier.addListener('inviteAccountSettled', listener);
-    return () => {
-      inviteNotifier.removeListener('inviteAccountSettled', listener);
-    };
-  }, [clearPendingInvite, reset]);
 
   return (
     <InviteContext.Provider

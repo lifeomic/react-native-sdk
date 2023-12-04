@@ -104,9 +104,7 @@ describe('accepting invite', () => {
     ).toBeUndefined();
   });
 
-  it('refreshes auth token, emits inviteAccepted, then waits for inviteAccountSettled to resets cache and mutation', async () => {
-    const acceptListener = jest.fn();
-    inviteNotifier.addListener('inviteAccepted', acceptListener);
+  it('refreshes auth token', async () => {
     const { result, rerender } = await renderHookInContext();
     await act(async () => {
       inviteNotifier.emit('inviteDetected', mockInviteParams);
@@ -128,14 +126,6 @@ describe('accepting invite', () => {
     ).toBeUndefined();
     expect(result.current.inviteParams).toEqual({});
     expect(refreshForInviteAccept).toHaveBeenCalled();
-    expect(acceptListener).toHaveBeenCalled();
-
-    await act(async () => {
-      inviteNotifier.emit('inviteAccountSettled');
-      await rerender({});
-    });
-
-    inviteNotifier.removeListener('inviteAccepted', acceptListener);
   });
 
   it('catches unknown errors and still clears cache', async () => {

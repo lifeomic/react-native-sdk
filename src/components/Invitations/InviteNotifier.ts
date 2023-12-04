@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-import { ProjectInvite } from '../../types';
 
 export type InviteParams = {
   inviteId?: string;
@@ -8,8 +7,6 @@ export type InviteParams = {
 
 export type EventTypeHandlers = {
   inviteDetected: (inviteParams: InviteParams) => void;
-  inviteAccepted: (invite: ProjectInvite) => void;
-  inviteAccountSettled: () => void;
 };
 
 export type EventTypes = keyof EventTypeHandlers;
@@ -41,9 +38,7 @@ export class InviteNotifier {
     eventType: T,
     ...params: Parameters<EventTypeHandler<T>>
   ) {
-    if (eventType === 'inviteDetected') {
-      this.lastInviteDetectedParams = params[0] as InviteParams;
-    }
+    this.lastInviteDetectedParams = params[0] as InviteParams;
     return this.emitter.emit(eventType, ...params);
   }
 
