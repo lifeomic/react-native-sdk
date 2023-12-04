@@ -1,23 +1,18 @@
-import { EventTypes, inviteNotifier } from './InviteNotifier';
+import { inviteNotifier } from './InviteNotifier';
 
 it('allows simplified EventEmitter functionality', async () => {
   const inviteParams = {
     inviteId: 'invite-id',
     evc: 'evc',
   };
-  for (const eventType of [
-    'inviteAccepted',
-    'inviteDetected',
-  ] as EventTypes[]) {
-    const listener = jest.fn();
-    inviteNotifier.addListener(eventType, listener);
-    inviteNotifier.emit(eventType, inviteParams);
-    inviteNotifier.removeListener(eventType, listener);
-    inviteNotifier.emit(eventType, inviteParams);
+  const listener = jest.fn();
+  inviteNotifier.addListener('inviteDetected', listener);
+  inviteNotifier.emit('inviteDetected', inviteParams);
+  inviteNotifier.removeListener('inviteDetected', listener);
+  inviteNotifier.emit('inviteDetected', inviteParams);
 
-    expect(listener).toHaveBeenCalledTimes(1);
-    expect(listener).toHaveBeenCalledWith(inviteParams);
-  }
+  expect(listener).toHaveBeenCalledTimes(1);
+  expect(listener).toHaveBeenCalledWith(inviteParams);
 });
 
 it('caches last emitted invite detected so new listeners can consume invite params', async () => {
