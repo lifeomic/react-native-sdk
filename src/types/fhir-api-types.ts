@@ -54,14 +54,18 @@ export type FhirAPIEndpoints = {
     Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
 } & {
+  // We specifically use :resourceId instead of :id here because the FHIR API
+  // does a check between the path param property value and the data body
+  // property value, and throws if they do not match. Since 'one-query' removes
+  // any path params properties from the data body, having :id causes a failure.
   // PUT /<resource>/:resourceId
   [Name in keyof FhirResourcesByName as `PUT /v1/fhir/dstu3/${Name}/:resourceId`]: {
     Request: WithIdDefined<FhirResourcesByName[Name]>;
     Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
 } & {
-  // GET /<resource>/:resourceId
-  [Name in keyof FhirResourcesByName as `GET /v1/fhir/dstu3/${Name}/:resourceId`]: {
+  // GET /<resource>/:id
+  [Name in keyof FhirResourcesByName as `GET /v1/fhir/dstu3/${Name}/:id`]: {
     Request: {};
     Response: WithIdDefined<FhirResourcesByName[Name]>;
   };
