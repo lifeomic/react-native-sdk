@@ -47,6 +47,11 @@ export const useConsent = () => {
   }) => {
     return useRestMutation('PATCH /v1/consent/directives/me/:directiveId', {
       onSuccess: async (data, variables) => {
+        /**
+         * Accepting a consent can change the activities that are
+         * available to the user. So, trigger a refetch of activities
+         * on acceptance.
+         */
         queryClient.resetQueries({ queryKey: ACTIVITIES_QUERY_KEY });
         await options?.onSuccess?.(data, variables);
       },
