@@ -367,6 +367,9 @@ export const ACTIVITIES_QUERY_KEY = ['activities'];
 
 export const useActivities = <
   SelectedData = ActivitiesQueryResponse,
+  // This is needed to tell the parser that these generic expressions
+  // are not JSX.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   _ = never,
 >(
   input: ActivitiesInput,
