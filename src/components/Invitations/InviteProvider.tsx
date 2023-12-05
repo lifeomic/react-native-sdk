@@ -1,144 +1,105 @@
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Alert } from 'react-native';
+import { create } from 'zustand';
 import { t } from '../../../lib/i18n';
 import { inviteNotifier } from './InviteNotifier';
 import { useAuth } from '../../hooks/useAuth';
 import { useRestCache, useRestMutation } from '../../hooks/rest-api';
+import { ActivityIndicatorView } from '../ActivityIndicatorView';
+import { useQueryClient } from '@tanstack/react-query';
 
-type InviteParams = {
-  inviteId?: string;
+export type PendingInvite = {
+  inviteId: string;
   evc?: string;
 };
 
-type InviteState = {
-  inviteParams: InviteParams;
-  clearPendingInvite: () => Promise<void>;
-  lastAcceptedId: string;
+const store = create<PendingInvite | undefined>(() => undefined);
+
+inviteNotifier.addListener('inviteDetected', (invite) =>
+  store.setState(invite),
+);
+
+export const usePendingInvite = () => {
+  return store();
 };
 
-export const InviteContext = createContext<InviteState>({
-  inviteParams: {},
-  clearPendingInvite: async () => Promise.reject(),
-  lastAcceptedId: '',
-});
+export const clearPendingInvite = () => {
+  store.setState(undefined);
+};
 
-type ProviderProps = {
+export type InviteProviderProps = {
   children: React.ReactNode;
 };
 
-export const InviteProvider = ({ children }: ProviderProps) => {
-  const [inviteParams, setInviteParams] = useState<InviteParams>({});
-  const [lastAcceptedId, setAcceptedId] = useState<string>('');
+export const InviteProvider: React.FC<InviteProviderProps> = ({ children }) => {
+  const pendingInvite = store();
+  const { refreshForInviteAccept } = useAuth();
   const cache = useRestCache();
-  const { isLoading, isSuccess, isError, reset, mutateAsync } = useRestMutation(
-    'PATCH /v1/invitations/:inviteId',
-    {
-      // Do not include account header on this request.
-      axios: { headers: { 'LifeOmic-Account': '' } },
-      onSuccess: (data) => {
-        // Add the new account to the account list.
-        cache.updateCache(
-          'GET /v1/accounts',
-          {},
-          {
-            accounts: [
-              {
-                id: data.account,
-                name: data.accountName,
-                type: 'PAID',
-                logo: undefined,
-                features: [],
-                products: [],
-                trialActive: false,
-                trialEndDate: undefined,
-              },
-            ],
-          },
-        );
-      },
-    },
-  );
-  const { authResult, refreshForInviteAccept } = useAuth();
+  const queryClient = useQueryClient();
 
-  const clearPendingInvite = useCallback(async () => {
-    setInviteParams({});
-    inviteNotifier.clearCache();
-  }, [setInviteParams]);
-
-  const acceptInvite = useCallback(
-    async (inviteId: string) => {
-      try {
-        const acceptedInvite = await mutateAsync({
-          inviteId,
-          status: 'ACCEPTED',
-        });
-        setAcceptedId(acceptedInvite.id);
-
-        // Before notifying others, refresh the auth token so that the new
-        // auth token used has context of the accepted invite.
-        await refreshForInviteAccept();
-        clearPendingInvite();
-        reset();
-      } catch (error) {
-        if (
-          (error as any)?.response?.data?.code === 'INVITATION_ALREADY_ACCEPTED'
-        ) {
-          console.warn('Ignoring already accepted invite');
-        } else {
-          console.warn('Error accepting invitation', error);
-          Alert.alert(t('Error accepting invitation. Please try again.'));
-        }
-        clearPendingInvite();
-        reset();
+  const mutation = useRestMutation('PATCH /v1/invitations/:inviteId', {
+    // Do not include account header on this request.
+    axios: { headers: { 'LifeOmic-Account': '' } },
+    onError: (error: any) => {
+      if (error?.response?.data?.code === 'INVITATION_ALREADY_ACCEPTED') {
+        console.warn('Ignoring already accepted invite');
+      } else {
+        console.warn('Error accepting invitation', error);
+        Alert.alert(t('Error accepting invitation. Please try again.'));
       }
+      clearPendingInvite();
+      mutation.reset();
     },
-    [mutateAsync, refreshForInviteAccept, clearPendingInvite, reset],
-  );
+    onSuccess: async (acceptedInvite) => {
+      // Add the new account to the account list.
+      cache.updateCache(
+        'GET /v1/accounts',
+        {},
+        {
+          accounts: [
+            {
+              id: acceptedInvite.account,
+              name: acceptedInvite.accountName,
+              type: 'PAID',
+              logo: undefined,
+              features: [],
+              products: [],
+              trialActive: false,
+              trialEndDate: undefined,
+            },
+          ],
+        },
+      );
 
-  // Accept invite when needed
+      // Before notifying others, refresh the auth token so that the new
+      // auth token used has context of the accepted invite.
+      await refreshForInviteAccept();
+      // Clear the query client. Many API queries might return new data now that the
+      // invitation has been accepted. This is especially important for apps that might
+      // use multiple projects.
+      queryClient.clear();
+      clearPendingInvite();
+      mutation.reset();
+    },
+  });
+
   useEffect(() => {
-    if (
-      !inviteParams.inviteId ||
-      !authResult?.accessToken ||
-      isLoading ||
-      isSuccess ||
-      isError
-    ) {
-      return;
+    if (pendingInvite && mutation.status === 'idle') {
+      mutation.mutate({
+        inviteId: pendingInvite.inviteId,
+        status: 'ACCEPTED',
+      });
     }
+  }, [pendingInvite, mutation]);
 
-    // An inviteId is in memory, and the user has authenticated -
-    // time to accept the pending invite.
-    acceptInvite(inviteParams.inviteId);
-  }, [
-    inviteParams.inviteId,
-    authResult?.accessToken,
-    isLoading,
-    isSuccess,
-    isError,
-    acceptInvite,
-  ]);
+  // If there is a pending invite, assume we are in the process of accepting it.
+  if (pendingInvite) {
+    return (
+      <ActivityIndicatorView
+        message={t('root-stack-accepting-invitation', 'Accepting invitation')}
+      />
+    );
+  }
 
-  // Listen to pending invite param notifications
-  useEffect(() => {
-    const listener = (pendingInviteParams: InviteParams) => {
-      setInviteParams(pendingInviteParams);
-    };
-    inviteNotifier.addListener('inviteDetected', listener);
-    return () => {
-      inviteNotifier.removeListener('inviteDetected', listener);
-    };
-  }, []);
-
-  return (
-    <InviteContext.Provider
-      value={{
-        inviteParams,
-        clearPendingInvite,
-        lastAcceptedId,
-      }}
-    >
-      {children}
-    </InviteContext.Provider>
-  );
+  return <>{children}</>;
 };

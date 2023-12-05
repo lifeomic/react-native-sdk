@@ -1,9 +1,7 @@
 import { EventEmitter } from 'events';
+import { PendingInvite } from './InviteProvider';
 
-export type InviteParams = {
-  inviteId?: string;
-  evc?: string;
-};
+export type InviteParams = PendingInvite;
 
 export type EventTypeHandlers = {
   inviteDetected: (inviteParams: InviteParams) => void;
