@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
-import { useQuery } from '@tanstack/react-query';
+import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 const getActivitiesQueryDocument = gql`
   query GetAllActivities($input: GetAllActivitiesInput!) {
@@ -365,12 +365,28 @@ type ActivitiesQueryResponse = {
 
 export const ACTIVITIES_QUERY_KEY = ['activities'];
 
-export const useActivities = (input: ActivitiesInput) => {
+export const useActivities = <
+  SelectedData = ActivitiesQueryResponse,
+  // This is needed to tell the parser that these generic expressions
+  // are not JSX.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _ = never,
+>(
+  input: ActivitiesInput,
+  options?: Omit<
+    UseQueryOptions<ActivitiesQueryResponse, unknown, SelectedData>,
+    'queryKey' | 'queryFn'
+  >,
+) => {
   const { graphQLClient } = useGraphQLClient();
 
-  return useQuery(ACTIVITIES_QUERY_KEY, () =>
-    graphQLClient.request<ActivitiesQueryResponse>(getActivitiesQueryDocument, {
-      input,
-    }),
+  return useQuery(
+    ACTIVITIES_QUERY_KEY,
+    () =>
+      graphQLClient.request<ActivitiesQueryResponse>(
+        getActivitiesQueryDocument,
+        { input },
+      ),
+    options,
   );
 };
