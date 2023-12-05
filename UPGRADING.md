@@ -283,3 +283,12 @@ const MyComponent = () => {
 - To _avoid_ including the `LifeOmic-Account` header, you can specify an empty
   string for the header value, like so: `'LifeOmic-Account': ''`. When that
   empty string is provided, the header will be removed from the request.
+
+### 9.x -> 10.x
+
+- The `InviteProvider` is rendered in a different location, and does not render
+  it's children while there is a pending invite.
+
+- `usePendingInvite` no longer returns the "last accepted id".
+
+- The `react-query` cache is now cleared when an invite is accepted.

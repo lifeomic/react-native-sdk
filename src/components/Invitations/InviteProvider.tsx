@@ -13,18 +13,22 @@ export type PendingInvite = {
   evc?: string;
 };
 
-const store = create<PendingInvite | undefined>(() => undefined);
+// Intentionally *not* exporting this, to avoid exposing the underlying
+// zustand implementation detail.
+const usePendingInviteStore = create<PendingInvite | undefined>(
+  () => undefined,
+);
 
 inviteNotifier.addListener('inviteDetected', (invite) =>
-  store.setState(invite),
+  usePendingInviteStore.setState(invite),
 );
 
 export const usePendingInvite = () => {
-  return store();
+  return usePendingInviteStore();
 };
 
 export const clearPendingInvite = () => {
-  store.setState(undefined);
+  usePendingInviteStore.setState(undefined);
 };
 
 export type InviteProviderProps = {
@@ -32,7 +36,7 @@ export type InviteProviderProps = {
 };
 
 export const InviteProvider: React.FC<InviteProviderProps> = ({ children }) => {
-  const pendingInvite = store();
+  const pendingInvite = usePendingInvite();
   const { refreshForInviteAccept } = useAuth();
   const cache = useRestCache();
   const queryClient = useQueryClient();
