@@ -39,6 +39,7 @@ export function ActivityIndicatorView({
         animating
         testID={tID('activity-indicator-view')}
         color={colors.primarySource}
+        accessibilityRole="progressbar"
         {...props}
       />
       {timeOutMessage}
