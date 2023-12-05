@@ -365,10 +365,13 @@ type ActivitiesQueryResponse = {
 
 export const ACTIVITIES_QUERY_KEY = ['activities'];
 
-export const useActivities = (
+export const useActivities = <
+  SelectedData = ActivitiesQueryResponse,
+  _ = never,
+>(
   input: ActivitiesInput,
   options?: Omit<
-    UseQueryOptions<ActivitiesQueryResponse>,
+    UseQueryOptions<ActivitiesQueryResponse, unknown, SelectedData>,
     'queryKey' | 'queryFn'
   >,
 ) => {
