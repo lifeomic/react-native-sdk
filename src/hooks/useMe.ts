@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useHttpClient } from './useHttpClient';
 import { Patient } from 'fhir/r3';
-import { usePendingInvite } from './usePendingInvite';
 
 export interface Subject {
   subjectId: string;
@@ -21,9 +20,8 @@ interface MeResponse {
 
 export function useMe() {
   const { httpClient } = useHttpClient();
-  const { lastAcceptedId } = usePendingInvite();
 
-  const useMeQuery = useQuery(['fhir/dstu3/$me', lastAcceptedId], () =>
+  const useMeQuery = useQuery(['fhir/dstu3/$me'], () =>
     httpClient.get<MeResponse>('/v1/fhir/dstu3/$me').then((res) =>
       res.data.entry?.map(
         (entry) =>

@@ -12,7 +12,7 @@ import {
   revoke,
 } from 'react-native-app-auth';
 import { AuthResult, useAuth } from './useAuth';
-import { usePendingInvite } from './usePendingInvite';
+import { usePendingInvite } from '../components/Invitations/InviteProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import { _sdkAnalyticsEvent } from '../common';
 
@@ -51,9 +51,7 @@ export const OAuthContextProvider = ({
     storeAuthResult,
     clearAuthResult,
   } = useAuth();
-  const {
-    inviteParams: { inviteId, evc },
-  } = usePendingInvite();
+  const pendingInvite = usePendingInvite();
   const queryClient = useQueryClient();
 
   // PKCE is required
@@ -74,13 +72,16 @@ export const OAuthContextProvider = ({
     authConfig.iosPrefersEphemeralSession = true;
   }
 
-  if (inviteId && evc) {
+  if (pendingInvite?.evc) {
     authConfig.additionalParameters = {
       ...authConfig.additionalParameters,
-      inviteId,
-      evc,
+      inviteId: pendingInvite.inviteId,
+      evc: pendingInvite.evc,
     };
-    console.warn({ inviteId }, 'Added invite params to authConfig');
+    console.warn(
+      { inviteId: pendingInvite.inviteId },
+      'Added invite params to authConfig',
+    );
   }
 
   const logout = useCallback(
@@ -125,14 +126,14 @@ export const OAuthContextProvider = ({
       try {
         const result = await authorize(authConfig);
         await storeAuthResult(result);
-        _sdkAnalyticsEvent.track('Login', { usedInvite: !!inviteId && !!evc });
+        _sdkAnalyticsEvent.track('Login', { usedInvite: !!pendingInvite?.evc });
         onSuccess?.(result);
       } catch (error) {
         await clearAuthResult();
         onFail?.(error);
       }
     },
-    [authConfig, clearAuthResult, evc, inviteId, storeAuthResult],
+    [authConfig, clearAuthResult, pendingInvite?.evc, storeAuthResult],
   );
 
   const refreshHandler = useCallback(
