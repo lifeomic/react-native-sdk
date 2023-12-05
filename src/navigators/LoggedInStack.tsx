@@ -10,7 +10,6 @@ import { useActiveProject } from '../hooks/useActiveProject';
 import { useOnboardingCourse } from '../hooks/useOnboardingCourse';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { t } from 'i18next';
-import { usePendingInvite } from '../hooks/usePendingInvite';
 import { useSetUserProfileEffect } from '../hooks/useSetUserProfileEffect';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { useJoinCircles } from '../hooks/Circles/useJoinCircles';
@@ -20,7 +19,6 @@ import { useUser } from '../hooks';
 
 export function LoggedInStack() {
   const Stack = createNativeStackNavigator<LoggedInRootParamList>();
-  const { inviteParams } = usePendingInvite();
   useSetUserProfileEffect();
   // Fetch profiles early but don't wait for them
   useProfilesForAllTiles();
@@ -61,8 +59,6 @@ export function LoggedInStack() {
         'root-stack-waiting-for-app-config',
         'Loading onboarding course data',
       );
-    } else if (inviteParams?.inviteId) {
-      return t('root-stack-accepting-invitation', 'Accepting invitation');
     } else if (loadingJoinCircles) {
       return t('root-stack-waiting-for-circle-join', 'Joining Circles');
     } else if (shouldWaitForOnAppStart) {
@@ -72,7 +68,6 @@ export function LoggedInStack() {
       );
     }
   }, [
-    inviteParams?.inviteId,
     loadingConsents,
     loadingJoinCircles,
     loadingOnboardingCourse,

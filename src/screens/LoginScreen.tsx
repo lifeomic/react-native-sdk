@@ -2,7 +2,8 @@ import React, { FC, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
-import { useStyles, useDeveloperConfig, usePendingInvite } from '../hooks/';
+import { useStyles, useDeveloperConfig } from '../hooks/';
+import { usePendingInvite } from '../components/Invitations/InviteProvider';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import LaunchScreen from '../components/LaunchScreen';
 import { Dialog, Portal, Text } from 'react-native-paper';
@@ -13,7 +14,7 @@ export const LoginScreen: FC = () => {
   const [visible, setVisible] = useState(false);
   const [errorText, setErrorText] = useState('');
   const { AlertTriangle } = useIcons();
-  const { inviteParams } = usePendingInvite();
+  const pendingInvite = usePendingInvite();
   const { LoginScreen: loginScreenProps = {} } = componentProps;
 
   const hideDialog = () => {
@@ -22,7 +23,7 @@ export const LoginScreen: FC = () => {
   };
 
   const getLoginButtonText = () => {
-    if (inviteParams?.inviteId) {
+    if (pendingInvite) {
       return (
         loginScreenProps.acceptInviteText ??
         t('login-button-title-invite-found', 'Accept Invite')

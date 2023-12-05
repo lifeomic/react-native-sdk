@@ -2,14 +2,15 @@ import React from 'react';
 import { Text } from 'react-native';
 import { render, act } from '@testing-library/react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { useStyles, useDeveloperConfig, usePendingInvite } from '../hooks';
+import { useStyles, useDeveloperConfig } from '../hooks';
 import { LoginScreen } from './LoginScreen';
 import * as OAuthLoginButtonModule from '../components/OAuthLoginButton';
+import { clearPendingInvite } from '../components/Invitations/InviteProvider';
+import { inviteNotifier } from '../components/Invitations/InviteNotifier';
 
 jest.mock('../hooks', () => ({
   useStyles: jest.fn(),
   useDeveloperConfig: jest.fn(),
-  usePendingInvite: jest.fn(),
 }));
 jest.mock('react-native-paper', () => {
   const Dialog = ({ visible, children }: any) => visible && children;
@@ -25,7 +26,6 @@ jest.mock('react-native-paper', () => {
 
 const useDeveloperConfigMock = useDeveloperConfig as jest.Mock;
 const useStylesMock = useStyles as jest.Mock;
-const usePendingInviteMock = usePendingInvite as jest.Mock;
 
 const loginScreenInContext = (
   <PaperProvider>
@@ -47,9 +47,7 @@ describe('LoginScreen', () => {
       renderCustomLoginScreen: null,
     });
 
-    usePendingInviteMock.mockReturnValue({
-      inviteParams: undefined,
-    });
+    clearPendingInvite();
   });
   it('renders correctly', () => {
     const { getByText } = render(loginScreenInContext);
@@ -58,11 +56,8 @@ describe('LoginScreen', () => {
   });
 
   it('renders accept invite if inviteID present', () => {
-    usePendingInviteMock.mockReturnValue({
-      inviteParams: {
-        inviteId: 'someInviteId',
-      },
-    });
+    inviteNotifier.emit('inviteDetected', { inviteId: 'someInviteId' });
+
     const { getByText } = render(loginScreenInContext);
     expect(getByText('Accept Invite')).toBeDefined();
   });

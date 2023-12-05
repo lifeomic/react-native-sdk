@@ -1,11 +1,21 @@
 import React from 'react';
-import { act, renderHook } from '@testing-library/react-native';
+import {
+  act,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from '@testing-library/react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { InviteProvider } from './InviteProvider';
+import {
+  InviteProvider,
+  clearPendingInvite,
+  usePendingInvite,
+} from './InviteProvider';
 import { InviteParams, inviteNotifier } from './InviteNotifier';
-import { usePendingInvite } from '../../hooks/usePendingInvite';
 import { useAuth } from '../../hooks/useAuth';
 import { createRestAPIMock } from '../../test-utils/rest-api-mocking';
+import { Text } from 'react-native';
 
 const api = createRestAPIMock();
 
@@ -29,11 +39,21 @@ const mockAuthResult = {
   accessToken: 'access-token',
 };
 
+const renderUI = (children: React.ReactElement) =>
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <InviteProvider>{children}</InviteProvider>
+    </QueryClientProvider>,
+  );
+
 const renderHookInContext = async () => {
   return renderHook(() => usePendingInvite(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={new QueryClient()}>
-        <InviteProvider>{children}</InviteProvider>
+        <InviteProvider>
+          <></>
+        </InviteProvider>
+        {children}
       </QueryClientProvider>
     ),
   });
@@ -51,22 +71,20 @@ beforeEach(() => {
       data: { account: 'invited-account' } as any,
     }),
   );
+  clearPendingInvite();
   inviteNotifier.clearCache();
-});
-
-it('without provider, methods fail', async () => {
-  const { result } = renderHook(() => usePendingInvite());
-  await expect(result.current.clearPendingInvite()).rejects.toBeUndefined();
 });
 
 it('listens for invite params and exposes them', async () => {
   const { result } = await renderHookInContext();
-  expect(result.current.inviteParams).toEqual({});
+  expect(result.current).toEqual(undefined);
 
   act(() => {
     inviteNotifier.emit('inviteDetected', mockInviteParams);
   });
-  expect(result.current.inviteParams).toEqual(mockInviteParams);
+  await waitFor(() => {
+    expect(result.current).toStrictEqual(mockInviteParams);
+  });
 });
 
 it('allows for clearing pending invite params', async () => {
@@ -74,11 +92,23 @@ it('allows for clearing pending invite params', async () => {
   act(() => {
     inviteNotifier.emit('inviteDetected', mockInviteParams);
   });
-  expect(result.current.inviteParams).toEqual(mockInviteParams);
+  expect(result.current).toEqual(mockInviteParams);
   act(() => {
-    result.current.clearPendingInvite();
+    clearPendingInvite();
   });
-  expect(result.current.inviteParams).toEqual({});
+  expect(result.current).toEqual(undefined);
+});
+
+it('renders loading indicator while there is a pending invite', async () => {
+  inviteNotifier.emit('inviteDetected', mockInviteParams);
+
+  renderUI(<Text>content</Text>);
+
+  screen.getByRole('progressbar');
+
+  await waitFor(() => {
+    screen.getByText('content');
+  });
 });
 
 describe('accepting invite', () => {
@@ -124,7 +154,7 @@ describe('accepting invite', () => {
     expect(
       mutationMock.mock.calls[0][0].headers['LifeOmic-Account'],
     ).toBeUndefined();
-    expect(result.current.inviteParams).toEqual({});
+    expect(result.current).toEqual(undefined);
     expect(refreshForInviteAccept).toHaveBeenCalled();
   });
 
@@ -150,6 +180,6 @@ describe('accepting invite', () => {
       mutationMock.mock.calls[0][0].headers['LifeOmic-Account'],
     ).toBeUndefined();
     expect(refreshForInviteAccept).not.toHaveBeenCalled();
-    expect(result.current.inviteParams).toEqual({});
+    expect(result.current).toEqual(undefined);
   });
 });

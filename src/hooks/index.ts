@@ -16,7 +16,6 @@ export * from './useMe';
 export * from './useNotifications';
 export * from './useOAuthFlow';
 export * from './useOnboardingCourse';
-export * from './usePendingInvite';
 export * from './Circles';
 export * from './useStyles';
 export * from './useSubjectProjects';
