@@ -1,12 +1,25 @@
 import {
   Appointment,
   Bundle,
+  BundleEntry,
   Observation,
   Patient,
   Practitioner,
   Questionnaire,
   QuestionnaireResponse,
 } from 'fhir/r3';
+
+// These "better" types strongly type the bundle
+// to match the LifeOmic FHIR API guarantees.
+type BetterEntry<T> = Omit<BundleEntry<T>, 'resource'> & {
+  // `resource` is guaranteed to be defined by the API
+  resource: T;
+};
+
+type BetterBundle<T> = Omit<Bundle<T>, 'entry'> & {
+  // `entry` is guaranteed to be defined by the API
+  entry: BetterEntry<T>[];
+};
 
 /**
  * Add entries to this type to support them in the hooks.
@@ -73,6 +86,11 @@ export type FhirAPIEndpoints = {
   // GET /<resource>
   [Name in keyof FhirResourcesByName as `GET /v1/fhir/dstu3/${Name}`]: {
     Request: SearchParamsForResourceType<Name>;
-    Response: Bundle<WithIdDefined<FhirResourcesByName[Name]>>;
+    Response: BetterBundle<WithIdDefined<FhirResourcesByName[Name]>>;
+  };
+} & {
+  'GET /v1/fhir/dstu3/$me': {
+    Request: {};
+    Response: BetterBundle<WithIdDefined<Patient>>;
   };
 };

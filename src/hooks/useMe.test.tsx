@@ -2,9 +2,10 @@ import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useMe } from './useMe';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import MockAdapter from 'axios-mock-adapter';
-import axios from 'axios';
-import { useHttpClient } from './useHttpClient';
+import { HttpClientContextProvider } from './useHttpClient';
+import { ActiveAccountProvider } from './useActiveAccount';
+import { createRestAPIMock } from '../test-utils/rest-api-mocking';
+import { Patient } from 'fhir/r3';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,29 +15,23 @@ const queryClient = new QueryClient({
   },
 });
 
-jest.mock('./useHttpClient', () => ({
-  useHttpClient: jest.fn(),
-}));
-
-const useHttpClientMock = useHttpClient as jest.Mock;
+const api = createRestAPIMock();
 
 const renderHookInContext = async () => {
   return renderHook(() => useMe(), {
     wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <ActiveAccountProvider account="mockaccount">
+          <HttpClientContextProvider>{children}</HttpClientContextProvider>
+        </ActiveAccountProvider>
+      </QueryClientProvider>
     ),
   });
 };
 
-const axiosInstance = axios.create();
-const axiosMock = new MockAdapter(axiosInstance);
-
-beforeEach(() => {
-  useHttpClientMock.mockReturnValue({ httpClient: axiosInstance });
-});
-
 test('fetches and parses $me', async () => {
-  const subject1 = {
+  const subject1: Patient & { id: string } = {
+    resourceType: 'Patient',
     id: 'patientId1',
     meta: {
       tag: [
@@ -47,7 +42,8 @@ test('fetches and parses $me', async () => {
       ],
     },
   };
-  const subject2 = {
+  const subject2: Patient & { id: string } = {
+    resourceType: 'Patient',
     id: 'patientId2',
     meta: {
       tag: [
@@ -58,12 +54,17 @@ test('fetches and parses $me', async () => {
       ],
     },
   };
-  axiosMock.onGet('/v1/fhir/dstu3/$me').reply(200, {
-    entry: [{ resource: subject1 }, { resource: subject2 }],
+
+  api.mock('GET /v1/fhir/dstu3/$me', {
+    status: 200,
+    data: {
+      resourceType: 'Bundle',
+      type: 'searchset',
+      entry: [{ resource: subject1 }, { resource: subject2 }],
+    },
   });
+
   const { result } = await renderHookInContext();
-  await waitFor(() => result.current.isSuccess);
-  expect(axiosMock.history.get[0].url).toBe('/v1/fhir/dstu3/$me');
   await waitFor(() => {
     expect(result.current.data).toEqual([
       { subjectId: 'patientId1', projectId: 'projectId1', subject: subject1 },

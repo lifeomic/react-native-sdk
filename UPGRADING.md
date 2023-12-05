@@ -292,3 +292,9 @@ const MyComponent = () => {
 - `usePendingInvite` no longer returns the "last accepted id".
 
 - The `react-query` cache is now cleared when an invite is accepted.
+
+### 10.x -> 11.x
+
+- The `react-query` query key for the `useMe()` data changed. The hook is now
+  powered by `useRestQuery`. If needing to interact with the cached data, use
+  the `useRestCache` hook.
