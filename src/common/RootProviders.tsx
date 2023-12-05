@@ -5,7 +5,6 @@ import { HttpClientContextProvider } from '../hooks/useHttpClient';
 import { OAuthContextProvider } from '../hooks/useOAuthFlow';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
-import { InviteProvider } from '../components/Invitations/InviteProvider';
 import { BrandConfigProvider } from '../components/BrandConfigProvider';
 import { NoInternetToastProvider } from '../hooks/NoInternetToastProvider';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
@@ -38,26 +37,24 @@ export function RootProviders({
         <AuthContextProvider>
           <HttpClientContextProvider baseURL={apiBaseURL}>
             <GraphQLClientContextProvider baseURL={apiBaseURL}>
-              <InviteProvider>
-                <OAuthContextProvider authConfig={authConfig}>
-                  <BrandConfigProvider theme={theme} {...brand}>
-                    <NoInternetToastProvider>
-                      <ActionSheetProvider>
-                        <SafeAreaProvider>
-                          <ThemedNavigationContainer>
-                            <Toast />
-                            <LoggedInProviders>
-                              <LogoHeaderDimensionsContextProvider>
-                                {children}
-                              </LogoHeaderDimensionsContextProvider>
-                            </LoggedInProviders>
-                          </ThemedNavigationContainer>
-                        </SafeAreaProvider>
-                      </ActionSheetProvider>
-                    </NoInternetToastProvider>
-                  </BrandConfigProvider>
-                </OAuthContextProvider>
-              </InviteProvider>
+              <OAuthContextProvider authConfig={authConfig}>
+                <BrandConfigProvider theme={theme} {...brand}>
+                  <NoInternetToastProvider>
+                    <ActionSheetProvider>
+                      <SafeAreaProvider>
+                        <ThemedNavigationContainer>
+                          <Toast />
+                          <LoggedInProviders>
+                            <LogoHeaderDimensionsContextProvider>
+                              {children}
+                            </LogoHeaderDimensionsContextProvider>
+                          </LoggedInProviders>
+                        </ThemedNavigationContainer>
+                      </SafeAreaProvider>
+                    </ActionSheetProvider>
+                  </NoInternetToastProvider>
+                </BrandConfigProvider>
+              </OAuthContextProvider>
             </GraphQLClientContextProvider>
           </HttpClientContextProvider>
         </AuthContextProvider>

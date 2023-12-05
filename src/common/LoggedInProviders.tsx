@@ -13,7 +13,7 @@ import { useAuth } from '../hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NotLoggedInRootParamList } from '../navigators';
 import { LoginScreen } from '../screens';
-import { ActivityIndicatorView } from '../components';
+import { ActivityIndicatorView, InviteProvider } from '../components';
 import { t } from 'i18next';
 
 export type LoggedInProvidersProps = {
@@ -49,21 +49,23 @@ export const LoggedInProviders = ({ children }: LoggedInProvidersProps) => {
   }
 
   return (
-    <ActiveProjectContextProvider>
-      <TrackTileProvider>
-        <WearableLifecycleProvider>
-          <CircleTileContextProvider>
-            <OnboardingCourseContextProvider>
-              <PushNotificationsProvider config={pushNotificationsConfig}>
-                <NotificationsManagerProvider>
-                  {children}
-                </NotificationsManagerProvider>
-              </PushNotificationsProvider>
-              <CreateEditPostModal />
-            </OnboardingCourseContextProvider>
-          </CircleTileContextProvider>
-        </WearableLifecycleProvider>
-      </TrackTileProvider>
-    </ActiveProjectContextProvider>
+    <InviteProvider>
+      <ActiveProjectContextProvider>
+        <TrackTileProvider>
+          <WearableLifecycleProvider>
+            <CircleTileContextProvider>
+              <OnboardingCourseContextProvider>
+                <PushNotificationsProvider config={pushNotificationsConfig}>
+                  <NotificationsManagerProvider>
+                    {children}
+                  </NotificationsManagerProvider>
+                </PushNotificationsProvider>
+                <CreateEditPostModal />
+              </OnboardingCourseContextProvider>
+            </CircleTileContextProvider>
+          </WearableLifecycleProvider>
+        </TrackTileProvider>
+      </ActiveProjectContextProvider>
+    </InviteProvider>
   );
 };
