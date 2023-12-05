@@ -1,6 +1,6 @@
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
-import { useQuery } from '@tanstack/react-query';
+import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
 const getActivitiesQueryDocument = gql`
   query GetAllActivities($input: GetAllActivitiesInput!) {
@@ -365,12 +365,22 @@ type ActivitiesQueryResponse = {
 
 export const ACTIVITIES_QUERY_KEY = ['activities'];
 
-export const useActivities = (input: ActivitiesInput) => {
+export const useActivities = (
+  input: ActivitiesInput,
+  options?: Omit<
+    UseQueryOptions<ActivitiesQueryResponse>,
+    'queryKey' | 'queryFn'
+  >,
+) => {
   const { graphQLClient } = useGraphQLClient();
 
-  return useQuery(ACTIVITIES_QUERY_KEY, () =>
-    graphQLClient.request<ActivitiesQueryResponse>(getActivitiesQueryDocument, {
-      input,
-    }),
+  return useQuery(
+    ACTIVITIES_QUERY_KEY,
+    () =>
+      graphQLClient.request<ActivitiesQueryResponse>(
+        getActivitiesQueryDocument,
+        { input },
+      ),
+    options,
   );
 };
