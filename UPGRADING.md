@@ -298,3 +298,9 @@ const MyComponent = () => {
 - The `react-query` query key for the `useMe()` data changed. The hook is now
   powered by `useRestQuery`. If needing to interact with the cached data, use
   the `useRestCache` hook.
+
+### 11.x -> 12.x
+
+- The underlying query key for `useExchangeToken` changed.
+
+- The `clientId` parameter for `useExchangeToken` is no longer optional.

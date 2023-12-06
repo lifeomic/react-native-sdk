@@ -1,20 +1,18 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import { AuthedAppTileScreen } from './AuthedAppTileScreen';
-import { useExchangeToken } from '../hooks/useExchangeToken';
 import { useActiveProject } from '../hooks/useActiveProject';
-import { useActiveAccount } from '../hooks/useActiveAccount';
+import { ActiveAccountProvider } from '../hooks/useActiveAccount';
 import { useHandleAppTileEvents } from '../hooks/useHandleAppTileEvents';
 import { useAppConfig } from '../hooks/useAppConfig';
+import { createRestAPIMock } from '../test-utils/rest-api-mocking';
+import { HttpClientContextProvider } from '../hooks/useHttpClient';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-jest.mock('../hooks/useExchangeToken', () => ({
-  useExchangeToken: jest.fn(),
-}));
+const api = createRestAPIMock();
+
 jest.mock('../hooks/useActiveProject', () => ({
   useActiveProject: jest.fn(),
-}));
-jest.mock('../hooks/useActiveAccount', () => ({
-  useActiveAccount: jest.fn(),
 }));
 jest.mock('../hooks/useHandleAppTileEvents', () => ({
   useHandleAppTileEvents: jest.fn(),
@@ -23,9 +21,7 @@ jest.mock('../hooks/useAppConfig', () => ({
   useAppConfig: jest.fn(),
 }));
 
-const useExchangeTokenMock = useExchangeToken as jest.Mock;
 const useActiveProjectMock = useActiveProject as jest.Mock;
-const useActiveAccountMock = useActiveAccount as jest.Mock;
 const useHandleAppTileEventsMock = useHandleAppTileEvents as jest.Mock;
 const useAppConfigMock = useAppConfig as jest.Mock;
 
@@ -48,16 +44,21 @@ const appTile = {
   scope: 'PUBLIC',
 };
 
+const renderScreen = () =>
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <ActiveAccountProvider account="acct1">
+        <HttpClientContextProvider>
+          <AuthedAppTileScreen navigation={navigation} route={route} />
+        </HttpClientContextProvider>
+      </ActiveAccountProvider>
+    </QueryClientProvider>,
+  );
+
 beforeEach(() => {
-  useExchangeTokenMock.mockReturnValue({
-    data: {
-      code: 'someCode',
-    },
-    isFetched: true,
-    isLoading: false,
-  });
-  useActiveAccountMock.mockReturnValue({
-    account: 'acct1',
+  api.mock('POST /v1/client-tokens', {
+    status: 200,
+    data: { code: 'someCode' },
   });
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
@@ -72,24 +73,21 @@ beforeEach(() => {
   useAppConfigMock.mockReturnValue({ data: {} });
 });
 
-test('builds uri with code, projectId, patientId, and accountId', () => {
+test('builds uri with code, projectId, patientId, and accountId', async () => {
   route.params.appTile = appTile;
-  const { getByTestId } = render(
-    <AuthedAppTileScreen navigation={navigation} route={route} />,
-  );
-  const AppTileWebView = getByTestId('app-tile-webview');
-  expect(useExchangeTokenMock).toHaveBeenCalledTimes(1);
-  expect(AppTileWebView.props.source).toMatchObject({
-    uri: 'http://unit-test/app-tile/callback?accountId=acct1&code=someCode&patientId=subjectId&projectId=projectId',
+  const { getByTestId } = renderScreen();
+  await waitFor(() => {
+    const AppTileWebView = getByTestId('app-tile-webview');
+    expect(AppTileWebView.props.source).toMatchObject({
+      uri: 'http://unit-test/app-tile/callback?accountId=acct1&code=someCode&patientId=subjectId&projectId=projectId',
+    });
   });
 });
 
-test('calls handleAppTileMessage', () => {
+test('calls handleAppTileMessage', async () => {
   route.params.appTile = appTile;
-  const { getByTestId } = render(
-    <AuthedAppTileScreen navigation={navigation} route={route} />,
-  );
-  const AppTileWebView = getByTestId('app-tile-webview');
+  const { findByTestId } = renderScreen();
+  const AppTileWebView = await findByTestId('app-tile-webview');
   const event = {
     nativeEvent: {
       data: JSON.stringify({}),
@@ -101,7 +99,7 @@ test('calls handleAppTileMessage', () => {
 
 test('sets the appTitle title as the screen title', () => {
   route.params.appTile = appTile;
-  render(<AuthedAppTileScreen navigation={navigation} route={route} />);
+  renderScreen();
   expect(navigation.setOptions).toBeCalledWith({
     title: appTile.title,
   });
@@ -123,7 +121,7 @@ test('sets the titleOverride as the screen title', () => {
       },
     },
   });
-  render(<AuthedAppTileScreen navigation={navigation} route={route} />);
+  renderScreen();
   expect(navigation.setOptions).toBeCalledWith({
     title: TITLE_OVERRIDE,
   });
@@ -140,7 +138,7 @@ test('handles existing appTileSettings with no appTile override title', () => {
       },
     },
   });
-  render(<AuthedAppTileScreen navigation={navigation} route={route} />);
+  renderScreen();
   expect(navigation.setOptions).toBeCalledWith({
     title: appTile.title,
   });
