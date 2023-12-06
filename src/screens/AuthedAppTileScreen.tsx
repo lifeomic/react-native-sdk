@@ -1,16 +1,18 @@
-import React, { useState, useLayoutEffect, useRef } from 'react';
+import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { WebView } from 'react-native-webview';
 import { Appbar } from 'react-native-paper';
 import {
   AppTile,
   useAppConfig,
+  useAuthedAppletUrl,
   useHandleAppTileEvents,
   useStyles,
 } from '../hooks';
+import { ActivityIndicator } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useIcons } from '../components';
 import { defaultStyles as AppNavHeaderStyles } from '../components/AppNavHeader';
-import { AuthedWebApplet } from '../components/AuthedWebApplet';
 
 export type AuthedAppTileParams = {
   appTile: AppTile;
@@ -65,15 +67,54 @@ export const AuthedAppTileScreen = ({
     styles.backActionIcon?.color,
   ]);
 
+  const query = useAuthedAppletUrl({
+    exchangeId: appTile.id,
+    appletUrl: appTile.callbackUrls?.[0]!,
+    clientId: appTile.clientId!,
+    searchParams,
+  });
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+
+  const handlePageLoaded = () => {
+    setIsPageLoaded(true);
+  };
+
+  const dispatchLXFocusEvent = useCallback(() => {
+    if (webViewRef.current?.injectJavaScript && isPageLoaded) {
+      const script = `
+        window.dispatchEvent(new Event('lx-focus'));
+        true;
+      `;
+      webViewRef.current.injectJavaScript(script);
+    }
+  }, [isPageLoaded]);
+
+  useFocusEffect(dispatchLXFocusEvent);
+
+  // Do not proceed until the query has resolved
+  if (!query.data) {
+    return <ActivityIndicator animating={true} />;
+  }
+
+  const source = {
+    uri: query.data.url,
+  };
+
   return (
-    <AuthedWebApplet
-      appTile={appTile}
-      searchParams={searchParams}
+    <WebView
+      key={source.uri}
+      geolocationEnabled
+      source={source}
+      ref={webViewRef}
+      cacheEnabled={false}
+      incognito={true}
       onMessage={handleAppTileMessage}
       onNavigationStateChange={(e) => {
         setCanGoBack(e.canGoBack);
         handleAppTileNavigationStateChange(e);
       }}
+      onLoad={handlePageLoaded}
+      testID="app-tile-webview"
     />
   );
 };
