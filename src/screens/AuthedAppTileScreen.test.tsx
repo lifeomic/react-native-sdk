@@ -50,10 +50,11 @@ const appTile = {
 
 beforeEach(() => {
   useExchangeTokenMock.mockReturnValue({
-    status: 'success',
     data: {
       code: 'someCode',
     },
+    isFetched: true,
+    isLoading: false,
   });
   useActiveAccountMock.mockReturnValue({
     account: 'acct1',
@@ -61,6 +62,8 @@ beforeEach(() => {
   useActiveProjectMock.mockReturnValue({
     activeProject: { id: 'projectId' },
     activeSubjectId: 'subjectId',
+    isFetched: true,
+    isLoading: false,
   });
   useHandleAppTileEventsMock.mockReturnValue({
     handleAppTileMessage: handleAppTileMessageMock,

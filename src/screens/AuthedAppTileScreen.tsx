@@ -1,16 +1,21 @@
-import React, { useState, useLayoutEffect, useRef } from 'react';
+import React, { useCallback, useState, useLayoutEffect, useRef } from 'react';
 import { WebView } from 'react-native-webview';
 import { Appbar } from 'react-native-paper';
 import {
   AppTile,
+  useActiveAccount,
+  useActiveProject,
   useAppConfig,
+  useExchangeToken,
   useHandleAppTileEvents,
   useStyles,
 } from '../hooks';
+import queryString from 'query-string';
+import { ActivityIndicator } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useIcons } from '../components';
 import { defaultStyles as AppNavHeaderStyles } from '../components/AppNavHeader';
-import { AuthedWebApplet } from '../components/AuthedWebApplet';
 
 export type AuthedAppTileParams = {
   appTile: AppTile;
@@ -65,15 +70,88 @@ export const AuthedAppTileScreen = ({
     styles.backActionIcon?.color,
   ]);
 
+  const { activeProject, activeSubjectId } = useActiveProject();
+  const { account } = useActiveAccount();
+  const {
+    data,
+    isLoading: loadingCode,
+    isFetched: codeFetched,
+  } = useExchangeToken(appTile.id, appTile.clientId);
+  const [isPageLoaded, setIsPageLoaded] = useState(false);
+
+  // Conditions to be met before building the applet uri
+  const isLoading = loadingCode;
+  const isFetched = codeFetched;
+  const hasData = data?.code;
+
+  const readyToBuildUri = isFetched && !isLoading && hasData;
+  const oauthCallbackUrl = appTile.callbackUrls?.[0]!;
+
+  const buildUri = useCallback(() => {
+    const parsed = queryString.parse('');
+    if (data?.code) {
+      parsed.code = data.code;
+    }
+
+    parsed.accountId = account;
+
+    parsed.projectId = activeProject.id;
+    parsed.patientId = activeSubjectId;
+
+    for (const [key, value] of Object.entries(searchParams)) {
+      parsed[key] = value;
+    }
+
+    return `${oauthCallbackUrl}?${queryString.stringify(parsed)}`;
+  }, [
+    account,
+    activeProject,
+    data,
+    oauthCallbackUrl,
+    activeSubjectId,
+    searchParams,
+  ]);
+
+  const handlePageLoaded = () => {
+    setIsPageLoaded(true);
+  };
+
+  const dispatchLXFocusEvent = useCallback(() => {
+    if (webViewRef.current?.injectJavaScript && isPageLoaded) {
+      const script = `
+        window.dispatchEvent(new Event('lx-focus'));
+        true;
+      `;
+      webViewRef.current.injectJavaScript(script);
+    }
+  }, [isPageLoaded]);
+
+  useFocusEffect(dispatchLXFocusEvent);
+
+  // Do not proceed until all queries have resolved
+  if (!readyToBuildUri) {
+    return <ActivityIndicator animating={true} />;
+  }
+
+  const source = {
+    uri: buildUri(),
+  };
+
   return (
-    <AuthedWebApplet
-      appTile={appTile}
-      searchParams={searchParams}
+    <WebView
+      key={source.uri}
+      geolocationEnabled
+      source={source}
+      ref={webViewRef}
+      cacheEnabled={false}
+      incognito={true}
       onMessage={handleAppTileMessage}
       onNavigationStateChange={(e) => {
         setCanGoBack(e.canGoBack);
         handleAppTileNavigationStateChange(e);
       }}
+      onLoad={handlePageLoaded}
+      testID="app-tile-webview"
     />
   );
 };
