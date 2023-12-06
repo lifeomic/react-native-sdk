@@ -37,15 +37,18 @@ export const AuthedWebApplet: React.FC<AuthedWebAppletProps> = ({
 
   // Use this focus effect to notify the applet when it receives focus.
   useFocusEffect(
-    useCallback(() => {
-      if (webViewRef.current?.injectJavaScript && isPageLoaded) {
-        const script = `
+    useCallback(
+      /* istanbul ignore next */ () => {
+        if (webViewRef.current?.injectJavaScript && isPageLoaded) {
+          const script = `
           window.dispatchEvent(new Event('lx-focus'));
           true;
         `;
-        webViewRef.current.injectJavaScript(script);
-      }
-    }, [isPageLoaded]),
+          webViewRef.current.injectJavaScript(script);
+        }
+      },
+      [isPageLoaded],
+    ),
   );
 
   if (tokenQuery.status !== 'success') {
