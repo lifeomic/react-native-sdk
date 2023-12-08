@@ -303,7 +303,7 @@ const getActivitiesQueryDocument = gql`
   }
 `;
 
-type ActivitiesInput = {
+export type ActivitiesInput = {
   status?: string;
   startDateTime?: string;
   endDateTime: string;
@@ -355,7 +355,7 @@ export type Activity = {
   };
 };
 
-type ActivitiesQueryResponse = {
+export type ActivitiesQueryResponse = {
   getAllActivities: {
     edges: {
       node: Activity;
