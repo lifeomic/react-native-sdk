@@ -51,6 +51,9 @@ type AdditionalSearchParamsByName = {
     patient?: string;
     status?: Appointment['status'];
   };
+  Observation: {
+    patient?: string;
+  };
 };
 
 type SearchParamsForResourceType<Name extends keyof FhirResourcesByName> =
