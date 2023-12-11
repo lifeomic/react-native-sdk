@@ -130,13 +130,14 @@ const defaultStyles = createStyles('ComposeInputBar', (theme) => ({
   inputText: {
     textAlignVertical: 'top',
     flex: 1,
+    color: theme.colors.scrim,
   },
   sendIconColor: {
     enabled: theme.colors.primary,
     disabled: theme.colors.primaryContainer,
   },
   placeholderText: {
-    color: theme.colors.surfaceDisabled,
+    color: theme.colors.text,
   },
   sendButton: {
     position: 'absolute',
