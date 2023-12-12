@@ -302,11 +302,13 @@ const defaultStyles = createStyles('ComposeMessageScreen', (theme) => ({
   },
   toProvidersLabel: {
     fontWeight: '700',
+    color: theme.colors.onBackground,
   },
   writeMessageLabel: {
     fontWeight: '700',
     marginLeft: theme.spacing.medium,
     marginBottom: theme.spacing.medium,
+    color: theme.colors.onBackground,
   },
   plusIcon: {
     color: theme.colors.secondary,
