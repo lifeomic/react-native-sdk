@@ -7,6 +7,7 @@ import {
   Practitioner,
   Questionnaire,
   QuestionnaireResponse,
+  ProcedureRequest,
 } from 'fhir/r3';
 
 // These "better" types strongly type the bundle
@@ -31,6 +32,7 @@ type FhirResourcesByName = {
   QuestionnaireResponse: QuestionnaireResponse;
   Appointment: Appointment;
   Practitioner: Practitioner;
+  ProcedureRequest: ProcedureRequest;
 };
 
 /**
@@ -52,6 +54,9 @@ type AdditionalSearchParamsByName = {
     status?: Appointment['status'];
   };
   Observation: {
+    patient?: string;
+  };
+  ProcedureRequest: {
     patient?: string;
   };
 };
