@@ -119,4 +119,17 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
     Request: { projectId: string };
     Response: AppConfig;
   };
+
+  'GET /v1/fhir/files/projects/:projectId/files/:fileId': {
+    Request: {
+      include?: 'downloadUrl';
+    };
+    Response: {
+      /**
+       * Consider this value non-optional if you specified `include=downloadUrl`
+       * in the request.
+       */
+      downloadUrl?: string;
+    };
+  };
 };
