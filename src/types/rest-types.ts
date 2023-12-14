@@ -120,7 +120,7 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
     Response: AppConfig;
   };
 
-  'GET /v1/files/:fileId': {
+  'GET /v1/fhir/files/projects/:projectId/files/:fileId': {
     Request: {
       include?: 'downloadUrl';
     };
