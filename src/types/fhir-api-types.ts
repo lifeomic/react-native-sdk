@@ -8,6 +8,7 @@ import {
   Questionnaire,
   QuestionnaireResponse,
   ProcedureRequest,
+  DocumentReference,
 } from 'fhir/r3';
 
 // These "better" types strongly type the bundle
@@ -26,13 +27,14 @@ type BetterBundle<T> = Omit<Bundle<T>, 'entry'> & {
  * Add entries to this type to support them in the hooks.
  */
 type FhirResourcesByName = {
-  Patient: Patient;
-  Observation: Observation;
-  Questionnaire: Questionnaire;
-  QuestionnaireResponse: QuestionnaireResponse;
   Appointment: Appointment;
+  DocumentReference: DocumentReference;
+  Observation: Observation;
+  Patient: Patient;
   Practitioner: Practitioner;
   ProcedureRequest: ProcedureRequest;
+  Questionnaire: Questionnaire;
+  QuestionnaireResponse: QuestionnaireResponse;
 };
 
 /**
