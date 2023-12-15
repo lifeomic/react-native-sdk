@@ -122,6 +122,12 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
 
   'GET /v1/fhir/files/projects/:projectId/files/:fileId': {
     Request: {
+      /**
+       * If accessing a file owned by a subject, it is recommended to
+       * specify the subject id here.
+       */
+      subject?: string;
+      /** Specify this value to get a pre-signed download url in response. */
       include?: 'downloadUrl';
     };
     Response: {
