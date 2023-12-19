@@ -65,6 +65,30 @@ export const defaultChartStyles = createStyles('ChartStyles', (theme) => ({
     height: undefined as number | undefined,
     width: undefined as number | undefined,
   },
+  bar: {
+    data: {
+      fill: theme.colors.primary,
+    },
+  } as VictoryStyleProp<'bar'>,
+  sleepAnalysis: {
+    independentAxis: {
+      grid: {
+        display: 'none',
+      },
+    } as VictoryStyleProp<'axis'>,
+    dependentAxis: {
+      grid: {
+        stroke: theme.colors.backdrop,
+        display: 'flex',
+        strokeWidth: 2,
+        strokeLinecap: 'round',
+        opacity: 0.4,
+      },
+      axis: {
+        display: 'none',
+      },
+    } as VictoryStyleProp<'dependentAxis'>,
+  } as VictoryThemeDefinition,
 }));
 
 declare module '@styles' {

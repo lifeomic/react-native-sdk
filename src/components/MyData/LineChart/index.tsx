@@ -17,7 +17,7 @@ import ViewShot from 'react-native-view-shot';
 import { Trace, TraceLine } from './TraceLine';
 import { useVictoryTheme } from '../useVictoryTheme';
 import { scaleTime } from 'd3-scale';
-import { Title } from './Title';
+import { Title } from '../common/Title';
 import { View, Dimensions } from 'react-native';
 import { createStyles } from '../../BrandConfigProvider';
 import { useStyles } from '../../../hooks';
