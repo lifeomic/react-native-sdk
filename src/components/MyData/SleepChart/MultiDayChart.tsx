@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { VictoryChart, VictoryAxis, VictoryBar } from 'victory-native';
 import { VictoryLabelProps } from 'victory-core';
 import {
@@ -16,6 +16,7 @@ import { G, Circle, Text, SvgProps } from 'react-native-svg';
 import { useCommonChartProps } from '../useCommonChartProps';
 import type { SleepChartData } from './useSleepChartData';
 import { useVictoryTheme } from '../useVictoryTheme';
+import { DataSelector, SleepDataToolTipPreparer } from './DataSelector';
 import ViewShot from 'react-native-view-shot';
 import { t } from 'i18next';
 import { useStyles } from '../../../hooks';
@@ -26,11 +27,12 @@ import { ActivityIndicatorView } from '../../ActivityIndicatorView';
 type Props = SleepChartData & {
   domainPadding?: number;
   viewShotRef: React.RefObject<ViewShot>;
+  onBlockScrollChange: (shouldBlock: boolean) => void;
 };
 
 export const MultiDayChart = (props: Props) => {
-  const { viewShotRef } = props;
-  const { dateRange, sleepData, isFetching } = props;
+  const { viewShotRef, onBlockScrollChange } = props;
+  const { dateRange, sleepData, isFetching, xDomain } = props;
   const common = useCommonChartProps();
   const theme = useVictoryTheme();
   const { styles } = useStyles(defaultStyles);
@@ -101,6 +103,44 @@ export const MultiDayChart = (props: Props) => {
     return new Array(4).fill(0).map((_, i) => ((i + 1) * maxY) / 4);
   }, [data]);
 
+  const prepareTooltipData = useCallback<SleepDataToolTipPreparer>(
+    (x) => {
+      const domain = isYear ? [0, 11] : dateRange;
+      const getDateValue = (d: Date) =>
+        xDomainWithPadding(isYear ? d.getMonth() : d);
+
+      const xDomainWithPadding = xDomain
+        .copy()
+        .range([domainPadding, xDomain.range()[1] - domainPadding])
+        .domain(domain);
+
+      const closestPoint = data.reduce(
+        (closest, datum) =>
+          Math.abs(getDateValue(datum.x) - x) <
+          Math.abs(getDateValue(closest.x) - x)
+            ? datum
+            : closest,
+        data[0],
+      );
+
+      return {
+        color: styles.data?.color ?? '',
+        header: closestPoint.period,
+        title: t(
+          'sleep-analysis-sleep-amount',
+          '{{hours}}h {{minutes}}m',
+          closestPoint,
+        ),
+        subtitle: isYear
+          ? t('sleep-analysis-average-duration', 'Avg Duration')
+          : t('sleep-analysis-sleep-duration', 'Sleep Duration'),
+        x: getDateValue(closestPoint?.x),
+        hideTooltip: !closestPoint?.y,
+      };
+    },
+    [data, xDomain, dateRange, isYear, styles, domainPadding],
+  );
+
   return (
     <View>
       <ViewShot ref={viewShotRef} options={{ format: 'png' }}>
@@ -152,6 +192,11 @@ export const MultiDayChart = (props: Props) => {
       <View style={styles.loadingContainer}>
         <ActivityIndicatorView animating={isFetching} />
       </View>
+
+      <DataSelector
+        onBlockScrollChange={onBlockScrollChange}
+        prepareTooltipData={prepareTooltipData}
+      />
     </View>
   );
 };

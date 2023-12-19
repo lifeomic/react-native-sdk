@@ -30,10 +30,12 @@ type Props = {
     dataUri?: string;
     dateRange: [Date, Date];
   }) => void;
+  onBlockScrollChange: (shouldBlock: boolean) => void;
 };
 
 const SleepChart = (props: Props) => {
   const { title, dateRange: incomingDateRange, onShare } = props;
+  const { onBlockScrollChange } = props;
   const viewShotRef = useRef<ViewShot>(null);
   const [_showSelection, setShowSelection] = useState(false);
   const [isSwitchingChartType, setIsSwitchingChartType] = useState(false);
@@ -79,6 +81,7 @@ const SleepChart = (props: Props) => {
       <View style={styles.chartWrapper}>
         <ChartType
           viewShotRef={viewShotRef}
+          onBlockScrollChange={onBlockScrollChange}
           {...chartData}
           // Hide data when switching, multi-day data does not render well on daily
           sleepData={isSwitchingChartType ? [] : chartData.sleepData}

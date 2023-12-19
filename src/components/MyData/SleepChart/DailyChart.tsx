@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { VictoryChart, VictoryAxis } from 'victory-native';
 import { VictoryLabelProps, Tuple } from 'victory-core';
 import {
@@ -22,6 +22,7 @@ import {
 import { useCommonChartProps } from '../useCommonChartProps';
 import uniqBy from 'lodash/unionBy';
 import type { SleepChartData } from './useSleepChartData';
+import { DataSelector, SleepDataToolTipPreparer } from './DataSelector';
 import ViewShot from 'react-native-view-shot';
 import { t } from 'i18next';
 import { useVictoryTheme } from '../useVictoryTheme';
@@ -34,10 +35,11 @@ import { ActivityIndicatorView } from '../../ActivityIndicatorView';
 
 type Props = SleepChartData & {
   viewShotRef: React.RefObject<ViewShot>;
+  onBlockScrollChange: (shouldBlock: boolean) => void;
 };
 
 export const DailyChart = (props: Props) => {
-  const { viewShotRef } = props;
+  const { viewShotRef, onBlockScrollChange } = props;
   const { xDomain, sleepData, isFetching } = props;
   const common = useCommonChartProps();
   const { sleepAnalysisTheme: theme } = useVictoryTheme();
@@ -103,6 +105,24 @@ export const DailyChart = (props: Props) => {
     );
   }, [xDomain]);
 
+  const prepareTooltipData = useCallback<SleepDataToolTipPreparer>(
+    (x) => {
+      const closestPoint = orderBy(data, 'x').find(
+        (datum) => datum.x <= x && datum.x + datum.width >= x,
+      );
+
+      return (
+        closestPoint && {
+          color: closestPoint.fill ?? '',
+          header: format(xDomain.invert(x), 'h:mm aa'),
+          title: closestPoint.sleepTypeName,
+          subtitle: t('sleep-analysis-stage', 'Stage'),
+        }
+      );
+    },
+    [data, xDomain],
+  );
+
   return (
     <View>
       <ViewShot ref={viewShotRef} options={{ format: 'png' }}>
@@ -147,6 +167,11 @@ export const DailyChart = (props: Props) => {
       <View style={styles.loadingContainer}>
         {<ActivityIndicatorView animating={isFetching} />}
       </View>
+
+      <DataSelector
+        onBlockScrollChange={onBlockScrollChange}
+        prepareTooltipData={prepareTooltipData}
+      />
     </View>
   );
 };

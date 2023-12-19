@@ -44,6 +44,7 @@ export const MyDataScreen = () => {
   const { data: config, isLoading: loadingAppConfig } = useAppConfig();
   const { styles } = useStyles(defaultStyles);
   const [exportData, setExportData] = useState<any>();
+  const [blockScroll, setBlockScroll] = useState(false);
   const [period, setPeriod] = useState(PERIODS[1]);
   const [range, setRange] = useState(() => {
     const start = startOfWeek(startOfToday());
@@ -78,7 +79,7 @@ export const MyDataScreen = () => {
   }
 
   return (
-    <ScreenSurface testID="my-data-screen">
+    <ScreenSurface testID="my-data-screen" scrollEnabled={!blockScroll}>
       <View style={styles.container}>
         <ScrollView horizontal style={styles.periodScrollView}>
           {PERIODS.map((p) => (
@@ -162,6 +163,7 @@ export const MyDataScreen = () => {
                 dateRange={range}
                 padding={Number(styles.container?.paddingHorizontal) * 2}
                 onShare={setExportData}
+                onBlockScrollChange={setBlockScroll}
               />
             )}
           </React.Fragment>
