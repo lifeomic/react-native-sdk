@@ -2,7 +2,7 @@ import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 
-const getActivitiesQueryDocument = gql`
+export const getActivitiesQueryDocument = gql`
   query GetAllActivities($input: GetAllActivitiesInput!) {
     getAllActivities(input: $input) {
       edges {
