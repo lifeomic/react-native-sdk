@@ -37,13 +37,13 @@ export type InviteProviderProps = {
 
 const isInviteAlreadyAcceptedErrorResponse =
   /* istanbul ignore next */
-  (response: unknown) => {
+  (response: unknown): boolean => {
     if (!response) {
       return false;
     }
 
     if (typeof response !== 'object') {
-      return;
+      return false;
     }
 
     if ('code' in response && response.code === 'INVITATION_ALREADY_ACCEPTED') {
