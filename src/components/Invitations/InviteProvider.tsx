@@ -35,6 +35,32 @@ export type InviteProviderProps = {
   children: React.ReactNode;
 };
 
+const isInviteAlreadyAcceptedErrorResponse =
+  /* istanbul ignore next */
+  (response: unknown): boolean => {
+    if (!response) {
+      return false;
+    }
+
+    if (typeof response !== 'object') {
+      return false;
+    }
+
+    if ('code' in response && response.code === 'INVITATION_ALREADY_ACCEPTED') {
+      return true;
+    }
+
+    if (
+      'error' in response &&
+      typeof response.error === 'string' &&
+      response.error.includes('already accepted')
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
 export const InviteProvider: React.FC<InviteProviderProps> = ({ children }) => {
   const pendingInvite = usePendingInvite();
   const { refreshForInviteAccept } = useAuth();
@@ -45,7 +71,7 @@ export const InviteProvider: React.FC<InviteProviderProps> = ({ children }) => {
     // Do not include account header on this request.
     axios: { headers: { 'LifeOmic-Account': '' } },
     onError: (error: any) => {
-      if (error?.response?.data?.code === 'INVITATION_ALREADY_ACCEPTED') {
+      if (isInviteAlreadyAcceptedErrorResponse(error.response?.data)) {
         console.warn('Ignoring already accepted invite');
       } else {
         console.warn('Error accepting invitation', error);
