@@ -4,6 +4,7 @@ import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { ScreenSurface } from '../components/ScreenSurface';
 import { LineChart } from '../components/MyData/LineChart';
+import { SleepChart } from '../components/MyData/SleepChart';
 import { DatePicker } from '../components/TrackTile/TrackerDetails/DatePicker';
 import {
   format,
@@ -146,12 +147,23 @@ export const MyDataScreen = () => {
         {config?.homeTab?.myDataSettings?.components.map((component, index) => (
           <React.Fragment key={`${component.type}-${index}`}>
             {index > 0 && <Divider style={styles.divider} />}
-            <LineChart
-              {...component}
-              dateRange={range}
-              padding={Number(styles.container?.paddingHorizontal) * 2}
-              onShare={setExportData}
-            />
+            {component.type === 'LineChart' && (
+              <LineChart
+                {...component}
+                dateRange={range}
+                padding={Number(styles.container?.paddingHorizontal) * 2}
+                onShare={setExportData}
+              />
+            )}
+            {component.type === 'SleepChart' && (
+              <SleepChart
+                {...component}
+                title="Sleep Analysis"
+                dateRange={range}
+                padding={Number(styles.container?.paddingHorizontal) * 2}
+                onShare={setExportData}
+              />
+            )}
           </React.Fragment>
         ))}
 

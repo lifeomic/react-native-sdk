@@ -53,6 +53,20 @@ export type TabStyle = {
   svgPropsInactive?: SvgProps;
 };
 
+type LineChart = {
+  type: 'LineChart';
+  title: string;
+  trace1: Trace;
+  trace2?: Trace;
+};
+
+type SleepChart = {
+  type: 'SleepChart';
+  title: string;
+};
+
+type Chart = LineChart | SleepChart;
+
 export interface AppConfig {
   homeTab?: {
     appTiles?: AppTile[];
@@ -66,12 +80,7 @@ export interface AppConfig {
     messageTiles?: MessageTile[];
     pillarSettings?: { advancedScreenTrackers: string[] };
     myDataSettings?: {
-      components: {
-        type: 'LineChart';
-        title: string;
-        trace1: Trace;
-        trace2?: Trace;
-      }[];
+      components: Chart[];
     };
     todayTile?: AppTile;
     todayTileSettings?: {

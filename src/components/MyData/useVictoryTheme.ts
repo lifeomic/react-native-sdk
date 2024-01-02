@@ -7,6 +7,7 @@ import { merge } from 'lodash';
 
 type VictoryTheme = VictoryThemeDefinition & {
   trendlineTheme: VictoryThemeDefinition;
+  sleepAnalysisTheme: VictoryThemeDefinition;
 };
 
 export const useVictoryTheme = (
@@ -56,6 +57,9 @@ export const useVictoryTheme = (
           styles.scatter,
         ),
       },
+      bar: {
+        style: merge({}, styles.bar),
+      },
     };
 
     const customTheme: VictoryTheme = {
@@ -64,6 +68,7 @@ export const useVictoryTheme = (
         ...theme,
         line: merge({}, theme.line, { style: styles.trendline }),
       },
+      sleepAnalysisTheme: styles.sleepAnalysis ?? {},
     };
     return customTheme;
   }, [styles, trace, variant]);
