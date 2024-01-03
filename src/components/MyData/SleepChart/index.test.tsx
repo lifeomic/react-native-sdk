@@ -11,6 +11,7 @@ import {
   addMonths,
   startOfYear,
   endOfYear,
+  addHours,
 } from 'date-fns';
 import { scaleTime } from 'd3-scale';
 
@@ -60,8 +61,12 @@ const Deep = {
   code: '93831-6',
 };
 
-describe('LineChart', () => {
+describe('SleepChart', () => {
   it('should render daily chart', async () => {
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(new Date(0)),
+    };
     mockUseSleepChartData.mockReturnValue({
       isFetching: false,
       sleepData: [
@@ -103,7 +108,7 @@ describe('LineChart', () => {
               },
               valuePeriod: {
                 start: addMinutes(new Date(0), 4).toISOString(),
-                end: addMinutes(new Date(0), 5).toISOString(),
+                end: addHours(new Date(0), 3).toISOString(),
               },
             },
             // malformed components - not rendered:
@@ -126,13 +131,13 @@ describe('LineChart', () => {
           ],
         },
       ],
-      xDomain: scaleTime().domain([new Date(0), addMinutes(new Date(0), 5)]),
-      dateRange: [new Date(0), new Date(0)],
+      xDomain: scaleTime().domain([new Date(0), addHours(new Date(0), 3)]),
+      dateRange: [dateRange.start, dateRange.end],
     });
 
     const { findByText, findByLabelText } = render(
       <SleepChart
-        dateRange={{ start: new Date(0), end: new Date(0) }}
+        dateRange={dateRange}
         title="Single Day Test Title"
         onBlockScrollChange={jest.fn()}
       />,
@@ -141,7 +146,7 @@ describe('LineChart', () => {
     expect(await findByText('Single Day Test Title')).toBeDefined();
     expect(await findByText(format(new Date(0), 'hh:mm aa'))).toBeDefined();
     expect(
-      await findByText(format(addMinutes(new Date(0), 5), 'hh:mm aa')),
+      await findByText(format(addHours(new Date(0), 3), 'hh:mm aa')),
     ).toBeDefined();
     expect(await findByText('Awake')).toBeDefined();
     expect(await findByText('REM')).toBeDefined();
@@ -172,7 +177,7 @@ describe('LineChart', () => {
     ).toBeDefined();
     expect(
       await findByLabelText(
-        `1 minutes of Deep sleep starting at ${addMinutes(
+        `176 minutes of Deep sleep starting at ${addMinutes(
           new Date(0),
           4,
         ).toLocaleTimeString()}`,
@@ -181,6 +186,10 @@ describe('LineChart', () => {
   });
 
   it('should select data on daily chart', async () => {
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(new Date(0)),
+    };
     const xDomain = scaleTime().domain([
       new Date(0),
       addMinutes(new Date(0), 2),
@@ -206,14 +215,14 @@ describe('LineChart', () => {
         },
       ],
       xDomain,
-      dateRange: [new Date(0), new Date(0)],
+      dateRange: [dateRange.start, dateRange.end],
     });
 
     const onBlockScrollChange = jest.fn();
 
     const { findByText, findAllByText, getByTestId } = render(
       <SleepChart
-        dateRange={{ start: new Date(0), end: new Date(0) }}
+        dateRange={dateRange}
         title="Single Day Test Title"
         onBlockScrollChange={onBlockScrollChange}
       />,
@@ -269,6 +278,10 @@ describe('LineChart', () => {
   });
 
   it('should render multi day chart', async () => {
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(addDays(new Date(0), 7)),
+    };
     mockUseSleepChartData.mockReturnValue({
       isFetching: false,
       sleepData: [
@@ -296,13 +309,13 @@ describe('LineChart', () => {
           },
         },
       ],
-      xDomain: scaleTime().domain([new Date(0), addDays(new Date(0), 7)]),
-      dateRange: [new Date(0), addDays(new Date(0), 7)],
+      xDomain: scaleTime().domain([dateRange.start, dateRange.end]),
+      dateRange: [dateRange.start, dateRange.end],
     });
 
     const { findByText, findByLabelText } = render(
       <SleepChart
-        dateRange={{ start: new Date(0), end: addDays(new Date(0), 7) }}
+        dateRange={dateRange}
         title="Multi Day Test Title"
         onBlockScrollChange={jest.fn()}
       />,
@@ -332,7 +345,11 @@ describe('LineChart', () => {
   });
 
   it('should select data on multi-day chart', async () => {
-    const xDomain = scaleTime().domain([new Date(0), addDays(new Date(0), 7)]);
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(addDays(new Date(0), 7)),
+    };
+    const xDomain = scaleTime().domain([dateRange.start, dateRange.end]);
     mockUseSleepChartData.mockReturnValue({
       isFetching: false,
       sleepData: [
@@ -361,14 +378,14 @@ describe('LineChart', () => {
         },
       ],
       xDomain,
-      dateRange: [new Date(0), addDays(new Date(0), 7)],
+      dateRange: [dateRange.start, dateRange.end],
     });
 
     const onBlockScrollChange = jest.fn();
 
     const { findByText, getByTestId } = render(
       <SleepChart
-        dateRange={{ start: new Date(0), end: addDays(new Date(0), 7) }}
+        dateRange={dateRange}
         title="Multi Day Test Title"
         onBlockScrollChange={onBlockScrollChange}
       />,
@@ -403,6 +420,10 @@ describe('LineChart', () => {
   });
 
   it('should render year chart', async () => {
+    const dateRange = {
+      start: startOfDay(startOfYear(new Date(0))),
+      end: startOfDay(endOfYear(new Date(0))),
+    };
     mockUseSleepChartData.mockReturnValue({
       isFetching: false,
       sleepData: [
@@ -430,19 +451,13 @@ describe('LineChart', () => {
           },
         },
       ],
-      xDomain: scaleTime().domain([
-        startOfYear(new Date(0)),
-        endOfYear(new Date(0)),
-      ]),
-      dateRange: [startOfYear(new Date(0)), endOfYear(new Date(0))],
+      xDomain: scaleTime().domain([dateRange.start, dateRange.end]),
+      dateRange: [dateRange.start, dateRange.end],
     });
 
     const { findByText, findByLabelText } = render(
       <SleepChart
-        dateRange={{
-          start: startOfYear(new Date(0)),
-          end: endOfYear(new Date(0)),
-        }}
+        dateRange={dateRange}
         title="Year Test Title"
         onBlockScrollChange={jest.fn()}
       />,
@@ -474,10 +489,11 @@ describe('LineChart', () => {
   });
 
   it('should select data on year chart', async () => {
-    const xDomain = scaleTime().domain([
-      startOfYear(new Date(0)),
-      endOfYear(new Date(0)),
-    ]);
+    const dateRange = {
+      start: startOfDay(startOfYear(new Date(0))),
+      end: startOfDay(endOfYear(new Date(0))),
+    };
+    const xDomain = scaleTime().domain([dateRange.start, dateRange.end]);
     mockUseSleepChartData.mockReturnValue({
       isFetching: false,
       sleepData: [
@@ -522,16 +538,13 @@ describe('LineChart', () => {
         },
       ],
       xDomain,
-      dateRange: [startOfYear(new Date(0)), endOfYear(new Date(0))],
+      dateRange: [dateRange.start, dateRange.end],
     });
 
     const onBlockScrollChange = jest.fn();
     const { findByText, getByTestId } = render(
       <SleepChart
-        dateRange={{
-          start: startOfYear(new Date(0)),
-          end: endOfYear(new Date(0)),
-        }}
+        dateRange={dateRange}
         title="Year Test Title"
         onBlockScrollChange={onBlockScrollChange}
       />,

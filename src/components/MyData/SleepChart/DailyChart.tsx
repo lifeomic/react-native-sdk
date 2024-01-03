@@ -154,18 +154,25 @@ export const DailyChart = (props: Props) => {
           </G>
 
           <VictoryAxis
-            tickValues={ticks}
-            tickFormat={(v, i, a) =>
-              i === 0 || i + 1 === a.length ? format(v, 'hh:mm aa') : '*'
-            }
-            tickLabelComponent={<Tick enabled={!!data.length} />}
+            tickValues={data.length ? ticks : []}
+            tickFormat={(v, i, a) => {
+              const isFirstOrLast = i === 0 || i === a.length - 1;
+              if (!data.length) {
+                return ''; // hide tick labels
+              } else if (isFirstOrLast) {
+                return format(v, 'hh:mm aa');
+              } else {
+                return '*';
+              }
+            }}
+            tickLabelComponent={<Tick />}
             style={theme.independentAxis}
           />
         </VictoryChart>
       </ViewShot>
 
       <View style={styles.loadingContainer}>
-        {<ActivityIndicatorView animating={isFetching} />}
+        <ActivityIndicatorView animating={isFetching} />
       </View>
 
       <DataSelector
@@ -236,27 +243,24 @@ const valToName = (value: number) =>
 type TickProps = {
   text?: string;
   index?: number;
-  enabled: boolean;
 } & VictoryLabelProps;
 
-const Tick = ({ text, index, enabled, ...props }: TickProps) => {
+const Tick = ({ text, index, ...props }: TickProps) => {
   const { Moon, Sunrise } = useIcons();
   const { styles } = useStyles(defaultStyles);
   const Icon = index === 0 ? Moon : Sunrise;
 
-  if (!enabled) {
+  if (!text) {
     return null;
   }
 
   if (text === '*') {
     return (
-      null && (
-        <Circle
-          {...(props as any)}
-          style={{ ...props.style, ...styles.tickDot }}
-          r={2}
-        />
-      )
+      <Circle
+        {...(props as any)}
+        style={{ ...props.style, ...styles.tickDot }}
+        r={2}
+      />
     );
   }
 
