@@ -17,6 +17,7 @@ import { LoggedInRootScreenProps } from '../navigators/types';
 
 export const ConsentScreen = ({
   navigation,
+  route,
 }: LoggedInRootScreenProps<'screens/ConsentScreen'>) => {
   const { styles } = useStyles(defaultStyles);
   const { CustomConsentScreen } = useDeveloperConfig();
@@ -30,10 +31,14 @@ export const ConsentScreen = ({
         return logout({});
       }
 
-      const route = shouldLaunchOnboardingCourse
+      if (route.params?.noNavOnAccept) {
+        navigation.pop();
+        return;
+      }
+      const nextRoute = shouldLaunchOnboardingCourse
         ? 'screens/OnboardingCourseScreen'
         : 'app';
-      navigation.replace(route);
+      navigation.replace(nextRoute);
     },
   });
   const { logout } = useOAuthFlow();
