@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { t } from 'i18next';
 import { useAppConfig } from '../hooks/useAppConfig';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
@@ -44,6 +44,7 @@ export const MyDataScreen = () => {
   const { data: config, isLoading: loadingAppConfig } = useAppConfig();
   const { styles } = useStyles(defaultStyles);
   const [exportData, setExportData] = useState<any>();
+  const [blockScroll, setBlockScroll] = useState(false);
   const [period, setPeriod] = useState(PERIODS[1]);
   const [range, setRange] = useState(() => {
     const start = startOfWeek(startOfToday());
@@ -55,19 +56,22 @@ export const MyDataScreen = () => {
     };
   });
 
-  const handlePeriodChange = (newPeriod: Period) => {
-    setExportData(undefined);
-    setRange((current) => ({
-      start: newPeriod.startOfPeriodFn(current.start),
-      end: endOfDay(
-        addDays(
-          newPeriod.shiftByFn(newPeriod.startOfPeriodFn(current.start), 1),
-          -1,
+  const handlePeriodChange = useCallback(
+    (newPeriod: Period) => () => {
+      setExportData(undefined);
+      setRange((current) => ({
+        start: newPeriod.startOfPeriodFn(current.start),
+        end: endOfDay(
+          addDays(
+            newPeriod.shiftByFn(newPeriod.startOfPeriodFn(current.start), 1),
+            -1,
+          ),
         ),
-      ),
-    }));
-    setPeriod(newPeriod);
-  };
+      }));
+      setPeriod(newPeriod);
+    },
+    [],
+  );
 
   if (loadingAppConfig) {
     return (
@@ -78,13 +82,13 @@ export const MyDataScreen = () => {
   }
 
   return (
-    <ScreenSurface testID="my-data-screen">
+    <ScreenSurface testID="my-data-screen" scrollEnabled={!blockScroll}>
       <View style={styles.container}>
         <ScrollView horizontal style={styles.periodScrollView}>
           {PERIODS.map((p) => (
             <TouchableOpacity
               key={p.label}
-              onPress={() => handlePeriodChange(p)}
+              onPress={handlePeriodChange(p)}
               style={[
                 styles.periodBubbleView,
                 p.label === period.label && styles.periodBubbleSelectedView,
@@ -158,10 +162,10 @@ export const MyDataScreen = () => {
             {component.type === 'SleepChart' && (
               <SleepChart
                 {...component}
-                title="Sleep Analysis"
                 dateRange={range}
                 padding={Number(styles.container?.paddingHorizontal) * 2}
                 onShare={setExportData}
+                onBlockScrollChange={setBlockScroll}
               />
             )}
           </React.Fragment>

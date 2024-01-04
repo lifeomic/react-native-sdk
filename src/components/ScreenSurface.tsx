@@ -8,18 +8,24 @@ import { ScrollView, View } from 'react-native';
 type Props = {
   children?: React.ReactNode;
   styles?: ScreenSurfaceStyles;
+  scrollEnabled?: boolean;
 } & React.ComponentProps<typeof Surface>;
 
 export function ScreenSurface({
   children,
   styles: instanceStyles,
+  scrollEnabled,
   ...props
 }: Props) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
     <Surface style={styles.surfaceView} {...props}>
-      <ScrollView overScrollMode="always" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        overScrollMode="always"
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={scrollEnabled}
+      >
         <View style={styles.container}>{children}</View>
       </ScrollView>
     </Surface>

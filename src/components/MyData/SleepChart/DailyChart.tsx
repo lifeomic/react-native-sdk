@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { VictoryChart, VictoryAxis } from 'victory-native';
 import { VictoryLabelProps, Tuple } from 'victory-core';
 import {
@@ -22,6 +22,7 @@ import {
 import { useCommonChartProps } from '../useCommonChartProps';
 import uniqBy from 'lodash/unionBy';
 import type { SleepChartData } from './useSleepChartData';
+import { DataSelector, SleepDataToolTipPreparer } from './DataSelector';
 import ViewShot from 'react-native-view-shot';
 import { t } from 'i18next';
 import { useVictoryTheme } from '../useVictoryTheme';
@@ -34,10 +35,11 @@ import { ActivityIndicatorView } from '../../ActivityIndicatorView';
 
 type Props = SleepChartData & {
   viewShotRef: React.RefObject<ViewShot>;
+  onBlockScrollChange: (shouldBlock: boolean) => void;
 };
 
 export const DailyChart = (props: Props) => {
-  const { viewShotRef } = props;
+  const { viewShotRef, onBlockScrollChange } = props;
   const { xDomain, sleepData, isFetching } = props;
   const common = useCommonChartProps();
   const { sleepAnalysisTheme: theme } = useVictoryTheme();
@@ -103,6 +105,24 @@ export const DailyChart = (props: Props) => {
     );
   }, [xDomain]);
 
+  const prepareTooltipData = useCallback<SleepDataToolTipPreparer>(
+    (x) => {
+      const closestPoint = orderBy(data, 'x').find(
+        (datum) => datum.x <= x && datum.x + datum.width >= x,
+      );
+
+      return (
+        closestPoint && {
+          color: closestPoint.fill ?? '',
+          header: format(xDomain.invert(x), 'h:mm aa'),
+          title: closestPoint.sleepTypeName,
+          subtitle: t('sleep-analysis-stage', 'Stage'),
+        }
+      );
+    },
+    [data, xDomain],
+  );
+
   return (
     <View>
       <ViewShot ref={viewShotRef} options={{ format: 'png' }}>
@@ -134,19 +154,31 @@ export const DailyChart = (props: Props) => {
           </G>
 
           <VictoryAxis
-            tickValues={ticks}
-            tickFormat={(v, i, a) =>
-              i === 0 || i + 1 === a.length ? format(v, 'hh:mm aa') : '*'
-            }
-            tickLabelComponent={<Tick enabled={!!data.length} />}
+            tickValues={data.length ? ticks : []}
+            tickFormat={(v, i, a) => {
+              const isFirstOrLast = i === 0 || i === a.length - 1;
+              if (!data.length) {
+                return ''; // hide tick labels
+              } else if (isFirstOrLast) {
+                return format(v, 'hh:mm aa');
+              } else {
+                return '*';
+              }
+            }}
+            tickLabelComponent={<Tick />}
             style={theme.independentAxis}
           />
         </VictoryChart>
       </ViewShot>
 
       <View style={styles.loadingContainer}>
-        {<ActivityIndicatorView animating={isFetching} />}
+        <ActivityIndicatorView animating={isFetching} />
       </View>
+
+      <DataSelector
+        onBlockScrollChange={onBlockScrollChange}
+        prepareTooltipData={prepareTooltipData}
+      />
     </View>
   );
 };
@@ -211,27 +243,24 @@ const valToName = (value: number) =>
 type TickProps = {
   text?: string;
   index?: number;
-  enabled: boolean;
 } & VictoryLabelProps;
 
-const Tick = ({ text, index, enabled, ...props }: TickProps) => {
+const Tick = ({ text, index, ...props }: TickProps) => {
   const { Moon, Sunrise } = useIcons();
   const { styles } = useStyles(defaultStyles);
   const Icon = index === 0 ? Moon : Sunrise;
 
-  if (!enabled) {
+  if (!text) {
     return null;
   }
 
   if (text === '*') {
     return (
-      null && (
-        <Circle
-          {...(props as any)}
-          style={{ ...props.style, ...styles.tickDot }}
-          r={2}
-        />
-      )
+      <Circle
+        {...(props as any)}
+        style={{ ...props.style, ...styles.tickDot }}
+        r={2}
+      />
     );
   }
 

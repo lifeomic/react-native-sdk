@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { startOfDay, differenceInDays } from 'date-fns';
 import ViewShot from 'react-native-view-shot';
 import { useVictoryTheme } from '../useVictoryTheme';
@@ -30,13 +24,13 @@ type Props = {
     dataUri?: string;
     dateRange: [Date, Date];
   }) => void;
+  onBlockScrollChange: (shouldBlock: boolean) => void;
 };
 
 const SleepChart = (props: Props) => {
   const { title, dateRange: incomingDateRange, onShare } = props;
+  const { onBlockScrollChange } = props;
   const viewShotRef = useRef<ViewShot>(null);
-  const [_showSelection, setShowSelection] = useState(false);
-  const [isSwitchingChartType, setIsSwitchingChartType] = useState(false);
   const dateRange = useMemo<[Date, Date]>(
     () => [
       startOfDay(incomingDateRange.start),
@@ -48,7 +42,6 @@ const SleepChart = (props: Props) => {
   const chartData = useSleepChartData({ dateRange });
 
   const handleExport = useCallback(async () => {
-    setShowSelection(true);
     const dataUri = await viewShotRef.current?.capture?.();
     onShare?.({
       selectedPoints: [],
@@ -56,7 +49,6 @@ const SleepChart = (props: Props) => {
       dataUri,
       dateRange,
     });
-    setShowSelection(false);
   }, [title, dateRange, onShare]);
 
   const ChartType = useMemo(
@@ -64,13 +56,12 @@ const SleepChart = (props: Props) => {
     [dateRange],
   );
 
-  useEffect(() => setIsSwitchingChartType(true), [ChartType]);
-  useEffect(() => {
-    // end existing switch once isFetching is false
-    setIsSwitchingChartType(
-      (chartTypeChanged) => chartTypeChanged && chartData.isFetching,
-    );
-  }, [chartData.isFetching]);
+  const isSwitchingChartType = useMemo(
+    () =>
+      differenceInDays(...dateRange) !==
+      differenceInDays(...chartData.dateRange),
+    [dateRange, chartData.dateRange],
+  );
 
   return (
     <View style={styles.container}>
@@ -79,6 +70,7 @@ const SleepChart = (props: Props) => {
       <View style={styles.chartWrapper}>
         <ChartType
           viewShotRef={viewShotRef}
+          onBlockScrollChange={onBlockScrollChange}
           {...chartData}
           // Hide data when switching, multi-day data does not render well on daily
           sleepData={isSwitchingChartType ? [] : chartData.sleepData}

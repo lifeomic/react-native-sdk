@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { SleepChart } from './index';
 import { useSleepChartData } from './useSleepChartData';
 import {
@@ -11,6 +11,7 @@ import {
   addMonths,
   startOfYear,
   endOfYear,
+  addHours,
 } from 'date-fns';
 import { scaleTime } from 'd3-scale';
 
@@ -60,8 +61,12 @@ const Deep = {
   code: '93831-6',
 };
 
-describe('LineChart', () => {
+describe('SleepChart', () => {
   it('should render daily chart', async () => {
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(new Date(0)),
+    };
     mockUseSleepChartData.mockReturnValue({
       isFetching: false,
       sleepData: [
@@ -103,7 +108,7 @@ describe('LineChart', () => {
               },
               valuePeriod: {
                 start: addMinutes(new Date(0), 4).toISOString(),
-                end: addMinutes(new Date(0), 5).toISOString(),
+                end: addHours(new Date(0), 3).toISOString(),
               },
             },
             // malformed components - not rendered:
@@ -126,21 +131,22 @@ describe('LineChart', () => {
           ],
         },
       ],
-      xDomain: scaleTime().domain([new Date(0), addMinutes(new Date(0), 5)]),
-      dateRange: [new Date(0), new Date(0)],
+      xDomain: scaleTime().domain([new Date(0), addHours(new Date(0), 3)]),
+      dateRange: [dateRange.start, dateRange.end],
     });
 
     const { findByText, findByLabelText } = render(
       <SleepChart
-        dateRange={{ start: new Date(0), end: new Date(0) }}
+        dateRange={dateRange}
         title="Single Day Test Title"
+        onBlockScrollChange={jest.fn()}
       />,
     );
 
     expect(await findByText('Single Day Test Title')).toBeDefined();
     expect(await findByText(format(new Date(0), 'hh:mm aa'))).toBeDefined();
     expect(
-      await findByText(format(addMinutes(new Date(0), 5), 'hh:mm aa')),
+      await findByText(format(addHours(new Date(0), 3), 'hh:mm aa')),
     ).toBeDefined();
     expect(await findByText('Awake')).toBeDefined();
     expect(await findByText('REM')).toBeDefined();
@@ -171,7 +177,7 @@ describe('LineChart', () => {
     ).toBeDefined();
     expect(
       await findByLabelText(
-        `1 minutes of Deep sleep starting at ${addMinutes(
+        `176 minutes of Deep sleep starting at ${addMinutes(
           new Date(0),
           4,
         ).toLocaleTimeString()}`,
@@ -179,7 +185,103 @@ describe('LineChart', () => {
     ).toBeDefined();
   });
 
+  it('should select data on daily chart', async () => {
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(new Date(0)),
+    };
+    const xDomain = scaleTime().domain([
+      new Date(0),
+      addMinutes(new Date(0), 2),
+    ]);
+    mockUseSleepChartData.mockReturnValue({
+      isFetching: false,
+      sleepData: [
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: new Date(0).toISOString(),
+                end: addMinutes(new Date(0), 2).toISOString(),
+              },
+            },
+          ],
+        },
+      ],
+      xDomain,
+      dateRange: [dateRange.start, dateRange.end],
+    });
+
+    const onBlockScrollChange = jest.fn();
+
+    const { findByText, findAllByText, getByTestId } = render(
+      <SleepChart
+        dateRange={dateRange}
+        title="Single Day Test Title"
+        onBlockScrollChange={onBlockScrollChange}
+      />,
+    );
+
+    await act(async () => {
+      const selector = await getByTestId('sleep-chart-data-selector');
+
+      let touchStart = Date.now();
+      selector.props.onStartShouldSetResponder({
+        nativeEvent: { timestamp: touchStart },
+      });
+      let shouldSetRes = selector.props.onMoveShouldSetResponder({
+        nativeEvent: { timestamp: touchStart },
+      });
+
+      expect(shouldSetRes).toBe(false); // Touch move happened too soon so we don't respond and let a parent element respond instead
+
+      shouldSetRes = selector.props.onMoveShouldSetResponder({
+        nativeEvent: { timestamp: touchStart + 500, touches: [] },
+      });
+
+      expect(shouldSetRes).toBe(false); // No touches so we shouldn't respond
+
+      shouldSetRes = selector.props.onMoveShouldSetResponder({
+        nativeEvent: { timestamp: touchStart + 500, touches: [{}] },
+      });
+
+      expect(shouldSetRes).toBe(true); // Touch exists and timestamp diff was >= 500 so respond
+
+      shouldSetRes = selector.props.onMoveShouldSetResponder({
+        nativeEvent: { timestamp: touchStart + 500, touches: [{}] },
+      });
+
+      expect(shouldSetRes).toBe(true); // No touches so we shouldn't respond
+
+      selector.props.onResponderGrant(); // Call grant on this responder since it returned true
+
+      expect(onBlockScrollChange).toHaveBeenLastCalledWith(true); // If responding we should block scrolling
+
+      selector.props.onResponderMove({
+        nativeEvent: { locationX: xDomain(addMinutes(new Date(0), 1)) },
+      });
+    });
+
+    await waitFor(async () => {
+      expect(await findAllByText('REM')).toHaveLength(2); // axis and tooltip
+    });
+    expect(
+      await findByText(format(addMinutes(new Date(0), 1), 'h:mm aa')), // tooltip header
+    ).toBeDefined();
+    expect(await findByText('Stage')).toBeDefined(); // tooltip subtitle
+  });
+
   it('should render multi day chart', async () => {
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(addDays(new Date(0), 7)),
+    };
     mockUseSleepChartData.mockReturnValue({
       isFetching: false,
       sleepData: [
@@ -207,14 +309,15 @@ describe('LineChart', () => {
           },
         },
       ],
-      xDomain: scaleTime().domain([new Date(0), addDays(new Date(0), 7)]),
-      dateRange: [new Date(0), addDays(new Date(0), 7)],
+      xDomain: scaleTime().domain([dateRange.start, dateRange.end]),
+      dateRange: [dateRange.start, dateRange.end],
     });
 
     const { findByText, findByLabelText } = render(
       <SleepChart
-        dateRange={{ start: new Date(0), end: addDays(new Date(0), 7) }}
+        dateRange={dateRange}
         title="Multi Day Test Title"
+        onBlockScrollChange={jest.fn()}
       />,
     );
 
@@ -241,7 +344,86 @@ describe('LineChart', () => {
     ).toBeDefined();
   });
 
+  it('should select data on multi-day chart', async () => {
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(addDays(new Date(0), 7)),
+    };
+    const xDomain = scaleTime().domain([dateRange.start, dateRange.end]);
+    mockUseSleepChartData.mockReturnValue({
+      isFetching: false,
+      sleepData: [
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addMinutes(new Date(0), 7 * 60).toISOString(),
+          valuePeriod: {
+            start: new Date(0).toISOString(),
+            end: addMinutes(new Date(0), 7 * 60).toISOString(),
+          },
+        },
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addMinutes(
+            addDays(new Date(0), 1),
+            15.5 * 60,
+          ).toISOString(),
+          valuePeriod: {
+            start: addDays(new Date(0), 1).toISOString(),
+            end: addMinutes(addDays(new Date(0), 1), 15.5 * 60).toISOString(),
+          },
+        },
+      ],
+      xDomain,
+      dateRange: [dateRange.start, dateRange.end],
+    });
+
+    const onBlockScrollChange = jest.fn();
+
+    const { findByText, getByTestId } = render(
+      <SleepChart
+        dateRange={dateRange}
+        title="Multi Day Test Title"
+        onBlockScrollChange={onBlockScrollChange}
+      />,
+    );
+
+    await act(async () => {
+      const selector = await getByTestId('sleep-chart-data-selector');
+
+      selector.props.onResponderMove({
+        nativeEvent: {
+          locationX: xDomain(
+            startOfDay(addMinutes(addDays(new Date(0), 1), 15.5 * 60)),
+          ),
+        },
+      });
+    });
+
+    await waitFor(async () => {
+      expect(
+        await findByText(
+          format(
+            startOfDay(addMinutes(addDays(new Date(0), 1), 15.5 * 60)),
+            'MMMM d',
+          ),
+        ),
+      ).toBeDefined();
+    });
+    expect(
+      await findByText('15h 30m'), // tooltip header
+    ).toBeDefined();
+    expect(await findByText('Sleep Duration')).toBeDefined(); // tooltip subtitle
+  });
+
   it('should render year chart', async () => {
+    const dateRange = {
+      start: startOfDay(startOfYear(new Date(0))),
+      end: startOfDay(endOfYear(new Date(0))),
+    };
     mockUseSleepChartData.mockReturnValue({
       isFetching: false,
       sleepData: [
@@ -269,20 +451,15 @@ describe('LineChart', () => {
           },
         },
       ],
-      xDomain: scaleTime().domain([
-        startOfYear(new Date(0)),
-        endOfYear(new Date(0)),
-      ]),
-      dateRange: [startOfYear(new Date(0)), endOfYear(new Date(0))],
+      xDomain: scaleTime().domain([dateRange.start, dateRange.end]),
+      dateRange: [dateRange.start, dateRange.end],
     });
 
     const { findByText, findByLabelText } = render(
       <SleepChart
-        dateRange={{
-          start: startOfYear(new Date(0)),
-          end: endOfYear(new Date(0)),
-        }}
+        dateRange={dateRange}
         title="Year Test Title"
+        onBlockScrollChange={jest.fn()}
       />,
     );
 
@@ -311,6 +488,91 @@ describe('LineChart', () => {
     ).toBeDefined();
   });
 
+  it('should select data on year chart', async () => {
+    const dateRange = {
+      start: startOfDay(startOfYear(new Date(0))),
+      end: startOfDay(endOfYear(new Date(0))),
+    };
+    const xDomain = scaleTime().domain([dateRange.start, dateRange.end]);
+    mockUseSleepChartData.mockReturnValue({
+      isFetching: false,
+      sleepData: [
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addMinutes(new Date(0), 18 * 60).toISOString(),
+          valuePeriod: {
+            start: new Date(0).toISOString(),
+            end: addMinutes(new Date(0), 18 * 60).toISOString(),
+          },
+        },
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addMinutes(
+            addMonths(new Date(0), 4),
+            9.5 * 60,
+          ).toISOString(),
+          valuePeriod: {
+            start: addMonths(new Date(0), 4).toISOString(),
+            end: addMinutes(addMonths(new Date(0), 4), 9.5 * 60).toISOString(),
+          },
+        },
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addMinutes(
+            addDays(addMonths(new Date(0), 4), 1),
+            8 * 60,
+          ).toISOString(),
+          valuePeriod: {
+            start: addDays(addMonths(new Date(0), 4), 1).toISOString(),
+            end: addMinutes(
+              addDays(addMonths(new Date(0), 4), 1),
+              8 * 60,
+            ).toISOString(),
+          },
+        },
+      ],
+      xDomain,
+      dateRange: [dateRange.start, dateRange.end],
+    });
+
+    const onBlockScrollChange = jest.fn();
+    const { findByText, getByTestId } = render(
+      <SleepChart
+        dateRange={dateRange}
+        title="Year Test Title"
+        onBlockScrollChange={onBlockScrollChange}
+      />,
+    );
+
+    await act(async () => {
+      const selector = await getByTestId('sleep-chart-data-selector');
+
+      selector.props.onResponderMove({
+        nativeEvent: {
+          locationX: xDomain(addDays(addMonths(new Date(0), 4), 20)),
+        },
+      });
+    });
+
+    await waitFor(async () => {
+      expect(
+        await findByText(
+          format(addDays(addMonths(new Date(0), 4), 20), 'MMMM'),
+        ),
+      ).toBeDefined();
+    });
+    expect(
+      await findByText('8h 45m'), // tooltip header
+    ).toBeDefined();
+    expect(await findByText('Avg Duration')).toBeDefined(); // tooltip subtitle
+  });
+
   it('calls share when the share button is pressed', async () => {
     mockUseSleepChartData.mockReturnValue({
       isFetching: false,
@@ -326,6 +588,7 @@ describe('LineChart', () => {
         dateRange={{ start: new Date(0), end: new Date(0) }}
         onShare={onShare}
         title="Test Title"
+        onBlockScrollChange={jest.fn()}
       />,
     );
 
