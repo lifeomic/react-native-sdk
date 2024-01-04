@@ -18,7 +18,7 @@ import { ComposeMessageParams } from '../screens/ComposeMessageScreen';
 
 export type LoggedInRootParamList = {
   app: NavigatorScreenParams<TabParamList> | undefined;
-  'screens/ConsentScreen': undefined;
+  'screens/ConsentScreen': { noNavOnAccept?: boolean };
   'Circle/Thread': { post: Post; createNewComment?: boolean };
   'screens/OnboardingCourseScreen': undefined;
 };

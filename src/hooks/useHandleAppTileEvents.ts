@@ -15,7 +15,7 @@ import {
   TRACKER_PILLAR_CODE,
   TRACKER_PILLAR_CODE_SYSTEM,
 } from '../components/TrackTile/services/TrackTileService';
-import { HomeStackParamList } from '../navigators/types';
+import { HomeStackParamList, LoggedInRootParamList } from '../navigators/types';
 import { CircleTile, useAppConfig } from './useAppConfig';
 import { openURL } from '../common/urls';
 
@@ -57,7 +57,14 @@ export type OpenUrlAppletMessage = {
   data: OpenUrlDataType;
 };
 
-export type AppTileMessage = DeepLinkAppletMessage | OpenUrlAppletMessage;
+export type OpenConsentAppletMessage = {
+  type: AppTileMessageType.openConsent;
+};
+
+export type AppTileMessage =
+  | DeepLinkAppletMessage
+  | OpenUrlAppletMessage
+  | OpenConsentAppletMessage;
 
 type BeforeRemoveListener = EventListenerCallback<
   EventMapCore<any>,
@@ -68,7 +75,10 @@ export const useHandleAppTileEvents = (webView: WebView | null = null) => {
   const { data } = useAppConfig();
   const { pillarTrackers } = useTrackers();
   const { todayTileSettings, tiles } = data?.homeTab || {};
-  const navigation = useNavigation<StackNavigationProp<HomeStackParamList>>();
+  const navigation =
+    useNavigation<
+      StackNavigationProp<HomeStackParamList & LoggedInRootParamList>
+    >();
   const [blockGoBack, setBlockGoBack] = useState(false);
 
   useEffect(() => {
@@ -163,6 +173,12 @@ export const useHandleAppTileEvents = (webView: WebView | null = null) => {
     await openURL(url);
   };
 
+  const handleOpenConsentMessage = async () => {
+    navigation.push('screens/ConsentScreen', {
+      noNavOnAccept: true,
+    });
+  };
+
   const handleAppTileMessage = (event: WebViewMessageEvent) => {
     const eventData = event.nativeEvent.data;
     if (!eventData) {
@@ -177,6 +193,9 @@ export const useHandleAppTileEvents = (webView: WebView | null = null) => {
           break;
         case AppTileMessageType.openUrl:
           handleOpenUrlMessage(appTileMessage);
+          break;
+        case AppTileMessageType.openConsent:
+          handleOpenConsentMessage();
           break;
 
         // no default
