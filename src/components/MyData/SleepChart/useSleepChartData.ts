@@ -5,6 +5,7 @@ import { differenceInDays, min, max, startOfDay, endOfDay } from 'date-fns';
 import { useCommonChartProps } from '../useCommonChartProps';
 import { Observation } from 'fhir/r3';
 import compact from 'lodash/compact';
+import groupBy from 'lodash/groupBy';
 
 type Props = {
   dateRange: [Date, Date];
@@ -39,10 +40,24 @@ export const useSleepChartData = (props: Props) => {
 
   useEffect(() => {
     if (!isFetching && isFetched) {
-      const newSleepData =
+      const sleepObservations =
         data?.entry
           ?.map((e) => e.resource)
           .filter((v): v is Observation => !!v) ?? [];
+
+      const groupedData = groupBy(sleepObservations, (d) =>
+        startOfDay(new Date(d.effectiveDateTime!)),
+      );
+
+      // Use only one observation per day, selecting the observation with the most
+      // components since it should have the most detail
+      const newSleepData = Object.values(groupedData).flatMap((entries) =>
+        entries
+          .sort(
+            (a, b) => (b.component?.length || 0) - (a.component?.length || 0),
+          )
+          .slice(0, 1),
+      );
 
       const { start, end } = newSleepData.reduce(
         (domain, observation) => ({

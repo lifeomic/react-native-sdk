@@ -56,7 +56,7 @@ describe('useSleepChartData', () => {
     expect(result.current.isFetching).toBe(false);
   });
 
-  it('should fetch the trace data', () => {
+  it('should fetch the sleep data', () => {
     const observation: fhir3.Observation = {
       resourceType: 'Observation',
       status: 'final',
@@ -104,6 +104,95 @@ describe('useSleepChartData', () => {
     expect(result.current.sleepData).toEqual([observation]);
     expect(result.current.xDomain.domain()[0]).toEqual(new Date(0));
     expect(result.current.xDomain.domain()[1]).toEqual(new Date(10));
+  });
+
+  it('should only use the datum with the most detail per day', () => {
+    const observation1: fhir3.Observation = {
+      resourceType: 'Observation',
+      status: 'final',
+      code: {},
+      effectiveDateTime: new Date(10).toISOString(),
+      valuePeriod: {
+        start: new Date(0).toISOString(),
+        end: new Date(10).toISOString(),
+      },
+    };
+    const observation2: fhir3.Observation = {
+      resourceType: 'Observation',
+      status: 'final',
+      code: {},
+      effectiveDateTime: new Date(10).toISOString(),
+      valuePeriod: {
+        start: new Date(0).toISOString(),
+        end: new Date(10).toISOString(),
+      },
+      component: [
+        // two data points, so this observation has the most detail
+        {
+          code: {},
+          valuePeriod: {
+            start: new Date(0).toISOString(),
+            end: new Date(5).toISOString(),
+          },
+        },
+        {
+          code: {},
+          valuePeriod: {
+            start: new Date(5).toISOString(),
+            end: new Date(10).toISOString(),
+          },
+        },
+      ],
+    };
+    const observation3: fhir3.Observation = {
+      resourceType: 'Observation',
+      status: 'final',
+      code: {},
+      effectiveDateTime: addDays(new Date(10), 1).toISOString(),
+      valuePeriod: {
+        start: addDays(new Date(0), 1).toISOString(),
+        end: addDays(new Date(10), 1).toISOString(),
+      },
+    };
+    useSearchResourcesQuery.mockReturnValue({
+      isFetching: false,
+      isFetched: true,
+      data: {
+        entry: [
+          {
+            resource: observation1,
+          },
+          {
+            resource: observation2,
+          },
+          {
+            resource: observation1,
+          },
+          {
+            resource: observation3, // No data but different day
+          },
+        ],
+      },
+    });
+
+    const { result } = renderHook(useSleepChartData, {
+      initialProps: {
+        dateRange: [new Date(0), new Date(0)],
+      },
+    });
+
+    expect(useSearchResourcesQuery).toHaveBeenNthCalledWith(1, {
+      resourceType: 'Observation',
+      coding: [{ code: '258158006', system: 'http://snomed.info/sct' }],
+      dateRange: [startOfDay(new Date(0)), endOfDay(new Date(0))],
+      pageSize: 50,
+    });
+
+    expect(result.current.sleepData).toEqual([observation2, observation3]);
+    expect(result.current.xDomain.domain()[0]).toEqual(new Date(0));
+    expect(result.current.xDomain.domain()[1]).toEqual(
+      addDays(new Date(10), 1),
+    );
   });
 
   it('should fetch the data with a pageSize based on the dateRange', () => {
