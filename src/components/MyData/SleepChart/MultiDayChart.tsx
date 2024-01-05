@@ -50,6 +50,22 @@ export const MultiDayChart = (props: Props) => {
       groupFn(new Date(d.effectiveDateTime!)),
     );
 
+    const getDurationInMinutes = (obs: fhir3.Observation) => {
+      if (
+        obs.valueQuantity?.code === 'min' &&
+        obs.valueQuantity?.system === 'http://unitsofmeasure.org'
+      ) {
+        return obs.valueQuantity.value ?? 0;
+      } else if (obs.valuePeriod?.end && obs.valuePeriod?.start) {
+        return differenceInMinutes(
+          new Date(obs.valuePeriod.end),
+          new Date(obs.valuePeriod.start),
+        );
+      }
+
+      return 0;
+    };
+
     return {
       isYear: isYearChart,
       ticks: ticksFromRange,
@@ -58,15 +74,7 @@ export const MultiDayChart = (props: Props) => {
         .map(([date, d]) => {
           const duration =
             d.reduce(
-              (total, observation) =>
-                total +
-                (!observation.valuePeriod?.end ||
-                !observation.valuePeriod?.start
-                  ? 0
-                  : differenceInMinutes(
-                      new Date(observation.valuePeriod.end),
-                      new Date(observation.valuePeriod.start),
-                    )),
+              (total, observation) => total + getDurationInMinutes(observation),
               0,
             ) / (isYearChart ? d.length : 1);
 
