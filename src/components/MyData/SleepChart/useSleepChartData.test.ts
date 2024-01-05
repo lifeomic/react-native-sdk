@@ -112,9 +112,8 @@ describe('useSleepChartData', () => {
       status: 'final',
       code: {},
       effectiveDateTime: new Date(10).toISOString(),
-      valuePeriod: {
-        start: new Date(0).toISOString(),
-        end: new Date(10).toISOString(),
+      valueQuantity: {
+        value: 0,
       },
     };
     const observation2: fhir3.Observation = {
@@ -122,9 +121,8 @@ describe('useSleepChartData', () => {
       status: 'final',
       code: {},
       effectiveDateTime: new Date(10).toISOString(),
-      valuePeriod: {
-        start: new Date(0).toISOString(),
-        end: new Date(10).toISOString(),
+      valueQuantity: {
+        value: 0,
       },
       component: [
         // two data points, so this observation has the most detail
@@ -149,10 +147,18 @@ describe('useSleepChartData', () => {
       status: 'final',
       code: {},
       effectiveDateTime: addDays(new Date(10), 1).toISOString(),
-      valuePeriod: {
-        start: addDays(new Date(0), 1).toISOString(),
-        end: addDays(new Date(10), 1).toISOString(),
+      valueQuantity: {
+        value: 0,
       },
+      component: [
+        {
+          code: {},
+          valuePeriod: {
+            start: addDays(new Date(0), 1).toISOString(),
+            end: addDays(new Date(10), 1).toISOString(),
+          },
+        },
+      ],
     };
     useSearchResourcesQuery.mockReturnValue({
       isFetching: false,
@@ -223,10 +229,18 @@ describe('useSleepChartData', () => {
       id: 'first',
       code: {},
       effectiveDateTime: new Date(10).toISOString(),
-      valuePeriod: {
-        start: new Date(0).toISOString(),
-        end: new Date(10).toISOString(),
+      valueQuantity: {
+        value: 0,
       },
+      component: [
+        {
+          code: {},
+          valuePeriod: {
+            start: new Date(0).toISOString(),
+            end: new Date(10).toISOString(),
+          },
+        },
+      ],
     };
     const observation2: fhir3.Observation = {
       ...observation1,

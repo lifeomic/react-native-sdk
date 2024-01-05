@@ -303,10 +303,25 @@ describe('SleepChart', () => {
             addDays(new Date(0), 1),
             9.5 * 60,
           ).toISOString(),
-          valuePeriod: {
-            start: addDays(new Date(0), 1).toISOString(),
-            end: addMinutes(addDays(new Date(0), 1), 9.5 * 60).toISOString(),
+          valueQuantity: {
+            value: 9.5 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
           },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: addDays(new Date(0), 1).toISOString(),
+                end: addMinutes(
+                  addDays(new Date(0), 1),
+                  9.5 * 60,
+                ).toISOString(),
+              },
+            },
+          ],
         },
       ],
       xDomain: scaleTime().domain([dateRange.start, dateRange.end]),
@@ -358,10 +373,22 @@ describe('SleepChart', () => {
           code: {},
           status: 'final',
           effectiveDateTime: addMinutes(new Date(0), 7 * 60).toISOString(),
-          valuePeriod: {
-            start: new Date(0).toISOString(),
-            end: addMinutes(new Date(0), 7 * 60).toISOString(),
+          valueQuantity: {
+            value: 7 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
           },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: new Date(0).toISOString(),
+                end: addMinutes(new Date(0), 7 * 60).toISOString(),
+              },
+            },
+          ],
         },
         {
           resourceType: 'Observation',
@@ -371,10 +398,25 @@ describe('SleepChart', () => {
             addDays(new Date(0), 1),
             15.5 * 60,
           ).toISOString(),
-          valuePeriod: {
-            start: addDays(new Date(0), 1).toISOString(),
-            end: addMinutes(addDays(new Date(0), 1), 15.5 * 60).toISOString(),
+          valueQuantity: {
+            value: 15.5 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
           },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: addDays(new Date(0), 1).toISOString(),
+                end: addMinutes(
+                  addDays(new Date(0), 1),
+                  15.5 * 60,
+                ).toISOString(),
+              },
+            },
+          ],
         },
       ],
       xDomain,
@@ -432,10 +474,22 @@ describe('SleepChart', () => {
           code: {},
           status: 'final',
           effectiveDateTime: addMinutes(new Date(0), 18 * 60).toISOString(),
-          valuePeriod: {
-            start: new Date(0).toISOString(),
-            end: addMinutes(new Date(0), 18 * 60).toISOString(),
+          valueQuantity: {
+            value: 18 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
           },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: new Date(0).toISOString(),
+                end: addMinutes(new Date(0), 18 * 60).toISOString(),
+              },
+            },
+          ],
         },
         {
           resourceType: 'Observation',
@@ -445,10 +499,25 @@ describe('SleepChart', () => {
             addMonths(new Date(0), 1),
             9.5 * 60,
           ).toISOString(),
-          valuePeriod: {
-            start: addMonths(new Date(0), 1).toISOString(),
-            end: addMinutes(addMonths(new Date(0), 1), 9.5 * 60).toISOString(),
+          valueQuantity: {
+            value: 9.5 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
           },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: addMonths(new Date(0), 1).toISOString(),
+                end: addMinutes(
+                  addMonths(new Date(0), 1),
+                  9.5 * 60,
+                ).toISOString(),
+              },
+            },
+          ],
         },
       ],
       xDomain: scaleTime().domain([dateRange.start, dateRange.end]),
@@ -502,10 +571,22 @@ describe('SleepChart', () => {
           code: {},
           status: 'final',
           effectiveDateTime: addMinutes(new Date(0), 18 * 60).toISOString(),
-          valuePeriod: {
-            start: new Date(0).toISOString(),
-            end: addMinutes(new Date(0), 18 * 60).toISOString(),
+          valueQuantity: {
+            value: 18 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
           },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: new Date(0).toISOString(),
+                end: addMinutes(new Date(0), 18 * 60).toISOString(),
+              },
+            },
+          ],
         },
         {
           resourceType: 'Observation',
@@ -515,10 +596,25 @@ describe('SleepChart', () => {
             addMonths(new Date(0), 4),
             9.5 * 60,
           ).toISOString(),
-          valuePeriod: {
-            start: addMonths(new Date(0), 4).toISOString(),
-            end: addMinutes(addMonths(new Date(0), 4), 9.5 * 60).toISOString(),
+          valueQuantity: {
+            value: 9.5 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
           },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: addMonths(new Date(0), 4).toISOString(),
+                end: addMinutes(
+                  addMonths(new Date(0), 4),
+                  9.5 * 60,
+                ).toISOString(),
+              },
+            },
+          ],
         },
         {
           resourceType: 'Observation',
@@ -528,13 +624,25 @@ describe('SleepChart', () => {
             addDays(addMonths(new Date(0), 4), 1),
             8 * 60,
           ).toISOString(),
-          valuePeriod: {
-            start: addDays(addMonths(new Date(0), 4), 1).toISOString(),
-            end: addMinutes(
-              addDays(addMonths(new Date(0), 4), 1),
-              8 * 60,
-            ).toISOString(),
+          valueQuantity: {
+            value: 8 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
           },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: addDays(addMonths(new Date(0), 4), 1).toISOString(),
+                end: addMinutes(
+                  addDays(addMonths(new Date(0), 4), 1),
+                  8 * 60,
+                ).toISOString(),
+              },
+            },
+          ],
         },
       ],
       xDomain,
