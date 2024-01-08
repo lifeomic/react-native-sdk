@@ -35,10 +35,16 @@ export type RestAPIEndpoints = FhirAPIEndpoints & {
   };
 
   'GET /v1/features': {
-    Request: {
-      project?: string;
-      tag?: string;
-    };
+    Request:
+      | {
+          project: string;
+          tag?: string;
+        }
+      | {
+          project: 'Mobile';
+          tag?: string;
+          currentVersion: string;
+        };
     Response: {
       [feature: string]: boolean;
     };
