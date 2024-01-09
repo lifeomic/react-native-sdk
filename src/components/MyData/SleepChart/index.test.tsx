@@ -185,6 +185,102 @@ describe('SleepChart', () => {
     ).toBeDefined();
   });
 
+  it('should render daily summary', async () => {
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(new Date(0)),
+    };
+    mockUseSleepChartData.mockReturnValue({
+      isFetching: false,
+      sleepData: [
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: new Date(0).toISOString(),
+                end: addMinutes(new Date(0), 1).toISOString(),
+              },
+            },
+            {
+              code: {
+                coding: [Awake],
+              },
+              valuePeriod: {
+                start: addMinutes(new Date(0), 1).toISOString(),
+                end: addMinutes(new Date(0), 3).toISOString(),
+              },
+            },
+            {
+              code: {
+                coding: [Light],
+              },
+              valuePeriod: {
+                start: addMinutes(new Date(0), 3).toISOString(),
+                end: addMinutes(new Date(0), 6).toISOString(),
+              },
+            },
+            {
+              code: {
+                coding: [Deep],
+              },
+              valuePeriod: {
+                start: addMinutes(new Date(0), 6).toISOString(),
+                end: addHours(new Date(0), 3).toISOString(),
+              },
+            },
+            // malformed components - not rendered:
+            {
+              code: {
+                coding: [],
+              },
+              valuePeriod: {
+                start: new Date(0).toISOString(),
+              },
+            },
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                end: addMinutes(new Date(0), 5).toISOString(),
+              },
+            },
+          ],
+        },
+      ],
+      xDomain: scaleTime().domain([new Date(0), addHours(new Date(0), 3)]),
+      dateRange: [dateRange.start, dateRange.end],
+    });
+
+    const { findByText } = render(
+      <SleepChart
+        dateRange={dateRange}
+        title="Single Day Test Title"
+        onBlockScrollChange={jest.fn()}
+      />,
+    );
+
+    fireEvent.press(await findByText('Summary'));
+
+    expect(await findByText('Single Day Test Title')).toBeDefined();
+    expect(await findByText('0h 1m')).toBeDefined();
+    expect(await findByText('Awake')).toBeDefined();
+    expect(await findByText('0h 2m')).toBeDefined();
+    expect(await findByText('REM')).toBeDefined();
+    expect(await findByText('0h 3m')).toBeDefined();
+    expect(await findByText('Light')).toBeDefined();
+    expect(await findByText('2h 54m')).toBeDefined();
+    expect(await findByText('Deep')).toBeDefined();
+    expect(await findByText('3h 0m')).toBeDefined();
+    expect(await findByText('Total Sleep')).toBeDefined();
+  });
+
   it('should select data on daily chart', async () => {
     const dateRange = {
       start: startOfDay(new Date(0)),
@@ -357,6 +453,160 @@ describe('SleepChart', () => {
         )}`,
       ),
     ).toBeDefined();
+  });
+
+  it('should render multi day summary', async () => {
+    const dateRange = {
+      start: startOfDay(new Date(0)),
+      end: startOfDay(addDays(new Date(0), 7)),
+    };
+    mockUseSleepChartData.mockReturnValue({
+      isFetching: false,
+      sleepData: [
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addMinutes(new Date(0), 7 * 60).toISOString(),
+          valuePeriod: {
+            start: new Date(0).toISOString(),
+            end: addMinutes(new Date(0), 7 * 60).toISOString(),
+          },
+        },
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addHours(
+            addDays(new Date(0), 1),
+            9.5,
+          ).toISOString(),
+          valueQuantity: {
+            value: 9.5 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
+          },
+          component: [
+            {
+              code: {
+                coding: [Light],
+              },
+              valuePeriod: {
+                start: addDays(new Date(0), 1).toISOString(),
+                end: addMinutes(addDays(new Date(0), 1), 30).toISOString(),
+              },
+            },
+          ],
+        },
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addHours(
+            addDays(new Date(0), 2),
+            9.5,
+          ).toISOString(),
+          valueQuantity: {
+            value: 9.5 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
+          },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: addDays(new Date(0), 2).toISOString(),
+                end: addMinutes(
+                  addDays(new Date(0), 2),
+                  9.5 * 60,
+                ).toISOString(),
+              },
+            },
+          ],
+        },
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addHours(
+            addDays(new Date(0), 3),
+            9.5,
+          ).toISOString(),
+          valueQuantity: {
+            value: 9.5 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
+          },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: addDays(new Date(0), 3).toISOString(),
+                end: addMinutes(
+                  addDays(new Date(0), 3),
+                  9.5 * 60,
+                ).toISOString(),
+              },
+            },
+          ],
+        },
+        {
+          resourceType: 'Observation',
+          code: {},
+          status: 'final',
+          effectiveDateTime: addHours(
+            addDays(new Date(0), 4),
+            9.5,
+          ).toISOString(),
+          valueQuantity: {
+            value: 9.5 * 60,
+            code: 'min',
+            system: 'http://unitsofmeasure.org',
+          },
+          component: [
+            {
+              code: {
+                coding: [REM],
+              },
+              valuePeriod: {
+                start: addDays(new Date(0), 4).toISOString(),
+                end: addMinutes(
+                  addDays(new Date(0), 4),
+                  9.5 * 60,
+                ).toISOString(),
+              },
+            },
+          ],
+        },
+      ],
+      xDomain: scaleTime().domain([dateRange.start, dateRange.end]),
+      dateRange: [dateRange.start, dateRange.end],
+    });
+
+    const { findByText, debug } = render(
+      <SleepChart
+        dateRange={dateRange}
+        title="Multi Day Test Title"
+        onBlockScrollChange={jest.fn()}
+      />,
+    );
+
+    fireEvent.press(await findByText('Summary'));
+
+    expect(await findByText('Multi Day Test Title')).toBeDefined();
+    expect(await findByText('Awake')).toBeDefined();
+    debug();
+    expect(await findByText('1d 4h 30m')).toBeDefined();
+    expect(await findByText('REM')).toBeDefined();
+    expect(await findByText('0h 30m')).toBeDefined();
+    expect(await findByText('Light')).toBeDefined();
+    expect(await findByText('Deep')).toBeDefined();
+    expect(await findByText('1d 5h 0m')).toBeDefined();
+    expect(await findByText('Total Sleep')).toBeDefined();
   });
 
   it('should select data on multi-day chart', async () => {

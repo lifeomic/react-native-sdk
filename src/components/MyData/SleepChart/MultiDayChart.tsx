@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { VictoryChart, VictoryAxis, VictoryBar } from 'victory-native';
 import { VictoryLabelProps } from 'victory-core';
+import { BarProps } from 'victory-bar';
 import {
   eachDayOfInterval,
   format,
@@ -12,7 +13,7 @@ import {
   isValid,
 } from 'date-fns';
 import groupBy from 'lodash/groupBy';
-import { G, Circle, Text, SvgProps } from 'react-native-svg';
+import { G, Circle, Text, SvgProps, Rect } from 'react-native-svg';
 import { useCommonChartProps } from '../useCommonChartProps';
 import type { SleepChartData } from './useSleepChartData';
 import { useVictoryTheme } from '../useVictoryTheme';
@@ -23,6 +24,9 @@ import { useStyles } from '../../../hooks';
 import { createStyles } from '../../BrandConfigProvider';
 import { View } from 'react-native';
 import { ActivityIndicatorView } from '../../ActivityIndicatorView';
+import { scaleLinear } from 'd3-scale';
+import { useSleepDisplay } from './useSleepDisplay';
+import { ObservationComponent } from 'fhir/r3';
 
 type Props = SleepChartData & {
   domainPadding?: number;
@@ -85,6 +89,7 @@ export const MultiDayChart = (props: Props) => {
             minutes: Math.round(duration % 60),
             isAverage: isYearChart,
             period: format(new Date(date), isYearChart ? 'MMMM' : 'MMMM d'),
+            components: d.flatMap((datum) => datum.component),
           };
         }),
     };
@@ -174,6 +179,7 @@ export const MultiDayChart = (props: Props) => {
             cornerRadius={barWidth / 2}
             labels={(label) => label}
             labelComponent={<A11yBarLabel />}
+            dataComponent={<SleepBar />}
             style={{
               ...theme.bar?.style,
               data: {
@@ -206,6 +212,61 @@ export const MultiDayChart = (props: Props) => {
         prepareTooltipData={prepareTooltipData}
       />
     </View>
+  );
+};
+
+const SleepBar = (props: BarProps) => {
+  const toDisplay = useSleepDisplay();
+  const stages = {
+    deep: 0,
+    light: 0,
+    rem: 0,
+    awake: 0,
+    default: 0,
+  };
+  let total = 0;
+
+  props.datum.components.forEach((component: ObservationComponent) => {
+    if (!component?.valuePeriod?.start || !component?.valuePeriod?.end) {
+      return;
+    }
+
+    const cStart = Number(new Date(component.valuePeriod.start));
+    const cEnd = Number(new Date(component.valuePeriod.end));
+    const diff = cEnd - cStart;
+
+    const display = toDisplay(component.code);
+
+    stages[display.codeType] += diff;
+    total += diff;
+  });
+
+  const scale = scaleLinear()
+    .range([0, (props.y0 ?? 0) - (props.y ?? 0)])
+    .domain([0, total]);
+
+  let y = props.y ?? 0;
+
+  return (
+    <>
+      {(['awake', 'rem', 'light', 'deep'] as const).map((codeType) => {
+        const rY = y;
+        const y0 = scale(stages[codeType]);
+        y += y0;
+
+        return (
+          <Rect
+            key={codeType}
+            {...(props as any)}
+            x={(props.x ?? 0) - ((props.barWidth as number) ?? 0) / 2}
+            y={rY}
+            width={props.barWidth}
+            height={y0}
+            fill={toDisplay(codeType).color}
+          />
+        );
+      })}
+    </>
   );
 };
 
