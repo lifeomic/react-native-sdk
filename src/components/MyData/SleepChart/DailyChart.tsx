@@ -22,12 +22,12 @@ import {
 import { useCommonChartProps } from '../useCommonChartProps';
 import uniqBy from 'lodash/unionBy';
 import type { SleepChartData } from './useSleepChartData';
+import { useSleepDisplay, valToName } from './useSleepDisplay';
 import { DataSelector, SleepDataToolTipPreparer } from './DataSelector';
 import ViewShot from 'react-native-view-shot';
 import { t } from 'i18next';
 import { useVictoryTheme } from '../useVictoryTheme';
 import { useStyles } from '../../../hooks';
-import { CodeableConcept } from 'fhir/r3';
 import orderBy from 'lodash/orderBy';
 import { Falsey } from 'lodash';
 import { scaleLinear } from 'd3-scale';
@@ -44,6 +44,7 @@ export const DailyChart = (props: Props) => {
   const common = useCommonChartProps();
   const { sleepAnalysisTheme: theme } = useVictoryTheme();
   const { styles } = useStyles(defaultStyles);
+  const toDisplay = useSleepDisplay(styles.stageColors);
 
   const yDomain = useMemo(
     () =>
@@ -66,7 +67,9 @@ export const DailyChart = (props: Props) => {
                 return undefined;
               }
 
-              const sleepType = codeToNum(d.code);
+              const display = toDisplay(d.code);
+
+              const sleepType = display.num;
               const start = startOfMinute(new Date(d.valuePeriod.start));
               const end = endOfMinute(new Date(d.valuePeriod.end));
 
@@ -77,11 +80,8 @@ export const DailyChart = (props: Props) => {
                 y: yDomain(4 - sleepType) + common.padding.top,
                 height: yDomain(sleepType),
                 sleepType,
-                fill: codeToValue({
-                  default: 'transparent',
-                  ...styles.stageColors,
-                })(d.code),
-                sleepTypeName: valToName(sleepType),
+                fill: display.color,
+                sleepTypeName: display.name,
                 startTime: start.toLocaleTimeString(),
                 durationInMinutes: Math.abs(differenceInMinutes(start, end)),
               };
@@ -90,7 +90,7 @@ export const DailyChart = (props: Props) => {
         'sleepType',
         'asc',
       ),
-    [sleepData, styles, common, xDomain, yDomain],
+    [sleepData, common, xDomain, yDomain, toDisplay],
   );
 
   const ticks = useMemo(() => {
@@ -187,59 +187,6 @@ function compact<T>(arr: T[]): Exclude<T, Falsey>[] {
   return arr.filter((v) => !!v) as Exclude<T, Falsey>[];
 }
 
-type CodeMap<T> = Partial<Record<'light' | 'awake' | 'deep' | 'rem', T>> &
-  Record<'default', T>;
-
-function codeToValue<T>(map: CodeMap<T>) {
-  return (coding: CodeableConcept) => {
-    for (const code of coding.coding ?? []) {
-      if (
-        code.system === 'http://loinc.org' &&
-        code.code === '93830-8' &&
-        map.light
-      ) {
-        return map.light;
-      } else if (
-        code.system === 'http://loinc.org' &&
-        code.code === '93831-6' &&
-        map.deep
-      ) {
-        return map.deep;
-      } else if (
-        code.system === 'http://loinc.org' &&
-        code.code === '93829-0' &&
-        map.rem
-      ) {
-        return map.rem;
-      } else if (
-        code.system === 'http://loinc.org' &&
-        code.code === '93828-2' &&
-        map.awake
-      ) {
-        return map.awake;
-      }
-    }
-
-    return map.default;
-  };
-}
-
-const codeToNum = codeToValue({
-  deep: 1,
-  light: 2,
-  rem: 3,
-  awake: 4,
-  default: 0,
-});
-
-const valToName = (value: number) =>
-  ({
-    4: t('sleep-analysis-type-awake', 'Awake'),
-    3: t('sleep-analysis-type-rem', 'REM'),
-    2: t('sleep-analysis-type-light', 'Light'),
-    1: t('sleep-analysis-type-deep', 'Deep'),
-  }[value] ?? '');
-
 type TickProps = {
   text?: string;
   index?: number;
@@ -291,6 +238,9 @@ const defaultStyles = createStyles('SleepAnalysisSingleDay', (theme) => ({
     fill: theme.colors.primary,
     r: 10,
   } as CircleProps,
+  /**
+   * @deprecated Use SleepAnalysisDisplay to control the stage colors
+   */
   stageColors: {
     awake: 'hotpink',
     deep: 'dodgerblue',

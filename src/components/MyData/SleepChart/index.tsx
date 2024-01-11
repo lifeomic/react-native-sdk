@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useRef } from 'react';
 import { startOfDay, differenceInDays } from 'date-fns';
 import ViewShot from 'react-native-view-shot';
+import { t } from 'i18next';
 import { useVictoryTheme } from '../useVictoryTheme';
 import { Title } from '../common/Title';
 import { View, Dimensions } from 'react-native';
@@ -11,6 +12,8 @@ import { defaultChartStyles } from '../styles';
 import { useSleepChartData } from './useSleepChartData';
 import { DailyChart } from './DailyChart';
 import { MultiDayChart } from './MultiDayChart';
+import { SegmentedButtons } from 'react-native-paper';
+import { SleepSummary } from './SleepSummary';
 
 type Props = {
   title: string;
@@ -31,6 +34,7 @@ const SleepChart = (props: Props) => {
   const { title, dateRange: incomingDateRange, onShare } = props;
   const { onBlockScrollChange } = props;
   const viewShotRef = useRef<ViewShot>(null);
+  const [isTimelineView, setIsTimelineView] = React.useState(true);
   const dateRange = useMemo<[Date, Date]>(
     () => [
       startOfDay(incomingDateRange.start),
@@ -68,16 +72,39 @@ const SleepChart = (props: Props) => {
       <Title {...props} onShare={handleExport} />
 
       <View style={styles.chartWrapper}>
-        <ChartType
-          viewShotRef={viewShotRef}
-          onBlockScrollChange={onBlockScrollChange}
-          {...chartData}
-          // Hide data when switching, multi-day data does not render well on daily
-          sleepData={isSwitchingChartType ? [] : chartData.sleepData}
-          // Use incoming date range when switching, multi-day chart shows single day when switching from daily
-          dateRange={isSwitchingChartType ? dateRange : chartData.dateRange}
-        />
+        {isTimelineView ? (
+          <ChartType
+            viewShotRef={viewShotRef}
+            onBlockScrollChange={onBlockScrollChange}
+            {...chartData}
+            // Hide data when switching, multi-day data does not render well on daily
+            sleepData={isSwitchingChartType ? [] : chartData.sleepData}
+            // Use incoming date range when switching, multi-day chart shows single day when switching from daily
+            dateRange={isSwitchingChartType ? dateRange : chartData.dateRange}
+          />
+        ) : (
+          <ViewShot ref={viewShotRef} options={{ format: 'png' }}>
+            <SleepSummary {...chartData} />
+          </ViewShot>
+        )}
       </View>
+
+      <SegmentedButtons
+        onValueChange={(value) => setIsTimelineView(value === 'true')}
+        value={`${isTimelineView}`}
+        density="high"
+        style={styles.chartToggleView}
+        buttons={[
+          {
+            value: 'true',
+            label: t('sleep-analysis-toggle-details', 'Details'),
+          },
+          {
+            value: 'false',
+            label: t('sleep-analysis-toggle-summary', 'Summary'),
+          },
+        ]}
+      />
     </View>
   );
 };
@@ -107,8 +134,10 @@ const SleepChartWrapper = (props: Props & { padding?: number }) => {
 
 export { SleepChartWrapper as SleepChart };
 
-const defaultStyles = createStyles('LineChart', () => ({
-  container: {},
+const defaultStyles = createStyles('SleepChart', () => ({
+  container: {
+    width: '100%',
+  },
   chartWrapper: {
     position: 'relative',
   },
@@ -118,6 +147,9 @@ const defaultStyles = createStyles('LineChart', () => ({
     right: 0,
     top: 0,
     bottom: 0,
+  },
+  chartToggleView: {
+    margin: 16,
   },
 }));
 
