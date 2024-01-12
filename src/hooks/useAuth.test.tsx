@@ -333,6 +333,7 @@ test('refreshForAuthFailure refreshes auth token if not already loading', async 
   jest.useFakeTimers();
   act(() => {
     result.current.refreshForAuthFailure(new Error() as AxiosError);
+    result.current.refreshForAuthFailure(new Error() as AxiosError);
   });
   expect(refreshHandler).toHaveBeenCalledTimes(1);
   expect(result.current.loading).toBe(true);
