@@ -20,7 +20,7 @@ import { t } from 'i18next';
 import { tID } from '../../common/testID';
 import uuid from 'react-native-uuid';
 import { NativeEventEmitter } from 'react-native';
-import { _sdkAnalyticsEvent } from '../../common';
+import { _sdkAnalyticsEvent } from '../../common/Analytics';
 
 const eventEmitter = new NativeEventEmitter({
   addListener: () => {},

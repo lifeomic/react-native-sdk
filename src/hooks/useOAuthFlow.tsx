@@ -14,7 +14,7 @@ import {
 import { AuthResult, useAuth } from './useAuth';
 import { usePendingInvite } from '../components/Invitations/InviteProvider';
 import { useQueryClient } from '@tanstack/react-query';
-import { _sdkAnalyticsEvent } from '../common';
+import { _sdkAnalyticsEvent } from '../common/Analytics';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
