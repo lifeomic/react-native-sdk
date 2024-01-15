@@ -1,13 +1,11 @@
 import React from 'react';
 import { camelCase, upperFirst } from 'lodash';
 import { SvgProps } from 'react-native-svg/lib/typescript/ReactNativeSVG';
-import {
-  AppTileStack,
-  HomeStack,
-  MessageTileStack,
-  NotificationsStack,
-  SettingsStack,
-} from '../navigators';
+import { AppTileStack } from '../navigators/ConfigurableTabStacks/AppTileStack';
+import { HomeStack } from '../navigators/HomeStack';
+import { MessageTileStack } from '../navigators/ConfigurableTabStacks/MessageTileStack';
+import { NotificationsStack } from '../navigators/NotificationsStack';
+import { SettingsStack } from '../navigators/SettingsStack';
 import { AppConfig, useAppConfig } from './useAppConfig';
 import { useDeveloperConfig } from './useDeveloperConfig';
 import { useIcons } from '../components/BrandConfigProvider';

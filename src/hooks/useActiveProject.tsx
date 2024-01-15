@@ -4,7 +4,7 @@ import { Project, useSubjectProjects } from './useSubjectProjects';
 import { useAsyncStorage } from './useAsyncStorage';
 import { useUser } from './useUser';
 import { combineQueries } from '@lifeomic/one-query';
-import { ActivityIndicatorView } from '../components';
+import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { t } from 'i18next';
 import { InviteRequiredScreen } from '../screens/InviteRequiredScreen';
 import { useRestQuery } from './rest-api';

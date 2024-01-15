@@ -1,7 +1,7 @@
 import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 import { useHttpClient } from './useHttpClient';
 import { useActiveAccount } from './useActiveAccount';
-import { useActiveProject } from '.';
+import { useActiveProject } from './useActiveProject';
 import queryString from 'query-string';
 
 export function useExchangeToken<Selected = { code: string }>(

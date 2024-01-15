@@ -3,7 +3,9 @@ import { ActivityIndicator, View } from 'react-native';
 import useTimeout from 'react-use/lib/useTimeout';
 import { tID } from '../common/testID';
 import { createStyles } from '../components/BrandConfigProvider';
-import { useDeveloperConfig, useStyles, useTheme } from '../hooks';
+import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
+import { useStyles } from '../hooks/useStyles';
+import { useTheme } from '../hooks/useTheme';
 import { Text } from 'react-native-paper';
 
 interface Props {

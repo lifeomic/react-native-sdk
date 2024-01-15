@@ -12,8 +12,9 @@ import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { useAuth } from '../hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NotLoggedInRootParamList } from '../navigators';
-import { LoginScreen } from '../screens';
-import { ActivityIndicatorView, InviteProvider } from '../components';
+import { LoginScreen } from '../screens/LoginScreen';
+import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
+import { InviteProvider } from '../components/Invitations/InviteProvider';
 import { t } from 'i18next';
 
 export type LoggedInProvidersProps = {
