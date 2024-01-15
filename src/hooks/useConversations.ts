@@ -7,6 +7,8 @@ import {
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from './useGraphQLClient';
 import cloneDeep from 'lodash/cloneDeep';
+import { useProfilesForTile } from './useMessagingProfiles';
+import { useUser } from './useUser';
 
 const conversationsQueryDocument = gql`
   query Conversations($after: String, $first: Int) {
@@ -77,12 +79,25 @@ export type PageInfoData = {
   };
 };
 
-export function useHasUnread() {
+export function useHasUnread(tileId: string) {
+  const { data: userData } = useUser();
   const { data } = useInfiniteConversations();
-  return data?.pages
-    .flat()
-    .flatMap((pageData) => pageData.conversations.edges)
-    .some(({ node }) => node.hasUnread === true);
+  const { data: profiles } = useProfilesForTile(tileId);
+
+  return (
+    data?.pages
+      ?.flatMap((page) =>
+        page.conversations.edges
+          .flatMap((edge) => edge.node)
+          // Conversations that contain users not part of this message tile should be hidden
+          .filter((node) =>
+            node.userIds.every(
+              (id) => id === userData?.id || profiles?.find((p) => p.id === id),
+            ),
+          ),
+      )
+      ?.some((node) => node.hasUnread === true) ?? false
+  );
 }
 
 export function useInfiniteConversations() {
