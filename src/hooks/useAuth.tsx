@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { RefreshResult } from 'react-native-app-auth';
@@ -70,6 +71,7 @@ export const AuthContextProvider = ({
     RefreshHandler | undefined
   >();
   const { currentAppState } = useCurrentAppState();
+  const refreshLock = useRef<Promise<void>>();
 
   const storeAuthResult = useCallback(async (result: AuthResult) => {
     await secureStorage.setObject(result);
@@ -87,23 +89,37 @@ export const AuthContextProvider = ({
 
   const refreshAuthResult = useCallback(
     async (_refreshHandler: RefreshHandler, _authResult: AuthResult) => {
-      if (__DEV__ && process.env.NODE_ENV !== 'test') {
-        console.warn('Attempting access token refresh');
-      }
-      try {
-        setLoading(true);
-        const refreshResult = await _refreshHandler(_authResult);
-        await storeAuthResult({
-          ...refreshResult,
-
-          // Careful not to lose `refreshToken`, which may not be in `refreshResult`
-          refreshToken: refreshResult.refreshToken || _authResult.refreshToken,
-        });
-      } catch (error) {
-        if (process.env.NODE_ENV !== 'test') {
-          console.warn('Error occurred refreshing access token', error);
+      const refreshSession = async () => {
+        if (__DEV__ && process.env.NODE_ENV !== 'test') {
+          console.log('Attempting access token refresh');
         }
-        clearAuthResult();
+        try {
+          setLoading(true);
+          const refreshResult = await _refreshHandler(_authResult);
+          await storeAuthResult({
+            ...refreshResult,
+
+            // Careful not to lose `refreshToken`, which may not be in `refreshResult`
+            refreshToken:
+              refreshResult.refreshToken || _authResult.refreshToken,
+          });
+        } catch (error) {
+          if (process.env.NODE_ENV !== 'test') {
+            console.warn('Error occurred refreshing access token', error);
+          }
+          clearAuthResult();
+        }
+      };
+
+      if (refreshLock.current) {
+        return refreshLock.current;
+      }
+
+      try {
+        refreshLock.current = refreshSession();
+        await refreshLock.current;
+      } finally {
+        refreshLock.current = undefined;
       }
     },
     [storeAuthResult, clearAuthResult],
