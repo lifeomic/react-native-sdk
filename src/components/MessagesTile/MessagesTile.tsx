@@ -12,7 +12,7 @@ interface Props extends Pick<HomeStackScreenProps<'Home'>, 'navigation'> {
 }
 
 export function MessagesTile({ navigation, title, id, Icon }: Props) {
-  const hasUnread = useHasUnread();
+  const hasUnread = useHasUnread(id);
 
   return (
     <Tile
