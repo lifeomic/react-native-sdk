@@ -65,7 +65,8 @@ export type HomeStackParamList = {
   };
   'Home/AdvancedTrackerEditor': {
     tracker: Tracker;
-    trackerValue: TrackerValue;
+    // Date is not serializable, force this to be a string and deserialize the value in the screen component
+    trackerValue: Omit<TrackerValue, 'createdDate'> & { createdDate: string };
     valuesContext: TrackerValuesContext;
   };
   'Home/MyData': undefined;

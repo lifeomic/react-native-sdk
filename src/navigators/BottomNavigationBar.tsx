@@ -56,7 +56,7 @@ export const BottomNavigationBar = ({
             ? options.tabBarLabel
             : options.title !== undefined
             ? options.title
-            : route.title;
+            : route.name;
 
         return label;
       }}

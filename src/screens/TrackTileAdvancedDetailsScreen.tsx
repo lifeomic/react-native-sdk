@@ -20,7 +20,10 @@ export const AdvancedTrackerDetailsScreen = ({
       onEditValue={(trackerValue) =>
         navigation.push('Home/AdvancedTrackerEditor', {
           tracker,
-          trackerValue,
+          trackerValue: {
+            ...trackerValue,
+            createdDate: trackerValue.createdDate.toISOString(),
+          },
           valuesContext,
         })
       }

@@ -119,7 +119,10 @@ export const RadialProgress: FC<Props> = (props) => {
   return (
     <View
       style={[
-        { position: 'relative' },
+        {
+          borderRadius: size,
+        },
+        styles.container,
         shadow(styles.circle?.shadow) as ViewStyle,
       ]}
     >
@@ -175,6 +178,10 @@ export const RadialProgress: FC<Props> = (props) => {
 };
 
 const defaultStyles = createStyles('TrackerRadialProgress', (theme) => ({
+  container: {
+    position: 'relative',
+    backgroundColor: 'white',
+  },
   disabledBorder: {
     opacity: 0.3,
   },
