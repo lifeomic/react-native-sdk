@@ -122,8 +122,7 @@ export function MessageScreen<ParamList extends ParamListBase>({
           <View
             style={{
               flexDirection: 'row',
-              flex: 1,
-              maxWidth: 60,
+              width: 60,
             }}
           >
             {

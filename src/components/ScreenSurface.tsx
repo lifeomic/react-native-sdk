@@ -35,6 +35,7 @@ export function ScreenSurface({
 const defaultStyles = createStyles('ScreenSurface', (theme) => ({
   surfaceView: {
     flex: 1,
+    height: '100%',
     backgroundColor: theme.colors.elevation.level1,
   },
   scrollView: {},

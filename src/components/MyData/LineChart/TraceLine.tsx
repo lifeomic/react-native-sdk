@@ -32,7 +32,7 @@ export const TraceLine = (props: Props) => {
   const yDomain = [domainMin, domainMax] as [number, number];
 
   const trend = useMemo(() => {
-    if (showTrend) {
+    if (showTrend && data.length > 1) {
       const xAvg = sumBy(data, 'x') / data.length;
       const yAvg = sumBy(data, 'y') / data.length;
       const sumOfProducts = sumBy(data, (d) => (d.x - xAvg) * (d.y - yAvg));

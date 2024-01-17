@@ -3,7 +3,6 @@ import { t } from '../../lib/i18n';
 import { AdvancedTrackerEditor } from '../components/TrackTile/TrackerDetails/AdvancedTrackerEditor/AdvancedTrackerEditor';
 import { HomeStackScreenProps } from '../navigators/types';
 import { HeaderButton } from '../components/HeaderButton';
-import { useNavigation } from '@react-navigation/native';
 import { notifySaveEditTrackerValue } from '../components/TrackTile/services/EmitterService';
 
 export const AdvancedTrackerEditorScreen = ({
@@ -17,7 +16,7 @@ export const AdvancedTrackerEditorScreen = ({
       title: t('Edit {{name}}', {
         name: tracker?.name,
       }),
-      headerRight: SaveEditorButton,
+      headerRight: SaveEditorButton(navigation),
     });
   });
 
@@ -25,14 +24,18 @@ export const AdvancedTrackerEditorScreen = ({
     <AdvancedTrackerEditor
       tracker={tracker}
       valuesContext={valuesContext}
-      trackerValue={trackerValue}
+      trackerValue={{
+        ...trackerValue,
+        createdDate: new Date(trackerValue.createdDate),
+      }}
     />
   );
 };
 
-export const SaveEditorButton = () => {
-  const navigation = useNavigation();
-  return (
+type NavigationProp =
+  HomeStackScreenProps<'Home/AdvancedTrackerEditor'>['navigation'];
+export const SaveEditorButton = (navigation: NavigationProp) => () =>
+  (
     <HeaderButton
       title={t('track-tile.save', 'Save')}
       onPress={async () => {
@@ -41,6 +44,5 @@ export const SaveEditorButton = () => {
       }}
     />
   );
-};
 
 export default AdvancedTrackerEditorScreen;

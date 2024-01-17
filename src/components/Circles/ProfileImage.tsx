@@ -3,7 +3,7 @@ import { ViewStyle } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { initials } from './initials';
 import type { Post } from '../../hooks/Circles/types';
-import { IconSource } from 'react-native-paper/lib/typescript/src/components/Icon';
+import { AvatarIconProps } from 'react-native-paper';
 import { createStyles } from '../BrandConfigProvider';
 import { useStyles } from '../BrandConfigProvider/styles/StylesProvider';
 import { tID } from '../TrackTile/common/testID';
@@ -11,7 +11,7 @@ import { tID } from '../TrackTile/common/testID';
 type Props = {
   post: Post;
   size: number;
-  fallbackIcon: IconSource;
+  fallbackIcon: AvatarIconProps['icon'];
   style?: ViewStyle;
 };
 

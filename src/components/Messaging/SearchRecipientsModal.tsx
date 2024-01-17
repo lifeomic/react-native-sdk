@@ -111,7 +111,6 @@ export const SearchRecipientsModal = ({
         mode="contained"
         style={styles.doneButton}
         labelStyle={styles.doneButtonLabel}
-        compact={true}
         onPress={() => hideSelf()}
       >
         {t('next-button', 'Done')}
@@ -125,8 +124,6 @@ const defaultStyles = createStyles('SearchRecipientsModal', (theme) => {
     rootView: {
       backgroundColor: theme.colors.elevation.level1,
       height: Platform.select({ android: '90%', default: '100%' }),
-      width: '90%',
-      marginHorizontal: '5%',
     },
     scrollView: { minHeight: '80%' },
     listItem: {
@@ -152,7 +149,6 @@ const defaultStyles = createStyles('SearchRecipientsModal', (theme) => {
       marginVertical: 16,
       marginRight: 16,
       height: 35,
-      width: 55,
       alignSelf: 'center',
     },
     doneButtonLabel: {

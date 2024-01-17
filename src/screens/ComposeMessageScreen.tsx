@@ -126,7 +126,11 @@ export function ComposeMessageScreen<ParamList extends ParamListBase>({
   return (
     <Provider>
       <Portal>
-        <Modal visible={isOpen} onDismiss={() => setIsOpen(false)}>
+        <Modal
+          visible={isOpen}
+          contentContainerStyle={styles.searchRecipientsModalContainer}
+          onDismiss={() => setIsOpen(false)}
+        >
           <SearchRecipientsModal
             userIds={searchUserIds}
             onProfileSelected={addSelectedProfile}
@@ -312,6 +316,12 @@ const defaultStyles = createStyles('ComposeMessageScreen', (theme) => ({
   },
   plusIcon: {
     color: theme.colors.secondary,
+  },
+  searchRecipientsModalContainer: {
+    backgroundColor: theme.colors.elevation.level1,
+    height: Platform.select({ android: '90%', default: '100%' }),
+    width: '90%',
+    marginHorizontal: '5%',
   },
 }));
 
