@@ -5,6 +5,7 @@ import { SvgProps } from 'react-native-svg';
 import { TextStyle, ViewStyle } from 'react-native';
 import { useRestQuery } from './rest-api';
 import { appConfigNotifier } from '../common/AppConfigNotifier';
+import ms from 'ms';
 
 export interface AppTile {
   id: string;
@@ -124,8 +125,8 @@ export const useAppConfig = () => {
     'GET /v1/life-research/projects/:projectId/app-config',
     { projectId: activeProject.id },
     {
-      // Don't refetch this query, unless it is manually refetched.
-      staleTime: Infinity,
+      // Longer stale time to avoid refetching every time someone changes pages.
+      staleTime: ms('10m'),
     },
   );
 
