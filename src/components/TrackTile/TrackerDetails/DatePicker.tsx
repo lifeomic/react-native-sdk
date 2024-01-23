@@ -66,56 +66,49 @@ export const DatePicker: FC<DatePickerProps> = (props) => {
   );
 
   return (
-    <>
-      <View
-        style={[
-          styles.buttonContainer,
-          { justifyContent: 'space-between', backgroundColor: color },
-        ]}
-      >
-        <IconButton
-          style={styles.iconButton}
-          icon={TriangleBack}
-          accessibilityLabel={backAccessibilityLabel}
-          onPress={() => {
-            onChange(backValue);
-          }}
-        />
-        <IconButton
-          style={styles.iconButton}
-          icon={
-            iconDisabledCondition ? TriangleForwardDisabled : TriangleForward
-          }
-          disabled={iconDisabledCondition}
-          accessibilityLabel={forwardAccessibilityLabel}
-          onPress={() => onChange(forwardValue)}
-        />
-      </View>
+    <View style={[styles.buttonContainer, { backgroundColor: color }]}>
+      <IconButton
+        style={styles.iconButton}
+        icon={TriangleBack}
+        accessibilityLabel={backAccessibilityLabel}
+        onPress={() => {
+          onChange(backValue);
+        }}
+      />
       <View style={styles.textContainer}>
         <Text style={styles.text} variant="titleMedium">
           {dateText}
         </Text>
       </View>
-    </>
+      <IconButton
+        style={styles.iconButton}
+        icon={iconDisabledCondition ? TriangleForwardDisabled : TriangleForward}
+        disabled={iconDisabledCondition}
+        accessibilityLabel={forwardAccessibilityLabel}
+        onPress={() => onChange(forwardValue)}
+      />
+    </View>
   );
 };
 
 const defaultStyles = createStyles('TrackTile.DatePicker', (theme) => ({
   buttonContainer: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     marginVertical: theme.spacing.medium,
     alignItems: 'center',
     borderRadius: 8,
-    width: '90%',
+    height: 48,
+    elevation: 1,
+    shadowOpacity: 0.15,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 1 },
+    shadowRadius: 3,
   },
   textContainer: {
-    position: 'absolute',
-    marginVertical: theme.spacing.medium - 4,
     width: '70%',
-    borderRadius: 8,
-    height: 48,
+    marginVertical: theme.spacing.medium - 4,
+    height: '100%',
     justifyContent: 'center',
     backgroundColor: theme.colors.background,
   },

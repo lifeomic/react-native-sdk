@@ -9,12 +9,13 @@ import groupBy from 'lodash/groupBy';
 
 type Props = {
   dateRange: [Date, Date];
+  enabled?: boolean;
 };
 
 export type SleepChartData = ReturnType<typeof useSleepChartData>;
 
 export const useSleepChartData = (props: Props) => {
-  const { dateRange } = props;
+  const { dateRange, enabled } = props;
   const { useSearchResourcesQuery } = useFhirClient();
   const common = useCommonChartProps();
   const [chartData, setChartData] = useState<{
@@ -36,6 +37,7 @@ export const useSleepChartData = (props: Props) => {
     ],
     dateRange: [startOfDay(dateRange[0]), endOfDay(dateRange[1])],
     pageSize: Math.max(50, days),
+    enabled,
   });
 
   useEffect(() => {

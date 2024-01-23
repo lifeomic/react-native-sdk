@@ -3,28 +3,34 @@ import React from 'react';
 import { Surface } from 'react-native-paper';
 import { createStyles } from './BrandConfigProvider';
 import { useStyles } from '../hooks/useStyles';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, ScrollViewProps } from 'react-native';
 
 type Props = {
   children?: React.ReactNode;
   styles?: ScreenSurfaceStyles;
   scrollEnabled?: boolean;
+  scrollViewProps?: Omit<ScrollViewProps, 'scrollEnabled'>;
+  Header?: React.ReactNode;
 } & React.ComponentProps<typeof Surface>;
 
 export function ScreenSurface({
   children,
   styles: instanceStyles,
   scrollEnabled,
+  scrollViewProps,
+  Header,
   ...props
 }: Props) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
 
   return (
     <Surface style={styles.surfaceView} {...props}>
+      {Header}
       <ScrollView
         overScrollMode="always"
         showsVerticalScrollIndicator={false}
         scrollEnabled={scrollEnabled}
+        {...scrollViewProps}
       >
         <View style={styles.container}>{children}</View>
       </ScrollView>
