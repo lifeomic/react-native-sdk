@@ -1,7 +1,11 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import { authorize, refresh, revoke } from 'react-native-app-auth';
-import { OAuthContextProvider, useOAuthFlow } from './useOAuthFlow';
+import {
+  ModifyAuthConfig,
+  OAuthContextProvider,
+  useOAuthFlow,
+} from './useOAuthFlow';
 import { AuthResult, useAuth } from './useAuth';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
@@ -42,11 +46,16 @@ const authResult: AuthResult = {
   refreshToken: 'refreshToken',
 };
 
-const renderHookInContext = async () => {
+const renderHookInContext = async ({
+  modifyAuthConfig,
+}: { modifyAuthConfig?: ModifyAuthConfig } = {}) => {
   return renderHook(() => useOAuthFlow(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={new QueryClient()}>
-        <OAuthContextProvider authConfig={authConfig}>
+        <OAuthContextProvider
+          authConfig={authConfig}
+          modifyAuthConfig={modifyAuthConfig}
+        >
           {children}
         </OAuthContextProvider>
       </QueryClientProvider>
@@ -65,6 +74,23 @@ beforeEach(() => {
 
   authorizeMock.mockResolvedValue(authResult);
 });
+
+const modifyAuthConfig: ModifyAuthConfig = (
+  action,
+  config,
+  previousAuthResult,
+) => {
+  return {
+    ...config,
+    customHeaders: {
+      action,
+      authResult: previousAuthResult
+        ? previousAuthResult
+        : 'no-previous-auth-result',
+      ...config.customHeaders,
+    },
+  };
+};
 
 test('without provider, methods fail', async () => {
   const { result } = renderHook(() => useOAuthFlow());
@@ -124,6 +150,32 @@ describe('login', () => {
     expect(clearAuthResultMock).toHaveBeenCalled();
     expect(onFail).toHaveBeenCalledWith(error);
   });
+
+  test('allows for customizing auth config used for login', async () => {
+    useAuthMock.mockReturnValueOnce({
+      isLoggedIn: false,
+      authResult: undefined,
+      storeAuthResult: storeAuthResultMock,
+      clearAuthResult: clearAuthResultMock,
+      initialize: useAuthInitialize,
+    });
+
+    const { result } = await renderHookInContext({ modifyAuthConfig });
+    expect(useAuthInitialize).toHaveBeenCalled();
+
+    await act(async () => {
+      await result.current.login({});
+    });
+
+    expect(authorize).toHaveBeenCalledWith({
+      ...authConfig,
+      customHeaders: {
+        // values set by provided modifyAuthConfig
+        authResult: 'no-previous-auth-result',
+        action: 'authorize',
+      },
+    });
+  });
 });
 
 describe('logout', () => {
@@ -139,6 +191,20 @@ describe('logout', () => {
     expect(revoke).toHaveBeenCalled();
     expect(clearAuthResultMock).toHaveBeenCalled();
     expect(onSuccess).toHaveBeenCalledWith();
+  });
+
+  test('allows for customizing auth config used for logout', async () => {
+    const { result } = await renderHookInContext({ modifyAuthConfig });
+    expect(useAuthInitialize).toHaveBeenCalled();
+
+    await act(async () => {
+      await result.current.logout({});
+    });
+
+    expect(revoke).toHaveBeenCalledWith(
+      { ...authConfig, customHeaders: { action: 'revoke', authResult } },
+      { sendClientId: true, tokenToRevoke: authResult.refreshToken },
+    );
   });
 
   test('upon error, still clears storage and reports error', async () => {
@@ -176,6 +242,23 @@ describe('logout', () => {
     expect(clearAuthResultMock).toHaveBeenCalled();
     expect(onSuccess).toHaveBeenCalledWith();
   });
+
+  test('allows for customizing auth config used for refresh handler', async () => {
+    await renderHookInContext({ modifyAuthConfig });
+    expect(useAuthInitialize).toHaveBeenCalled();
+
+    const refreshHandler = useAuthInitialize.mock.calls[0][0];
+    await act(async () => {
+      await refreshHandler({ refreshToken: 'refresh-token' });
+    });
+
+    expect(refreshMock).toHaveBeenCalledWith(
+      { ...authConfig, customHeaders: { action: 'refreshToken', authResult } },
+      {
+        refreshToken: 'refresh-token',
+      },
+    );
+  });
 });
 
 describe('refreshHandler', () => {
@@ -201,5 +284,22 @@ describe('refreshHandler', () => {
     await act(async () => {
       await expect(refreshHandler).rejects.toThrow();
     });
+  });
+
+  test('allows for customizing auth config used for refresh handler', async () => {
+    await renderHookInContext({ modifyAuthConfig });
+    expect(useAuthInitialize).toHaveBeenCalled();
+
+    const refreshHandler = useAuthInitialize.mock.calls[0][0];
+    await act(async () => {
+      await refreshHandler({ refreshToken: 'refresh-token' });
+    });
+
+    expect(refreshMock).toHaveBeenCalledWith(
+      { ...authConfig, customHeaders: { action: 'refreshToken', authResult } },
+      {
+        refreshToken: 'refresh-token',
+      },
+    );
   });
 });

@@ -32,6 +32,35 @@ export interface LogoutParams {
   onFail?: (error?: any) => void;
 }
 
+/**
+ * Callback function to modify the authentication configuration during OAuth
+ * flows.
+ *
+ * While typically not needed, this function is invoked when the application
+ * performs oauth actions like authorize on login or revoke on logout etc.,
+ * providing an opportunity to dynamically change the authentication
+ * configuration used for those actions.
+ *
+ * @example
+ * <RootProviders
+ *   authConfig={authConfig}
+ *   modifyAuthConfig={(action, config, previousAuthResult) => {
+ *     if (action === 'refreshToken') {
+ *       return {
+ *         ...config,
+ *         // make auth config change
+ *       }
+ *     }
+ *     return config
+ *   }}
+ * />
+ */
+export type ModifyAuthConfig = (
+  action: 'authorize' | 'refreshToken' | 'revoke',
+  currentAuthConfig: AuthConfiguration,
+  previousAuthorizeResult?: AuthResult,
+) => AuthConfiguration;
+
 const OAuthContext = createContext<OAuthConfig>({
   login: (_) => Promise.reject(),
   logout: () => Promise.reject(),
@@ -39,9 +68,11 @@ const OAuthContext = createContext<OAuthConfig>({
 
 export const OAuthContextProvider = ({
   authConfig,
+  modifyAuthConfig = () => authConfig,
   children,
 }: {
   authConfig: AuthConfiguration;
+  modifyAuthConfig?: ModifyAuthConfig;
   children?: React.ReactNode;
 }) => {
   const {
@@ -99,7 +130,7 @@ export const OAuthContextProvider = ({
       }
 
       try {
-        await revoke(authConfig, {
+        await revoke(modifyAuthConfig('revoke', authConfig, authResult), {
           tokenToRevoke: authResult.refreshToken,
           sendClientId: true,
         });
@@ -113,9 +144,10 @@ export const OAuthContextProvider = ({
     [
       queryClient,
       isLoggedIn,
-      authResult?.refreshToken,
+      authResult,
       clearAuthResult,
       authConfig,
+      modifyAuthConfig,
     ],
   );
 
@@ -124,7 +156,9 @@ export const OAuthContextProvider = ({
       const { onSuccess, onFail } = params;
 
       try {
-        const result = await authorize(authConfig);
+        const result = await authorize(
+          modifyAuthConfig('authorize', authConfig, authResult),
+        );
         await storeAuthResult(result);
         _sdkAnalyticsEvent.track('Login', { usedInvite: !!pendingInvite?.evc });
         onSuccess?.(result);
@@ -133,7 +167,14 @@ export const OAuthContextProvider = ({
         onFail?.(error);
       }
     },
-    [authConfig, clearAuthResult, pendingInvite?.evc, storeAuthResult],
+    [
+      authConfig,
+      clearAuthResult,
+      pendingInvite?.evc,
+      storeAuthResult,
+      modifyAuthConfig,
+      authResult,
+    ],
   );
 
   const refreshHandler = useCallback(
@@ -143,11 +184,15 @@ export const OAuthContextProvider = ({
           'No refreshToken! The app can NOT function properly without a refreshToken. Expect to be logged out immediately.',
         );
       }
-      return await refresh(authConfig, {
-        refreshToken: storedResult.refreshToken,
-      });
+
+      return await refresh(
+        modifyAuthConfig('refreshToken', authConfig, authResult),
+        {
+          refreshToken: storedResult.refreshToken,
+        },
+      );
     },
-    [authConfig],
+    [authConfig, modifyAuthConfig, authResult],
   );
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AuthConfiguration } from 'react-native-app-auth';
 import { AuthContextProvider } from '../hooks/useAuth';
 import { HttpClientContextProvider } from '../hooks/useHttpClient';
-import { OAuthContextProvider } from '../hooks/useOAuthFlow';
+import { ModifyAuthConfig, OAuthContextProvider } from '../hooks/useOAuthFlow';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { BrandConfigProvider } from '../components/BrandConfigProvider';
@@ -21,12 +21,14 @@ const queryClient = new QueryClient();
 export type RootProvidersProps = {
   account: string;
   authConfig: AuthConfiguration;
+  modifyAuthConfig?: ModifyAuthConfig;
   children?: React.ReactNode;
 };
 
 export function RootProviders({
   account,
   authConfig,
+  modifyAuthConfig,
   children,
 }: RootProvidersProps) {
   const { apiBaseURL, theme, brand } = useDeveloperConfig();
@@ -37,7 +39,10 @@ export function RootProviders({
         <AuthContextProvider>
           <HttpClientContextProvider baseURL={apiBaseURL}>
             <GraphQLClientContextProvider baseURL={apiBaseURL}>
-              <OAuthContextProvider authConfig={authConfig}>
+              <OAuthContextProvider
+                authConfig={authConfig}
+                modifyAuthConfig={modifyAuthConfig}
+              >
                 <BrandConfigProvider theme={theme} {...brand}>
                   <NoInternetToastProvider>
                     <ActionSheetProvider>
