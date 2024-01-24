@@ -39,16 +39,20 @@ export const TraceLine = (props: Props) => {
       const sumOfSquares = sumBy(data, (d) => Math.pow(d.x - xAvg, 2));
       const m = sumOfProducts / sumOfSquares;
       const b = yAvg - m * xAvg;
-      return [
-        {
-          x: xDomain[0],
-          y: m * xDomain[0] + b,
-        },
-        {
-          x: xDomain[1],
-          y: m * xDomain[1] + b,
-        },
-      ];
+
+      return (
+        !isNaN(m) &&
+        !isNaN(b) && [
+          {
+            x: xDomain[0],
+            y: m * xDomain[0] + b,
+          },
+          {
+            x: xDomain[1],
+            y: m * xDomain[1] + b,
+          },
+        ]
+      );
     }
 
     return false;

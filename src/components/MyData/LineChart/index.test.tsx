@@ -136,6 +136,7 @@ describe('LineChart', () => {
       <LineChart
         dateRange={{ start: mockDate, end: mockDate }}
         title="Test Title"
+        enabled
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',
@@ -167,6 +168,7 @@ describe('LineChart', () => {
       <LineChart
         dateRange={{ start: mockDate, end: mockDate }}
         title="Test Title"
+        enabled
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',
@@ -205,6 +207,7 @@ describe('LineChart', () => {
       <LineChart
         dateRange={{ start: mockDate, end: addDays(mockDate, 2) }}
         title="Test Title"
+        enabled
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',
@@ -285,6 +288,7 @@ describe('LineChart', () => {
         dateRange={{ start, end }}
         onShare={onShare}
         title="Test Title"
+        enabled
         trace1={{
           type: 'Observation',
           label: 'Trace1Label',

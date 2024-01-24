@@ -30,11 +30,13 @@ import { PointData, useChartData } from './useChartData';
 import { AxisArrows } from './AxisArrows';
 import { defaultChartStyles } from '../styles';
 import { Legend } from './Legend';
+import { ActivityIndicatorView } from '../../ActivityIndicatorView';
 
 type Props = {
   title: string;
   trace1: Trace;
   trace2?: Trace;
+  enabled?: boolean;
   dateRange: {
     start: Date;
     end: Date;
@@ -52,6 +54,7 @@ const LineChart = (props: Props) => {
     title,
     trace1,
     trace2,
+    enabled,
     dateRange: incomingDateRange,
     onShare,
   } = props;
@@ -67,10 +70,11 @@ const LineChart = (props: Props) => {
   );
   const common = useCommonChartProps();
   const { styles } = useStyles(defaultStyles);
-  const { trace1Data, trace2Data } = useChartData({
+  const { trace1Data, trace2Data, isFetching } = useChartData({
     trace1,
     trace2,
     dateRange,
+    enabled,
   });
 
   useEffect(() => {
@@ -144,15 +148,21 @@ const LineChart = (props: Props) => {
           </VictoryChart>
         </ViewShot>
 
+        <View style={styles.loadingContainer}>
+          <ActivityIndicatorView animating={isFetching} />
+        </View>
+
         <View style={styles.dataSelectorContainer}>
-          <DataSelector
-            xDomain={domain}
-            dateRange={dateRange}
-            trace1={trace1Data}
-            trace2={trace2Data}
-            selection={selection}
-            onChange={setSelection}
-          />
+          {enabled && (
+            <DataSelector
+              xDomain={domain}
+              dateRange={dateRange}
+              trace1={trace1Data}
+              trace2={trace2Data}
+              selection={selection}
+              onChange={setSelection}
+            />
+          )}
         </View>
       </View>
     </View>
@@ -207,6 +217,13 @@ const defaultStyles = createStyles('LineChart', () => ({
     right: 0,
     top: 0,
     bottom: 0,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
 }));
 

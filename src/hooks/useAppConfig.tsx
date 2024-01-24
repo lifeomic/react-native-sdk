@@ -66,7 +66,7 @@ type SleepChart = {
   title: string;
 };
 
-type Chart = LineChart | SleepChart;
+export type Chart = LineChart | SleepChart;
 
 export interface AppConfig {
   homeTab?: {

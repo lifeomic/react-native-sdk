@@ -21,6 +21,7 @@ type Props = {
     start: Date;
     end: Date;
   };
+  enabled?: boolean;
   onShare?: (config: {
     selectedPoints: [];
     title: string;
@@ -32,7 +33,7 @@ type Props = {
 
 const SleepChart = (props: Props) => {
   const { title, dateRange: incomingDateRange, onShare } = props;
-  const { onBlockScrollChange } = props;
+  const { enabled, onBlockScrollChange } = props;
   const viewShotRef = useRef<ViewShot>(null);
   const [isTimelineView, setIsTimelineView] = React.useState(true);
   const dateRange = useMemo<[Date, Date]>(
@@ -43,7 +44,7 @@ const SleepChart = (props: Props) => {
     [incomingDateRange.start, incomingDateRange.end],
   );
   const { styles } = useStyles(defaultStyles);
-  const chartData = useSleepChartData({ dateRange });
+  const chartData = useSleepChartData({ dateRange, enabled });
 
   const handleExport = useCallback(async () => {
     const dataUri = await viewShotRef.current?.capture?.();

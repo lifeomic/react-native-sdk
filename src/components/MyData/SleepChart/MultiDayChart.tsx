@@ -138,11 +138,11 @@ export const MultiDayChart = (props: Props) => {
 
       return {
         color: styles.data?.color ?? '',
-        header: closestPoint.period,
+        header: closestPoint?.period,
         title: t(
           'sleep-analysis-sleep-amount',
           '{{hours}}h {{minutes}}m',
-          closestPoint,
+          closestPoint ?? {},
         ),
         subtitle: isYear
           ? t('sleep-analysis-average-duration', 'Avg Duration')

@@ -7,10 +7,11 @@ type Props = {
   trace1: Trace;
   trace2?: Trace;
   dateRange: [Date, Date];
+  enabled?: boolean;
 };
 
 export const useChartData = (props: Props) => {
-  const { trace1, trace2, dateRange } = props;
+  const { trace1, trace2, dateRange, enabled } = props;
   const { useSearchResourcesQuery } = useFhirClient();
 
   const days = Math.abs(differenceInDays(...dateRange));
@@ -20,13 +21,14 @@ export const useChartData = (props: Props) => {
     coding: trace1.coding,
     dateRange,
     pageSize: Math.max(200, days),
+    enabled,
   });
 
   const trace2Res = useSearchResourcesQuery({
     resourceType: trace2?.type ?? 'Observation',
     coding: trace2?.coding ?? [],
     dateRange,
-    enabled: !!trace2,
+    enabled: !!trace2 && enabled,
     pageSize: Math.max(200, days),
   });
 
@@ -36,6 +38,7 @@ export const useChartData = (props: Props) => {
   return {
     trace1Data,
     trace2Data,
+    isFetching: trace1Res.isFetching || trace2Res.isFetching,
   };
 };
 
