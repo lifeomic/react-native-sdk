@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { SDKEventEmitter } from '../../common/SDKEventEmitter';
 import { PendingInvite } from './InviteProvider';
 
 export type InviteParams = PendingInvite;
@@ -10,7 +10,7 @@ export type EventTypeHandlers = {
 export type EventTypes = keyof EventTypeHandlers;
 export type EventTypeHandler<T extends EventTypes> = EventTypeHandlers[T];
 export class InviteNotifier {
-  private emitter = new EventEmitter();
+  private emitter = new SDKEventEmitter();
   private lastInviteDetectedParams: InviteParams | undefined;
 
   public addListener<T extends EventTypes>(
@@ -22,6 +22,7 @@ export class InviteNotifier {
         this.lastInviteDetectedParams,
       );
     }
+
     return this.emitter.addListener(eventType, listener);
   }
 
@@ -29,7 +30,7 @@ export class InviteNotifier {
     eventType: EventTypes,
     listener: EventTypeHandler<T>,
   ) {
-    return this.emitter.removeListener(eventType, listener);
+    this.emitter.removeListener(eventType, listener);
   }
 
   public emit<T extends EventTypes>(

@@ -1,4 +1,5 @@
-import { EventEmitter } from 'events';
+import { SDKEventEmitter } from '../../../common/SDKEventEmitter';
+
 import {
   Tracker,
   TrackerValue,
@@ -26,26 +27,28 @@ export type EventTypeHandlers = {
 export type EventTypes = keyof EventTypeHandlers;
 export type EventTypeHandler<T extends EventTypes> = EventTypeHandlers[T];
 
-export class TrackTileEmitter extends EventEmitter {
+export class TrackTileEmitter {
+  private emitter = new SDKEventEmitter();
+
   public addListener<T extends EventTypes>(
     eventType: T,
     listener: EventTypeHandler<T>,
   ) {
-    return super.addListener(eventType, listener);
+    return this.emitter.addListener(eventType, listener);
   }
 
   public removeListener<T extends EventTypes>(
     eventType: EventTypes,
     listener: EventTypeHandler<T>,
   ) {
-    return super.removeListener(eventType, listener);
+    return this.emitter.removeListener(eventType, listener);
   }
 
   public emit<T extends EventTypes>(
     eventType: T,
     ...params: Parameters<EventTypeHandler<T>>
   ) {
-    return super.emit(eventType, ...params);
+    return this.emitter.emit(eventType, ...params);
   }
 }
 

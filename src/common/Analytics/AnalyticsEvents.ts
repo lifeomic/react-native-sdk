@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { SDKEventEmitter } from '../SDKEventEmitter';
 
 export type AnalyticsEventTypeHandlers = {
   track: (eventName: string, event: unknown) => void;
@@ -14,7 +14,7 @@ export type AnalyticsEventTypes = keyof AnalyticsEventTypeHandlers;
 export type AnalyticsEventTypeHandler<T extends AnalyticsEventTypes> =
   AnalyticsEventTypeHandlers[T];
 
-const emitter = new EventEmitter();
+const emitter = new SDKEventEmitter();
 
 export type Tracker<CustomEventMap extends Record<string, unknown>> = {
   track<Key extends keyof CustomEventMap>(

@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { SDKEventEmitter } from './SDKEventEmitter';
 
 export type RefreshParams = {
   context?: 'HomeScreen';
@@ -7,7 +7,7 @@ export type RefreshParams = {
 export const refreshEventType = 'refreshRequested';
 export type RefreshHandler = (refreshParams: RefreshParams) => void;
 export class RefreshNotifier {
-  private emitter = new EventEmitter();
+  private emitter = new SDKEventEmitter();
 
   public addListener(listener: RefreshHandler) {
     return this.emitter.addListener(refreshEventType, listener);

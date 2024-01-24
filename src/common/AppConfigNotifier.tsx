@@ -1,10 +1,10 @@
-import { EventEmitter } from 'events';
 import { AppConfig } from '../hooks';
+import { SDKEventEmitter } from './SDKEventEmitter';
 
 export const appConfigChangeEventType = 'appConfigChanged';
 export type AppConfigChangeHandler = (config: AppConfig | undefined) => void;
 export class AppConfigNotifier {
-  private emitter = new EventEmitter();
+  private emitter = new SDKEventEmitter();
 
   public addListener(listener: AppConfigChangeHandler) {
     return this.emitter.addListener(appConfigChangeEventType, listener);
