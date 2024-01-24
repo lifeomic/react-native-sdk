@@ -54,11 +54,9 @@ export const useRecentCodedValues = (metricId: string) => {
       });
     };
 
-    notifier.addListener('valuesChanged', handler);
+    const { unsubscribe } = notifier.addListener('valuesChanged', handler);
 
-    return () => {
-      notifier.removeListener('valuesChanged', handler);
-    };
+    return unsubscribe;
   }, [metricId]);
 
   return recentCodedValues;

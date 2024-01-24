@@ -33,11 +33,9 @@ export function BrandConfigProvider({ theme, styles, icons, children }: Props) {
       }
     };
 
-    appConfigNotifier.addListener(listener);
+    const { unsubscribe } = appConfigNotifier.addListener(listener);
 
-    return () => {
-      appConfigNotifier.removeListener(listener);
-    };
+    return unsubscribe;
   }, []);
 
   return (

@@ -104,12 +104,18 @@ export const useTrackers = (trackersToUse?: Trackers) => {
       }
     };
     if (!trackersToUse) {
-      notifier.addListener('trackerChanged', onChange);
-      notifier.addListener('trackerRemoved', onRemoved);
+      const trackerChangedSubscription = notifier.addListener(
+        'trackerChanged',
+        onChange,
+      );
+      const trackerRemovedSubscription = notifier.addListener(
+        'trackerRemoved',
+        onRemoved,
+      );
 
       return () => {
-        notifier.removeListener('trackerChanged', onChange);
-        notifier.removeListener('trackerRemoved', onRemoved);
+        trackerChangedSubscription.unsubscribe();
+        trackerRemovedSubscription.unsubscribe();
       };
     }
   }, [trackersToUse]);

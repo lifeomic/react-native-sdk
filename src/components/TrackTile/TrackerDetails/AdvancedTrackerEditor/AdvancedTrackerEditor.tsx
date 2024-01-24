@@ -108,11 +108,12 @@ export const AdvancedTrackerEditor = (props: AdvancedTrackerEditorProps) => {
       }
     };
 
-    notifier.addListener('saveEditTrackerValue', handler);
+    const { unsubscribe } = notifier.addListener(
+      'saveEditTrackerValue',
+      handler,
+    );
 
-    return () => {
-      notifier.removeListener('saveEditTrackerValue', handler);
-    };
+    return unsubscribe;
   }, [
     valuesContext,
     metricId,

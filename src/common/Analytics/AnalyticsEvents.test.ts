@@ -11,9 +11,9 @@ describe('AnalyticsEvents', () => {
       usedInvite: true,
     };
     const listener = jest.fn();
-    analyticsListener.addListener('track', listener);
+    const { remove } = analyticsListener.addListener('track', listener);
     _sdkAnalyticsEvent.track(eventKey, event);
-    analyticsListener.removeListener('track', listener);
+    remove();
     _sdkAnalyticsEvent.track(eventKey, event);
 
     expect(listener).toHaveBeenCalledTimes(1);

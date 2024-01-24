@@ -80,10 +80,8 @@ export const useTrackerValues = (
         fetchData();
       }
     };
-    refreshNotifier.addListener(refreshHandler);
-    return () => {
-      refreshNotifier.removeListener(refreshHandler);
-    };
+    const { unsubscribe } = refreshNotifier.addListener(refreshHandler);
+    return unsubscribe;
   }, [fetchData]);
 
   useEffect(() => {
@@ -122,11 +120,9 @@ export const useTrackerValues = (
       });
     };
 
-    notifier.addListener('valuesChanged', handler);
+    const { unsubscribe } = notifier.addListener('valuesChanged', handler);
 
-    return () => {
-      notifier.removeListener('valuesChanged', handler);
-    };
+    return unsubscribe;
   }, [valuesContext]);
 
   useEffect(() => {

@@ -62,7 +62,7 @@ type AnalyticsListener = {
   addListener<EventType extends AnalyticsEventTypes>(
     eventType: EventType,
     listener: AnalyticsEventTypeHandler<EventType>,
-  ): void;
+  ): { unsubscribe: () => void; remove: () => void };
 
   removeListener<EventType extends AnalyticsEventTypes>(
     eventType: EventType,

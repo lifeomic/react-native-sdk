@@ -78,10 +78,8 @@ export const useAxiosTrackTileService = (): TrackTileService => {
         cache.trackerValues = {};
       }
     };
-    refreshNotifier.addListener(refreshHandler);
-    return () => {
-      refreshNotifier.removeListener(refreshHandler);
-    };
+    const { unsubscribe } = refreshNotifier.addListener(refreshHandler);
+    return unsubscribe;
   }, [cache]);
 
   const updateSettingsInCache = (settings: BulkInstalledMetricSettings) => {
