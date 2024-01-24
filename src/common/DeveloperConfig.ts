@@ -83,6 +83,7 @@ export type DeveloperConfig = {
   simpleTheme?: SimpleTheme;
   brand?: Brand;
   apiBaseURL?: string;
+  appsAPIBaseURL?: string;
   AppNavHeader?: {
     headerColors?: RouteColor[];
     onHeaderColors?: RouteColor[];
