@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
 } from 'react';
 import {
   authorize,
@@ -32,16 +33,40 @@ export interface LogoutParams {
   onFail?: (error?: any) => void;
 }
 
+/**
+ * Callback function to set the authentication configuration used during
+ * OAuth flows.
+ *
+ * While typically not needed, this function is invoked with the current
+ * auth result to be able to provide a dynamic auth configuration.
+ *
+ * @example
+ * <RootProviders
+ *   authConfig={(currentAuthResult) => {
+ *     if (...) {
+ *       return {
+ *         ...config,
+ *         // make auth config change
+ *       }
+ *     }
+ *     return config
+ *   }}
+ * />
+ */
+export type AuthConfigGetter = (
+  currentAuthResult?: AuthResult,
+) => AuthConfiguration;
+
 const OAuthContext = createContext<OAuthConfig>({
   login: (_) => Promise.reject(),
   logout: () => Promise.reject(),
 });
 
 export const OAuthContextProvider = ({
-  authConfig,
+  authConfig: authConfigOrGetter,
   children,
 }: {
-  authConfig: AuthConfiguration;
+  authConfig: AuthConfiguration | AuthConfigGetter;
   children?: React.ReactNode;
 }) => {
   const {
@@ -53,6 +78,14 @@ export const OAuthContextProvider = ({
   } = useAuth();
   const pendingInvite = usePendingInvite();
   const queryClient = useQueryClient();
+
+  const authConfig = useMemo(
+    () =>
+      typeof authConfigOrGetter === 'function'
+        ? authConfigOrGetter(authResult)
+        : authConfigOrGetter,
+    [authConfigOrGetter, authResult],
+  );
 
   // PKCE is required
   if (!authConfig.usePKCE) {
@@ -110,13 +143,7 @@ export const OAuthContextProvider = ({
         onFail?.(error);
       }
     },
-    [
-      queryClient,
-      isLoggedIn,
-      authResult?.refreshToken,
-      clearAuthResult,
-      authConfig,
-    ],
+    [queryClient, isLoggedIn, authResult, clearAuthResult, authConfig],
   );
 
   const login = useCallback(
@@ -143,6 +170,7 @@ export const OAuthContextProvider = ({
           'No refreshToken! The app can NOT function properly without a refreshToken. Expect to be logged out immediately.',
         );
       }
+
       return await refresh(authConfig, {
         refreshToken: storedResult.refreshToken,
       });

@@ -1,7 +1,16 @@
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
-import { authorize, refresh, revoke } from 'react-native-app-auth';
-import { OAuthContextProvider, useOAuthFlow } from './useOAuthFlow';
+import {
+  AuthConfiguration,
+  authorize,
+  refresh,
+  revoke,
+} from 'react-native-app-auth';
+import {
+  AuthConfigGetter,
+  OAuthContextProvider,
+  useOAuthFlow,
+} from './useOAuthFlow';
 import { AuthResult, useAuth } from './useAuth';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
@@ -42,11 +51,15 @@ const authResult: AuthResult = {
   refreshToken: 'refreshToken',
 };
 
-const renderHookInContext = async () => {
+const renderHookInContext = (
+  props: {
+    authConfig?: AuthConfiguration | AuthConfigGetter;
+  } = { authConfig },
+) => {
   return renderHook(() => useOAuthFlow(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={new QueryClient()}>
-        <OAuthContextProvider authConfig={authConfig}>
+        <OAuthContextProvider authConfig={props.authConfig || authConfig}>
           {children}
         </OAuthContextProvider>
       </QueryClientProvider>
@@ -73,30 +86,46 @@ test('without provider, methods fail', async () => {
 });
 
 test('initial state test', async () => {
-  const { result } = await renderHookInContext();
+  const { result } = renderHookInContext();
   expect(result.current.authConfig).toEqual(authConfig);
 });
 
 test('overrides usePKCE to true', async () => {
-  const newAuthConfig = {
+  const { result } = renderHookInContext({
+    authConfig: {
+      ...authConfig,
+      usePKCE: false,
+    },
+  });
+
+  expect(result.current.authConfig).toEqual(authConfig);
+});
+
+test('allows for providing auth config as a function', () => {
+  const additionalParameters = {
+    customParameter: 'custom-parameter',
+  };
+  const authConfigFn: AuthConfigGetter = jest.fn(() => ({
     ...authConfig,
     usePKCE: false,
-  };
-  const { result } = await renderHook(() => useOAuthFlow(), {
-    wrapper: ({ children }) => (
-      <QueryClientProvider client={new QueryClient()}>
-        <OAuthContextProvider authConfig={newAuthConfig}>
-          {children}
-        </OAuthContextProvider>
-      </QueryClientProvider>
-    ),
+    additionalParameters,
+  }));
+
+  const { result } = renderHookInContext({
+    authConfig: authConfigFn,
   });
-  expect(result.current.authConfig).toEqual(authConfig);
+
+  expect(authConfigFn).toHaveBeenCalledTimes(1);
+  expect(authConfigFn).toHaveBeenCalledWith(authResult);
+  expect(result.current.authConfig).toEqual({
+    ...authConfig,
+    additionalParameters,
+  });
 });
 
 describe('login', () => {
   test('utilizes authorize and storeAuthResult', async () => {
-    const { result } = await renderHookInContext();
+    const { result } = renderHookInContext();
     const onSuccess = jest.fn();
     await act(async () => {
       await result.current.login({
@@ -110,7 +139,7 @@ describe('login', () => {
   });
 
   test('upon error, clears storage and reports error', async () => {
-    const { result } = await renderHookInContext();
+    const { result } = renderHookInContext();
     const onFail = jest.fn();
     const error = new Error('login fail');
     authorizeMock.mockRejectedValue(error);
@@ -128,7 +157,7 @@ describe('login', () => {
 
 describe('logout', () => {
   test('utilizes revoke and clearAuthResult', async () => {
-    const { result } = await renderHookInContext();
+    const { result } = renderHookInContext();
     const onSuccess = jest.fn();
     await act(async () => {
       await result.current.logout({
@@ -142,7 +171,7 @@ describe('logout', () => {
   });
 
   test('upon error, still clears storage and reports error', async () => {
-    const { result } = await renderHookInContext();
+    const { result } = renderHookInContext();
     const onFail = jest.fn();
     const error = new Error('logout fail');
     revokeMock.mockRejectedValue(error);
@@ -164,7 +193,7 @@ describe('logout', () => {
       clearAuthResult: clearAuthResultMock,
       initialize: jest.fn(),
     });
-    const { result } = await renderHookInContext();
+    const { result } = renderHookInContext();
     const onSuccess = jest.fn();
     await act(async () => {
       await result.current.logout({
@@ -180,7 +209,7 @@ describe('logout', () => {
 
 describe('refreshHandler', () => {
   test('calls useAuth with refreshHandler that utilizes refresh method', async () => {
-    await renderHookInContext();
+    renderHookInContext();
     expect(useAuthInitialize).toHaveBeenCalled();
 
     const refreshHandler = useAuthInitialize.mock.calls[0][0];
@@ -194,7 +223,7 @@ describe('refreshHandler', () => {
   });
 
   test('throws if no refreshToken provided', async () => {
-    await renderHookInContext();
+    renderHookInContext();
     expect(useAuthInitialize).toHaveBeenCalled();
 
     const refreshHandler = useAuthInitialize.mock.calls[0][0];

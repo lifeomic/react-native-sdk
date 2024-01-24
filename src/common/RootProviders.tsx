@@ -2,7 +2,7 @@ import * as React from 'react';
 import { AuthConfiguration } from 'react-native-app-auth';
 import { AuthContextProvider } from '../hooks/useAuth';
 import { HttpClientContextProvider } from '../hooks/useHttpClient';
-import { OAuthContextProvider } from '../hooks/useOAuthFlow';
+import { AuthConfigGetter, OAuthContextProvider } from '../hooks/useOAuthFlow';
 import { GraphQLClientContextProvider } from '../hooks/useGraphQLClient';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { BrandConfigProvider } from '../components/BrandConfigProvider';
@@ -20,7 +20,7 @@ const queryClient = new QueryClient();
 
 export type RootProvidersProps = {
   account: string;
-  authConfig: AuthConfiguration;
+  authConfig: AuthConfiguration | AuthConfigGetter;
   children?: React.ReactNode;
 };
 
