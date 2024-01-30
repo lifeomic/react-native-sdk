@@ -116,7 +116,7 @@ test('allows for providing auth config as a function', () => {
   });
 
   expect(authConfigFn).toHaveBeenCalledTimes(1);
-  expect(authConfigFn).toHaveBeenCalledWith(authResult);
+  expect(authConfigFn).toHaveBeenCalledWith(authResult.accessToken);
   expect(result.current.authConfig).toEqual({
     ...authConfig,
     additionalParameters,

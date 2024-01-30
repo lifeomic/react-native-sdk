@@ -38,11 +38,11 @@ export interface LogoutParams {
  * OAuth flows.
  *
  * While typically not needed, this function is invoked with the current
- * auth result to be able to provide a dynamic auth configuration.
+ * access token to be able to provide a dynamic auth configuration.
  *
  * @example
  * <RootProviders
- *   authConfig={(currentAuthResult) => {
+ *   authConfig={(currentAccessToken) => {
  *     if (...) {
  *       return {
  *         ...config,
@@ -53,9 +53,7 @@ export interface LogoutParams {
  *   }}
  * />
  */
-export type AuthConfigGetter = (
-  currentAuthResult?: AuthResult,
-) => AuthConfiguration;
+export type AuthConfigGetter = (accessToken?: string) => AuthConfiguration;
 
 const OAuthContext = createContext<OAuthConfig>({
   login: (_) => Promise.reject(),
@@ -82,9 +80,9 @@ export const OAuthContextProvider = ({
   const authConfig = useMemo(
     () =>
       typeof authConfigOrGetter === 'function'
-        ? authConfigOrGetter(authResult)
+        ? authConfigOrGetter(authResult?.accessToken)
         : authConfigOrGetter,
-    [authConfigOrGetter, authResult],
+    [authConfigOrGetter, authResult?.accessToken],
   );
 
   // PKCE is required
@@ -143,7 +141,13 @@ export const OAuthContextProvider = ({
         onFail?.(error);
       }
     },
-    [queryClient, isLoggedIn, authResult, clearAuthResult, authConfig],
+    [
+      queryClient,
+      isLoggedIn,
+      authResult?.refreshToken,
+      clearAuthResult,
+      authConfig,
+    ],
   );
 
   const login = useCallback(
