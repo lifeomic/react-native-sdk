@@ -8,7 +8,10 @@ import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { BrandConfigProvider } from '../components/BrandConfigProvider';
 import { NoInternetToastProvider } from '../hooks/NoInternetToastProvider';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  SafeAreaProvider,
+  SafeAreaProviderProps,
+} from 'react-native-safe-area-context';
 import { ThemedNavigationContainer } from './ThemedNavigationContainer';
 import { LoggedInProviders } from './LoggedInProviders';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
@@ -21,12 +24,14 @@ const queryClient = new QueryClient();
 export type RootProvidersProps = {
   account: string;
   authConfig: AuthConfiguration | AuthConfigGetter;
+  safeAreaProviderProps?: SafeAreaProviderProps;
   children?: React.ReactNode;
 };
 
 export function RootProviders({
   account,
   authConfig,
+  safeAreaProviderProps,
   children,
 }: RootProvidersProps) {
   const { apiBaseURL, theme, brand } = useDeveloperConfig();
@@ -41,7 +46,7 @@ export function RootProviders({
                 <BrandConfigProvider theme={theme} {...brand}>
                   <NoInternetToastProvider>
                     <ActionSheetProvider>
-                      <SafeAreaProvider>
+                      <SafeAreaProvider {...safeAreaProviderProps}>
                         <ThemedNavigationContainer>
                           <Toast />
                           <LoggedInProviders>
