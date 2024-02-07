@@ -10,3 +10,4 @@ export * from './Wearables';
 export * from './AppNavHeader';
 export * from './LogoHeader';
 export * from './SocialShare';
+export * from './TrackTile';
