@@ -1,10 +1,11 @@
 import { useActiveProject } from './useActiveProject';
 import { Consent, Questionnaire } from 'fhir/r3';
-import { useRestQuery, useRestMutation } from './rest-api';
+import { useRestQuery, useRestMutation, useRestCache } from './rest-api';
 import { RestAPIEndpoints } from '../types/rest-types';
 import { RequestPayloadOf } from '@lifeomic/one-query';
 import { useQueryClient } from '@tanstack/react-query';
 import { ACTIVITIES_QUERY_KEY } from './useActivities';
+import cloneDeep from 'lodash/cloneDeep';
 
 type PatchConsentDirectives =
   RestAPIEndpoints['PATCH /v1/consent/directives/me/:directiveId'];
@@ -29,6 +30,7 @@ export const createConsentPatch = (
 export const useConsent = () => {
   const queryClient = useQueryClient();
   const { activeProject } = useActiveProject();
+  const cache = useRestCache();
 
   const useConsentDirectives = () => {
     return useRestQuery('GET /v1/consent/directives/me', {
@@ -54,6 +56,27 @@ export const useConsent = () => {
          */
         queryClient.resetQueries({ queryKey: ACTIVITIES_QUERY_KEY });
         await options?.onSuccess?.(data, variables);
+
+        /**
+         * Update consent status in cache following a successful mutation
+         */
+        cache.updateCache(
+          'GET /v1/consent/directives/me',
+          { projectId: activeProject.id, includeForm: true },
+          (currentData) => {
+            if (!currentData) {
+              return currentData!;
+            }
+            const newData = cloneDeep(currentData);
+            for (const consent of newData?.items) {
+              if (consent.id === variables.directiveId) {
+                consent.status = variables.status;
+              }
+            }
+
+            return newData!;
+          },
+        );
       },
     });
   };

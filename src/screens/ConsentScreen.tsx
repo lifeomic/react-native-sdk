@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { View, ScrollView, Text, Alert } from 'react-native';
 import { t } from 'i18next';
 import Markdown from 'react-native-markdown-display';
@@ -23,14 +23,26 @@ export const ConsentScreen = ({
   const { CustomConsentScreen } = useDeveloperConfig();
   const { useShouldRenderConsentScreen, useUpdateProjectConsentDirective } =
     useConsent();
-  const { consentDirectives, isLoading: loadingDirectives } =
-    useShouldRenderConsentScreen();
+  const {
+    shouldRenderConsentScreen,
+    consentDirectives,
+    isLoading: loadingDirectives,
+  } = useShouldRenderConsentScreen();
   const updateConsentDirectiveMutation = useUpdateProjectConsentDirective({
     onSuccess: (_, { status }) => {
       if (status === 'rejected') {
         return logout({});
       }
+    },
+  });
 
+  const { logout } = useOAuthFlow();
+  const { shouldLaunchOnboardingCourse } = useOnboardingCourse();
+
+  // Handle navigation when there
+  // are no consents left to present
+  useEffect(() => {
+    if (!shouldRenderConsentScreen) {
       if (route.params?.noNavOnAccept) {
         navigation.pop();
         return;
@@ -39,12 +51,14 @@ export const ConsentScreen = ({
         ? 'screens/OnboardingCourseScreen'
         : 'app';
       navigation.replace(nextRoute);
-    },
-  });
-  const { logout } = useOAuthFlow();
-  const { shouldLaunchOnboardingCourse } = useOnboardingCourse();
+    }
+  }, [
+    navigation,
+    route.params?.noNavOnAccept,
+    shouldLaunchOnboardingCourse,
+    shouldRenderConsentScreen,
+  ]);
 
-  // TODO: If needed, allow for accepting multiple consents in a row.
   const consentToPresent = useMemo(
     () => consentDirectives?.[0],
     [consentDirectives],
