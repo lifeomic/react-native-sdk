@@ -18,13 +18,30 @@ export type PendingInvite = {
 const usePendingInviteStore = create<PendingInvite | undefined>(
   () => undefined,
 );
+const usePendingInviteStateStore = create<{
+  loading?: boolean;
+  failedToDecode?: boolean;
+  failureMessage?: string;
+}>(() => ({}));
 
-inviteNotifier.addListener('inviteDetected', (invite) =>
-  usePendingInviteStore.setState(invite),
+inviteNotifier.addListener('inviteDetected', (invite) => {
+  usePendingInviteStore.setState(invite);
+  usePendingInviteStateStore.setState({
+    loading: false,
+    failedToDecode: false,
+    failureMessage: undefined,
+  });
+});
+inviteNotifier.addListener('inviteLoadingStateChanged', (state) =>
+  usePendingInviteStateStore.setState(state, true),
 );
 
 export const usePendingInvite = () => {
   return usePendingInviteStore();
+};
+
+export const usePendingInviteState = () => {
+  return usePendingInviteStateStore();
 };
 
 export const clearPendingInvite = () => {

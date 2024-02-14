@@ -3,10 +3,14 @@ import { View, StyleSheet } from 'react-native';
 import { t } from 'i18next';
 import { OAuthLoginButton } from '../components/OAuthLoginButton';
 import { useStyles, useDeveloperConfig } from '../hooks/';
-import { usePendingInvite } from '../components/Invitations/InviteProvider';
+import {
+  usePendingInvite,
+  usePendingInviteState,
+} from '../components/Invitations/InviteProvider';
 import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import LaunchScreen from '../components/LaunchScreen';
 import { Dialog, Portal, Text } from 'react-native-paper';
+import compact from 'lodash/compact';
 
 export const LoginScreen: FC = () => {
   const { renderCustomLoginScreen, componentProps = {} } = useDeveloperConfig();
@@ -15,6 +19,7 @@ export const LoginScreen: FC = () => {
   const [errorText, setErrorText] = useState('');
   const { AlertTriangle } = useIcons();
   const pendingInvite = usePendingInvite();
+  const { loading, failedToDecode, failureMessage } = usePendingInviteState();
   const { LoginScreen: loginScreenProps = {} } = componentProps;
 
   const hideDialog = () => {
@@ -23,6 +28,9 @@ export const LoginScreen: FC = () => {
   };
 
   const getLoginButtonText = () => {
+    if (loading) {
+      return t('login-button-loading-invite', 'Loading');
+    }
     if (pendingInvite) {
       return (
         loginScreenProps.acceptInviteText ??
@@ -61,7 +69,23 @@ export const LoginScreen: FC = () => {
       <View style={styles.containerView}>
         <LaunchScreen key="launch-screen" style={StyleSheet.absoluteFill} />
         <View style={styles.buttonContainer}>
-          <OAuthLoginButton label={getLoginButtonText()} onFail={onFail} />
+          <OAuthLoginButton
+            label={getLoginButtonText()}
+            onFail={onFail}
+            loading={loading}
+            disabled={loading || failedToDecode}
+          />
+          {failedToDecode && (
+            <Text
+              style={styles.inviteErrorText}
+              suppressHighlighting
+              onLongPress={() => {
+                setVisible(true);
+              }}
+            >
+              {t('login-invite-error', 'Invite Error Occurred')}
+            </Text>
+          )}
         </View>
       </View>
       <Portal>
@@ -71,7 +95,9 @@ export const LoginScreen: FC = () => {
             {t('login-error-title', 'Authentication Error')}
           </Dialog.Title>
           <Dialog.Content>
-            <Text variant="bodyMedium">{errorText}</Text>
+            <Text variant="bodyMedium">
+              {compact([errorText, failureMessage]).join('\n')}
+            </Text>
           </Dialog.Content>
         </Dialog>
       </Portal>
@@ -79,7 +105,7 @@ export const LoginScreen: FC = () => {
   );
 };
 
-const defaultStyles = createStyles('LoginScreen', () => ({
+const defaultStyles = createStyles('LoginScreen', (theme) => ({
   containerView: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -89,6 +115,11 @@ const defaultStyles = createStyles('LoginScreen', () => ({
     height: '20%',
     width: '100%',
     paddingHorizontal: 30,
+  },
+  inviteErrorText: {
+    color: theme.colors.error,
+    textAlign: 'center',
+    paddingVertical: theme.spacing.small,
   },
 }));
 
