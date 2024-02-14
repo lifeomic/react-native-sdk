@@ -6,8 +6,8 @@ import axios, {
 } from 'axios';
 import { useAuth } from './useAuth';
 import { APIClient } from '@lifeomic/one-query';
-import { RestAPIEndpoints } from '../types/rest-types';
 import { useActiveAccount } from './useActiveAccount';
+import { RestAPIEndpoints } from '@lifeomic/react-client';
 
 export const defaultBaseURL = 'https://api.us.lifeomic.com';
 export const defaultHeaders: RawAxiosRequestHeaders = {
