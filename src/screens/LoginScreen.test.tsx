@@ -55,6 +55,20 @@ describe('LoginScreen', () => {
     expect(getByText('Login')).toBeDefined();
   });
 
+  it('renders invite loading', () => {
+    inviteNotifier.emit('inviteLoadingStateChanged', { loading: true });
+
+    const { getByText } = render(loginScreenInContext);
+    expect(getByText('Loading')).toBeDefined();
+  });
+
+  it('renders invite error invite failed to decode', () => {
+    inviteNotifier.emit('inviteLoadingStateChanged', { failedToDecode: true });
+
+    const { getByText } = render(loginScreenInContext);
+    expect(getByText('Invite Error Occurred')).toBeDefined();
+  });
+
   it('renders accept invite if inviteID present', () => {
     inviteNotifier.emit('inviteDetected', { inviteId: 'someInviteId' });
 

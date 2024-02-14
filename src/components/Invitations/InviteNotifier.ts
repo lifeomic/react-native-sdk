@@ -5,6 +5,11 @@ export type InviteParams = PendingInvite;
 
 export type EventTypeHandlers = {
   inviteDetected: (inviteParams: InviteParams) => void;
+  inviteLoadingStateChanged: (state: {
+    loading?: boolean;
+    failedToDecode?: boolean;
+    failureMessage?: string;
+  }) => void;
 };
 
 export type EventTypes = keyof EventTypeHandlers;
