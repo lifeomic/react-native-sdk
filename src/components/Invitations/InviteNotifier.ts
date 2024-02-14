@@ -3,13 +3,15 @@ import { PendingInvite } from './InviteProvider';
 
 export type InviteParams = PendingInvite;
 
+type InviteState = {
+  loading?: boolean;
+  failedToDecode?: boolean;
+  failureMessage?: string;
+};
+
 export type EventTypeHandlers = {
   inviteDetected: (inviteParams: InviteParams) => void;
-  inviteLoadingStateChanged: (state: {
-    loading?: boolean;
-    failedToDecode?: boolean;
-    failureMessage?: string;
-  }) => void;
+  inviteLoadingStateChanged: (state: InviteState) => void;
 };
 
 export type EventTypes = keyof EventTypeHandlers;
@@ -17,6 +19,7 @@ export type EventTypeHandler<T extends EventTypes> = EventTypeHandlers[T];
 export class InviteNotifier {
   private emitter = new EventEmitter();
   private lastInviteDetectedParams: InviteParams | undefined;
+  private lastInviteState: InviteState | undefined;
 
   public addListener<T extends EventTypes>(
     eventType: T,
@@ -25,6 +28,13 @@ export class InviteNotifier {
     if (eventType === 'inviteDetected' && this.lastInviteDetectedParams) {
       (listener as EventTypeHandler<'inviteDetected'>)(
         this.lastInviteDetectedParams,
+      );
+    } else if (
+      eventType === 'inviteLoadingStateChanged' &&
+      this.lastInviteState
+    ) {
+      (listener as EventTypeHandler<'inviteLoadingStateChanged'>)(
+        this.lastInviteState,
       );
     }
     return this.emitter.addListener(eventType, listener);
