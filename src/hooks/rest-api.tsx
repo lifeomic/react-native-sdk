@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-query/build/lib/types';
 import { AxiosRequestConfig } from 'axios';
 
-type Endpoints = RestAPIEndpoints & ClientRestAPIEndpoints;
+export type Endpoints = RestAPIEndpoints & ClientRestAPIEndpoints;
 
 declare type RestrictedUseQueryOptions<
   Response,
