@@ -331,6 +331,7 @@ export const Pillar: FC<PillarProps> = (props) => {
       <TouchableOpacity
         testID={tID(`pillar-increment-${metricId}`)}
         onPress={() => onAddData(increment)}
+        disabled={loading}
       >
         <Indicator
           name="pillars-add-data-button-icon"

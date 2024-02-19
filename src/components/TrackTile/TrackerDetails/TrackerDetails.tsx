@@ -145,7 +145,7 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
                   createDate: isToday(dateRange.start)
                     ? new Date()
                     : dateRange.start,
-                  ...activeValues[metricId]?.[0],
+                  ...trackerValue,
                   value: convertToPreferredUnit(resourceValue, tracker),
                   tracker,
                 }),
