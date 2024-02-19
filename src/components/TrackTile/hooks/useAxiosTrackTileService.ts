@@ -274,6 +274,7 @@ export const useAxiosTrackTileService = (): TrackTileService => {
             dates: [`ge${start}`, `le${end}`],
             codeBelow: valuesContext.codeBelow,
             patientId,
+            first: 200,
           },
           query: FETCH_TRACKER_VALUES_BY_DATES_QUERY,
         },
@@ -488,9 +489,9 @@ export type Procedure = {
 };
 
 export const FETCH_TRACKER_VALUES_BY_DATES_QUERY = `
-query GetObservations($dates: [String!], $codeBelow: String!, $patientId: String) {
+query GetObservations($dates: [String!], $codeBelow: String!, $patientId: String, $first: Int) {
   patient(id: $patientId) {
-    observationsConnection(dates: $dates, codeBelow: $codeBelow) {
+    observationsConnection(dates: $dates, codeBelow: $codeBelow, first: $first) {
       edges {
         node {
           id
@@ -509,7 +510,7 @@ query GetObservations($dates: [String!], $codeBelow: String!, $patientId: String
         }
       }
     }
-    proceduresConnection(dates: $dates, codeBelow: $codeBelow) {
+    proceduresConnection(dates: $dates, codeBelow: $codeBelow, first: $first) {
       edges {
         node {
           id
