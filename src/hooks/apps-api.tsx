@@ -1,12 +1,12 @@
 import { createAPIHooks } from '@lifeomic/one-query';
 import axios from 'axios';
 
-import { AppsAPIEndpoints } from '../types/apps-rest-types';
+import { AuthAPIEndpoints } from '@lifeomic/react-client';
 import { useDeveloperConfig } from './useDeveloperConfig';
 
 export const defaultBaseURL = 'https://apps.us.lifeomic.com';
 
-const hooks = createAPIHooks<AppsAPIEndpoints>({
+const hooks = createAPIHooks<AuthAPIEndpoints>({
   name: 'lifeomic-apps-react-native-sdk',
   client: () => {
     // hook will be used according to rules of hooks

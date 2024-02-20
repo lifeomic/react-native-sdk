@@ -16,7 +16,7 @@ import { HttpClientContextProvider } from '../../../../../src/hooks/useHttpClien
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DeveloperConfigProvider } from '../../../../../src/components/DeveloperConfigProvider';
 
-const axiosInstance = axios.create();
+const axiosInstance = axios.create() as any;
 const mock = new MockAdapter(axiosInstance);
 
 export const MockEnvironmentDecorator = ({

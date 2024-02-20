@@ -4,12 +4,12 @@ import { setupServer } from 'msw/node';
 import { renderHook } from '@testing-library/react-native';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { useAppsAPIMutation } from './apps-api';
-import { AppsAPIEndpoints } from '../types/apps-rest-types';
+import { AuthAPIEndpoints } from '@lifeomic/react-client';
 
 const server = setupServer();
 server.listen({ onUnhandledRequest: 'error' });
 
-const adoptAppsAPIMocking = createAPIMockingUtility<AppsAPIEndpoints>({
+const adoptAppsAPIMocking = createAPIMockingUtility<AuthAPIEndpoints>({
   server,
   baseUrl: 'https://apps.us.lifeomic.com',
 });

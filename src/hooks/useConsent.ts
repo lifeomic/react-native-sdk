@@ -6,7 +6,7 @@ import {
   useRestCache,
   Endpoints,
 } from './rest-api';
-import { RestAPIEndpoints } from '../types/rest-types';
+import { RestAPIEndpoints } from '@lifeomic/react-client';
 import { RequestPayloadOf } from '@lifeomic/one-query';
 import {
   UseMutationResult,
