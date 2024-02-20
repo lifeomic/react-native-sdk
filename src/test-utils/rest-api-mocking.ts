@@ -1,7 +1,7 @@
 import { APIMocker, createAPIMocker } from '@lifeomic/one-query/test-utils';
 import { RestAPIEndpoints } from '@lifeomic/react-client';
 import { SetupServerApi, setupServer } from 'msw/node';
-import { Overrides } from 'src/hooks/rest-api';
+import { Overrides } from '../hooks/rest-api';
 
 const server = setupServer();
 server.listen({ onUnhandledRequest: 'error' });
