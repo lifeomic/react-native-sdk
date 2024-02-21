@@ -1,9 +1,18 @@
 import { useActiveProject } from './useActiveProject';
 import { Consent, Questionnaire } from 'fhir/r3';
-import { useRestQuery, useRestMutation, useRestCache } from './rest-api';
-import { RestAPIEndpoints } from '../types/rest-types';
+import {
+  useRestQuery,
+  useRestMutation,
+  useRestCache,
+  Endpoints,
+} from './rest-api';
+import { RestAPIEndpoints } from '@lifeomic/react-client';
 import { RequestPayloadOf } from '@lifeomic/one-query';
-import { useQueryClient } from '@tanstack/react-query';
+import {
+  UseMutationResult,
+  UseQueryResult,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { ACTIVITIES_QUERY_KEY } from './useActivities';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -104,6 +113,36 @@ export const useConsent = () => {
     useConsentDirectives,
     useUpdateProjectConsentDirective,
     useShouldRenderConsentScreen,
+  } as {
+    useConsentDirectives: () => UseQueryResult<{
+      items: ConsentAndForm[];
+    }>;
+    useUpdateProjectConsentDirective: (
+      options?:
+        | {
+            onSuccess?:
+              | ((
+                  data: PatchConsentDirectives['Response'],
+                  variables: PatchConsentDirectives['Request'] & {
+                    directiveId: string;
+                  },
+                ) => Promise<void> | void)
+              | undefined;
+          }
+        | undefined,
+    ) => UseMutationResult<
+      {},
+      unknown,
+      RequestPayloadOf<
+        Endpoints,
+        'PATCH /v1/consent/directives/me/:directiveId'
+      >
+    >;
+    useShouldRenderConsentScreen: () => {
+      isLoading: boolean;
+      consentDirectives: ConsentAndForm[] | undefined;
+      shouldRenderConsentScreen: boolean;
+    };
   };
 };
 

@@ -1,8 +1,31 @@
-import { createAPIHooks } from '@lifeomic/one-query';
+import { createRestAPIHooks, RestAPIEndpoints } from '@lifeomic/react-client';
 import { useHttpClient } from './useHttpClient';
-import { RestAPIEndpoints } from '../types/rest-types';
+import { AppConfig } from './useAppConfig';
+import { APIQueryHooks, RequestPayloadOf } from '@lifeomic/one-query';
+import {
+  UseQueryOptions,
+  UseQueryResult,
+} from '@tanstack/react-query/build/lib/types';
+import { AxiosRequestConfig } from 'axios';
 
-const hooks = createAPIHooks<RestAPIEndpoints>({
+export type Overrides = {
+  'GET /v1/life-research/projects/:projectId/app-config': {
+    Request: {};
+    Response: AppConfig;
+  };
+};
+
+declare type RestrictedUseQueryOptions<
+  Response,
+  TError = unknown,
+  Data = Response,
+> = Omit<UseQueryOptions<Response, TError, Data>, 'queryKey' | 'queryFn'> & {
+  axios?: AxiosRequestConfig;
+};
+
+export type Endpoints = RestAPIEndpoints & Overrides;
+
+const hooks: APIQueryHooks<Endpoints> = createRestAPIHooks<Overrides>({
   name: 'lifeomic-react-native-sdk',
   client: () => {
     // This function is explicitly documented as being hooks-compatible.
@@ -13,7 +36,18 @@ const hooks = createAPIHooks<RestAPIEndpoints>({
   },
 });
 
-export const useRestQuery = hooks.useAPIQuery;
+export const useRestQuery: <
+  Route extends keyof Endpoints & string,
+  Data = Endpoints[Route]['Response'],
+>(
+  route: Route,
+  payload: RequestPayloadOf<Endpoints, Route>,
+  options?: RestrictedUseQueryOptions<
+    Endpoints[Route]['Response'],
+    unknown,
+    Data
+  >,
+) => UseQueryResult<Data> = hooks.useAPIQuery;
 
 export const useInfiniteRestQuery = hooks.useInfiniteAPIQuery;
 

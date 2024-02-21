@@ -20,7 +20,7 @@ export const DataOverrideProvider: React.FC<DataOverrideProviderProps> = ({
   builder,
   children,
 }) => {
-  const axiosInstance = axios.create();
+  const axiosInstance = axios.create() as any;
   const mock = new MockAdapter(axiosInstance);
 
   if (builder) {
