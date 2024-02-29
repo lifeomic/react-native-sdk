@@ -16,6 +16,7 @@ import { AuthResult, useAuth } from './useAuth';
 import { usePendingInvite } from '../components/Invitations/InviteProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import { _sdkAnalyticsEvent } from '../common/Analytics';
+import { useDeveloperConfig } from './useDeveloperConfig';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
@@ -76,6 +77,7 @@ export const OAuthContextProvider = ({
   } = useAuth();
   const pendingInvite = usePendingInvite();
   const queryClient = useQueryClient();
+  const { skipInviteParams } = useDeveloperConfig();
 
   const authConfig = useMemo(
     () =>
@@ -103,7 +105,7 @@ export const OAuthContextProvider = ({
     authConfig.iosPrefersEphemeralSession = true;
   }
 
-  if (pendingInvite?.evc) {
+  if (pendingInvite?.evc && !skipInviteParams) {
     authConfig.additionalParameters = {
       ...authConfig.additionalParameters,
       inviteId: pendingInvite.inviteId,
