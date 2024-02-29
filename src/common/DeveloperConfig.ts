@@ -137,6 +137,7 @@ export type DeveloperConfig = {
     items: { id: string; title: string; action: () => void }[],
   ) => { id: string; title: string; action: () => void }[];
   navigationLinking?: LinkingOptions<any>;
+  skipInviteParams?: boolean;
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };
