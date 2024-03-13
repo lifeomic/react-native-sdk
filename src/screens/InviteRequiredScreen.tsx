@@ -8,9 +8,14 @@ import {
 import { createStyles } from '../components/BrandConfigProvider';
 import { tID } from '../common/testID';
 import { useStyles } from '../hooks/useStyles';
+import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 
 export const InviteRequiredScreen = () => {
   const { styles } = useStyles(defaultStyles);
+  const { CustomInviteRequiredScreen } = useDeveloperConfig();
+  if (CustomInviteRequiredScreen) {
+    return CustomInviteRequiredScreen;
+  }
 
   return (
     <View style={styles.containerView}>
