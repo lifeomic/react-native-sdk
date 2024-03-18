@@ -141,7 +141,7 @@ test('renders custom consent screen if present in developer config', () => {
   });
   expect(navigateMock.replace).toHaveBeenCalledWith('app');
   expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledTimes(1);
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+  expect(updateConsentDirectiveMutationMock.mutate.mock.calls[0][0]).toEqual(
     createConsentPatch(defaultConsentDirective.id, true),
   );
 
@@ -156,7 +156,7 @@ test('renders custom consent screen if present in developer config', () => {
   });
   () => expect(logoutMock).toHaveBeenCalledTimes(1);
   expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledTimes(1);
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+  expect(updateConsentDirectiveMutationMock.mutate.mock.calls[0][0]).toEqual(
     createConsentPatch(defaultConsentDirective.id, false),
   );
 
@@ -191,7 +191,7 @@ test('renders the consent body and acceptance verbiage', () => {
 test('should accept the consent and navigate to the home screen', () => {
   const { getByText } = render(consentScreen);
   fireEvent.press(getByText('Agree'));
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+  expect(updateConsentDirectiveMutationMock.mutate.mock.calls[0][0]).toEqual(
     createConsentPatch(defaultConsentDirective.id, true),
   );
   useUpdateProjectConsentDirectiveMock.mock.calls[0][0].onSuccess(undefined, {
@@ -206,7 +206,7 @@ test('should accept the consent and navigate to the onboarding course screen', (
   });
   const { getByText } = render(consentScreen);
   fireEvent.press(getByText('Agree'));
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+  expect(updateConsentDirectiveMutationMock.mutate.mock.calls[0][0]).toEqual(
     createConsentPatch(defaultConsentDirective.id, true),
   );
   useUpdateProjectConsentDirectiveMock.mock.calls[0][0].onSuccess(undefined, {
@@ -227,7 +227,7 @@ test('Pressing logout declines the consent and logs the the user out', async () 
   const { getByText } = render(consentScreen);
   fireEvent.press(getByText('Decline'));
   alertSpy.mock.calls[0]?.[2]?.[1].onPress!();
-  expect(updateConsentDirectiveMutationMock.mutate).toHaveBeenCalledWith(
+  expect(updateConsentDirectiveMutationMock.mutate.mock.calls[0][0]).toEqual(
     createConsentPatch(defaultConsentDirective.id, false),
   );
   useUpdateProjectConsentDirectiveMock.mock.calls[0][0].onSuccess(undefined, {

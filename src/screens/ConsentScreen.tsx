@@ -14,6 +14,7 @@ import {
 import type { ConsentAndForm } from '../hooks/useConsent';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 import { LoggedInRootScreenProps } from '../navigators/types';
+import { _sdkAnalyticsEvent } from '../common/Analytics';
 
 export const ConsentScreen = ({
   navigation,
@@ -44,12 +45,21 @@ export const ConsentScreen = ({
   useEffect(() => {
     if (!shouldRenderConsentScreen) {
       if (route.params?.noNavOnAccept) {
+        _sdkAnalyticsEvent.track('Navigate', {
+          fromScreen: 'consentScreen',
+          method: 'pop',
+        });
         navigation.pop();
         return;
       }
       const nextRoute = shouldLaunchOnboardingCourse
         ? 'screens/OnboardingCourseScreen'
         : 'app';
+      _sdkAnalyticsEvent.track('Navigate', {
+        fromScreen: 'consentScreen',
+        toScreen: nextRoute,
+        method: 'replace',
+      });
       navigation.replace(nextRoute);
     }
   }, [
@@ -67,10 +77,31 @@ export const ConsentScreen = ({
   const updateConsentDirective = useCallback(
     (accept: boolean) => {
       if (!consentToPresent?.id) {
+        _sdkAnalyticsEvent.track('ConsentSubmitFailure', {
+          reason: 'Consent ID was missing; mutation not executed',
+          consent: consentToPresent,
+          userAcceptedConsent: accept,
+        });
         return;
       }
       updateConsentDirectiveMutation.mutate(
         createConsentPatch(consentToPresent.id, accept),
+        {
+          onSuccess: () => {
+            _sdkAnalyticsEvent.track('ConsentResponseSubmitted', {
+              userAcceptedConsent: accept,
+              consentName: consentToPresent.form.name,
+              consentId: consentToPresent.form.id,
+            });
+          },
+          onError: (err) => {
+            _sdkAnalyticsEvent.track('ConsentSubmitFailure', {
+              reason: `Error thrown during mutation: ${JSON.stringify(err)}`,
+              consent: consentToPresent,
+              userAcceptedConsent: accept,
+            });
+          },
+        },
       );
     },
     [updateConsentDirectiveMutation, consentToPresent],
@@ -126,6 +157,10 @@ export const ConsentScreen = ({
   }
 
   if (CustomConsentScreen) {
+    _sdkAnalyticsEvent.track('CustomConsentScreenShown', {
+      consentName: consentToPresent.form.name,
+      consentId: consentToPresent.form.id,
+    });
     return (
       <CustomConsentScreen
         consentForm={consentToPresent}
@@ -135,6 +170,11 @@ export const ConsentScreen = ({
       />
     );
   }
+
+  _sdkAnalyticsEvent.track('ConsentScreenShown', {
+    consentName: consentToPresent.form.name,
+    consentId: consentToPresent.form.id,
+  });
 
   return (
     <View style={styles.view}>

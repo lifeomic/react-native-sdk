@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { ConsentAndForm } from '../../hooks/useConsent';
 
 export type AnalyticsEventTypeHandlers = {
   track: (eventName: string, event: unknown) => void;
@@ -47,16 +48,33 @@ export const createAnalyticsEmitter = <
 };
 
 export type SDKTrackEvents = {
-  Login: { usedInvite: boolean };
-  LoginFailure: { error: string; usedInvite: boolean };
-  TokenRefreshFailure: { accessTokenExpirationDate: string };
-  InviteDetected: {};
+  ConsentResponseSubmitted: {
+    consentName?: string;
+    consentId?: string;
+    userAcceptedConsent: boolean;
+  };
+  ConsentScreenShown: { consentName?: string; consentId?: string };
+  ConsentSubmitFailure: {
+    reason: string;
+    consent?: ConsentAndForm;
+    userAcceptedConsent: boolean;
+  };
+  CustomConsentScreenShown: { consentName?: string; consentId?: string };
   InviteAcceptFailure: { reason: string };
   InviteAcceptSuccess: { accountName: string; accountId: string };
+  InviteDetected: {};
   InviteRequiredScreenPresented: {};
+  Login: { usedInvite: boolean };
   LoginButtonPresented: { buttonText: string };
+  LoginFailure: { error: string; usedInvite: boolean };
+  Navigate: {
+    fromScreen: string;
+    toScreen?: string;
+    method: 'pop' | 'replace';
+  };
   PostCreated: { messageLength: number };
   PostEdited: { messageLength: number };
+  TokenRefreshFailure: { accessTokenExpirationDate: string };
 };
 
 /**
