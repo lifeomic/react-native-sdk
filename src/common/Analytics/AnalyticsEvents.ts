@@ -48,6 +48,13 @@ export const createAnalyticsEmitter = <
 
 export type SDKTrackEvents = {
   Login: { usedInvite: boolean };
+  LoginFailure: { error: string; usedInvite: boolean };
+  TokenRefreshFailure: { accessTokenExpirationDate: string };
+  InviteDetected: {};
+  InviteAcceptFailure: { reason: string };
+  InviteAcceptSuccess: { accountName: string; accountId: string };
+  InviteRequiredScreenPresented: {};
+  LoginButtonPresented: { buttonText: string };
   PostCreated: { messageLength: number };
   PostEdited: { messageLength: number };
 };

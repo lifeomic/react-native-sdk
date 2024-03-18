@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useRestCache, useRestMutation } from '../../hooks/rest-api';
 import { ActivityIndicatorView } from '../ActivityIndicatorView';
 import { useQueryClient } from '@tanstack/react-query';
+import { _sdkAnalyticsEvent } from '../../common/Analytics';
 
 export type PendingInvite = {
   inviteId: string;
@@ -25,6 +26,7 @@ const usePendingInviteStateStore = create<{
 }>(() => ({}));
 
 inviteNotifier.addListener('inviteDetected', (invite) => {
+  _sdkAnalyticsEvent.track('InviteDetected', {}); // inviteId/evc exposure should be limited
   usePendingInviteStore.setState(invite);
   usePendingInviteStateStore.setState({
     loading: false,
@@ -32,9 +34,9 @@ inviteNotifier.addListener('inviteDetected', (invite) => {
     failureMessage: undefined,
   });
 });
-inviteNotifier.addListener('inviteLoadingStateChanged', (state) =>
-  usePendingInviteStateStore.setState(state, true),
-);
+inviteNotifier.addListener('inviteLoadingStateChanged', (state) => {
+  usePendingInviteStateStore.setState(state, true);
+});
 
 export const usePendingInvite = () => {
   return usePendingInviteStore();
@@ -90,14 +92,25 @@ export const InviteProvider: React.FC<InviteProviderProps> = ({ children }) => {
     onError: (error: any) => {
       if (isInviteAlreadyAcceptedErrorResponse(error.response?.data)) {
         console.warn('Ignoring already accepted invite');
+        _sdkAnalyticsEvent.track('InviteAcceptFailure', {
+          reason: 'Invite Already Accepted',
+        });
       } else {
         console.warn('Error accepting invitation', error);
         Alert.alert(t('Error accepting invitation. Please try again.'));
+        _sdkAnalyticsEvent.track('InviteAcceptFailure', {
+          reason: JSON.stringify(error),
+        });
       }
       clearPendingInvite();
       mutation.reset();
     },
     onSuccess: async (acceptedInvite) => {
+      _sdkAnalyticsEvent.track('InviteAcceptSuccess', {
+        accountName: acceptedInvite.accountName,
+        accountId: acceptedInvite.account,
+      });
+
       // Add the new account to the account list.
       cache.updateCache(
         'GET /v1/accounts',

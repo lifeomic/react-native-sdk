@@ -11,6 +11,7 @@ import { createStyles, useIcons } from '../components/BrandConfigProvider';
 import LaunchScreen from '../components/LaunchScreen';
 import { Dialog, Portal, Text } from 'react-native-paper';
 import compact from 'lodash/compact';
+import { _sdkAnalyticsEvent } from '../common/Analytics';
 
 export const LoginScreen: FC = () => {
   const { renderCustomLoginScreen, componentProps = {} } = useDeveloperConfig();
@@ -32,11 +33,18 @@ export const LoginScreen: FC = () => {
       return t('login-button-loading-invite', 'Loading');
     }
     if (pendingInvite) {
+      _sdkAnalyticsEvent.track('LoginButtonPresented', {
+        buttonText: 'Accept Invite',
+      });
       return (
         loginScreenProps.acceptInviteText ??
         t('login-button-title-invite-found', 'Accept Invite')
       );
     }
+
+    _sdkAnalyticsEvent.track('LoginButtonPresented', {
+      buttonText: 'Login',
+    });
     return loginScreenProps.loginText ?? t('login-button-title', 'Login');
   };
 

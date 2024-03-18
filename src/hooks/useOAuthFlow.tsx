@@ -162,6 +162,10 @@ export const OAuthContextProvider = ({
         _sdkAnalyticsEvent.track('Login', { usedInvite: !!pendingInvite?.evc });
         onSuccess?.(result);
       } catch (error) {
+        _sdkAnalyticsEvent.track('LoginFailure', {
+          error: JSON.stringify(error),
+          usedInvite: !!pendingInvite?.evc,
+        });
         await clearAuthResult();
         onFail?.(error);
       }
@@ -172,6 +176,9 @@ export const OAuthContextProvider = ({
   const refreshHandler = useCallback(
     async function (storedResult: AuthResult) {
       if (!storedResult?.refreshToken) {
+        _sdkAnalyticsEvent.track('TokenRefreshFailure', {
+          accessTokenExpirationDate: storedResult.accessTokenExpirationDate,
+        });
         throw new Error(
           'No refreshToken! The app can NOT function properly without a refreshToken. Expect to be logged out immediately.',
         );

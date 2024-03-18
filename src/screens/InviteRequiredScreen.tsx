@@ -8,9 +8,11 @@ import {
 import { createStyles } from '../components/BrandConfigProvider';
 import { tID } from '../common/testID';
 import { useStyles } from '../hooks/useStyles';
+import { _sdkAnalyticsEvent } from '../common/Analytics';
 
 export const InviteRequiredScreen = () => {
   const { styles } = useStyles(defaultStyles);
+  _sdkAnalyticsEvent.track('InviteRequiredScreenPresented', {});
 
   return (
     <View style={styles.containerView}>
