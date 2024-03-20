@@ -13,17 +13,17 @@ import { _sdkAnalyticsEvent } from '../common/Analytics';
 export const InviteRequiredScreen = () => {
   const { styles } = useStyles(defaultStyles);
   _sdkAnalyticsEvent.track('InviteRequiredScreenPresented', {});
+  const { textOverrides } = styles;
 
   return (
     <View style={styles.containerView}>
-      <Text style={styles.invitationLabel} testID={tID('invite-only-text')}>
-        {t(
-          'invite-required-text',
-          'This app is only available to use by invitation. Please contact your administrator for access.',
-        )}
-      </Text>
+      <View style={styles.messageContainer}>
+        <Text style={styles.invitationLabel} testID={tID('invite-only-text')}>
+          {textOverrides?.message as string}
+        </Text>
+      </View>
       <OAuthLogoutButton
-        label={t('settings-logout', 'Logout')}
+        label={textOverrides?.button as string}
         mode="contained"
         style={styles.oAuthLogout}
       />
@@ -36,6 +36,9 @@ const defaultStyles = createStyles('InviteRequiredScreen', (theme) => ({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: theme.colors.elevation.level1,
+  },
+  messageContainer: {
     marginHorizontal: theme.spacing.medium,
   },
   invitationLabel: {
@@ -44,6 +47,13 @@ const defaultStyles = createStyles('InviteRequiredScreen', (theme) => ({
   oAuthLogout: {
     style: { marginTop: theme.spacing.small },
   } as OAuthLogoutButtonStyles,
+  textOverrides: {
+    message: t(
+      'invite-required-text',
+      'This app is only available to use by invitation. Please contact your administrator for access.',
+    ),
+    button: t('settings-logout', 'Logout'),
+  },
 }));
 
 declare module '@styles' {
