@@ -89,7 +89,9 @@ export function Tracker(tracker: TrackerProps) {
 
 const size = 95;
 const defaultStyles = createStyles('Tracker', (theme) => ({
-  trackerNameText: {},
+  trackerNameText: {
+    color: theme.colors.onSurface,
+  },
   trackerNameDisabledText: {
     color: '#7B8996',
   },
