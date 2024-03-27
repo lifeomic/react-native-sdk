@@ -158,13 +158,11 @@ const defaultStyles = createStyles('SearchRecipientsModal', (theme) => {
       backgroundColor: theme.colors.primary,
       marginVertical: 16,
       marginRight: 16,
-      height: 35,
       alignSelf: 'center',
     },
     doneButtonLabel: {
       color: theme.colors.onPrimary,
       fontSize: 14,
-      lineHeight: 16,
       textAlignVertical: 'center',
     },
   };
