@@ -308,13 +308,12 @@ export const TrackerDetails: FC<TrackerDetailsProps> = (props) => {
 
 const defaultStyles = createStyles('TrackerDetails', (theme) => ({
   imageContainer: {
-    width: 326,
-    height: 210,
+    width: 280,
+    height: 200,
   },
   image: {
     flex: 1,
     resizeMode: 'contain',
-    width: 200,
   },
   radialProgressBorderView: {},
   radialProgressContainer: {
