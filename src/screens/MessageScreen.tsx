@@ -236,6 +236,18 @@ export function MessageScreen<ParamList extends ParamListBase>({
             </TouchableOpacity>
           </Swipeable>
         ))}
+        {!conversations?.length && !isLoading && (
+          <Swipeable>
+            <List.Item
+              titleStyle={styles.listItemText}
+              title={t('no-direct-messages', 'No message history.')}
+              style={styles.listItemView}
+              description={t('no-direct-messages', 'New messages appear here.')}
+              descriptionStyle={styles.listItemSubtitleText}
+            />
+            <Divider style={styles.listItemDividerView} />
+          </Swipeable>
+        )}
         {isLoading ? (
           <ActivityIndicatorView />
         ) : (

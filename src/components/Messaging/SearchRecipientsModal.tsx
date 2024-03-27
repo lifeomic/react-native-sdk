@@ -7,7 +7,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { GiftedAvatar, User as GiftedUser } from 'react-native-gifted-chat';
-import { Button, Divider, List, Searchbar } from 'react-native-paper';
+import { Button, Divider, List, Searchbar, Text } from 'react-native-paper';
 import { tID } from '../TrackTile/common/testID';
 import { useStyles, useUser } from '../../hooks';
 import { createStyles, useIcons } from '../BrandConfigProvider';
@@ -77,6 +77,16 @@ export const SearchRecipientsModal = ({
         clearIcon={ClearList}
         testID={tID('search-bar')}
       />
+      {others.length < 1 && (
+        <View>
+          <Text style={{ textAlign: 'center' }}>
+            {t(
+              'no-recipients-message',
+              'No available message recipients. \nYou must be added to a messaging group to use this feature. Ask your administrator for more information.',
+            )}
+          </Text>
+        </View>
+      )}
       <ScrollView
         scrollEventThrottle={400}
         contentContainerStyle={styles.scrollView}
