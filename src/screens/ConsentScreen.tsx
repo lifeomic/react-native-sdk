@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { View, ScrollView, Text, Alert } from 'react-native';
+import { View, ScrollView, Alert } from 'react-native';
+import { Text } from 'react-native-paper';
 import { t } from 'i18next';
 import Markdown from 'react-native-markdown-display';
 import { Button } from 'react-native-paper';
@@ -180,9 +181,7 @@ export const ConsentScreen = ({
     <View style={styles.view}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.consentTextContainer}>
-          <Text>
-            <Markdown>{consentText}</Markdown>
-          </Text>
+          <Markdown>{consentText}</Markdown>
         </View>
       </ScrollView>
       <View style={styles.buttonsContainer}>
