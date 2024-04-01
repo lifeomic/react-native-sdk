@@ -109,7 +109,7 @@ export const AuthedAppTileScreen = ({
       cacheEnabled={false}
       incognito={true}
       onMessage={handleAppTileMessage}
-      onNavigationStateChange={(e) => {
+      onNavigationStateChange={(e: any) => {
         setCanGoBack(e.canGoBack);
         handleAppTileNavigationStateChange(e);
       }}

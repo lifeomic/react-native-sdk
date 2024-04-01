@@ -66,7 +66,7 @@ export const NumberPicker = (props: NumberPickerProps) => {
           onValueChange={(val) => {
             setTempValue(val as string);
           }}
-          style={styles.androidPicker}
+          style={styles.androidPickerView}
         >
           {numbers.map((n) => (
             <Picker.Item
@@ -141,7 +141,7 @@ const defaultStyles = createStyles('TrackTileNumberPicker', (theme) => ({
     justifyContent: 'center',
     backgroundColor: theme.colors.elevation.level1,
   },
-  androidPicker: {
+  androidPickerView: {
     height: '100%',
     width: '100%',
   },

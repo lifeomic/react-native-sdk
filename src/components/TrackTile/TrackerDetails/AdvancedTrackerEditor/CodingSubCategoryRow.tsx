@@ -47,7 +47,7 @@ export const CodingSubCategoryRow = (props: CodingSubCategoryRowProps) => {
                 {
                   backgroundColor: color,
                 },
-                styles.radioDot,
+                styles.radioDotView,
               ]}
             />
           )}
@@ -108,7 +108,7 @@ const defaultStyles = createStyles('CodingSubCategoryRow', () => ({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  radioDot: {
+  radioDotView: {
     width: '65%',
     height: '65%',
     borderRadius: 12,

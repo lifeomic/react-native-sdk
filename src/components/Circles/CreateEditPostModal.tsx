@@ -110,7 +110,7 @@ export const CreateEditPostModal = () => {
                   'create-post-placeholder-text',
                   'What do you want to share?',
                 )}
-                style={styles.textArea}
+                style={styles.areaText}
                 onChangeText={(text: string) => {
                   setPostText(text);
                   setCharacterCount(text.length);
@@ -184,7 +184,7 @@ const defaultStyles = createStyles('CreateEditPostModal', (theme) => ({
     flex: 1,
   },
   header: {},
-  textArea: {
+  areaText: {
     width: '100%',
     flex: 1,
   },

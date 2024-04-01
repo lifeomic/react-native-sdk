@@ -269,7 +269,7 @@ export const Pillar: FC<PillarProps> = (props) => {
               <>
                 <Animated.View
                   style={[
-                    styles.pillarFill,
+                    styles.pillarFillView,
                     {
                       transform: [
                         {
@@ -371,7 +371,7 @@ const defaultStyles = createStyles('Pillar', (theme) => ({
     height: '100%',
     backgroundColor: theme.colors.surfaceVariant,
   },
-  pillarFill: {
+  pillarFillView: {
     width: defaultPillarWidth,
     height: '100%',
     borderRadius: defaultPillarWidth,

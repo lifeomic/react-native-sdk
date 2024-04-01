@@ -114,7 +114,7 @@ export const MyDataScreen = () => {
                 chartDimensions.current[index] = e.nativeEvent.layout;
               }}
             >
-              {index > 0 && <Divider style={styles.divider} />}
+              {index > 0 && <Divider style={styles.dividerView} />}
               {component.type === 'LineChart' && (
                 <LineChart
                   {...component}
@@ -321,7 +321,7 @@ const defaultStyles = createStyles('MyDataScreen', (theme) => ({
   datePickerNavigatorContainer: {
     backgroundColor: theme.colors.primary,
   },
-  divider: {
+  dividerView: {
     width: '100%',
     backgroundColor: theme.colors.onSurface,
     marginBottom: 24,

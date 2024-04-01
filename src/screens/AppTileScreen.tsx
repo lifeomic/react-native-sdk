@@ -53,7 +53,7 @@ export const AppTileScreen = ({ navigation, route }: AppTileScreenProps) => {
       source={{ uri: appTile.source.url }}
       ref={webViewRef}
       cacheEnabled={false}
-      onNavigationStateChange={(e) => {
+      onNavigationStateChange={(e: any) => {
         setCanGoBack(e.canGoBack);
         handleAppTileNavigationStateChange(e);
       }}
