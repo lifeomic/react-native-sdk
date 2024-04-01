@@ -1,6 +1,6 @@
 import React from 'react';
 import { camelCase, upperFirst } from 'lodash';
-import { SvgProps } from 'react-native-svg/lib/typescript/ReactNativeSVG';
+import { SvgProps } from 'react-native-svg';
 import { AppTileStack } from '../navigators/ConfigurableTabStacks/AppTileStack';
 import { HomeStack } from '../navigators/HomeStack';
 import { MessageTileStack } from '../navigators/ConfigurableTabStacks/MessageTileStack';
