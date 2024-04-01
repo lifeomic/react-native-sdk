@@ -3,7 +3,7 @@ import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Badge, Text, shadow } from 'react-native-paper';
 import { useStyles } from '../../hooks/useStyles';
 import { createStyles, useIcons } from '../BrandConfigProvider';
-import { SvgProps } from 'react-native-svg';
+import { NumberProp, SvgProps } from 'react-native-svg';
 import { tID } from '../../common/testID';
 
 interface TileProps {
@@ -57,8 +57,8 @@ export const Tile = ({
                 testID={tID('tile-chevron-icon-container')}
               >
                 <ChevronRight
-                  height={styles.arrowImage?.height}
-                  stroke={styles.arrowImage?.overlayColor}
+                  height={styles.arrow?.height}
+                  stroke={styles.arrow?.overlayColor}
                 />
               </View>
             ) : (
@@ -112,8 +112,8 @@ const defaultStyles = createStyles('Tile', (theme) => ({
     justifyContent: 'center',
     backgroundColor: theme.colors.primarySource,
   },
-  arrowImage: {
-    height: '100%',
+  arrow: {
+    height: '100%' as NumberProp | undefined,
     overlayColor: theme.colors.onPrimary,
   },
 }));

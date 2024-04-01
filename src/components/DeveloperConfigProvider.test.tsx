@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { renderHook } from '@testing-library/react-native';
 import { DeveloperConfigProvider } from './DeveloperConfigProvider';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
-import { DeveloperConfig } from '../common/DeveloperConfig';
+import { DeveloperConfig, HomeNavigator } from '../common/DeveloperConfig';
 import { NavigationContainer } from '@react-navigation/native';
 // NOTE: This file purposefully tests both useDeveloperConfig and
 // DeveloperConfigProvider.
@@ -50,9 +50,13 @@ describe('with developerConfig injected into provider', () => {
     });
     expect(result.current.apiBaseURL).toEqual(apiBaseURL);
   });
-
+  
   test('allows for additionalHomeScreens to be configured', async () => {
-    const NativeStack = createNativeStackNavigator();
+    type HomeScreenRoutes = {
+      'CustomHomeScreen/HelloWorld': {},
+    };
+
+    const NativeStack = createNativeStackNavigator<HomeScreenRoutes>() as HomeNavigator<HomeScreenRoutes>;
 
     const additionalScreens = [
       <NativeStack.Screen

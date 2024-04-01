@@ -21,8 +21,9 @@ import { createMessageScreen } from '../screens/MessageScreen';
 import { useInvalidateTodayCountCache } from '../hooks/todayTile/useTodayTasks';
 import { useQueryClient } from '@tanstack/react-query';
 import { createComposeMessageScreen } from '../screens/ComposeMessageScreen';
+import { HomeNavigator } from '../common/DeveloperConfig';
 
-const Stack = createNativeStackNavigator<HomeStackParamList>();
+const Stack = createNativeStackNavigator<HomeStackParamList>() as HomeNavigator<HomeStackParamList>;
 
 const MessageScreen = createMessageScreen<HomeStackParamList>({
   DirectMessageScreen: 'Home/DirectMessage',

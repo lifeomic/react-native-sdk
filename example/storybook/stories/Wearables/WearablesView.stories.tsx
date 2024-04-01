@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { Platform } from 'react-native';
+import { Platform, ViewStyle } from 'react-native';
 import { storiesOf } from '@storybook/react-native';
 import {
   WearablesView,
@@ -180,5 +180,5 @@ const storyStyles = {
       default: '100%',
     }),
     margin: 'auto',
-  },
+  } as ViewStyle,
 };
