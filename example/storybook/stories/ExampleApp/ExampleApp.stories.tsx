@@ -19,7 +19,7 @@ import { Home, Bell, Settings, Menu } from '@lifeomic/chromicons-native';
 import { HelloWorldScreen } from '../../../src/screens/HelloWorldScreen';
 import { IconButton } from 'react-native-paper';
 import { navigationRef } from '../../../../src/common/ThemedNavigationContainer';
-import { DataOverrideProvider } from '../../helpers/DataProviderDecorator';
+import { DataOverrideProvider } from 'example/storybook/helpers/DataProviderDecorator';
 
 storiesOf('Example App', module)
   .addDecorator(withKnobs)
