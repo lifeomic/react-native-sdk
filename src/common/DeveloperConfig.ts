@@ -13,7 +13,6 @@ import {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
-import { NativeStackNavigatorProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 import { PointBreakdownProps } from '../components/SocialShare/renderers/point-breakdown';
 import { ImageSourcePropType } from 'react-native';
 import { Route } from '../navigators/types';
@@ -115,8 +114,8 @@ export type DeveloperConfig = {
     };
   };
   pushNotificationsConfig?: PushNotificationsConfig;
-  getAdditionalHomeScreens?: <ParamList extends ParamListBase>(
-    HomeStack: Navigator<ParamList, NativeStackNavigatorProps>,
+  getAdditionalHomeScreens?: <TypedNavigator>(
+    HomeStack: TypedNavigator,
   ) => JSX.Element[];
   CustomHomeScreen?: () => JSX.Element;
   CustomActivityIndicatorView?: React.FC<{
