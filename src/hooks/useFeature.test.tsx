@@ -43,7 +43,7 @@ test('fetches the feature flag', async () => {
 
   const { result } = await renderHookInContext('test');
 
-await waitFor(() => expect(result.current.isSuccess).toBe(true));
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
   expect(axiosMock.history.get[0].url).toBe('/v1/features/test');
   await waitFor(() => expect(result.current.data).toEqual(true));
 });
