@@ -69,8 +69,8 @@ describe('usePost', () => {
     await waitFor(() => {
       expect(scope.isDone()).toBe(true);
       expect(result.current.isLoading).toBe(false);
+      expect(result.current.data).toEqual(response);
     });
-    expect(result.current.data).toEqual(response);
   });
 
   test('returns placeholder data until result is fetched', async () => {

@@ -536,8 +536,12 @@ describe('useDeleteResourceMutation', () => {
       });
     });
 
-    expect(axiosMock.history.delete[0].url).toBe(
-      `/v1/fhir/dstu3/Observation/${observationId}`,
-    );
+    await act(async () => {
+      await waitFor(() => {
+        expect(axiosMock.history.delete[0].url).toBe(
+          `/v1/fhir/dstu3/Observation/${observationId}`,
+        );
+      });
+    });
   });
 });

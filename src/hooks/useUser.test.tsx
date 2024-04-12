@@ -49,7 +49,7 @@ test('fetches and parses user', async () => {
   const mockGet = jest.fn().mockReturnValue({ status: 200, data: userProfile });
   api.mock('GET /v1/user', mockGet);
   const { result } = await renderInContext(() => useUser());
-  await waitFor(() => result.current.isSuccess);
+await waitFor(() => expect(result.current.isSuccess).toBe(true));
   await waitFor(() => expect(result.current.data).toEqual(userProfile));
   expect(mockGet).toHaveBeenCalledTimes(1);
   expect(mockGet).toHaveBeenCalledWith({

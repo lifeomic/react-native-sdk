@@ -94,18 +94,19 @@ test('calls handleAppTileMessage', async () => {
     },
   };
   AppTileWebView.props.onMessage(event);
-  expect(handleAppTileMessageMock).toBeCalledWith(event);
+  await waitFor(() => expect(handleAppTileMessageMock).toBeCalledWith(event));
 });
 
-test('sets the appTitle title as the screen title', () => {
+test('sets the appTitle title as the screen title', async () => {
   route.params.appTile = appTile;
-  renderScreen();
+  const { findByTestId } = renderScreen();
+  await findByTestId('app-tile-webview');
   expect(navigation.setOptions).toBeCalledWith({
     title: appTile.title,
   });
 });
 
-test('sets the titleOverride as the screen title', () => {
+test('sets the titleOverride as the screen title', async () => {
   route.params.appTile = appTile;
   const TITLE_OVERRIDE = 'My title override';
   useAppConfigMock.mockReturnValue({
@@ -121,13 +122,14 @@ test('sets the titleOverride as the screen title', () => {
       },
     },
   });
-  renderScreen();
+  const { findByTestId } = renderScreen();
+  await findByTestId('app-tile-webview');
   expect(navigation.setOptions).toBeCalledWith({
     title: TITLE_OVERRIDE,
   });
 });
 
-test('handles existing appTileSettings with no appTile override title', () => {
+test('handles existing appTileSettings with no appTile override title', async () => {
   route.params.appTile = appTile;
   useAppConfigMock.mockReturnValue({
     data: {
@@ -138,7 +140,8 @@ test('handles existing appTileSettings with no appTile override title', () => {
       },
     },
   });
-  renderScreen();
+  const { findByTestId } = renderScreen();
+  await findByTestId('app-tile-webview');
   expect(navigation.setOptions).toBeCalledWith({
     title: appTile.title,
   });

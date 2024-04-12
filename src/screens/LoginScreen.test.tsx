@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { render, act } from '@testing-library/react-native';
+import { render, act, waitFor } from '@testing-library/react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { useStyles, useDeveloperConfig } from '../hooks';
 import { LoginScreen } from './LoginScreen';
@@ -35,8 +35,6 @@ const loginScreenInContext = (
 
 describe('LoginScreen', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
-
     useStylesMock.mockReturnValue({
       styles: {
         containerView: {},
@@ -89,26 +87,30 @@ describe('LoginScreen', () => {
     expect(getByText('Custom Login Screen')).toBeDefined();
   });
 
-  it('renders an error when onFail is called', () => {
+  it('renders an error when onFail is called', async () => {
     const oAuthLoginButtonSpy = jest.spyOn(
       OAuthLoginButtonModule,
       'OAuthLoginButton',
     );
 
-    const { findByText } = render(loginScreenInContext);
-
-    expect(oAuthLoginButtonSpy).toHaveBeenCalledTimes(1);
+    const { toJSON, findByText } = render(loginScreenInContext);
+    await act(async () => {
+      await waitFor(() => expect(oAuthLoginButtonSpy).toHaveBeenCalledTimes(1));
+    });
 
     const onFail = oAuthLoginButtonSpy.mock.calls[0][0].onFail!;
 
-    act(() => {
+    await act(() => {
       onFail('Fake error');
     });
 
-    expect(findByText('Authentication Error')).toBeDefined();
-    expect(
-      findByText('We encountered an error trying to log you in.'),
-    ).toBeDefined();
+    await act(async () => {
+      await waitFor(() =>
+        expect(findByText('Authentication Error')).toBeDefined(),
+      );
+    });
+
+    expect(JSON.stringify(toJSON())).toContain('Fake error');
   });
 
   const NON_ERRORING_FAILURE_MESSAGES = [

@@ -19,8 +19,13 @@ export function useJoinCircles() {
           )
           .then((res) => {
             return res.data;
+          })
+          .catch(() => {
+            return [];
           });
       }
+
+      return [];
     },
     {
       enabled: !!data?.homeTab?.circleTiles,

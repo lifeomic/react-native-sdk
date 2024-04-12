@@ -69,8 +69,8 @@ test('renders no notification message', async () => {
   const { getByTestId } = render(notificationsScreen);
   await waitFor(() => {
     expect(scope.isDone()).toBe(true);
+    expect(getByTestId('no-notifications-message')).toBeDefined();
   });
-  expect(getByTestId('no-notifications-message')).toBeDefined();
 });
 
 test('renders notifications', async () => {
@@ -97,11 +97,11 @@ test('renders notifications', async () => {
     undefined,
     notificationResponse,
   );
-  const { getByTestId, getByText } = render(notificationsScreen);
+  const { findByTestId, getByText } = render(notificationsScreen);
   await waitFor(() => {
     expect(scope.isDone()).toBe(true);
   });
-  const notification = getByTestId('notification-0');
+  const notification = await findByTestId('notification-0');
   expect(notification).toBeDefined();
   expect(getByText(notificationText)).toBeDefined();
 });

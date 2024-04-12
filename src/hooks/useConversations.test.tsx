@@ -72,8 +72,7 @@ describe('useHasUnread', () => {
     const { result } = renderHookInContext(() => useHasUnread(''));
 
     await waitFor(() => scope.done());
-
-    expect(result.current).toBe(true);
+    await waitFor(() => expect(result.current).toBe(true));
   });
 
   test('returns false if there are conversations with no matching profiles', async () => {
@@ -99,8 +98,7 @@ describe('useHasUnread', () => {
     const { result } = renderHookInContext(() => useHasUnread(''));
 
     await waitFor(() => scope.done());
-
-    expect(result.current).toBe(false);
+    await waitFor(() => expect(result.current).toBe(false));
   });
 
   test('handles missing user and profile data', async () => {
@@ -130,7 +128,6 @@ describe('useHasUnread', () => {
     const { result } = renderHookInContext(() => useHasUnread(''));
 
     await waitFor(() => scope.done());
-
-    expect(result.current).toBe(false);
+    await waitFor(() => expect(result.current).toBe(false));
   });
 });
