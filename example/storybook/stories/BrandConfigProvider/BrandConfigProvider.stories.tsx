@@ -34,20 +34,20 @@ storiesOf('BrandConfigProvider', module)
       'Provider level component styles',
       {
         ExampleBox: {
-          container: {
+          containerView: {
             borderWidth: 4,
           },
-          text: {
+          messageText: {
             fontWeight: 'bold',
           },
         },
       },
     );
     const componentStyles: ExampleBoxStyles = object('Component level styles', {
-      container: {
+      containerView: {
         borderColor: 'blue',
       },
-      text: {
+      messageText: {
         fontStyle: 'italic',
       },
     });

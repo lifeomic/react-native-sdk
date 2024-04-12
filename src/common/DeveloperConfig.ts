@@ -114,8 +114,8 @@ export type DeveloperConfig = {
     };
   };
   pushNotificationsConfig?: PushNotificationsConfig;
-  getAdditionalHomeScreens?: <TypedNavigator>(
-    HomeStack: TypedNavigator,
+  getAdditionalHomeScreens?: <ParamList extends ParamListBase>(
+    list: ParamList,
   ) => JSX.Element[];
   CustomHomeScreen?: () => JSX.Element;
   CustomActivityIndicatorView?: React.FC<{
