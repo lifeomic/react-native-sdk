@@ -1,6 +1,10 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useAppConfig, AppTile } from './useAppConfig';
+import {
+  useAppConfig,
+  AppTile,
+  AppConfigContextProvider,
+} from './useAppConfig';
 import { useActiveProject } from './useActiveProject';
 import { HttpClientContextProvider } from './useHttpClient';
 import { createRestAPIMock } from '../test-utils/rest-api-mocking';
@@ -27,7 +31,9 @@ const renderHookInContext = async () => {
     wrapper: ({ children }) => (
       <QueryClientProvider client={new QueryClient()}>
         <ActiveAccountProvider account="mockaccount">
-          <HttpClientContextProvider>{children}</HttpClientContextProvider>
+          <AppConfigContextProvider>
+            <HttpClientContextProvider>{children}</HttpClientContextProvider>
+          </AppConfigContextProvider>
         </ActiveAccountProvider>
       </QueryClientProvider>
     ),
@@ -42,17 +48,21 @@ beforeEach(() => {
 
 test('configured appTiles are returned', async () => {
   const mockAppTiles = ['appTile-1', 'appTile-2', 'appTile-3'].map(mockAppTile);
-  api.mock('GET /v1/life-research/projects/:projectId/app-config', {
-    status: 200,
-    data: {
-      homeTab: {
-        appTiles: mockAppTiles,
-      },
-    },
-  });
-  const { result } = await renderHookInContext();
 
-  await waitFor(() => {
-    expect(result.current.data?.homeTab?.appTiles).toEqual(mockAppTiles);
-  });
+  // Bug in mocker seems to not be able to tell /:id and /list apart
+  api.mockOrdered('GET /v1/life-research/projects/:projectId/app-configs/:id', [
+    { status: 200, data: [{ name: 'Main Config', id: 'id' }] },
+    {
+      status: 200,
+      data: {
+        homeTab: {
+          appTiles: mockAppTiles,
+        },
+      } as any,
+    },
+  ]);
+  const { result } = await renderHookInContext();
+  await waitFor(() =>
+    expect(result.current.data?.homeTab?.appTiles).toEqual(mockAppTiles),
+  );
 });

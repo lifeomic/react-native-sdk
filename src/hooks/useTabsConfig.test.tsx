@@ -1,5 +1,5 @@
 import { renderHook, render } from '@testing-library/react-native';
-import { useAppConfig } from './useAppConfig';
+import { AppConfigContext, useAppConfig } from './useAppConfig';
 import { useDeveloperConfig } from './useDeveloperConfig';
 import { useTabsConfig } from './useTabsConfig';
 import { NavigationTab } from '../common';
@@ -14,9 +14,7 @@ jest.mock('./useDeveloperConfig', () => ({
   useDeveloperConfig: jest.fn(),
 }));
 
-const useAppConfigMock = useAppConfig as jest.Mock<
-  Partial<ReturnType<typeof useAppConfig>>
->;
+const useAppConfigMock = useAppConfig as jest.Mock<Partial<AppConfigContext>>;
 const useDeveloperConfigMock = useDeveloperConfig as jest.Mock<
   ReturnType<typeof useDeveloperConfig>
 >;
