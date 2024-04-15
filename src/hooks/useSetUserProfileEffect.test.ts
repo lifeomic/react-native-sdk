@@ -120,5 +120,5 @@ test('not set the username if it is already set', async () => {
   });
 
   renderHook(() => useSetUserProfileEffect());
-  await waitFor(() => expect(updateUser).not.toHaveBeenCalled());
+  expect(updateUser).not.toHaveBeenCalled();
 });
