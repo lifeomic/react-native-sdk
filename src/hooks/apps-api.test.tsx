@@ -1,7 +1,7 @@
 import React from 'react';
 import { createAPIMockingUtility } from '@lifeomic/one-query/test-utils';
 import { setupServer } from 'msw/node';
-import { renderHook } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { useAppsAPIMutation } from './apps-api';
 import { AuthAPIEndpoints } from '@lifeomic/react-client';
@@ -43,14 +43,22 @@ test('makes mutation request', async () => {
   });
 
   const { result } = renderHookInContext();
-
-  const response = await result.current.mutateAsync({
-    evc: 'evc-code',
-    inviteId: 'invite-id',
-    originalUrl: 'myapp://evc-signup',
-    clientId: 'client-id',
-    email: 'bat.man@thecave.com',
+  await act(async () => {
+    // Note: Without wrapping this particular waitFor jest will throw an act warning
+    await waitFor(() => expect(result.current.isSuccess).toBeDefined());
   });
 
-  expect(response).toEqual(credentials);
+  let response: any;
+  await act(async () => {
+    response = await result.current.mutateAsync({
+      evc: 'evc-code',
+      inviteId: 'invite-id',
+      originalUrl: 'myapp://evc-signup',
+      clientId: 'client-id',
+      email: 'bat.man@thecave.com',
+    });
+  });
+
+  await waitFor(() => expect(response).toEqual(credentials));
+  await waitFor(() => expect(result.current.isSuccess).toBeDefined());
 });

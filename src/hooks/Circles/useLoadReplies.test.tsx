@@ -110,16 +110,16 @@ describe('useLoadReplies', () => {
     );
     const { result } = renderHookWithInjectedClient();
 
-    act(() => {
+    await act(() => {
       result.current.loadReplies(initialPost);
     });
 
     await waitFor(() => {
       expect(scope.isDone()).toBe(true);
       expect(result.current.isFetched).toBe(true);
+      expect(result.current.data).toEqual(response);
     });
 
-    expect(result.current.data).toEqual(response);
     await waitFor(() => {
       expect(queryClient.getQueryData(['postDetails', initialPost.id])).toEqual(
         {

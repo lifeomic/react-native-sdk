@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-native';
+import { renderHook, waitFor } from '@testing-library/react-native';
 import { useUpdateUser, useUser } from './useUser';
 import { useActiveProject } from './useActiveProject';
 import { useSetUserProfileEffect } from './useSetUserProfileEffect';
@@ -28,10 +28,9 @@ beforeEach(() => {
   useActiveProjectMock.mockReturnValue({ activeSubject: {} });
 });
 
-test('should update the user once all hooks load and the user does not have data', () => {
+test('should update the user once all hooks load and the user does not have data', async () => {
   const result = renderHook(() => useSetUserProfileEffect());
-
-  expect(updateUser).not.toHaveBeenCalled();
+  await waitFor(() => expect(updateUser).not.toHaveBeenCalled());
 
   useUserMock.mockReturnValue({
     isLoading: false,
@@ -40,8 +39,7 @@ test('should update the user once all hooks load and the user does not have data
   });
 
   result.rerender({});
-
-  expect(updateUser).not.toHaveBeenCalled();
+  await waitFor(() => expect(updateUser).not.toHaveBeenCalled());
 
   useActiveProjectMock.mockReturnValue({
     activeSubject: {
@@ -56,15 +54,17 @@ test('should update the user once all hooks load and the user does not have data
 
   result.rerender({});
 
-  expect(updateUser).toHaveBeenCalledWith({
-    profile: {
-      givenName: 'FirstName',
-      familyName: 'LastName',
-    },
+  await waitFor(() => {
+    expect(updateUser).toHaveBeenCalledWith({
+      profile: {
+        givenName: 'FirstName',
+        familyName: 'LastName',
+      },
+    });
   });
 });
 
-test('should use the first official name', () => {
+test('should use the first official name', async () => {
   useUserMock.mockReturnValue({
     isLoading: false,
     isFetched: true,
@@ -88,16 +88,17 @@ test('should use the first official name', () => {
   });
 
   renderHook(() => useSetUserProfileEffect());
-
-  expect(updateUser).toHaveBeenCalledWith({
-    profile: {
-      givenName: 'FirstName',
-      familyName: 'LastName',
-    },
-  });
+  await waitFor(() =>
+    expect(updateUser).toHaveBeenCalledWith({
+      profile: {
+        givenName: 'FirstName',
+        familyName: 'LastName',
+      },
+    }),
+  );
 });
 
-test('not set the username if it is already set', () => {
+test('not set the username if it is already set', async () => {
   useUserMock.mockReturnValue({
     isLoading: false,
     isFetched: true,
@@ -119,6 +120,5 @@ test('not set the username if it is already set', () => {
   });
 
   renderHook(() => useSetUserProfileEffect());
-
   expect(updateUser).not.toHaveBeenCalled();
 });

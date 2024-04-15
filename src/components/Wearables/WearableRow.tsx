@@ -529,9 +529,9 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
 
       return (
         <>
-          <View style={styles.divider} />
+          <View style={styles.dividerView} />
           {Content}
-          <View style={styles.divider} />
+          <View style={styles.dividerView} />
         </>
       );
     },
@@ -545,7 +545,7 @@ export const WearableRow: FC<WearableRowProps> = (props) => {
       styles.backfillButtonText,
       styles.backfillDescription,
       styles.backfillErrorText,
-      styles.divider,
+      styles.dividerView,
     ],
   );
 
@@ -629,7 +629,7 @@ const defaultStyles = createStyles('WearableRow', (theme) => ({
   detailsView: {
     flexDirection: 'column',
   },
-  divider: {
+  dividerView: {
     height: StyleSheet.hairlineWidth,
     width: '200%',
     marginLeft: -theme.spacing.large,

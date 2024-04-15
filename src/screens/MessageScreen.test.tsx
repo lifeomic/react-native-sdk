@@ -85,7 +85,7 @@ beforeEach(() => {
   useProfilesForTileMock.mockReturnValue({
     data: [mockMeProfile, mockYouProfile],
   });
-  useLeaveConversationMock.mockRejectedValue({
+  useLeaveConversationMock.mockReturnValue({
     mutateAsync: jest.fn(),
   });
 });

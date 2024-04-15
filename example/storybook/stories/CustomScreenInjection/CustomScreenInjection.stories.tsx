@@ -14,6 +14,7 @@ import {
   UsersScreen,
 } from './customScreens';
 import { Navigation } from '@lifeomic/chromicons-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 storiesOf('Custom Screen Injection', module)
   .addDecorator(withKnobs)
@@ -21,7 +22,8 @@ storiesOf('Custom Screen Injection', module)
     return (
       <DeveloperConfigProvider
         developerConfig={{
-          getAdditionalHomeScreens: (HomeStack) => {
+          getAdditionalHomeScreens: (paramList) => {
+            const HomeStack = createNativeStackNavigator<typeof paramList>();
             return [
               <HomeStack.Screen
                 name="CustomHomeScreen/Users"

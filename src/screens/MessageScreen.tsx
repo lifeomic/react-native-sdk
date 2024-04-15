@@ -302,6 +302,7 @@ const MultiGiftedAvatar = ({ profiles }: MultiGiftedAvatarProps) => {
     >
       {paddedProfiles.map((profile, i) => (
         <GiftedAvatar
+          key={i}
           user={{
             name: profile.profile.displayName,
             avatar: profile.profile.picture,

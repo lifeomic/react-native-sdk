@@ -55,7 +55,7 @@ test('fetches and returns projects related to useMe', async () => {
   const projectsResponse = { items: [{}, {}] };
   axiosMock.onGet().reply(200, projectsResponse);
   const { result } = await renderHookInContext();
-  await waitFor(() => result.current.isSuccess);
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
   expect(axiosMock.history.get[0].url).toBe('/v1/projects?id=proj1&id=proj2');
   await waitFor(() => expect(result.current.data).toEqual([{}, {}]));
 });
@@ -74,23 +74,23 @@ test('fetches even if useMe returns no data', async () => {
     isLoading: true,
   });
   const { result, rerender } = await renderHookInContext();
-  await waitFor(() => result.current.isSuccess);
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
   useMeMock.mockReturnValue({
     data: [],
   });
 
-  await rerender({});
-  await waitFor(() => result.current.isSuccess);
+  rerender({});
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
   useMeMock.mockReturnValue({
     data: [{ projectId: 'proj1' }, { noProjectIdEdgeCase: true }],
   });
 
   axiosMock.onGet().replyOnce(200, { items: [] });
-  await rerender({});
-  await waitFor(() => result.current.isSuccess);
+  rerender({});
+  await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
   expect(axiosMock.history.get.length).toBe(1);
-  expect(result.current.data).toBeUndefined();
+  expect(result.current.data).toEqual([]);
 });

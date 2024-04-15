@@ -2,7 +2,6 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { diagnostics: false }],
   },
-  testRunner: 'jest-circus/runner',
   testMatch: [
     '<rootDir>/src/**/*.test.{js,jsx,ts,tsx}',
   ],
