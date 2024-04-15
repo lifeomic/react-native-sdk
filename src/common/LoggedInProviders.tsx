@@ -9,7 +9,7 @@ import { PushNotificationsProvider } from '../hooks/usePushNotifications';
 import { CircleTileContextProvider } from '../hooks/Circles/useActiveCircleTile';
 import { OnboardingCourseContextProvider } from '../hooks/useOnboardingCourse';
 import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
-import { useAuth } from '../hooks';
+import { AppConfigContextProvider, useAuth } from '../hooks';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NotLoggedInRootParamList } from '../navigators';
 import { LoginScreen } from '../screens/LoginScreen';
@@ -52,20 +52,22 @@ export const LoggedInProviders = ({ children }: LoggedInProvidersProps) => {
   return (
     <InviteProvider>
       <ActiveProjectContextProvider>
-        <TrackTileProvider>
-          <WearableLifecycleProvider>
-            <CircleTileContextProvider>
-              <OnboardingCourseContextProvider>
-                <PushNotificationsProvider config={pushNotificationsConfig}>
-                  <NotificationsManagerProvider>
-                    {children}
-                  </NotificationsManagerProvider>
-                </PushNotificationsProvider>
-                <CreateEditPostModal />
-              </OnboardingCourseContextProvider>
-            </CircleTileContextProvider>
-          </WearableLifecycleProvider>
-        </TrackTileProvider>
+        <AppConfigContextProvider>
+          <TrackTileProvider>
+            <WearableLifecycleProvider>
+              <CircleTileContextProvider>
+                <OnboardingCourseContextProvider>
+                  <PushNotificationsProvider config={pushNotificationsConfig}>
+                    <NotificationsManagerProvider>
+                      {children}
+                    </NotificationsManagerProvider>
+                  </PushNotificationsProvider>
+                  <CreateEditPostModal />
+                </OnboardingCourseContextProvider>
+              </CircleTileContextProvider>
+            </WearableLifecycleProvider>
+          </TrackTileProvider>
+        </AppConfigContextProvider>
       </ActiveProjectContextProvider>
     </InviteProvider>
   );

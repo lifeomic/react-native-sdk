@@ -2,16 +2,21 @@ import { createRestAPIHooks, RestAPIEndpoints } from '@lifeomic/react-client';
 import { useHttpClient } from './useHttpClient';
 import { AppConfig } from './useAppConfig';
 import { APIQueryHooks, RequestPayloadOf } from '@lifeomic/one-query';
-import {
-  UseQueryOptions,
-  UseQueryResult,
-} from '@tanstack/react-query/build/lib/types';
+import { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { AxiosRequestConfig } from 'axios';
 
 export type Overrides = {
   'GET /v1/life-research/projects/:projectId/app-config': {
     Request: {};
     Response: AppConfig;
+  };
+  'GET /v1/life-research/projects/:projectId/app-configs/:id': {
+    Request: {};
+    Response: AppConfig;
+  };
+  'GET /v1/life-research/projects/:projectId/app-configs/list': {
+    Request: {};
+    Response: { id: string; name: string }[];
   };
 };
 
