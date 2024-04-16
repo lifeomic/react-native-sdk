@@ -7,7 +7,6 @@ import {
   AppTileScreen,
   CustomAppTileScreen,
   DeveloperConfigProvider,
-  Tile,
 } from '../../../src';
 import { TilesList } from '../../../src/components/tiles/TilesList';
 import {
@@ -16,6 +15,7 @@ import {
 } from '../../../src/navigators/types';
 import { DataProviderDecorator } from '../helpers/DataProviderDecorator';
 import { ScreenSurface } from '../../../src/components/ScreenSurface';
+import { Tile } from '../../../src/components/tiles/Tile';
 
 storiesOf('Custom App Tile Screen', module)
   .addDecorator(
@@ -78,6 +78,7 @@ function HomeScreen({ navigation, route }: HomeStackScreenProps<'Home'>) {
           }}
         >
           <Tile
+            tileListMode="list"
             id="app-tile-invalid"
             title="Error 2"
             onPress={() => {

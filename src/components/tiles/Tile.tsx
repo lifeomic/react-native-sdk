@@ -1,126 +1,37 @@
-import React from 'react';
-import { TouchableOpacity, View, ViewStyle } from 'react-native';
-import { Badge, Text, shadow } from 'react-native-paper';
-import { useStyles } from '../../hooks/useStyles';
-import { createStyles, useIcons } from '../BrandConfigProvider';
 import { SvgProps } from 'react-native-svg';
-import { tID } from '../../common/testID';
+import { BoxTile, BoxTileStyles } from './BoxTile';
+import { ListTile, ListTileStyles } from './ListTile';
+import React from 'react';
 
-interface TileProps {
+export interface TileProps {
   title: string;
-  children?: React.ReactNode;
   Icon?: React.FC<SvgProps>;
   id?: string;
   onPress?: () => void;
   testID?: string;
   showBadge?: boolean;
   badge?: () => React.JSX.Element | null;
-  style?: TileStyles;
+  children?: React.ReactNode;
+  tileListMode: 'list' | 'column';
 }
 
-export const Tile = ({
-  Icon,
-  title,
-  id,
-  testID,
-  children,
-  onPress,
-  showBadge,
-  badge,
-  style: instanceStyles,
-}: TileProps) => {
-  const { ChevronRight } = useIcons();
-  const { styles } = useStyles(defaultStyles, instanceStyles);
+export interface BoxTileProps extends TileProps {
+  tileListMode: 'column';
+  tileMode?: 'fullLength' | 'halfLength';
+  style?: BoxTileStyles;
+}
 
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={!onPress}
-      testID={tID(`tile-button-${id}`)}
-    >
-      <View style={styles.container} id={id} testID={testID}>
-        <View style={styles.contentsWrapper}>
-          <View style={styles.contentsView}>
-            <View style={styles.iconContainer}>
-              {Icon && <Icon style={styles.icon} />}
-            </View>
-            <Text numberOfLines={2} style={styles.titleText}>
-              {title}
-            </Text>
-            <View style={{ paddingRight: 24 }}>
-              {showBadge && <Badge size={12} testID={tID('tile-badge')} />}
-              {badge?.()}
-            </View>
-            {onPress ? (
-              <View
-                style={styles.arrowIconView}
-                testID={tID('tile-chevron-icon-container')}
-              >
-                <ChevronRight
-                  height={styles.arrowImage?.height}
-                  stroke={styles.arrowImage?.overlayColor}
-                />
-              </View>
-            ) : (
-              <View style={styles.arrowIconView} />
-            )}
-          </View>
-        </View>
-      </View>
-      {children}
-    </TouchableOpacity>
-  );
+export interface ListTileProps extends TileProps {
+  tileListMode: 'list';
+  style?: ListTileStyles;
+}
+
+export const Tile = (props: ListTileProps | BoxTileProps) => {
+  if (props.tileListMode === 'list') {
+    return <ListTile {...props} />;
+  } else if (props.tileListMode === 'column') {
+    return <BoxTile {...props} />;
+  }
+
+  return null;
 };
-
-const defaultStyles = createStyles('Tile', (theme) => ({
-  contentsView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: theme.spacing.large,
-  },
-  contentsWrapper: {
-    flex: 1,
-    borderRadius: 10,
-    overflow: 'hidden',
-  },
-  container: {
-    height: 55,
-    borderRadius: 10,
-    backgroundColor: theme.colors.surface,
-    marginBottom: theme.spacing.large,
-    ...shadow(3),
-  } as ViewStyle,
-  titleText: {
-    ...theme.fonts.titleMedium,
-    color: theme.colors.text,
-    paddingLeft: theme.spacing.small,
-    flex: 1,
-  },
-  iconContainer: {
-    width: 38,
-    paddingRight: theme.spacing.small,
-  },
-  icon: {
-    resizeMode: 'cover',
-    marginLeft: 0,
-    marginRight: theme.spacing.small,
-  },
-  arrowIconView: {
-    height: '100%',
-    aspectRatio: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.colors.primarySource,
-  },
-  arrowImage: {
-    height: '100%',
-    overlayColor: theme.colors.onPrimary,
-  },
-}));
-
-declare module '@styles' {
-  interface ComponentStyles
-    extends ComponentNamedStyles<typeof defaultStyles> {}
-}
-
-export type TileStyles = NamedStylesProp<typeof defaultStyles>;

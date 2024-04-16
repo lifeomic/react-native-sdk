@@ -5,6 +5,7 @@ import { ScreenSurface } from '../components/ScreenSurface';
 import { HomeStackScreenProps } from '../navigators/types';
 import { refreshNotifier } from '../common/RefreshNotifier';
 import { HeaderLeftRefreshButton } from '../components/HeaderLeftRefreshButton';
+import { useDeveloperConfig } from '../hooks/useDeveloperConfig';
 
 export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
   const { data } = useAppConfig();
@@ -12,6 +13,7 @@ export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
   const { navigation } = navProps;
   const customHeaderTitle = data?.homeTab?.screenHeader?.title;
   const headerRefreshEnabled = data?.homeTab?.screenHeader?.enableRefresh;
+  const { tileListMode } = useDeveloperConfig();
 
   const refresh = useCallback(async () => {
     if (refreshing) {
@@ -47,7 +49,7 @@ export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
 
   return (
     <ScreenSurface testID="home-screen">
-      <TilesList {...navProps} />
+      <TilesList tileListMode={tileListMode} {...navProps} />
     </ScreenSurface>
   );
 };
