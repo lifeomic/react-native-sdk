@@ -175,8 +175,6 @@ export const AppConfigContextProvider = ({
   const configList = useAppConfigList();
   const [appConfigId, setAppConfigId] = useState<string | undefined>();
 
-  console.log('ConfigList', configList);
-
   useEffect(() => {
     if (configList) {
       setAppConfigId(configList[0]?.id);
