@@ -12,7 +12,7 @@ const AppConfigSwitcherButton = () => {
     <IconButton
       onPress={emitShowAppConfigSwitcher}
       icon={Menu}
-      style={styles.button}
+      style={styles.iconButton}
     />
   );
 };
@@ -20,7 +20,7 @@ const AppConfigSwitcherButton = () => {
 export default AppConfigSwitcherButton;
 
 const defaultStyles = createStyles('AppConfigSwitcherButton', () => ({
-  button: {},
+  iconButton: {},
 }));
 
 declare module '@styles' {
