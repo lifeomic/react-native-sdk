@@ -5,7 +5,6 @@ import { ScreenSurface } from '../components/ScreenSurface';
 import { HomeStackScreenProps } from '../navigators/types';
 import { refreshNotifier } from '../common/RefreshNotifier';
 import { HeaderLeftRefreshButton } from '../components/HeaderLeftRefreshButton';
-import AppConfigSwitcher from '../components/AppConfigSwitcher';
 
 export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
   const { data } = useAppConfig();
@@ -48,7 +47,6 @@ export const HomeScreen = (navProps: HomeStackScreenProps<'Home'>) => {
 
   return (
     <ScreenSurface testID="home-screen">
-      <AppConfigSwitcher />
       <TilesList {...navProps} />
     </ScreenSurface>
   );

@@ -16,6 +16,7 @@ import { LoginScreen } from '../screens/LoginScreen';
 import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { InviteProvider } from '../components/Invitations/InviteProvider';
 import { t } from 'i18next';
+import AppConfigSwitcher from '../components/AppConfigSwitcher';
 
 export type LoggedInProvidersProps = {
   children?: React.ReactNode;
@@ -53,6 +54,7 @@ export const LoggedInProviders = ({ children }: LoggedInProvidersProps) => {
     <InviteProvider>
       <ActiveProjectContextProvider>
         <AppConfigContextProvider>
+          <AppConfigSwitcher />
           <TrackTileProvider>
             <WearableLifecycleProvider>
               <CircleTileContextProvider>
