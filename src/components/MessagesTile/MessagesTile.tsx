@@ -9,9 +9,16 @@ interface Props extends Pick<HomeStackScreenProps<'Home'>, 'navigation'> {
   id: string;
   title: string;
   Icon: React.FC<SvgProps>;
+  tileListMode: 'list' | 'column';
 }
 
-export function MessagesTile({ navigation, title, id, Icon }: Props) {
+export function MessagesTile({
+  navigation,
+  title,
+  id,
+  Icon,
+  tileListMode,
+}: Props) {
   const hasUnread = useHasUnread(id);
 
   return (
@@ -27,6 +34,7 @@ export function MessagesTile({ navigation, title, id, Icon }: Props) {
           tileId: id,
         });
       }}
+      tileListMode={tileListMode}
     />
   );
 }

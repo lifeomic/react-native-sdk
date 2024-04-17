@@ -2,7 +2,6 @@ import React, { useCallback } from 'react';
 import { Image, ImageStyle, View } from 'react-native';
 import { AppTile, CircleTile, useAppConfig } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
-import { Tile, TileStyles } from './Tile';
 import { TrackTile } from '../TrackTile';
 import { useStyles, useDeveloperConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
@@ -12,13 +11,19 @@ import { PillarsTile } from '../TrackTile/PillarsTile/PillarsTile';
 import { HomeStackScreenProps } from '../../navigators/types';
 import { t } from '../../../lib/i18n';
 import { MessagesTile } from '../MessagesTile';
+import { Tile } from './Tile';
 import TodayBadge from '../TodayBadge';
 
 interface Props extends HomeStackScreenProps<'Home'> {
   styles?: TilesListStyles;
+  tileListMode?: 'list' | 'column';
 }
 
-export function TilesList({ navigation, styles: instanceStyles }: Props) {
+export function TilesList({
+  navigation,
+  styles: instanceStyles,
+  tileListMode = 'list',
+}: Props) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { appTileScreens } = useDeveloperConfig();
   const { data } = useAppConfig();
@@ -104,15 +109,22 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
           title={trackTileTitle}
         />
       )}
-      <View style={styles.tilesView}>
+      <View
+        style={
+          tileListMode === 'list'
+            ? styles.listTilesView
+            : styles.columnTilesView
+        }
+      >
         {todayTileEnabled && todayTile && (
           <Tile
             id={todayTile.id}
             key={todayTile.id}
             title={todayTile.title}
-            Icon={tileIcon('HeartCheck', 'today')}
+            Icon={tileIcon('HeartCheck', 'today', tileListMode)}
             onPress={onTodayTilePress}
             badge={TodayBadge}
+            tileListMode={tileListMode}
           />
         )}
         {myDataTileEnabled && (
@@ -120,8 +132,9 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             id={'my-data-tile'}
             key={'my-data-tile'}
             title={t('My Data')}
-            Icon={tileIcon('Scatter', 'my-data-tile-icon')}
+            Icon={tileIcon('Scatter', 'my-data-tile-icon', tileListMode)}
             onPress={() => navigation.navigate('Home/MyData')}
+            tileListMode={tileListMode}
           />
         )}
         {data?.homeTab?.appTiles?.map((appTile: AppTile) => (
@@ -132,16 +145,24 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
               appTileSettings?.appTiles[appTile.id]?.title || appTile.title
             }
             onPress={onAppTilePress(appTile)}
-            Icon={appTileIcon(appTile.id, appTile.icon, styles.iconImage)}
+            Icon={appTileIcon(
+              appTile.id,
+              appTile.icon,
+              tileListMode === 'list'
+                ? styles.listIconImage
+                : styles.columnIconImage,
+            )}
+            tileListMode={tileListMode}
           />
         ))}
         {data?.homeTab?.messageTiles?.map(({ id, displayName }) => (
           <MessagesTile
-            Icon={tileIcon('MessageCircle', `message-tile-${id}`)}
+            Icon={tileIcon('MessageCircle', `message-tile-${id}`, tileListMode)}
             navigation={navigation}
             title={displayName}
             id={id}
             key={id}
+            tileListMode={tileListMode}
           />
         ))}
         {data?.homeTab?.circleTiles?.map((circleTile: CircleTile) => (
@@ -150,7 +171,8 @@ export function TilesList({ navigation, styles: instanceStyles }: Props) {
             key={circleTile.circleId}
             title={circleTile.buttonText ?? circleTile.circleName}
             onPress={onCircleTilePress(circleTile)}
-            Icon={tileIcon('HeartCircle', circleTile.circleId)}
+            Icon={tileIcon('HeartCircle', circleTile.circleId, tileListMode)}
+            tileListMode={tileListMode}
           />
         ))}
       </View>
@@ -174,7 +196,11 @@ const appTileIcon = (id: string, uri?: string, styles?: ImageStyle) =>
     return null;
   };
 
-const tileIcon = (defaultIconName: ChromiconName, customIdentifier: string) =>
+const tileIcon = (
+  defaultIconName: ChromiconName,
+  customIdentifier: string,
+  tileListMode: 'list' | 'column',
+) =>
   function TileIcon() {
     const { [defaultIconName]: DefaultIcon, [customIdentifier]: CustomIcon } =
       useIcons();
@@ -184,20 +210,31 @@ const tileIcon = (defaultIconName: ChromiconName, customIdentifier: string) =>
       return <CustomIcon />;
     }
 
-    return <DefaultIcon stroke={styles.tileIconImage?.overlayColor} />;
+    return (
+      <DefaultIcon
+        stroke={styles.tileIconImage?.overlayColor}
+        {...(tileListMode === 'column' && styles.columnIconView)}
+      />
+    );
   };
 
 const defaultStyles = createStyles('TilesList', (theme) => ({
   view: {},
-  tilesView: {
+  listTilesView: {
     marginHorizontal: theme.spacing.large,
     marginBottom: theme.spacing.large,
   },
-  iconImage: {
+  columnTilesView: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  listIconImage: {
     width: 30,
     height: 30,
     marginRight: theme.spacing.small,
   },
+  columnIconImage: { width: 40, height: 40 },
+  columnIconView: { width: 40, height: 40 },
   tileIconImage: {
     overlayColor: theme.colors.primarySource,
   },
@@ -211,5 +248,4 @@ declare module '@styles' {
     extends ComponentNamedStyles<typeof defaultStyles> {}
 }
 
-export type TilesListStyles = NamedStylesProp<typeof defaultStyles> &
-  TileStyles;
+export type TilesListStyles = NamedStylesProp<typeof defaultStyles>;

@@ -137,6 +137,7 @@ export type DeveloperConfig = {
   ) => { id: string; title: string; action: () => void }[];
   navigationLinking?: LinkingOptions<any>;
   skipInviteParams?: boolean;
+  tileListMode?: 'list' | 'column';
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };

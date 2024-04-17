@@ -33,6 +33,7 @@ const directMessageScreen = (
     <ActiveAccountProvider account="mockaccount">
       <GraphQLClientContextProvider baseURL={baseURL}>
         <MessagesTile
+          tileListMode="list"
           Icon={() => null}
           navigation={navigateMock as any}
           id="some-messages-tile"
