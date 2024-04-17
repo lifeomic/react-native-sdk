@@ -3,7 +3,7 @@ import { Image, ImageStyle, View } from 'react-native';
 import { AppTile, CircleTile, useAppConfig } from '../../hooks/useAppConfig';
 import { tID } from '../../common';
 import { TrackTile } from '../TrackTile';
-import { useStyles, useDeveloperConfig, useTheme } from '../../hooks';
+import { useStyles, useDeveloperConfig } from '../../hooks';
 import { getCustomAppTileComponent } from '../../common/DeveloperConfig';
 import { ChromiconName, createStyles, useIcons } from '../BrandConfigProvider';
 import { SvgUri } from 'react-native-svg';
@@ -27,7 +27,6 @@ export function TilesList({
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { appTileScreens } = useDeveloperConfig();
   const { data } = useAppConfig();
-  const theme = useTheme();
 
   const pillarsTileEnabled = data?.homeTab?.tiles?.includes?.('pillarsTile');
   const pillarSettings = data?.homeTab?.pillarSettings;
@@ -111,18 +110,11 @@ export function TilesList({
         />
       )}
       <View
-        style={[
-          styles.tilesView,
+        style={
           tileListMode === 'list'
-            ? {
-                marginHorizontal: theme.spacing.large,
-                marginBottom: theme.spacing.large,
-              }
-            : {
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-              },
-        ]}
+            ? styles.listTilesView
+            : styles.columnTilesView
+        }
       >
         {todayTileEnabled && todayTile && (
           <Tile
@@ -157,8 +149,8 @@ export function TilesList({
               appTile.id,
               appTile.icon,
               tileListMode === 'list'
-                ? styles.iconImage
-                : { width: 40, height: 40 },
+                ? styles.listIconImage
+                : styles.columnIconImage,
             )}
             tileListMode={tileListMode}
           />
@@ -221,19 +213,28 @@ const tileIcon = (
     return (
       <DefaultIcon
         stroke={styles.tileIconImage?.overlayColor}
-        {...(tileListMode === 'column' && { width: 40, height: 40 })}
+        {...(tileListMode === 'column' && styles.columnIconView)}
       />
     );
   };
 
 const defaultStyles = createStyles('TilesList', (theme) => ({
   view: {},
-  tilesView: {},
-  iconImage: {
+  listTilesView: {
+    marginHorizontal: theme.spacing.large,
+    marginBottom: theme.spacing.large,
+  },
+  columnTilesView: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  listIconImage: {
     width: 30,
     height: 30,
     marginRight: theme.spacing.small,
   },
+  columnIconImage: { width: 40, height: 40 },
+  columnIconView: { width: 40, height: 40 },
   tileIconImage: {
     overlayColor: theme.colors.primarySource,
   },

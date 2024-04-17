@@ -20,7 +20,7 @@ export function BoxTile({
   const backgroundColor =
     showBadge || !!badge
       ? styles.tileNotificationView?.backgroundColor
-      : styles.tileSpacingView?.backgroundColor;
+      : styles.tileView?.backgroundColor;
 
   return (
     <Card
@@ -28,7 +28,7 @@ export function BoxTile({
       onPress={onPress}
       disabled={!onPress}
       style={[
-        styles.tileSpacingView,
+        styles.tileView,
         tileMode === 'fullLength'
           ? { width: tileWidth * 2 + spaceBetweenTiles }
           : { width: tileWidth },
@@ -53,10 +53,7 @@ export const tileWidth =
   Math.floor(Dimensions.get('window').width - spaceBetweenTiles * 3) / 2;
 
 const defaultStyles = createStyles('BoxTile', (theme) => ({
-  tileColor: {
-    backgroundColor: theme.colors.surface,
-  },
-  tileSpacingView: {
+  tileView: {
     marginHorizontal: theme.spacing.small,
     marginBottom: theme.spacing.medium,
     backgroundColor: theme.colors.surface,
