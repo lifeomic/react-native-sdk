@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  Appbar,
-  Drawer,
-  IconButton,
-  Portal,
-  Provider,
-} from 'react-native-paper';
+import { Appbar, Drawer, IconButton, Portal } from 'react-native-paper';
 import { useAppConfig, useAppConfigList } from '../hooks/useAppConfig';
 import { Modal, NativeEventEmitter, View } from 'react-native';
 import { createStyles } from './BrandConfigProvider/styles/createStyles';
@@ -43,41 +37,39 @@ const AppConfigSwitcher = () => {
   }, []);
 
   return (
-    <Provider>
-      <Portal>
-        <Modal
-          visible={visible}
-          onDismiss={hideModal}
-          animationType={'slide'}
-          style={styles.modal}
-        >
-          <View style={styles.container}>
-            <Appbar.Header style={styles.header}>
-              <IconButton onPress={() => hideModal()} icon={ArrowLeft} />
-            </Appbar.Header>
-            <Drawer.Section
-              title="Adaptive Experiences: Tailored by Cohort"
-              showDivider={true}
-              titleMaxFontSizeMultiplier={4}
-            >
-              {configs?.map((config) => (
-                <Drawer.Item
-                  key={config.id}
-                  label={config.name}
-                  active={active === config.id}
-                  style={styles.itemText}
-                  onPress={() => {
-                    setActive(config.id);
-                    setAppConfigId(config.id);
-                    setVisible(false);
-                  }}
-                />
-              ))}
-            </Drawer.Section>
-          </View>
-        </Modal>
-      </Portal>
-    </Provider>
+    <Portal>
+      <Modal
+        visible={visible}
+        onDismiss={hideModal}
+        animationType={'slide'}
+        style={styles.modal}
+      >
+        <View style={styles.container}>
+          <Appbar.Header style={styles.header}>
+            <IconButton onPress={() => hideModal()} icon={ArrowLeft} />
+          </Appbar.Header>
+          <Drawer.Section
+            title="Adaptive Experiences: Tailored by Cohort"
+            showDivider={true}
+            titleMaxFontSizeMultiplier={4}
+          >
+            {configs?.map((config) => (
+              <Drawer.Item
+                key={config.id}
+                label={config.name}
+                active={active === config.id}
+                style={styles.itemText}
+                onPress={() => {
+                  setActive(config.id);
+                  setAppConfigId(config.id);
+                  setVisible(false);
+                }}
+              />
+            ))}
+          </Drawer.Section>
+        </View>
+      </Modal>
+    </Portal>
   );
 };
 
