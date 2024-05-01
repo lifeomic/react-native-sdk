@@ -19,6 +19,7 @@ function App() {
           primaryColor: '#fb5607',
         },
         apiBaseURL: baseURL,
+        showPreLoginWarning: false,
       }}
     >
       <RootProviders account="mockaccount" authConfig={authConfig}>

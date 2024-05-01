@@ -138,6 +138,7 @@ export type DeveloperConfig = {
   navigationLinking?: LinkingOptions<any>;
   skipInviteParams?: boolean;
   tileListMode?: 'list' | 'column';
+  showPreLoginWarning?: boolean;
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };
