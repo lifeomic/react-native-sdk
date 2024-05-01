@@ -44,7 +44,7 @@ export type PostRepliesQueryResponse = {
 
 export const postToMessage = (
   post: Partial<Post> & Pick<Post, 'id'>,
-): IMessage => {
+): IMessage | IMessage[] => {
   if (!post.authorId) {
     throw Error(
       t(
@@ -54,7 +54,7 @@ export const postToMessage = (
     );
   }
 
-  return {
+  const message = {
     _id: post.id,
     text: post.message || '',
     createdAt: post.createdAt ? new Date(post.createdAt) : new Date(),
@@ -64,6 +64,40 @@ export const postToMessage = (
       avatar: post.author?.profile.picture,
     },
   };
+
+  const markdownImages = message.text.match(/\!\[.+\]\(.+\)/g);
+
+  if (!markdownImages) {
+    return message;
+  }
+
+  const messages: IMessage[] = [];
+  let text = message.text;
+
+  for (let i = 0; i < markdownImages.length; i++) {
+    const imageMarkdown = markdownImages[i];
+    const imageUrl = imageMarkdown.match(/\!\[.+\]\((.+)\)/)?.[1];
+    const parts = text.split(imageMarkdown);
+    text = parts[1].trim();
+
+    messages.push({
+      ...message,
+      _id: `${message._id}-${i}`,
+      text: parts[0].trim(),
+    });
+    messages.push({
+      ...message,
+      _id: `${message._id}-${i}-image`,
+      text: '',
+      image: imageUrl,
+    });
+  }
+
+  if (text.length) {
+    messages.push({ ...message, text });
+  }
+
+  return messages.reverse();
 };
 
 const uniqSort = (userIds: Array<string | undefined>) => {
