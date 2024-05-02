@@ -29,7 +29,10 @@ import { useUser } from '../hooks';
 import { useProfilesForTile } from '../hooks/useMessagingProfiles';
 import { User } from '../types';
 import { ParamListBase } from '@react-navigation/native';
-import { DirectMessageParams } from './DirectMessagesScreen';
+import {
+  DirectMessageParams,
+  messageTextParsers,
+} from './DirectMessagesScreen';
 import { ComposeMessageParams } from './ComposeMessageScreen';
 import {
   ScreenParamTypes as BaseScreenParamTypes,
@@ -38,6 +41,7 @@ import {
 import compact from 'lodash/compact';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import ParsedText from 'react-native-parsed-text';
 
 export type MessageTileParams = {
   tileId: string;
@@ -206,7 +210,7 @@ export function MessageScreen<ParamList extends ParamListBase>({
                 style={styles.listItemView}
                 descriptionNumberOfLines={1}
                 descriptionStyle={
-                  node
+                  node.hasUnread
                     ? [styles.listItemSubtitleText, styles.newMessageText]
                     : styles.listItemSubtitleText
                 }
@@ -223,12 +227,19 @@ export function MessageScreen<ParamList extends ParamListBase>({
                   .map((profile) => profile.profile.displayName)
                   .join(', ')}
                 description={
-                  node.latestMessageUserId === userData?.id
-                    ? t('message-preview-prefixed', {
-                        defaultValue: 'You: {{messageText}}',
-                        messageText: node.latestMessageText,
-                      })
-                    : node.latestMessageText
+                  <ParsedText
+                    parse={messageTextParsers(
+                      styles.linkMessagePreviewText,
+                      true,
+                    )}
+                  >
+                    {node.latestMessageUserId === userData?.id
+                      ? t('message-preview-prefixed', {
+                          defaultValue: 'You: {{messageText}}',
+                          messageText: node.latestMessageText,
+                        })
+                      : node.latestMessageText}
+                  </ParsedText>
                 }
                 right={() => renderRight(node.latestMessageTime)}
               />
@@ -375,7 +386,6 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
     listItemTimeText: { paddingLeft: 15 },
     newMessageText: {
       color: theme.colors.text,
-      fontWeight: '600',
     },
     multiGiftedAvatarView: {
       flex: 1,
@@ -433,6 +443,9 @@ const defaultStyles = createStyles('MessageScreen', (theme) => {
       paddingVertical: 20,
     },
     createMessageIcon: {} as { color: string | undefined },
+    linkMessagePreviewText: {
+      textDecorationLine: 'underline',
+    },
   };
 });
 

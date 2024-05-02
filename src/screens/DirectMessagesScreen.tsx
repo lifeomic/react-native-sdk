@@ -28,7 +28,8 @@ import {
 import { User } from '../types';
 import { ScreenProps } from './utils/stack-helpers';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { Platform } from 'react-native';
+import { Linking, Platform, StyleProp, TextStyle } from 'react-native';
+import { ParseShape } from 'react-native-parsed-text';
 
 export type DirectMessageParams = {
   users: User[];
@@ -131,20 +132,24 @@ export const DirectMessagesScreen = ({
               left: styles.leftText,
               right: styles.rightText,
             }}
+            nextMessage={props.nextMessage}
             usernameStyle={styles.signatureText}
-            renderTime={(timeProps) => (
-              <Time
-                {...timeProps}
-                timeTextStyle={{
-                  left: styles.leftTimeText,
-                  right: styles.rightTimeText,
-                }}
-                containerStyle={{
-                  left: styles.leftTimeContainer,
-                  right: styles.rightTimeContainer,
-                }}
-              />
-            )}
+            renderTime={(timeProps) =>
+              timeProps.currentMessage?.createdAt !==
+                (timeProps as any).nextMessage?.createdAt && (
+                <Time
+                  {...timeProps}
+                  timeTextStyle={{
+                    left: styles.leftTimeText,
+                    right: styles.rightTimeText,
+                  }}
+                  containerStyle={{
+                    left: styles.leftTimeContainer,
+                    right: styles.rightTimeContainer,
+                  }}
+                />
+              )
+            }
           />
         );
       }}
@@ -187,9 +192,68 @@ export const DirectMessagesScreen = ({
           </Send>
         );
       }}
+      parsePatterns={messageTextParsers}
     />
   );
 };
+
+export const messageTextParsers = (
+  linkStyle: StyleProp<TextStyle>,
+  disabled = false,
+): ParseShape[] => [
+  {
+    pattern: /\!\[(.+)\]\((\S+)\)/,
+    renderText: (_fullString: string, matches: string[]) => `<${matches[1]}>`,
+  },
+  {
+    pattern: /\[(.+)\]\((\S+)\)/,
+    style: linkStyle,
+    renderText: (_fullString: string, matches: string[]) => matches[1],
+    onPress: (url: string) => {
+      const matches = url.match(/\[.+\]\((.+)\)/) || [];
+      Linking.openURL(matches[1]);
+    },
+    disabled,
+  },
+  {
+    type: 'url',
+    style: linkStyle,
+    onPress: (url: string) => Linking.openURL(url),
+    disabled,
+  },
+  {
+    type: 'phone',
+    style: linkStyle,
+    onPress: (url: string) => Linking.openURL(`tel:${url}`),
+    disabled,
+  },
+  {
+    type: 'email',
+    style: linkStyle,
+    onPress: (url: string) => Linking.openURL(`mailto:${url}`),
+    disabled,
+  },
+  {
+    pattern: /\*{3}(.+)\*{3}?/,
+    style: { fontWeight: 'bold', fontStyle: 'italic' },
+    renderText: (match: string) => match.slice(3, -3),
+  },
+  {
+    pattern: /[\*_]{2}(.+)[\*_]{2}?/,
+    style: { fontWeight: 'bold' },
+    renderText: (match: string) => match.slice(2, -2),
+  },
+  {
+    pattern: /[\*_]{1}(.+)[\*_]{1}?/,
+    style: { fontStyle: 'italic' },
+    renderText: (match: string) => match.slice(1, -1),
+  },
+  {
+    pattern: /~{2}(.+)~{2}?/,
+    style: { textDecorationLine: 'line-through' },
+    renderText: (match: string) => match.slice(2, -2),
+  },
+];
 
 const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   activityIndicator: {
