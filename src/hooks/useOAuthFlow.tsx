@@ -17,6 +17,7 @@ import { usePendingInvite } from '../components/Invitations/InviteProvider';
 import { useQueryClient } from '@tanstack/react-query';
 import { _sdkAnalyticsEvent } from '../common/Analytics';
 import { useDeveloperConfig } from './useDeveloperConfig';
+import { useStoredValue } from './useStoredValue';
 
 export interface OAuthConfig {
   login: (params: LoginParams) => Promise<void>;
@@ -78,6 +79,7 @@ export const OAuthContextProvider = ({
   const pendingInvite = usePendingInvite();
   const queryClient = useQueryClient();
   const { skipInviteParams } = useDeveloperConfig();
+  const [_, setLoginDetected] = useStoredValue('loginDetected');
 
   const authConfig = useMemo(
     () =>
@@ -159,6 +161,7 @@ export const OAuthContextProvider = ({
       try {
         const result = await authorize(authConfig);
         await storeAuthResult(result);
+        setLoginDetected('detected');
         _sdkAnalyticsEvent.track('Login', { usedInvite: !!pendingInvite?.evc });
         onSuccess?.(result);
       } catch (error) {
@@ -170,7 +173,13 @@ export const OAuthContextProvider = ({
         onFail?.(error);
       }
     },
-    [authConfig, clearAuthResult, pendingInvite?.evc, storeAuthResult],
+    [
+      authConfig,
+      clearAuthResult,
+      pendingInvite?.evc,
+      setLoginDetected,
+      storeAuthResult,
+    ],
   );
 
   const refreshHandler = useCallback(
