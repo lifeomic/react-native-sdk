@@ -164,5 +164,8 @@
     "react-navigation-header-buttons": "^9.0.1",
     "react-use": "^17.4.0",
     "zustand": "^4.4.7"
+  },
+  "optionalDependencies": {
+    "react-native-image-picker": "^7.1.2"
   }
 }

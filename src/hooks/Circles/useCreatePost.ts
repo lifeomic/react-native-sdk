@@ -60,6 +60,7 @@ export function useCreatePost() {
         replyCount: 0,
         status: 'READY',
         replies: { edges: [], pageInfo: {} },
+        attachmentsV2: { edges: [] },
         author: {
           profile: {
             displayName: data?.profile.displayName ?? '',

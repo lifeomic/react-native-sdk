@@ -52,7 +52,6 @@ describe('usePost', () => {
         message: 'Zoinks!',
         metadata: {},
         status: 'status',
-        attachments: [],
         reactionTotals: [],
         replies: {
           pageInfo: {},
@@ -110,7 +109,6 @@ describe('usePost', () => {
         message: 'Zoinks!',
         metadata: {},
         status: 'status',
-        attachments: [],
         reactionTotals: [],
         replies: {
           pageInfo: {},

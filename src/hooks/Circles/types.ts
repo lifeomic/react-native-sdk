@@ -34,7 +34,15 @@ export type Post = {
   deletedAt?: string;
   status: string;
   message?: string;
-  attachments?: {}[];
+  attachmentsV2?: {
+    edges: {
+      node: {
+        externalId: string;
+        type: AttachmentType;
+        url: string;
+      };
+    }[];
+  };
   reactionTotals: {
     type: string;
     url?: string;
@@ -77,6 +85,15 @@ export const postDetailsFragment = gql`
         url
         count
         userHasReacted
+      }
+      attachmentsV2 {
+        edges {
+          node {
+            externalId
+            type
+            url
+          }
+        }
       }
     }
   }
