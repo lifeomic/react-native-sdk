@@ -11,7 +11,6 @@ import {
 } from './usePrivatePosts';
 import { AttachmentType } from './types';
 
-jest.useFakeTimers();
 jest.mock('../useUser', () => ({
   useUser: jest.fn().mockReturnValue({ data: { id: 'user1' } }),
 }));
@@ -40,6 +39,10 @@ const renderHookWithInjectedClient = () => {
 };
 
 describe('useCreatePrivatePostAttachmentMutation', () => {
+  beforeEach(() => {
+    jest.spyOn(global, 'fetch').mockResolvedValue({} as any);
+  });
+
   test('returns query result', async () => {
     const response = {
       privatePostFileUploadUrl: {
