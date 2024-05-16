@@ -6,6 +6,9 @@ import {
   IMessage,
   InputToolbar,
   MessageImage,
+  MessageImageProps,
+  MessageText,
+  MessageTextProps,
   Time,
 } from 'react-native-gifted-chat';
 import { StyleSheet, ActivityIndicator } from 'react-native';
@@ -36,6 +39,7 @@ import { ParseShape } from 'react-native-parsed-text';
 import { IconButton } from 'react-native-paper';
 import { useTheme } from '../hooks/useTheme';
 import type { launchImageLibrary } from 'react-native-image-picker';
+import memoize from 'lodash/memoize';
 
 let launchImagePicker: typeof launchImageLibrary;
 
@@ -268,6 +272,8 @@ export const DirectMessagesScreen = ({
           />
         );
       }}
+      renderMessageImage={renderCustomImage}
+      renderMessageText={renderCustomText}
       renderComposer={(props) => {
         return (
           <Composer
@@ -385,6 +391,32 @@ export const DirectMessagesScreen = ({
     />
   );
 };
+
+const renderCustomText = memoize(
+  (props: MessageTextProps<IMessage>) => <MessageText {...props} />,
+  ({ currentMessage }) => currentMessage?._id,
+);
+
+const renderCustomImage = memoize(
+  (props: MessageImageProps<IMessage>) => <CustomMessageImage {...props} />,
+  ({ currentMessage }) => currentMessage?._id,
+);
+
+const CustomMessageImage = React.memo(
+  (props: MessageImageProps<IMessage>) => {
+    const { styles } = useStyles(defaultStyles);
+    return (
+      <View style={{ position: 'relative' }}>
+        <ActivityIndicator
+          style={styles.messageImageLoadingIcon}
+          color={styles.messageImageLoadingIcon?.color}
+        />
+        <MessageImage {...props} />
+      </View>
+    );
+  },
+  (a, b) => a.currentMessage?.image === b.currentMessage?.image,
+);
 
 export const messageTextParsers = (
   linkStyle: StyleProp<TextStyle>,
@@ -546,6 +578,10 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   previewImageLoadingIndicatorContainer: {
     ...StyleSheet.absoluteFillObject,
     top: 8,
+  },
+  messageImageLoadingIcon: {
+    ...StyleSheet.absoluteFillObject,
+    color: theme.colors.onPrimaryContainer,
   },
 }));
 
