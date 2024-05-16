@@ -11,6 +11,7 @@ import {
 } from './usePrivatePosts';
 import { AttachmentType } from './types';
 
+jest.useFakeTimers();
 jest.mock('../useUser', () => ({
   useUser: jest.fn().mockReturnValue({ data: { id: 'user1' } }),
 }));
