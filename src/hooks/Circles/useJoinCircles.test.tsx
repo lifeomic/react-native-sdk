@@ -28,6 +28,7 @@ const renderHookInContext = async () => {
 const axiosInstance = axios.create();
 const axiosMock = new MockAdapter(axiosInstance);
 
+jest.useFakeTimers();
 jest.mock('../useHttpClient', () => ({
   useHttpClient: jest.fn(),
 }));
