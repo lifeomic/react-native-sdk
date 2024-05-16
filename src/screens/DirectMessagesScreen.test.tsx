@@ -331,13 +331,13 @@ test('can remove a pending image', async () => {
 
 test('can handle image upload failure', async () => {
   let resolvers: ((_: unknown) => void)[] = [];
-  let i = 0;
+  let callCount = 0;
   useCreatePrivatePostAttachmentMutationMock.mockReturnValue({
     mutateAsync: jest.fn().mockImplementation(
       () =>
         new Promise((resolve, reject) => {
           // simulate second image upload failure
-          resolvers.push(++i === 2 ? reject : resolve);
+          resolvers.push(++callCount === 2 ? reject : resolve);
         }),
     ),
   });
@@ -369,7 +369,7 @@ test('can handle image upload failure', async () => {
   });
 
   expect(resolvers).toHaveLength(3);
-  resolvers.forEach((resolver, i) =>
+  resolvers.forEach((resolver, index) =>
     resolver({
       attachment: {
         externalId: 'externalId',
@@ -380,7 +380,7 @@ test('can handle image upload failure', async () => {
       uploadConfig: {
         id: 'id',
         fileLocation: {
-          permanentUrl: `someUri${i + 1}`,
+          permanentUrl: `someUri${index + 1}`,
           uploadUrl: 'uploadUrl',
         },
       },

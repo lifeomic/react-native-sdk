@@ -74,7 +74,7 @@ export const postToMessage = (
 };
 
 const breakUpMarkdownImages = (message: IMessage) => {
-  const markdownImages = message.text.match(/\!\[.+\]\(.+\)/g);
+  const markdownImages = message.text.match(/!\[.+\]\(.+\)/g);
 
   if (!markdownImages) {
     return message.text.length ? [message] : [];
@@ -85,7 +85,7 @@ const breakUpMarkdownImages = (message: IMessage) => {
 
   for (let i = 0; i < markdownImages.length; i++) {
     const imageMarkdown = markdownImages[i];
-    const imageUrl = imageMarkdown.match(/\!\[.+\]\((.+)\)/)?.[1];
+    const imageUrl = imageMarkdown.match(/!\[.+\]\((.+)\)/)?.[1];
     const parts = text.split(imageMarkdown);
     text = parts[1].trim();
 
@@ -237,7 +237,7 @@ export function useCreatePrivatePostMutation() {
           ...post,
           attachmentsV2: post.attachmentsV2?.map(
             // Omit the url from the attachment, it is only used for updating the cache
-            ({ url, ...attachment }) => attachment,
+            ({ url: _url, ...attachment }) => attachment,
           ),
         },
         createConversation: true,
@@ -356,7 +356,9 @@ export function useCreatePrivatePostAttachmentMutation() {
 
   const uploadImage = useMutation(['uploadMessageAttachment'], {
     mutationFn: async ({ asset, uploadConfig }: UploadImageProps) => {
-      if (!asset.uri) return;
+      if (!asset.uri) {
+        return;
+      }
 
       const blob = await getBlob(asset.uri);
       // Use fetch since the s3 uploadUrl is pre-signed

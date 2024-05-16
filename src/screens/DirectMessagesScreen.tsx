@@ -11,7 +11,7 @@ import {
   MessageTextProps,
   Time,
 } from 'react-native-gifted-chat';
-import { StyleSheet, ActivityIndicator } from 'react-native';
+import { StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import {
   useInfinitePrivatePosts,
   useCreatePrivatePostMutation,
@@ -51,6 +51,7 @@ try {
   );
 }
 
+const MAX_IMAGE_UPLOADS_PER_MESSAGE = 10;
 export type DirectMessageParams = {
   users: User[];
   conversationId: string;
@@ -104,6 +105,11 @@ export const DirectMessagesScreen = ({
   const { mutateAsync: createAttachment } =
     useCreatePrivatePostAttachmentMutation();
 
+  const RemoveImageIcon = useCallback(
+    () => <XIcon style={styles.removePendingImageButtonIcon} />,
+    [XIcon, styles.removePendingImageButtonIcon],
+  );
+
   const onSend = useCallback(
     (newMessages: IMessage[] = []) => {
       // Shouldn't happen but this makes sure we don't send empty attachments
@@ -148,7 +154,7 @@ export const DirectMessagesScreen = ({
   const addImageAttachment = useCallback(async () => {
     const pickerResult = await launchImagePicker({
       mediaType: 'photo',
-      selectionLimit: 10,
+      selectionLimit: MAX_IMAGE_UPLOADS_PER_MESSAGE - pendingImages.length,
       quality: 0.5,
     });
 
@@ -188,7 +194,7 @@ export const DirectMessagesScreen = ({
         });
       });
     }
-  }, [createAttachment, users]);
+  }, [createAttachment, users, pendingImages]);
 
   const loadingIndicator = (
     <ActivityIndicatorView
@@ -302,16 +308,22 @@ export const DirectMessagesScreen = ({
             disabled={disabled}
             style={styles.sendButtonContainer}
             testID={`GC_SEND_TOUCHABLE${disabled ? '_DISABLED' : ''}`}
-            icon={() => <SendIcon color={iconColor} />}
-          ></IconButton>
+            iconColor={iconColor}
+            icon={SendIcon}
+          />
         );
       }}
       parsePatterns={messageTextParsers}
       renderActions={() =>
         canUploadImages && (
           <IconButton
+            disabled={pendingImages.length >= MAX_IMAGE_UPLOADS_PER_MESSAGE}
             onPress={addImageAttachment}
-            iconColor={styles.uploadImageIcon?.color}
+            iconColor={
+              pendingImages.length >= MAX_IMAGE_UPLOADS_PER_MESSAGE
+                ? styles.uploadImageIconDisabled?.color
+                : styles.uploadImageIcon?.color
+            }
             icon={ImageIcon}
             testID="upload-image-button"
           />
@@ -338,7 +350,10 @@ export const DirectMessagesScreen = ({
       renderAccessory={
         pendingImages.length
           ? () => (
-              <View style={styles.pendingImagesContainer}>
+              <ScrollView
+                contentContainerStyle={styles.pendingImagesContainer}
+                horizontal
+              >
                 {pendingImages.map((image) => (
                   <View
                     testID="image-preview-container"
@@ -363,9 +378,7 @@ export const DirectMessagesScreen = ({
                     {!image.loading && (
                       <IconButton
                         testID="remove-image-button"
-                        icon={() => (
-                          <XIcon style={styles.removePendingImageButtonIcon} />
-                        )}
+                        icon={RemoveImageIcon}
                         onPress={() =>
                           setPendingImages((current) =>
                             current.filter(
@@ -384,7 +397,7 @@ export const DirectMessagesScreen = ({
                     )}
                   </View>
                 ))}
-              </View>
+              </ScrollView>
             )
           : undefined
       }
@@ -423,7 +436,7 @@ export const messageTextParsers = (
   disabled = false,
 ): ParseShape[] => [
   {
-    pattern: /\!\[(.+)\]\((\S+)\)/,
+    pattern: /!\[(.+)\]\((\S+)\)/,
     renderText: (_fullString: string, matches: string[]) => `<${matches[1]}>`,
   },
   {
@@ -460,12 +473,12 @@ export const messageTextParsers = (
     renderText: (match: string) => match.slice(3, -3),
   },
   {
-    pattern: /[\*_]{2}(.+)[\*_]{2}?/,
+    pattern: /[*_]{2}(.+)[*_]{2}?/,
     style: { fontWeight: 'bold' },
     renderText: (match: string) => match.slice(2, -2),
   },
   {
-    pattern: /[\*_]{1}(.+)[\*_]{1}?/,
+    pattern: /[*_]{1}(.+)[*_]{1}?/,
     style: { fontStyle: 'italic' },
     renderText: (match: string) => match.slice(1, -1),
   },
@@ -532,6 +545,9 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   rightTimeContainer: {},
   rightTimeText: {},
   uploadImageIcon: {
+    color: theme.colors.onSurface,
+  },
+  uploadImageIconDisabled: {
     color: theme.colors.onSurfaceDisabled,
   },
   footer: {},
