@@ -10,6 +10,7 @@ import { InviteRequiredScreen } from '../screens/InviteRequiredScreen';
 import { useRestQuery } from './rest-api';
 import { useActiveAccount } from './useActiveAccount';
 import { useDeveloperConfig } from './useDeveloperConfig';
+import { tID } from '../common/testID';
 
 const selectedProjectIdKey = 'selectedProjectIdKey';
 
@@ -154,10 +155,14 @@ export const ActiveProjectContextProvider: React.FC<ActiveProjectContextProvider
     const state = calculateState();
 
     useEffect(() => {
-      if (!query.isRefetching && state.status === 'not-a-patient') {
+      if (
+        !query.isRefetching &&
+        state.status === 'not-a-patient' &&
+        keepWaitingForPatientId
+      ) {
         query.refetchAll();
       }
-    }, [query, state.status]);
+    }, [keepWaitingForPatientId, query, state.status]);
 
     // This effect handles setting the initial value in async storage.
     const activeProjectId =
@@ -180,6 +185,7 @@ export const ActiveProjectContextProvider: React.FC<ActiveProjectContextProvider
       if (keepWaitingForPatientId) {
         return (
           <ActivityIndicatorView
+            testID={tID('waiting-for-patient-loader')}
             style={{
               text: {
                 alignSelf: 'center',
