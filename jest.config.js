@@ -41,5 +41,6 @@ module.exports = {
   },
   transformIgnorePatterns: [
     'node_modules/(?!(jest-)?@?react-native|query-string|decode-uri-component|split-on-first|filter-obj|victory|@lifeomic/one-query|react-navigation-header-buttons)',
-  ]
+  ],
+  workerIdleMemoryLimit: '900MB',
 };

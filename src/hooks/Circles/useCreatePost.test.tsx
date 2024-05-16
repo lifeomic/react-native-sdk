@@ -15,6 +15,10 @@ jest.mock('./useActiveCircleTile', () => ({
   })),
 }));
 
+jest.mock('../useUser', () => ({
+  useUser: jest.fn().mockReturnValue({}),
+}));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
