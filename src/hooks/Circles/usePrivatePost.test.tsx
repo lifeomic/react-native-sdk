@@ -11,6 +11,7 @@ import {
 } from './usePrivatePosts';
 import { AttachmentType } from './types';
 
+jest.useFakeTimers();
 jest.mock('../useUser', () => ({
   useUser: jest.fn().mockReturnValue({ data: { id: 'user1' } }),
 }));
@@ -24,7 +25,7 @@ const queryClient = new QueryClient({
 });
 
 const baseURL = 'https://some-domain/unit-test';
-const renderHookWithInjectedClient = async () => {
+const renderHookWithInjectedClient = () => {
   return renderHook(() => useCreatePrivatePostAttachmentMutation(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>
@@ -63,7 +64,7 @@ describe('useCreatePrivatePostAttachmentMutation', () => {
     // Stub s3 upload call
     fetchSpy.mockResolvedValueOnce({} as any);
 
-    const { result } = await renderHookWithInjectedClient();
+    const { result } = renderHookWithInjectedClient();
     const { mutateAsync } = result.current;
 
     let attachment: CreateAttachmentResponse | undefined;
@@ -108,7 +109,7 @@ describe('useCreatePrivatePostAttachmentMutation', () => {
 
   test('throws on missing asset type', async () => {
     expect.assertions(1);
-    const { result } = await renderHookWithInjectedClient();
+    const { result } = renderHookWithInjectedClient();
     const { mutateAsync } = result.current;
 
     await act(async () => {
@@ -129,7 +130,7 @@ describe('useCreatePrivatePostAttachmentMutation', () => {
 
   test('throws on unknown asset type', async () => {
     expect.assertions(1);
-    const { result } = await renderHookWithInjectedClient();
+    const { result } = renderHookWithInjectedClient();
     const { mutateAsync } = result.current;
 
     await act(async () => {
