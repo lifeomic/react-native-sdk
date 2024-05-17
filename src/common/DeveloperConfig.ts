@@ -139,6 +139,12 @@ export type DeveloperConfig = {
   skipInviteParams?: boolean;
   tileListMode?: 'list' | 'column';
   showPreLoginWarning?: boolean;
+  /***
+   * Instead of showing the invite required screen when no patientId
+   * is found retry indefinitely. This is useful if createPatientMapping rule
+   * is present for a given account and we do not expect the usual invite to project flow.
+   ***/
+  keepWaitingForPatientId?: boolean;
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };
