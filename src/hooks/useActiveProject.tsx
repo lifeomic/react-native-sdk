@@ -9,6 +9,8 @@ import { t } from 'i18next';
 import { InviteRequiredScreen } from '../screens/InviteRequiredScreen';
 import { useRestQuery } from './rest-api';
 import { useActiveAccount } from './useActiveAccount';
+import { useDeveloperConfig } from './useDeveloperConfig';
+import { tID } from '../common/testID';
 
 const selectedProjectIdKey = 'selectedProjectIdKey';
 
@@ -115,6 +117,7 @@ export type ActiveProjectContextProviderProps = {
 
 export const ActiveProjectContextProvider: React.FC<ActiveProjectContextProviderProps> =
   withAccountRequired(({ children }) => {
+    const { keepWaitingForPatientId } = useDeveloperConfig();
     const query = combineQueries([useSubjectProjects(), useMe(), useUser()]);
     const userId = query.data?.[2].id;
     const [storedProjectIdResult, setStoredProjectId, isStorageLoaded] =
@@ -151,6 +154,16 @@ export const ActiveProjectContextProvider: React.FC<ActiveProjectContextProvider
 
     const state = calculateState();
 
+    useEffect(() => {
+      if (
+        !query.isRefetching &&
+        state.status === 'not-a-patient' &&
+        keepWaitingForPatientId
+      ) {
+        query.refetchAll();
+      }
+    }, [keepWaitingForPatientId, query, state.status]);
+
     // This effect handles setting the initial value in async storage.
     const activeProjectId =
       state.status === 'success' ? state.activeProject.id : undefined;
@@ -169,6 +182,23 @@ export const ActiveProjectContextProvider: React.FC<ActiveProjectContextProvider
     }
     // TODO: handle error state.
     if (state.status === 'not-a-patient') {
+      if (keepWaitingForPatientId) {
+        return (
+          <ActivityIndicatorView
+            testID={tID('waiting-for-patient-loader')}
+            style={{
+              text: {
+                alignSelf: 'center',
+              },
+            }}
+            message={t(
+              'expected-waiting-for-account-and-project',
+              'Please wait while we complete the initial setup for your first login.',
+            )}
+          />
+        );
+      }
+
       return <InviteRequiredScreen />;
     }
 
