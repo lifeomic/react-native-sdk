@@ -408,12 +408,7 @@ export function useCreatePrivatePostAttachmentMutation() {
     const attachment: Attachment = {
       externalId: res.privatePostFileUploadUrl.id,
       subType: 's3',
-      type: {
-        JPEG: AttachmentType.IMAGE,
-        JPG: AttachmentType.IMAGE,
-        PNG: AttachmentType.IMAGE,
-        GIF: AttachmentType.IMAGE,
-      }[fileType],
+      type: AttachmentType.IMAGE,
     };
 
     return {
