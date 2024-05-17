@@ -15,6 +15,10 @@ jest.mock('./useActiveCircleTile', () => ({
   })),
 }));
 
+jest.mock('../useUser', () => ({
+  useUser: jest.fn().mockReturnValue({}),
+}));
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -81,6 +85,7 @@ describe('useCreatePost', () => {
       createdAt: new Date().toISOString(),
       status: 'READY',
       reactionTotals: [],
+      attachmentsV2: { edges: [] },
       replies: { edges: [], pageInfo: {} },
       id: '123',
       message: 'somePost',
@@ -138,6 +143,7 @@ describe('useCreatePost', () => {
       createdAt: new Date().toISOString(),
       status: 'READY',
       reactionTotals: [],
+      attachmentsV2: { edges: [] },
       replies: { edges: [], pageInfo: {} },
       id: '789',
       message: 'someCommentPost',

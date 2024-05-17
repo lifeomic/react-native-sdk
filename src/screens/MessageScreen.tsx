@@ -186,6 +186,8 @@ export function MessageScreen<ParamList extends ParamListBase>({
       ),
   );
 
+  const multimediaMessage = t('multimedia-message', 'Multimedia message');
+
   return (
     <GestureHandlerRootView style={styles.rootView}>
       <ScrollView
@@ -236,9 +238,10 @@ export function MessageScreen<ParamList extends ParamListBase>({
                     {node.latestMessageUserId === userData?.id
                       ? t('message-preview-prefixed', {
                           defaultValue: 'You: {{messageText}}',
-                          messageText: node.latestMessageText,
+                          messageText:
+                            node.latestMessageText || multimediaMessage,
                         })
-                      : node.latestMessageText}
+                      : node.latestMessageText || multimediaMessage}
                   </ParsedText>
                 }
                 right={() => renderRight(node.latestMessageTime)}

@@ -28,7 +28,6 @@ const mockPost: Post = {
   message: 'Zoinks!',
   metadata: {},
   status: 'status',
-  attachments: [],
   reactionTotals: [],
   replies: {
     pageInfo: {},

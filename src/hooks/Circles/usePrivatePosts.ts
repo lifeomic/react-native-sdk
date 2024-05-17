@@ -6,12 +6,13 @@ import {
 } from '@tanstack/react-query';
 import { gql } from 'graphql-request';
 import { useGraphQLClient } from '../useGraphQLClient';
-import { Post, postDetailsFragment } from './types';
+import { AttachmentType, Post, postDetailsFragment } from './types';
 import { useUser } from '../useUser';
 import { IMessage } from 'react-native-gifted-chat';
 import { t } from 'i18next';
 import { uniq } from 'lodash';
 import uuid from 'react-native-uuid';
+import type { Asset } from 'react-native-image-picker';
 
 /**
  * privatePosts
@@ -54,7 +55,7 @@ export const postToMessage = (
     );
   }
 
-  const message = {
+  const baseMessage: IMessage = {
     _id: post.id,
     text: post.message || '',
     createdAt: post.createdAt ? new Date(post.createdAt) : new Date(),
@@ -65,10 +66,18 @@ export const postToMessage = (
     },
   };
 
-  const markdownImages = message.text.match(/\!\[.+\]\(.+\)/g);
+  const messages = extractAttachments(post, baseMessage).concat(
+    breakUpMarkdownImages(baseMessage),
+  );
+
+  return messages.reverse();
+};
+
+const breakUpMarkdownImages = (message: IMessage) => {
+  const markdownImages = message.text.match(/!\[.+\]\(.+\)/g);
 
   if (!markdownImages) {
-    return message;
+    return message.text.length ? [message] : [];
   }
 
   const messages: IMessage[] = [];
@@ -76,7 +85,7 @@ export const postToMessage = (
 
   for (let i = 0; i < markdownImages.length; i++) {
     const imageMarkdown = markdownImages[i];
-    const imageUrl = imageMarkdown.match(/\!\[.+\]\((.+)\)/)?.[1];
+    const imageUrl = imageMarkdown.match(/!\[.+\]\((.+)\)/)?.[1];
     const parts = text.split(imageMarkdown);
     text = parts[1].trim();
 
@@ -97,7 +106,27 @@ export const postToMessage = (
     messages.push({ ...message, text });
   }
 
-  return messages.reverse();
+  return messages;
+};
+
+const extractAttachments = (post: Partial<Post>, message: IMessage) => {
+  const attachments = (post.attachmentsV2?.edges || []).slice();
+  attachments.reverse();
+
+  const messages: IMessage[] = [];
+
+  for (const attachment of attachments) {
+    if (attachment.node.type === AttachmentType.IMAGE) {
+      messages.push({
+        ...message,
+        _id: attachment.node.externalId,
+        text: '',
+        image: attachment.node.url,
+      });
+    }
+  }
+
+  return messages;
 };
 
 const uniqSort = (userIds: Array<string | undefined>) => {
@@ -181,7 +210,15 @@ interface CreatePrivatePostMutationProps {
   userIds: string[];
   post: {
     message: string;
+    attachmentsV2?: (Attachment & { url: string })[];
   };
+}
+
+interface Attachment {
+  externalId: string;
+  type: AttachmentType;
+  subType: string;
+  fileName?: string;
 }
 
 export function useCreatePrivatePostMutation() {
@@ -196,7 +233,13 @@ export function useCreatePrivatePostMutation() {
     const variables = {
       input: {
         userIds: uniqSort([userData?.id, ...userIds]),
-        post,
+        post: {
+          ...post,
+          attachmentsV2: post.attachmentsV2?.map(
+            // Omit the url from the attachment, it is only used for updating the cache
+            ({ url: _url, ...attachment }) => attachment,
+          ),
+        },
         createConversation: true,
       },
     };
@@ -232,6 +275,16 @@ export function useCreatePrivatePostMutation() {
                 picture: userData?.profile.picture!,
               },
             },
+            attachmentsV2: {
+              edges:
+                variables.post.attachmentsV2?.map((node) => ({
+                  node: {
+                    externalId: node.externalId,
+                    type: AttachmentType[node.type],
+                    url: node.url,
+                  },
+                })) || [],
+            },
           };
 
           const result = currentCache
@@ -265,6 +318,129 @@ const createPrivatePostMutationDocument = gql`
         }
       }
       conversationId
+    }
+  }
+`;
+
+/**
+ * CreatePrivatePostAttachment
+ */
+interface CreatePrivatePostAttachmentMutationProps {
+  userIds: string[];
+  asset: Asset;
+}
+
+export interface CreatePrivatePostAttachmentMutationResult {
+  id: string;
+  fileLocation: {
+    permanentUrl: string;
+    uploadUrl: string;
+  };
+}
+
+const getBlob = (uri: string) => fetch(uri).then((res) => res.blob());
+
+export interface CreateAttachmentResponse {
+  attachment: Attachment;
+  uploadConfig: CreatePrivatePostAttachmentMutationResult;
+}
+
+interface UploadImageProps {
+  asset: Asset;
+  uploadConfig: CreatePrivatePostAttachmentMutationResult;
+}
+
+export function useCreatePrivatePostAttachmentMutation() {
+  const { graphQLClient } = useGraphQLClient();
+  const { data: userData } = useUser();
+
+  const uploadImage = useMutation(['uploadMessageAttachment'], {
+    mutationFn: async ({ asset, uploadConfig }: UploadImageProps) => {
+      if (!asset.uri) {
+        return;
+      }
+
+      const blob = await getBlob(asset.uri);
+      // Use fetch since the s3 uploadUrl is pre-signed
+      await fetch(uploadConfig.fileLocation.uploadUrl, {
+        headers: {
+          'Content-Type': blob.type,
+        },
+        method: 'PUT',
+        body: blob,
+      });
+
+      return uploadConfig;
+    },
+  });
+
+  const createPrivatePostAttachmentMutation = async ({
+    userIds,
+    asset,
+  }: CreatePrivatePostAttachmentMutationProps) => {
+    if (!asset.type) {
+      throw Error("Unknown asset type, can't upload");
+    }
+
+    const fileType = {
+      'image/jpeg': 'JPEG' as const,
+      'image/jpg': 'JPG' as const,
+      'image/png': 'PNG' as const,
+      'image/gif': 'GIF' as const,
+    }[asset.type.toLowerCase()];
+
+    if (!fileType) {
+      throw Error(`Unsupported file type: ${asset.type}`);
+    }
+
+    const variables = {
+      input: {
+        userIds: uniqSort([userData?.id, ...userIds]),
+        fileType,
+      },
+    };
+
+    const res = await graphQLClient.request(
+      createPrivatePostAttachmentMutationDocument,
+      variables,
+    );
+
+    const attachment: Attachment = {
+      externalId: res.privatePostFileUploadUrl.id,
+      subType: 's3',
+      type: AttachmentType.IMAGE,
+    };
+
+    return {
+      attachment,
+      uploadConfig: {
+        ...res.privatePostFileUploadUrl,
+        fileLocation: {
+          ...res.privatePostFileUploadUrl.fileLocation,
+          permanentUrl: asset.uri,
+        },
+      },
+    };
+  };
+
+  return useMutation(['createPrivatePostAttachment'], {
+    mutationFn: createPrivatePostAttachmentMutation,
+    onSuccess: (data, variables) =>
+      uploadImage.mutateAsync({
+        asset: variables.asset,
+        uploadConfig: data.uploadConfig,
+      }),
+  });
+}
+
+const createPrivatePostAttachmentMutationDocument = gql`
+  mutation CreatePrivatePostAttachment($input: PrivatePostFileUploadUrlInput!) {
+    privatePostFileUploadUrl(input: $input) {
+      id
+      fileLocation {
+        permanentUrl
+        uploadUrl
+      }
     }
   }
 `;

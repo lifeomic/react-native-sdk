@@ -33,7 +33,6 @@ const mockPost: Post = {
   message: 'Zoinks!',
   metadata: {},
   status: 'status',
-  attachments: [],
   reactionTotals: [],
   replies: {
     pageInfo: {},
@@ -52,7 +51,6 @@ const mockPost: Post = {
           },
           __typename: 'ActivePost',
           message: 'Jinkies!',
-          attachments: [],
           reactionTotals: [],
           metadata: {},
           status: 'status',
@@ -73,7 +71,6 @@ const mockPost: Post = {
                   },
                   __typename: 'ActivePost',
                   message: 'Ruh Roh!',
-                  attachments: [],
                   reactionTotals: [],
                   metadata: {},
                   status: 'status',
