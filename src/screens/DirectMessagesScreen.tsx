@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   Bubble,
   Composer,
@@ -11,7 +17,13 @@ import {
   MessageTextProps,
   Time,
 } from 'react-native-gifted-chat';
-import { StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  ActivityIndicator,
+  ScrollView,
+  Image,
+  Dimensions,
+} from 'react-native';
 import {
   useInfinitePrivatePosts,
   useCreatePrivatePostMutation,
@@ -236,10 +248,17 @@ export const DirectMessagesScreen = ({
         return (
           <Bubble
             {...props}
-            wrapperStyle={{
-              left: styles.leftMessageView,
-              right: styles.rightMessageView,
-            }}
+            wrapperStyle={
+              props.currentMessage?.text
+                ? {
+                    left: styles.leftMessageView,
+                    right: styles.rightMessageView,
+                  }
+                : {
+                    right: styles.messageImageBubble,
+                    left: styles.messageImageBubble,
+                  }
+            }
             textStyle={{
               left: styles.leftText,
               right: styles.rightText,
@@ -248,7 +267,8 @@ export const DirectMessagesScreen = ({
             usernameStyle={styles.signatureText}
             renderTime={(timeProps) =>
               timeProps.currentMessage?.createdAt !==
-                (timeProps as any).nextMessage?.createdAt && (
+                (timeProps as any).nextMessage?.createdAt &&
+              props.currentMessage?.text && (
                 <Time
                   {...timeProps}
                   timeTextStyle={{
@@ -418,13 +438,43 @@ const renderCustomImage = memoize(
 const CustomMessageImage = React.memo(
   (props: MessageImageProps<IMessage>) => {
     const { styles } = useStyles(defaultStyles);
+    const [dimensions, setDimensions] = useState({});
+
+    useEffect(() => {
+      const image = props.currentMessage?.image;
+
+      if (image) {
+        Image.getSize(image, (width, height) => {
+          const aspectRatio = width / height;
+          const largerDimension = width > height ? 'width' : 'height';
+          setDimensions({
+            [largerDimension]: 'auto',
+            aspectRatio,
+          });
+        });
+      }
+    }, [props.currentMessage?.image]);
+
     return (
       <View style={{ position: 'relative' }}>
         <ActivityIndicator
           style={styles.messageImageLoadingIcon}
           color={styles.messageImageLoadingIcon?.color}
         />
-        <MessageImage {...props} />
+        <MessageImage
+          {...props}
+          lightboxProps={{
+            underlayColor: styles.messageImageLightbox?.backgroundColor,
+            style: styles.messageImageLightbox,
+          }}
+          imageStyle={[
+            dimensions,
+            {
+              maxWidth: Dimensions.get('screen').width * 0.65,
+            },
+            styles.messageImage,
+          ]}
+        />
       </View>
     );
   },
@@ -598,6 +648,15 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   messageImageLoadingIcon: {
     ...StyleSheet.absoluteFillObject,
     color: theme.colors.onPrimaryContainer,
+  },
+  messageImageBubble: {
+    backgroundColor: 'transparent',
+  },
+  messageImage: {
+    margin: 0,
+  },
+  messageImageLightbox: {
+    backgroundColor: 'transparent',
   },
 }));
 
