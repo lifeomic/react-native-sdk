@@ -280,9 +280,8 @@ const defaultStyles = createStyles('ComposeMessageScreen', (theme) => ({
   },
   chipView: {
     marginLeft: theme.spacing.tiny,
-    marginVertical: 2,
+    marginVertical: 4,
     backgroundColor: theme.colors.primary,
-    maxHeight: 30,
   },
   chipText: {
     color: theme.colors.surface,
@@ -291,7 +290,7 @@ const defaultStyles = createStyles('ComposeMessageScreen', (theme) => ({
     color: theme.colors.surface,
     justifyContent: 'center',
     paddingLeft: 6,
-    marginTop: -2,
+    marginTop: -6.5,
     marginRight: -4,
     height: '100%',
   },
