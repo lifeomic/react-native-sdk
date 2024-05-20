@@ -447,10 +447,13 @@ const CustomMessageImage = React.memo(
         Image.getSize(image, (width, height) => {
           const aspectRatio = width / height;
           const largerDimension = width > height ? 'width' : 'height';
-          setDimensions({
-            [largerDimension]: 'auto',
-            aspectRatio,
-          });
+
+          if (isFinite(aspectRatio)) {
+            setDimensions({
+              [largerDimension]: 'auto',
+              aspectRatio,
+            });
+          }
         });
       }
     }, [props.currentMessage?.image]);
