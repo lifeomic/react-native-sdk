@@ -17,7 +17,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const renderHookInContext = async () => {
+const renderHookInContext = () => {
   return renderHook(() => useJoinCircles(), {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -92,7 +92,7 @@ test('joins circles listed in app-config', async () => {
   axiosMock
     .onPatch('/v1/life-research/projects/projectId/app-config/circles')
     .reply(200, {});
-  const { result } = await renderHookInContext();
+  const { result } = renderHookInContext();
   await waitFor(() => expect(result.current.isSuccess).toBeDefined());
   expect(axiosMock.history.patch[0].url).toBe(
     '/v1/life-research/projects/projectId/app-config/circles',
@@ -117,7 +117,7 @@ test('does nothing if all circles are joined', async () => {
     },
   });
   axiosMock.reset();
-  const { result } = await renderHookInContext();
+  const { result } = renderHookInContext();
   await waitFor(() => expect(result.current.isSuccess).toBeDefined());
   await waitFor(() => expect(axiosMock.history.patch.length).toEqual(0));
 });

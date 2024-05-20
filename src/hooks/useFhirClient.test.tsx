@@ -384,10 +384,13 @@ describe('useCreateResourceMutation', () => {
         value: 73.5,
       },
     };
-    await act(async () => {
-      await result.current.mutateAsync(observation);
+    act(() => {
+      result.current.mutateAsync(observation);
     });
 
+    await waitFor(() => {
+      expect(result.current.data).toEqual(resultBundle);
+    });
     expect(axiosMock.history.post[0].url).toBe('/v1/fhir/dstu3/Observation');
     expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({
       ...observation,
@@ -402,9 +405,6 @@ describe('useCreateResourceMutation', () => {
           { system: 'http://lifeomic.com/fhir/dataset', code: 'projectId' },
         ],
       },
-    });
-    await waitFor(() => {
-      expect(result.current.data).toEqual(resultBundle);
     });
   });
 });
@@ -462,10 +462,13 @@ describe('useUpsertMutation', () => {
         value: 1.8,
       },
     };
-    await act(async () => {
-      await result.current.mutateAsync([observation1, observation2]);
+    act(() => {
+      result.current.mutateAsync([observation1, observation2]);
     });
 
+    await waitFor(() => {
+      expect(result.current.data).toEqual(resultBundle);
+    });
     expect(axiosMock.history.post[0].url).toBe(
       'https://fhir.us.lifeomic.com/acct1/dstu3',
     );
@@ -511,9 +514,6 @@ describe('useUpsertMutation', () => {
         },
       ],
     });
-    await waitFor(() => {
-      expect(result.current.data).toEqual(resultBundle);
-    });
   });
 });
 
@@ -529,19 +529,17 @@ describe('useDeleteResourceMutation', () => {
       return useDeleteResourceMutation();
     }
     const { result } = renderHookInContext(useTestHook);
-    await act(async () => {
-      await result.current.mutateAsync({
+    act(() => {
+      result.current.mutateAsync({
         id: observationId,
         resourceType: 'Observation',
       });
     });
 
-    await act(async () => {
-      await waitFor(() => {
-        expect(axiosMock.history.delete[0].url).toBe(
-          `/v1/fhir/dstu3/Observation/${observationId}`,
-        );
-      });
+    await waitFor(() => {
+      expect(axiosMock.history.delete[0].url).toBe(
+        `/v1/fhir/dstu3/Observation/${observationId}`,
+      );
     });
   });
 });
