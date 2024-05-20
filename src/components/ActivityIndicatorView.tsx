@@ -11,18 +11,22 @@ import { Text } from 'react-native-paper';
 interface Props {
   message?: string;
   timeOutMilliseconds?: number;
+  secondaryTimeOutMilliseconds?: number;
   style?: ActivityIndicatorViewStyles;
 }
 
 export function ActivityIndicatorView({
   message: messageText,
   timeOutMilliseconds,
+  secondaryTimeOutMilliseconds,
   style: instanceStyles,
+  children,
   ...props
 }: Props & Omit<ActivityIndicator['props'], 'style'>) {
   const { styles } = useStyles(defaultStyles, instanceStyles);
   const { colors } = useTheme();
   const [showMessage] = useTimeout(timeOutMilliseconds || 5000);
+  const [showChildren] = useTimeout(secondaryTimeOutMilliseconds || 30000);
   const { CustomActivityIndicatorView } = useDeveloperConfig();
 
   const timeOutMessage =
@@ -31,6 +35,9 @@ export function ActivityIndicatorView({
         {messageText}
       </Text>
     ) : null;
+
+  const secondTimeoutComponents =
+    !!children && !!showChildren() ? children : null;
 
   return CustomActivityIndicatorView ? (
     <CustomActivityIndicatorView timeoutMessage={timeOutMessage} />
@@ -45,6 +52,7 @@ export function ActivityIndicatorView({
         {...props}
       />
       {timeOutMessage}
+      {secondTimeoutComponents}
     </View>
   );
 }

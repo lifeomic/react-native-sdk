@@ -11,6 +11,7 @@ import { useRestQuery } from './rest-api';
 import { useActiveAccount } from './useActiveAccount';
 import { useDeveloperConfig } from './useDeveloperConfig';
 import { tID } from '../common/testID';
+import { OAuthLogoutButton } from '../components/OAuthLogoutButton';
 
 const selectedProjectIdKey = 'selectedProjectIdKey';
 
@@ -188,14 +189,17 @@ export const ActiveProjectContextProvider: React.FC<ActiveProjectContextProvider
             testID={tID('waiting-for-patient-loader')}
             style={{
               text: {
-                alignSelf: 'center',
+                textAlign: 'center',
               },
             }}
             message={t(
               'expected-waiting-for-account-and-project',
-              'Please wait while we complete the initial setup for your first login.',
+              'Please wait while we complete the initial setup for your first login. This may take a couple minutes.',
             )}
-          />
+            secondaryTimeOutMilliseconds={60000}
+          >
+            <OAuthLogoutButton label="Logout" />
+          </ActivityIndicatorView>
         );
       }
 
