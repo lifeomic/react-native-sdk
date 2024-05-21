@@ -371,6 +371,7 @@ export const DirectMessagesScreen = ({
         pendingImages.length
           ? () => (
               <ScrollView
+                style={styles.pendingImagesScrollView}
                 contentContainerStyle={styles.pendingImagesContainer}
                 horizontal
               >
@@ -605,10 +606,12 @@ const defaultStyles = createStyles('DirectMessagesScreen', (theme) => ({
   },
   footer: {},
   accessoryContainer: {},
+  pendingImagesScrollView: {
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.outlineVariant,
+  },
   pendingImagesContainer: {
     height: 68,
-    borderTopWidth: 1,
-    borderTopColor: 'lightgrey',
     justifyContent: 'flex-start',
     gap: 8,
     paddingHorizontal: 8,
