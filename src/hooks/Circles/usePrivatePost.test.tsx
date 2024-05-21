@@ -111,44 +111,52 @@ describe('useCreatePrivatePostAttachmentMutation', () => {
   });
 
   test('throws on missing asset type', async () => {
-    expect.assertions(1);
     const { result } = renderHookWithInjectedClient();
     const { mutateAsync } = result.current;
 
-    await act(async () => {
-      try {
-        await mutateAsync({
-          asset: {
-            id: 'assetId',
-            type: undefined, // purpose of the test
-            uri: 'https://some-image-url',
-          },
-          userIds: ['user1', 'user2'],
-        });
-      } catch (e) {
-        expect(e).toEqual(new Error("Unknown asset type, can't upload"));
-      }
+    let exception: Error | undefined;
+
+    act(() => {
+      mutateAsync({
+        asset: {
+          id: 'assetId',
+          type: undefined, // purpose of the test
+          uri: 'https://some-image-url',
+        },
+        userIds: ['user1', 'user2'],
+      }).catch((e) => {
+        exception = e;
+      });
+    });
+
+    await waitFor(() => {
+      expect(exception).toEqual(new Error("Unknown asset type, can't upload"));
     });
   });
 
   test('throws on unknown asset type', async () => {
-    expect.assertions(1);
     const { result } = renderHookWithInjectedClient();
     const { mutateAsync } = result.current;
 
-    await act(async () => {
-      try {
-        await mutateAsync({
-          asset: {
-            id: 'assetId',
-            type: 'application/pdf', // purpose of the test
-            uri: 'https://some-image-url',
-          },
-          userIds: ['user1', 'user2'],
-        });
-      } catch (e) {
-        expect(e).toEqual(new Error('Unsupported file type: application/pdf'));
-      }
+    let exception: Error | undefined;
+
+    act(() => {
+      mutateAsync({
+        asset: {
+          id: 'assetId',
+          type: 'application/pdf', // purpose of the test
+          uri: 'https://some-image-url',
+        },
+        userIds: ['user1', 'user2'],
+      }).catch((e) => {
+        exception = e;
+      });
+    });
+
+    await waitFor(() => {
+      expect(exception).toEqual(
+        new Error('Unsupported file type: application/pdf'),
+      );
     });
   });
 });
