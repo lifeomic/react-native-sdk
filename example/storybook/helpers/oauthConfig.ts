@@ -1,5 +1,5 @@
 import { AuthConfiguration } from 'react-native-app-auth';
-import { oauthConfig, apiBaseUrl } from '../../config';
+import { oauthConfig, apiBaseUrl, accountToUse } from '../../config';
 
 export const authConfig: AuthConfiguration = {
   clientId: oauthConfig.clientId,
@@ -18,3 +18,4 @@ export const authConfig: AuthConfiguration = {
 };
 
 export const baseURL = apiBaseUrl;
+export const account = accountToUse;

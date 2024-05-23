@@ -1,5 +1,5 @@
 import React from 'react';
-import { authConfig, baseURL } from './storybook/helpers/oauthConfig';
+import { authConfig, baseURL, account } from './storybook/helpers/oauthConfig';
 import { DeveloperConfigProvider, RootProviders, LoggedInStack } from '../src';
 import { FhirExampleScreen } from './src/screens/FhirExampleScreen';
 
@@ -22,7 +22,7 @@ function App() {
         showPreLoginWarning: false,
       }}
     >
-      <RootProviders account="mockaccount" authConfig={authConfig}>
+      <RootProviders account={account ?? 'mockaccount'} authConfig={authConfig}>
         <LoggedInStack />
       </RootProviders>
     </DeveloperConfigProvider>
