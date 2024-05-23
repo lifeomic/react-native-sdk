@@ -23,6 +23,7 @@ import {
   ScrollView,
   Image,
   Dimensions,
+  Keyboard,
 } from 'react-native';
 import {
   useInfinitePrivatePosts,
@@ -92,6 +93,14 @@ export const DirectMessagesScreen = ({
         }
     )[]
   >([]);
+  const [isKeyboardOpen, setIsKeyboardOpen] = React.useState(
+    Keyboard.isVisible(),
+  );
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardWillShow', () => setIsKeyboardOpen(true));
+    Keyboard.addListener('keyboardWillHide', () => setIsKeyboardOpen(false));
+  }, []);
 
   useEffect(() => {
     const conversation = conversations?.pages
@@ -123,7 +132,9 @@ export const DirectMessagesScreen = ({
   );
 
   const onSend = useCallback(
-    (newMessages: IMessage[] = []) => {
+    async (newMessages: IMessage[] = []) => {
+      Keyboard.dismiss();
+
       // Shouldn't happen but this makes sure we don't send empty attachments
       const removeLoadingImages = (
         item:
@@ -134,36 +145,38 @@ export const DirectMessagesScreen = ({
       ): item is CreateAttachmentResponse => !item.loading;
 
       // In practice their won't be more than one message at a time
-      newMessages.map(async (m) => {
-        const isLastMessage = newMessages.indexOf(m) === newMessages.length - 1;
+      await Promise.all(
+        newMessages.map(async (m) => {
+          const isLastMessage =
+            newMessages.indexOf(m) === newMessages.length - 1;
 
-        await mutateAsync({
-          userIds: users.map((user) => user.id),
-          post: {
-            message: m.text,
-            ...(isLastMessage
-              ? {
-                  attachmentsV2: pendingImages
-                    .filter(removeLoadingImages)
-                    .map((i) => ({
-                      ...i.attachment,
-                      url: i.uploadConfig.fileLocation.permanentUrl,
-                    })),
-                }
-              : {}),
-          },
-        });
-
-        if (isLastMessage) {
-          setPendingImages([]);
-        }
-      });
+          await mutateAsync({
+            userIds: users.map((user) => user.id),
+            post: {
+              message: m.text,
+              ...(isLastMessage
+                ? {
+                    attachmentsV2: pendingImages
+                      .filter(removeLoadingImages)
+                      .map((i) => ({
+                        ...i.attachment,
+                        url: i.uploadConfig.fileLocation.permanentUrl,
+                      })),
+                  }
+                : {}),
+            },
+          });
+        }),
+      );
+      setPendingImages([]);
     },
     [mutateAsync, users, pendingImages],
   );
 
   const canUploadImages = !!launchImagePicker;
   const addImageAttachment = useCallback(async () => {
+    Keyboard.dismiss();
+
     const pickerResult = await launchImagePicker({
       mediaType: 'photo',
       selectionLimit: MAX_IMAGE_UPLOADS_PER_MESSAGE - pendingImages.length,
@@ -243,7 +256,10 @@ export const DirectMessagesScreen = ({
         _id: userData.id,
       }}
       bottomOffset={Platform.select({ ios: tabsHeight })}
-      messagesContainerStyle={styles.messagesContainerStyle}
+      messagesContainerStyle={[
+        styles.messagesContainerStyle,
+        isKeyboardOpen && { paddingBottom: 0 },
+      ]}
       renderBubble={(props) => {
         return (
           <Bubble
@@ -295,6 +311,10 @@ export const DirectMessagesScreen = ({
                 ? styles.textInputBorder?.disabled
                 : styles.textInputBorder?.enabled,
             ]}
+            accessoryStyle={{
+              height: styles.pendingImagesContainer?.height,
+              ...styles.accessoryContainer,
+            }}
           />
         );
       }}
@@ -351,7 +371,8 @@ export const DirectMessagesScreen = ({
       }
       renderFooter={() =>
         // Add a footer to the bottom of the screen to account for the image preview
-        !!pendingImages.length && (
+        !!pendingImages.length &&
+        !isKeyboardOpen && (
           <View
             style={[
               { height: styles.pendingImagesContainer?.height },
@@ -360,13 +381,6 @@ export const DirectMessagesScreen = ({
           />
         )
       }
-      {...({
-        // accessoryStyle overrides are not documented but are supported
-        accessoryStyle: {
-          height: styles.pendingImagesContainer?.height,
-          ...styles.accessoryContainer,
-        },
-      } as any)}
       renderAccessory={
         pendingImages.length
           ? () => (
