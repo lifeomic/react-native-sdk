@@ -156,13 +156,19 @@ export const ActiveProjectContextProvider: React.FC<ActiveProjectContextProvider
     const state = calculateState();
 
     useEffect(() => {
-      if (
-        !query.isRefetching &&
-        state.status === 'not-a-patient' &&
-        keepWaitingForPatientId
-      ) {
-        query.refetchAll();
-      }
+      const intervalId = setInterval(() => {
+        if (
+          !query.isRefetching &&
+          state.status === 'not-a-patient' &&
+          keepWaitingForPatientId
+        ) {
+          query.refetchAll();
+        } else {
+          clearInterval(intervalId);
+        }
+      }, 2000);
+
+      return () => clearInterval(intervalId);
     }, [keepWaitingForPatientId, query, state.status]);
 
     // This effect handles setting the initial value in async storage.
