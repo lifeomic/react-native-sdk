@@ -79,7 +79,6 @@ export const OAuthContextProvider = ({
   const pendingInvite = usePendingInvite();
   const queryClient = useQueryClient();
   const { skipInviteParams } = useDeveloperConfig();
-  const [_, setLoginDetected] = useStoredValue('loginDetected');
 
   const authConfig = useMemo(
     () =>
@@ -161,7 +160,6 @@ export const OAuthContextProvider = ({
       try {
         const result = await authorize(authConfig);
         await storeAuthResult(result);
-        setLoginDetected('detected');
         _sdkAnalyticsEvent.track('Login', { usedInvite: !!pendingInvite?.evc });
         onSuccess?.(result);
       } catch (error) {
@@ -173,13 +171,7 @@ export const OAuthContextProvider = ({
         onFail?.(error);
       }
     },
-    [
-      authConfig,
-      clearAuthResult,
-      pendingInvite?.evc,
-      setLoginDetected,
-      storeAuthResult,
-    ],
+    [authConfig, clearAuthResult, pendingInvite?.evc, storeAuthResult],
   );
 
   const refreshHandler = useCallback(
