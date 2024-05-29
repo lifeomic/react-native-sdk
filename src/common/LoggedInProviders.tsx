@@ -17,6 +17,7 @@ import { ActivityIndicatorView } from '../components/ActivityIndicatorView';
 import { InviteProvider } from '../components/Invitations/InviteProvider';
 import { t } from 'i18next';
 import AppConfigSwitcher from '../components/AppConfigSwitcher';
+import { useStoredValue } from '../hooks/useStoredValue';
 
 export type LoggedInProvidersProps = {
   children?: React.ReactNode;
@@ -27,6 +28,8 @@ const LoggedOutStack = createNativeStackNavigator<NotLoggedInRootParamList>();
 export const LoggedInProviders = ({ children }: LoggedInProvidersProps) => {
   const auth = useAuth();
   const { pushNotificationsConfig } = useDeveloperConfig();
+  const [priorLoginDetected, setLoginDetected] =
+    useStoredValue('loginDetected');
 
   if (!auth.isLoggedIn && auth.loading) {
     return (
@@ -48,6 +51,10 @@ export const LoggedInProviders = ({ children }: LoggedInProvidersProps) => {
         </LoggedOutStack.Group>
       </LoggedOutStack.Navigator>
     );
+  }
+
+  if (!priorLoginDetected) {
+    setLoginDetected('detected');
   }
 
   return (
