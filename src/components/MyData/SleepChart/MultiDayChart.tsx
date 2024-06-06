@@ -207,10 +207,12 @@ export const MultiDayChart = (props: Props) => {
         <ActivityIndicatorView animating={isFetching} />
       </View>
 
-      <DataSelector
-        onBlockScrollChange={onBlockScrollChange}
-        prepareTooltipData={prepareTooltipData}
-      />
+      {data.length > 0 && (
+        <DataSelector
+          onBlockScrollChange={onBlockScrollChange}
+          prepareTooltipData={prepareTooltipData}
+        />
+      )}
     </View>
   );
 };
@@ -225,6 +227,10 @@ const SleepBar = (props: BarProps) => {
     default: 0,
   };
   let total = 0;
+
+  if (props.datum.components.length === 0) {
+    return null;
+  }
 
   props.datum.components.forEach((component: ObservationComponent) => {
     if (!component?.valuePeriod?.start || !component?.valuePeriod?.end) {

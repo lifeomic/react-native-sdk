@@ -175,10 +175,12 @@ export const DailyChart = (props: Props) => {
         <ActivityIndicatorView animating={isFetching} />
       </View>
 
-      <DataSelector
-        onBlockScrollChange={onBlockScrollChange}
-        prepareTooltipData={prepareTooltipData}
-      />
+      {data.length > 0 && (
+        <DataSelector
+          onBlockScrollChange={onBlockScrollChange}
+          prepareTooltipData={prepareTooltipData}
+        />
+      )}
     </View>
   );
 };
