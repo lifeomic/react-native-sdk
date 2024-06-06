@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useFhirClient } from '../../../hooks';
 import { ScaleTime, scaleTime } from 'd3-scale';
-import { differenceInDays, min, max, startOfDay, endOfDay } from 'date-fns';
+import {
+  differenceInDays,
+  min,
+  max,
+  startOfDay,
+  endOfDay,
+  isValid,
+} from 'date-fns';
 import { useCommonChartProps } from '../useCommonChartProps';
 import { Observation } from 'fhir/r3';
 import compact from 'lodash/compact';
@@ -87,9 +94,12 @@ export const useSleepChartData = (props: Props) => {
         {} as { start?: Date; end?: Date },
       );
 
+      const startDate = start && isValid(start) ? start : new Date(0);
+      const endDate = end && isValid(end) ? end : new Date(0);
+
       const newXDomain = scaleTime()
         .range([0, common.plotAreaWidth])
-        .domain([new Date(start ?? 0), new Date(end ?? 0)]);
+        .domain([startDate, endDate]);
 
       setChartData({ sleepData: newSleepData, xDomain: newXDomain, dateRange });
       setIsLoading(false);

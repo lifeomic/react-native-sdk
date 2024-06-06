@@ -110,6 +110,7 @@ export const MyDataScreen = () => {
         {config?.homeTab?.myDataSettings?.components.map((component, index) => (
           <React.Fragment key={`${component.type}-${index}`}>
             <View
+              style={styles.chartWrapperContainer}
               onLayout={(e) => {
                 chartDimensions.current[index] = e.nativeEvent.layout;
               }}
@@ -326,6 +327,9 @@ const defaultStyles = createStyles('MyDataScreen', (theme) => ({
     backgroundColor: theme.colors.onSurface,
     marginBottom: 24,
     marginTop: 5,
+  },
+  chartWrapperContainer: {
+    width: '100%',
   },
 }));
 
