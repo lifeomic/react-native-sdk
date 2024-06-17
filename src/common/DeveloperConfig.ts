@@ -145,6 +145,11 @@ export type DeveloperConfig = {
    * is present for a given account and we do not expect the usual invite to project flow.
    ***/
   keepWaitingForPatientId?: boolean;
+  /***
+   * Instead of proceeding further into the LoggedInStack show a loading indicator if
+   * there the user has no active consents and keep checking for either new consent assignment or active consent status.
+   */
+  activeConsentRequired?: boolean;
 };
 
 export type LogoHeaderConfig = { [key in Route]?: LogoHeaderOptions };
