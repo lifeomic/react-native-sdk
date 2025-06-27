@@ -60,7 +60,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.20.0",
-    "@babel/runtime": "^7.20.0",
+    "@babel/runtime": "^7.26.10",
     "@react-native/gradle-plugin": "^0.75.0-main",
     "@react-native/metro-config": "^0.75.0-main",
     "@react-navigation/bottom-tabs": "^6.5.5",
